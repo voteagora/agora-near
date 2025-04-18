@@ -16,6 +16,7 @@ import { siweProviderConfig } from "@/components/shared/SiweProviderConfig";
 import Tenant from "@/lib/tenant/tenant";
 import { getTransportForChain } from "@/lib/utils";
 import { hashFn } from "@wagmi/core/query";
+import { NearProvider } from "@/contexts/NearContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,19 +57,23 @@ const Web3Provider: FC<PropsWithChildren<{}>> = ({ children }) => (
     <QueryClientProvider client={queryClient}>
       <SIWEProvider {...siweProviderConfig}>
         <ConnectKitProvider options={{ enforceSupportedChains: false }}>
-          <body className={inter.variable}>
-            <noscript>You need to enable JavaScript to run this app.</noscript>
-            {/* {namespace === TENANT_NAMESPACES.OPTIMISM && <BetaBanner />} */}
-            {/* ConnectButtonProvider should be above PageContainer where DialogProvider is since the context is called from this Dialogs  */}
-            <ConnectButtonProvider>
-              <PageContainer>
-                <Toaster />
-                <AgoraProvider>{children}</AgoraProvider>
-              </PageContainer>
-            </ConnectButtonProvider>
-            {!shouldHideAgoraBranding && <Footer />}
-            <SpeedInsights />
-          </body>
+          <NearProvider>
+            <body className={inter.variable}>
+              <noscript>
+                You need to enable JavaScript to run this app.
+              </noscript>
+              {/* {namespace === TENANT_NAMESPACES.OPTIMISM && <BetaBanner />} */}
+              {/* ConnectButtonProvider should be above PageContainer where DialogProvider is since the context is called from this Dialogs  */}
+              <ConnectButtonProvider>
+                <PageContainer>
+                  <Toaster />
+                  <AgoraProvider>{children}</AgoraProvider>
+                </PageContainer>
+              </ConnectButtonProvider>
+              {!shouldHideAgoraBranding && <Footer />}
+              <SpeedInsights />
+            </body>
+          </NearProvider>
         </ConnectKitProvider>
       </SIWEProvider>
     </QueryClientProvider>
