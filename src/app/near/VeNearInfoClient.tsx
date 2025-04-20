@@ -163,10 +163,15 @@ export default function VeNearInfoClient() {
               <>
                 <Separator />
                 <InfoItem
-                  label="veNEAR Unlock Time"
-                  value={new Date(
-                    parseInt(accountInfo.veNearUnlockTimestamp) / 1e6
-                  ).toLocaleString()}
+                  label="Time until veNEAR is unlocked"
+                  value={String(
+                    Math.max(
+                      0,
+                      parseFloat(accountInfo.veNearUnlockTimestamp || "0") /
+                        1e6 -
+                        new Date().getTime()
+                    )
+                  )}
                   isRaw
                 />
               </>
