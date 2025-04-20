@@ -35,5 +35,9 @@ export async function generateMetadata({}) {
 }
 
 export default function NearWalletPage() {
-  return <NearWalletClient />;
+  return (
+    <div className="flex min-h-screen flex-col">
+      <NearWalletClient />
+    </div>
+  );
 }

@@ -1,31 +1,26 @@
+import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-  useRef,
-} from "react";
-
-// near api js
-import { providers, utils } from "near-api-js";
-
-// wallet selector
-import "@near-wallet-selector/modal-ui/styles.css";
-import { setupModal } from "@near-wallet-selector/modal-ui";
-import {
-  setupWalletSelector,
-  WalletSelector,
   NetworkId,
+  setupWalletSelector,
   WalletModuleFactory,
-  Subscription,
-  Wallet,
+  WalletSelector,
 } from "@near-wallet-selector/core";
-import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { setupLedger } from "@near-wallet-selector/ledger";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
-import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
+import { setupModal } from "@near-wallet-selector/modal-ui";
+import "@near-wallet-selector/modal-ui/styles.css";
+import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
+import { providers, utils } from "near-api-js";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 const THIRTY_TGAS = "30000000000000";
 const NO_DEPOSIT = "0";
@@ -52,7 +47,7 @@ interface NearContextType {
   viewMethod: (options: ViewMethodProps) => Promise<any>;
   callMethod: (options: CallMethodProps) => Promise<any>;
   getTransactionResult: (txhash: string) => Promise<any>;
-  getBalance: (accountId: string) => Promise<number>;
+  getBalance: (accountId: string) => Promise<string>;
   signAndSendTransactions: (options: TransactionsProps) => Promise<any>;
   getAccessKeys: (accountId: string) => Promise<any[]>;
 }
@@ -64,7 +59,7 @@ export const NearContext = createContext<NearContextType>({
   viewMethod: async () => null,
   callMethod: async () => null,
   getTransactionResult: async () => null,
-  getBalance: async () => 0,
+  getBalance: async () => "",
   signAndSendTransactions: async () => null,
   getAccessKeys: async () => [],
 });
@@ -76,6 +71,12 @@ interface NearProviderProps {
   networkId?: NetworkId;
   createAccessKeyFor?: string;
 }
+
+const debugLog = (message: string) => {
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[${new Date().toLocaleString()}]: ${message}`);
+  }
+};
 
 export const NearProvider: React.FC<NearProviderProps> = ({
   children,
@@ -155,16 +156,25 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       const url = `https://rpc.${networkId}.near.org`;
       const provider = new providers.JsonRpcProvider({ url });
 
-      const res = await provider.query({
-        request_type: "call_function",
-        account_id: contractId,
-        method_name: method,
-        args_base64: Buffer.from(JSON.stringify(args)).toString("base64"),
-        finality: "optimistic",
-      });
+      debugLog(
+        `viewMethod: ${contractId}.${method}(${JSON.stringify(args, null, 2)})`
+      );
 
-      const resultArray = (res as any).result;
-      return JSON.parse(Buffer.from(resultArray).toString());
+      try {
+        const res = await provider.query({
+          request_type: "call_function",
+          account_id: contractId,
+          method_name: method,
+          args_base64: Buffer.from(JSON.stringify(args)).toString("base64"),
+          finality: "optimistic",
+        });
+
+        const resultArray = (res as any).result;
+        return JSON.parse(Buffer.from(resultArray).toString());
+      } catch (error) {
+        debugLog(`Error calling ${contractId}.${method}: ${error}`);
+        return null;
+      }
     },
     [networkId]
   );
@@ -237,7 +247,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
    */
   const getBalance = useCallback(
     async (accountId: string) => {
-      if (!selector) return 0;
+      if (!selector) return "";
       const { network } = selector.options;
       const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
 
@@ -249,9 +259,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       });
       // return amount on NEAR
       const accountAmount = (account as any).amount;
-      return accountAmount
-        ? Number(utils.format.formatNearAmount(accountAmount))
-        : 0;
+      return accountAmount ? utils.format.formatNearAmount(accountAmount) : "0";
     },
     [selector]
   );
@@ -292,6 +300,13 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     },
     [selector]
   );
+
+  const rpcProvider = useMemo(() => {
+    if (!selector) return null;
+    const { network } = selector.options;
+    const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+    return provider;
+  }, [selector]);
 
   useEffect(() => {
     init();

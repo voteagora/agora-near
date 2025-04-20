@@ -5,10 +5,11 @@ import { useNear } from "@/contexts/NearContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import VeNearInfoClient from "./VeNearInfoClient";
 
 export default function NearWalletClient() {
   const { signedAccountId, signIn, signOut, getBalance } = useNear();
-  const [balance, setBalance] = useState<number | null>(null);
+  const [balance, setBalance] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ export default function NearWalletClient() {
                     <p className="text-lg">Loading...</p>
                   ) : (
                     <p className="text-lg font-medium">
-                      {balance !== null ? `${balance.toFixed(4)} NEAR` : "N/A"}
+                      {balance !== null ? `${balance} NEAR` : "N/A"}
                     </p>
                   )}
                 </div>
@@ -104,6 +105,8 @@ export default function NearWalletClient() {
           </div>
         </CardContent>
       </Card>
+
+      <VeNearInfoClient />
     </div>
   );
 }
