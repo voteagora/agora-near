@@ -77,7 +77,7 @@ export default class Tenant {
     if (!Tenant.instance) {
       Tenant.instance = new Tenant();
     }
-    return Tenant.instance
+    return Tenant.instance;
   }
 
   private deriveBrandName(namespace: TenantNamespace): string {
