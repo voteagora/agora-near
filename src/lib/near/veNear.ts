@@ -236,6 +236,7 @@ export function useAccountInfo(accountId: string | undefined | null) {
 
     return {
       accountId,
+      veNearBalance: veNearBalance,
       totalBalance: {
         near: account.balance?.near_balance || "0",
         extraBalance: account.balance?.extra_venear_balance || "0",
@@ -255,12 +256,13 @@ export function useAccountInfo(accountId: string | undefined | null) {
       veNearPendingBalance: veNearPendingBalance,
       veNearUnlockTimestamp: veNearUnlockTimestamp,
       veNearLockedBalance: veNearLockedBalance,
+      lockupAccountId: lockupAccountId,
     };
   }, [
     accountId,
     error,
     isLoading,
-    accountData,
+    accountData?.account,
     veNearBalance,
     stakingPool,
     liquidBalance,
@@ -268,6 +270,7 @@ export function useAccountInfo(accountId: string | undefined | null) {
     veNearPendingBalance,
     veNearUnlockTimestamp,
     veNearLockedBalance,
+    lockupAccountId,
   ]);
 
   return {

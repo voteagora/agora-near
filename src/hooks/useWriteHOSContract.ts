@@ -4,80 +4,82 @@ import { venearMethodRequirements } from "@/lib/contracts/near/venearConfig";
 import { VenearWriteContractMethods } from "@/lib/contracts/near/venearTypes";
 import { votingMethodRequirements } from "@/lib/contracts/near/votingConfig";
 import { VotingWriteContractMethods } from "@/lib/contracts/near/votingTypes";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { useNear } from "../contexts/NearContext";
+import { useMutation } from "@tanstack/react-query";
+import { MethodCall, useNear } from "../contexts/NearContext";
+import { MethodRequirementsConfig } from "@/lib/contracts/near/common";
 
-type CombinedMethods = VenearWriteContractMethods &
-  LockupWriteContractMethods &
-  VotingWriteContractMethods;
+type ContractMethodMap = {
+  VENEAR: VenearWriteContractMethods;
+  LOCKUP: LockupWriteContractMethods;
+  VOTING: VotingWriteContractMethods;
+};
 
-/** Any valid view‐method name across all contracts */
-export type MethodName = keyof CombinedMethods;
+type ContractType = keyof ContractMethodMap;
 
-/** Args & Result for a given method */
-export type MethodArgs<M extends MethodName> = CombinedMethods[M]["args"];
-export type MethodResult<M extends MethodName> = CombinedMethods[M]["result"];
+type ContractMethodType = {
+  args: Record<string, unknown>;
+  result: unknown;
+};
 
-export interface WriteContractConfig<Args> {
-  args: Args;
-  enabled?: boolean;
+type ContractSpecificMethodCall<
+  T extends ContractType,
+  M extends keyof ContractMethodMap[T] = keyof ContractMethodMap[T],
+> = {
+  methodName: M;
+  args?: ContractMethodMap[T][M] extends ContractMethodType
+    ? ContractMethodMap[T][M]["args"]
+    : Record<string, unknown>;
   gas?: string;
   deposit?: string;
-}
+};
 
-// Type guards to narrow down method types
-function isLockupMethod(
-  method: MethodName
-): method is keyof LockupWriteContractMethods {
-  return method in lockupMethodRequirements;
-}
+export type MethodName<T extends ContractType> = keyof ContractMethodMap[T];
 
-function isVenearMethod(
-  method: MethodName
-): method is keyof VenearWriteContractMethods {
-  return method in venearMethodRequirements;
-}
+const methodRequirementsMap = {
+  VENEAR: venearMethodRequirements,
+  LOCKUP: lockupMethodRequirements,
+  VOTING: votingMethodRequirements,
+} as const;
 
-function isVotingMethod(
-  method: MethodName
-): method is keyof VotingWriteContractMethods {
-  return method in votingMethodRequirements;
-}
+type MethodRequirements<T extends ContractType> = MethodRequirementsConfig<
+  ContractMethodMap[T]
+>;
 
-export function useWriteHOSContract<M extends MethodName>(
-  contractId: string,
-  methodName: M,
-  config: WriteContractConfig<MethodArgs<M>>
-): UseQueryResult<MethodResult<M>, Error> {
-  const { callMethod } = useNear();
+export function useWriteHOSContract<T extends ContractType>({
+  contractType,
+}: {
+  contractType: T;
+}) {
+  const { callMethods } = useNear();
 
-  const defaultConfig = isLockupMethod(methodName)
-    ? lockupMethodRequirements[methodName]
-    : isVenearMethod(methodName)
-      ? venearMethodRequirements[methodName]
-      : isVotingMethod(methodName)
-        ? votingMethodRequirements[methodName]
-        : undefined;
+  return useMutation({
+    mutationFn: ({
+      methodCalls,
+      contractId,
+    }: {
+      methodCalls: ContractSpecificMethodCall<T>[];
+      contractId: string;
+    }) => {
+      const methodRequirements = methodRequirementsMap[
+        contractType
+      ] as MethodRequirements<T>;
 
-  const {
-    args,
-    enabled = true,
-    gas = defaultConfig?.gas,
-    deposit = defaultConfig?.deposit,
-  } = config ?? {};
-
-  return useQuery({
-    queryKey: ["near-write", contractId, methodName, args] as const,
-    queryFn: async () => {
-      const res = await callMethod({
-        contractId,
-        method: methodName,
-        args,
-        gas,
-        deposit,
+      const processedMethodCalls = methodCalls.map((call) => {
+        const requirements =
+          methodRequirements[
+            call.methodName as keyof typeof methodRequirements
+          ];
+        return {
+          ...call,
+          gas: call.gas ?? requirements?.gas,
+          deposit: call.deposit ?? requirements?.deposit,
+        };
       });
-      return res as MethodResult<M> | null | undefined;
+
+      return callMethods({
+        contractId,
+        methodCalls: processedMethodCalls as MethodCall[],
+      });
     },
-    enabled,
   });
 }

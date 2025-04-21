@@ -1,11 +1,14 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNear } from "@/contexts/NearContext";
+import { useRegisterLockup } from "@/hooks/useVenearContract";
 import { useAccountInfo, useVeNearContractInfo } from "@/lib/near/veNear";
 import { utils } from "near-api-js";
+import { useCallback } from "react";
 
 export default function VeNearInfoClient() {
   const { signedAccountId } = useNear();
@@ -13,6 +16,23 @@ export default function VeNearInfoClient() {
     useVeNearContractInfo();
   const { data: accountInfo, isLoading: isLoadingAccount } =
     useAccountInfo(signedAccountId);
+
+  const {
+    registerAndDeployLockup,
+    isPending: isLoadingRegistration,
+    error: venearContractError,
+  } = useRegisterLockup();
+
+  const onRegisterToVote = useCallback(() => {
+    registerAndDeployLockup(
+      contractInfo?.storageDepositAmount || "0",
+      contractInfo?.lockupDeploymentCost || "0"
+    );
+  }, [
+    contractInfo?.lockupDeploymentCost,
+    contractInfo?.storageDepositAmount,
+    registerAndDeployLockup,
+  ]);
 
   const renderContractInfo = () => (
     <Card className="w-full mt-6">
@@ -68,20 +88,33 @@ export default function VeNearInfoClient() {
           <LoadingState />
         ) : accountInfo ? (
           <div className="space-y-4">
+            {accountInfo.lockupAccountId && (
+              <InfoItem
+                label="Lockup Account ID"
+                value={accountInfo.lockupAccountId}
+              />
+            )}
             <Separator />
             <InfoItem
-              label="NEAR Balance"
+              label="veNEAR Total Balance"
+              value={utils.format.formatNearAmount(
+                accountInfo.veNearBalance || "0"
+              )}
+              unit="veNEAR"
+            />
+            <InfoItem
+              label="Principal Balance"
               value={utils.format.formatNearAmount(
                 accountInfo.totalBalance.near
               )}
-              unit="NEAR"
+              unit="veNEAR"
             />
             <InfoItem
-              label="Rewards Balance"
+              label="Earned veNEAR"
               value={utils.format.formatNearAmount(
                 accountInfo.totalBalance.extraBalance
               )}
-              unit="NEAR"
+              unit="veNEAR"
             />
             {/* <InfoItem
               label="Liquid NEAR Balance"
@@ -178,8 +211,14 @@ export default function VeNearInfoClient() {
             )}
           </div>
         ) : (
-          <div className="text-center py-6 text-muted-foreground">
-            Connect your NEAR wallet to view your veNEAR account information
+          <div className="flex flex-col gap-4">
+            <p>Please register your account to vote</p>
+            <Button loading={isLoadingRegistration} onClick={onRegisterToVote}>
+              Register to vote
+            </Button>
+            {venearContractError && (
+              <p className="text-red-500">{`Registration error: ${venearContractError.message}`}</p>
+            )}
           </div>
         )}
       </CardContent>

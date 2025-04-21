@@ -7,7 +7,8 @@ export const venearMethodRequirements: MethodRequirementsConfig<VenearWriteContr
       deposit: "1", // Requires exactly 1 yoctoNEAR
     },
     deploy_lockup: {
-      deposit: undefined, // Requires dynamic deposit amount
+      deposit: undefined, // Requires dynamic deposit amount,
+      gas: "100 Tgas",
     },
     ft_transfer: {
       deposit: "1", // Requires exactly 1 yoctoNEAR

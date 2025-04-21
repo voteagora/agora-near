@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 import {
+  BrowserWalletBehaviour,
   NetworkId,
   setupWalletSelector,
   WalletModuleFactory,
@@ -21,9 +23,10 @@ import {
   useRef,
   useState,
 } from "react";
+import { convertUnit } from "@fastnear/utils";
 
-const THIRTY_TGAS = "30000000000000";
-const NO_DEPOSIT = "0";
+const DEFAULT_GAS = convertUnit("30 Tgas");
+const DEFAULT_DEPOSIT = "0";
 
 interface ViewMethodProps {
   contractId: string;
@@ -35,6 +38,18 @@ interface CallMethodProps extends ViewMethodProps {
   gas?: string;
   deposit?: string;
 }
+
+export type MethodCall = {
+  methodName: string;
+  args?: Record<string, unknown>;
+  gas?: string;
+  deposit?: string;
+};
+
+type CallMethodsProps = {
+  methodCalls: MethodCall[];
+  contractId: string;
+};
 
 interface TransactionsProps {
   transactions: any[];
@@ -50,6 +65,7 @@ interface NearContextType {
   getBalance: (accountId: string) => Promise<string>;
   signAndSendTransactions: (options: TransactionsProps) => Promise<any>;
   getAccessKeys: (accountId: string) => Promise<any[]>;
+  callMethods: ({ contractId, methodCalls }: CallMethodsProps) => Promise<any>;
 }
 
 export const NearContext = createContext<NearContextType>({
@@ -62,6 +78,7 @@ export const NearContext = createContext<NearContextType>({
   getBalance: async () => "",
   signAndSendTransactions: async () => null,
   getAccessKeys: async () => [],
+  callMethods: async () => null,
 });
 
 export const useNear = () => useContext(NearContext);
@@ -194,8 +211,8 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       contractId,
       method,
       args = {},
-      gas = THIRTY_TGAS,
-      deposit = NO_DEPOSIT,
+      gas = DEFAULT_GAS,
+      deposit = DEFAULT_DEPOSIT,
     }: CallMethodProps) => {
       if (!selector) return null;
       // Sign a transaction with the "FunctionCall" action
@@ -217,6 +234,51 @@ export const NearProvider: React.FC<NearProviderProps> = ({
 
       if (!outcome) return null;
       return providers.getTransactionLastResult(outcome);
+    },
+    [selector]
+  );
+
+  const callMethods = useCallback(
+    async ({ contractId, methodCalls }: CallMethodsProps) => {
+      try {
+        if (!selector) return null;
+
+        const selectedWallet = await selector.wallet();
+
+        const actions: Parameters<
+          BrowserWalletBehaviour["signAndSendTransaction"]
+        >[0]["actions"] = methodCalls.map(
+          ({ methodName, args, gas, deposit }) => ({
+            type: "FunctionCall",
+            params: {
+              methodName,
+              args: args ?? {},
+              gas: gas ? convertUnit(gas) : DEFAULT_GAS,
+              deposit: deposit ? convertUnit(deposit) : DEFAULT_DEPOSIT,
+            },
+          })
+        );
+
+        debugLog(
+          `FunctionCalls on ${contractId}: ${JSON.stringify(actions, null, 2)} `
+        );
+
+        const outcome = await selectedWallet.signAndSendTransaction({
+          receiverId: contractId,
+          actions,
+        });
+
+        if (!outcome) return null;
+
+        const result = providers.getTransactionLastResult(outcome);
+
+        debugLog(`Transaction result: ${JSON.stringify(result, null, 2)}`);
+
+        return result;
+      } catch (e) {
+        console.error("Error calling methods:", e);
+        return null;
+      }
     },
     [selector]
   );
@@ -328,6 +390,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         getBalance,
         signAndSendTransactions,
         getAccessKeys,
+        callMethods,
       }}
     >
       {children}
