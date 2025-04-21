@@ -10,6 +10,12 @@ export default class TenantTokenFactory {
           symbol: "OP",
           decimals: 18,
         };
+      case TENANT_NAMESPACES.NEAR:
+        return {
+          name: "Near",
+          symbol: "OP",
+          decimals: 18,
+        };
       case TENANT_NAMESPACES.ENS:
         return {
           name: "ENS",

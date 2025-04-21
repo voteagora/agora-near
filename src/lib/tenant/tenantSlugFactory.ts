@@ -7,6 +7,8 @@ export default class TenantSlugFactory {
     switch (namespace) {
       case TENANT_NAMESPACES.OPTIMISM:
         return "OP";
+      case TENANT_NAMESPACES.NEAR:
+        return "OP";
       case TENANT_NAMESPACES.ENS:
         return "ENS";
       case TENANT_NAMESPACES.ETHERFI:

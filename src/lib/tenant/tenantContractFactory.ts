@@ -26,6 +26,8 @@ export default class TenantContractFactory {
         return ensTenantContractConfig({ isProd, alchemyId });
       case TENANT_NAMESPACES.OPTIMISM:
         return optimismTenantContractConfig({ isProd, alchemyId });
+      case TENANT_NAMESPACES.NEAR:
+        return optimismTenantContractConfig({ isProd, alchemyId });
       case TENANT_NAMESPACES.UNISWAP:
         return uniswapTenantContractConfig({ isProd, alchemyId });
       case TENANT_NAMESPACES.CYBER:

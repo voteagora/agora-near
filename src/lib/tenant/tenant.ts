@@ -53,7 +53,8 @@ export default class Tenant {
   }
 
   public get namespace(): TenantNamespace {
-    return this._namespace;
+    return "optimism"; // TODO: remove this
+    // return this._namespace;
   }
 
   public get slug(): DaoSlug {
@@ -76,7 +77,7 @@ export default class Tenant {
     if (!Tenant.instance) {
       Tenant.instance = new Tenant();
     }
-    return Tenant.instance;
+    return Tenant.instance
   }
 
   private deriveBrandName(namespace: TenantNamespace): string {
