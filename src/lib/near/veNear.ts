@@ -203,6 +203,14 @@ export function useAccountInfo(accountId: string | undefined | null) {
         enabled: !!lockupAccountId,
       },
     },
+    {
+      contractId: lockupAccountId ?? "",
+      methodName: "get_owners_balance" as const,
+      config: {
+        args: {},
+        enabled: !!lockupAccountId,
+      },
+    },
   ]);
 
   const [
@@ -212,6 +220,7 @@ export function useAccountInfo(accountId: string | undefined | null) {
     { data: veNearPendingBalance, isLoading: isLoadingVeNearPending },
     { data: veNearUnlockTimestamp, isLoading: isLoadingVeNearUnlock },
     { data: veNearLockedBalance, isLoading: isLoadingVeNearLocked },
+    { data: ownersBalance, isLoading: isLoadingOwnersBalance },
   ] = lockupResults;
 
   const isLoading =
@@ -223,7 +232,8 @@ export function useAccountInfo(accountId: string | undefined | null) {
     isLoadingVeNearLiquid ||
     isLoadingVeNearPending ||
     isLoadingVeNearUnlock ||
-    isLoadingVeNearLocked;
+    isLoadingVeNearLocked ||
+    isLoadingOwnersBalance;
 
   const error = balanceError || accountError || lockupError;
 
@@ -257,6 +267,7 @@ export function useAccountInfo(accountId: string | undefined | null) {
       veNearUnlockTimestamp: veNearUnlockTimestamp,
       veNearLockedBalance: veNearLockedBalance,
       lockupAccountId: lockupAccountId,
+      ownersBalance: ownersBalance,
     };
   }, [
     accountId,

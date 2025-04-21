@@ -1,6 +1,5 @@
 import { MerkleProof } from "./common";
 import { VAccount } from "./venearTypes";
-import { ContractMethodRequirements } from "./common";
 
 // some shared types
 export type AccountId = string;

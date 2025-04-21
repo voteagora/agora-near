@@ -5,10 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNear } from "@/contexts/NearContext";
-import { useRegisterLockup } from "@/hooks/useVenearContract";
+import { useLockNear } from "@/hooks/useLockNear";
+import { useRegisterLockup } from "@/hooks/useRegisterLockup";
+import { useStakeNear } from "@/hooks/useStakeNear";
 import { useAccountInfo, useVeNearContractInfo } from "@/lib/near/veNear";
 import { utils } from "near-api-js";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export default function VeNearInfoClient() {
   const { signedAccountId } = useNear();
@@ -23,6 +26,35 @@ export default function VeNearInfoClient() {
     error: venearContractError,
   } = useRegisterLockup();
 
+  const {
+    lockNear,
+    unlockNear,
+    isLockingNear,
+    isUnlockingNear,
+    lockingNearError,
+    unlockingNearError,
+  } = useLockNear();
+
+  const { stakeNear, isStakingNear, stakingNearError } = useStakeNear({
+    lockupAccountId: accountInfo?.lockupAccountId || "",
+  });
+
+  const [stakeAmount, setStakeAmount] = useState("");
+
+  const lockAllNear = useCallback(() => {
+    if (accountInfo?.lockupAccountId) {
+      lockNear(accountInfo.lockupAccountId);
+    }
+  }, [accountInfo?.lockupAccountId, lockNear]);
+
+  const unlockAllNear = useCallback(() => {
+    if (accountInfo?.lockupAccountId) {
+      unlockNear({
+        lockupAccountId: accountInfo.lockupAccountId,
+      });
+    }
+  }, [accountInfo?.lockupAccountId, unlockNear]);
+
   const onRegisterToVote = useCallback(() => {
     registerAndDeployLockup(
       contractInfo?.storageDepositAmount || "0",
@@ -33,6 +65,25 @@ export default function VeNearInfoClient() {
     contractInfo?.storageDepositAmount,
     registerAndDeployLockup,
   ]);
+
+  const handleStakeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only allow numbers and decimals
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      setStakeAmount(value);
+    }
+  };
+
+  const handleStake = () => {
+    if (!stakeAmount) return;
+    try {
+      const yoctoAmount = utils.format.parseNearAmount(stakeAmount);
+      if (!yoctoAmount) throw new Error("Invalid amount");
+      stakeNear(yoctoAmount, "chorusone.pool.f863973.m0");
+    } catch (error) {
+      console.error("Error converting stake amount:", error);
+    }
+  };
 
   const renderContractInfo = () => (
     <Card className="w-full mt-6">
@@ -117,9 +168,16 @@ export default function VeNearInfoClient() {
               unit="veNEAR"
             />
             {/* <InfoItem
-              label="Liquid NEAR Balance"
+              label="Liquid owners balance"
               value={utils.format.formatNearAmount(
                 accountInfo.liquidBalance || "0"
+              )}
+              unit="NEAR"
+            />
+            <InfoItem
+              label="Owners balance"
+              value={utils.format.formatNearAmount(
+                accountInfo.ownersBalance || "0"
               )}
               unit="NEAR"
             /> */}
@@ -160,7 +218,7 @@ export default function VeNearInfoClient() {
               <>
                 <Separator />
                 <InfoItem
-                  label="Liquid NEAR Balance"
+                  label="Liquid NEAR Balance (NEAR not locked + staked NEAR)"
                   value={utils.format.formatNearAmount(
                     accountInfo.veNearLiquidBalance
                   )}
@@ -209,6 +267,57 @@ export default function VeNearInfoClient() {
                 />
               </>
             )}
+            <Separator />
+            <div className="flex flex-col gap-2">
+              <CardTitle>Account actions</CardTitle>
+              <div className="flex flex-row gap-2">
+                <div className="flex flex-col gap-2">
+                  <Button
+                    loading={isLockingNear}
+                    onClick={lockAllNear}
+                    disabled={isUnlockingNear}
+                  >
+                    {`Lock all NEAR`}
+                  </Button>
+                  {lockingNearError && (
+                    <p className="text-red-500">{`Lock error: ${lockingNearError.message}`}</p>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    loading={isUnlockingNear}
+                    onClick={unlockAllNear}
+                    disabled={isLockingNear}
+                  >
+                    {`Unlock all veNEAR`}
+                  </Button>
+                  {unlockingNearError && (
+                    <p className="text-red-500">{`Unlock error: ${unlockingNearError.message}`}</p>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col items-center gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Amount to stake"
+                      value={stakeAmount}
+                      onChange={handleStakeAmountChange}
+                      className="w-42"
+                    />
+                    <Button
+                      loading={isStakingNear}
+                      onClick={handleStake}
+                      disabled={isStakingNear || !stakeAmount}
+                    >
+                      {`Stake NEAR`}
+                    </Button>
+                  </div>
+                  {stakingNearError && (
+                    <p className="text-red-500">{`Stake error: ${stakingNearError.message}`}</p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col gap-4">

@@ -49,6 +49,7 @@ export type MethodCall = {
 type CallMethodsProps = {
   methodCalls: MethodCall[];
   contractId: string;
+  callbackUrl?: string;
 };
 
 interface TransactionsProps {
@@ -239,7 +240,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
   );
 
   const callMethods = useCallback(
-    async ({ contractId, methodCalls }: CallMethodsProps) => {
+    async ({ contractId, methodCalls, callbackUrl }: CallMethodsProps) => {
       try {
         if (!selector) return null;
 
@@ -266,6 +267,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         const outcome = await selectedWallet.signAndSendTransaction({
           receiverId: contractId,
           actions,
+          callbackUrl,
         });
 
         if (!outcome) return null;
