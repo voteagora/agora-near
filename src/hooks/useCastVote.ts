@@ -3,7 +3,6 @@ import { MerkleProof } from "@/lib/contracts/near/common";
 import { VAccount } from "@/lib/contracts/near/venearTypes";
 import { TESTNET_CONTRACTS } from "@/lib/near/constants";
 import { useQueryClient } from "@tanstack/react-query";
-import { BlockHeight } from "near-api-js/lib/providers/provider";
 import { useCallback, useMemo } from "react";
 import { READ_NEAR_CONTRACT_QK } from "./useReadNearContract";
 import { useWriteHOSContract } from "./useWriteHOSContract";
@@ -12,7 +11,7 @@ interface CastVoteArgs {
   proposalId: number;
   voteIndex: number;
   voteStorageFee: string;
-  blockHeight: BlockHeight;
+  blockId: number;
 }
 
 export function useCastVote() {
@@ -45,13 +44,13 @@ export function useCastVote() {
       proposalId,
       voteIndex,
       voteStorageFee,
-      blockHeight,
+      blockId,
     }: CastVoteArgs) => {
       const proof = (await viewMethod({
         contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
         method: "get_proof",
         args: { account_id: signedAccountId },
-        blockHeight,
+        blockId,
       })) as [MerkleProof, VAccount] | null;
 
       if (!proof) {

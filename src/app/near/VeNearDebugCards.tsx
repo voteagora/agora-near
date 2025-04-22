@@ -218,7 +218,7 @@ export default function VeNearDebugCards() {
       await castVote({
         proposalId,
         voteIndex,
-        blockHeight: proposal.snapshot_and_state.snapshot.block_height,
+        blockId: proposal.snapshot_and_state.snapshot.block_height,
         voteStorageFee: config.vote_storage_fee,
       });
       // Clear the selected vote after successful submission
