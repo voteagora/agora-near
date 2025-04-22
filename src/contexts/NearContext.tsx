@@ -24,6 +24,7 @@ import {
   useState,
 } from "react";
 import { convertUnit } from "@fastnear/utils";
+import { TESTNET_CONTRACTS } from "@/lib/near/constants";
 
 const DEFAULT_GAS = convertUnit("30 Tgas");
 const DEFAULT_DEPOSIT = "0";
@@ -147,7 +148,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
   const signIn = useCallback(async () => {
     if (!selector) return;
     const modal = setupModal(selector, {
-      contractId: "guest-book.testnet",
+      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
     });
     modal.show();
   }, [selector]);

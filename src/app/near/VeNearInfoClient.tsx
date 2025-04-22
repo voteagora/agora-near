@@ -104,7 +104,7 @@ export default function VeNearInfoClient() {
             />
             <Separator />
             <InfoItem
-              label="Lockup Deployment Cost"
+              label="Lockup Storage Cost"
               value={utils.format.formatNearAmount(
                 contractInfo?.lockupDeploymentCost || "0"
               )}
@@ -147,7 +147,7 @@ export default function VeNearInfoClient() {
             )}
             <Separator />
             <InfoItem
-              label="veNEAR Total Balance"
+              label="veNEAR Total Balance (Principal + Earned)"
               value={utils.format.formatNearAmount(
                 accountInfo.veNearBalance || "0"
               )}
@@ -167,21 +167,9 @@ export default function VeNearInfoClient() {
               )}
               unit="veNEAR"
             />
-            {/* <InfoItem
-              label="Liquid owners balance"
-              value={utils.format.formatNearAmount(
-                accountInfo.liquidBalance || "0"
-              )}
-              unit="NEAR"
-            />
-            <InfoItem
-              label="Owners balance"
-              value={utils.format.formatNearAmount(
-                accountInfo.ownersBalance || "0"
-              )}
-              unit="NEAR"
-            /> */}
+
             <Separator />
+            <CardTitle>Delegation</CardTitle>
             <InfoItem
               label="Delegated NEAR Balance"
               value={utils.format.formatNearAmount(
@@ -205,67 +193,71 @@ export default function VeNearInfoClient() {
                 />
               </>
             )}
+            <Separator />
+            <CardTitle>Staking</CardTitle>
+            <InfoItem
+              label="Available to stake balance"
+              value={utils.format.formatNearAmount(
+                accountInfo.liquidBalance || "0"
+              )}
+              unit="NEAR"
+            />
             {accountInfo.stakingPool && (
               <>
-                <Separator />
                 <InfoItem
                   label="Selected Staking Pool"
                   value={accountInfo.stakingPool}
                 />
               </>
             )}
+            <InfoItem
+              label="Available to stake balance"
+              value={utils.format.formatNearAmount(
+                accountInfo.liquidBalance || "0"
+              )}
+              unit="NEAR"
+            />
+            <Separator />
+            <CardTitle>Locking/Unlocking</CardTitle>
             {accountInfo.veNearLiquidBalance && (
-              <>
-                <Separator />
-                <InfoItem
-                  label="Liquid NEAR Balance (NEAR not locked + staked NEAR)"
-                  value={utils.format.formatNearAmount(
-                    accountInfo.veNearLiquidBalance
-                  )}
-                  unit="NEAR"
-                />
-              </>
+              <InfoItem
+                label="Available to lock"
+                value={utils.format.formatNearAmount(
+                  accountInfo.veNearLiquidBalance
+                )}
+                unit="NEAR"
+              />
             )}
             {accountInfo.veNearPendingBalance && (
-              <>
-                <Separator />
-                <InfoItem
-                  label="veNEAR Pending Balance"
-                  value={utils.format.formatNearAmount(
-                    accountInfo.veNearPendingBalance
-                  )}
-                  unit="veNEAR"
-                />
-              </>
+              <InfoItem
+                label="Pending to unlock"
+                value={utils.format.formatNearAmount(
+                  accountInfo.veNearPendingBalance
+                )}
+                unit="veNEAR"
+              />
             )}
             {accountInfo.veNearLockedBalance && (
-              <>
-                <Separator />
-                <InfoItem
-                  label="veNEAR Locked Balance"
-                  value={utils.format.formatNearAmount(
-                    accountInfo.veNearLockedBalance
-                  )}
-                  unit="veNEAR"
-                />
-              </>
+              <InfoItem
+                label="veNEAR Locked Balance"
+                value={utils.format.formatNearAmount(
+                  accountInfo.veNearLockedBalance
+                )}
+                unit="veNEAR"
+              />
             )}
             {accountInfo.veNearUnlockTimestamp && (
-              <>
-                <Separator />
-                <InfoItem
-                  label="Time until veNEAR is unlocked"
-                  value={String(
-                    Math.max(
-                      0,
-                      parseFloat(accountInfo.veNearUnlockTimestamp || "0") /
-                        1e6 -
-                        new Date().getTime()
-                    )
-                  )}
-                  isRaw
-                />
-              </>
+              <InfoItem
+                label="Time until veNEAR is unlocked"
+                value={String(
+                  Math.max(
+                    0,
+                    parseFloat(accountInfo.veNearUnlockTimestamp || "0") / 1e6 -
+                      new Date().getTime()
+                  )
+                )}
+                isRaw
+              />
             )}
             <Separator />
             <div className="flex flex-col gap-2">
