@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 import {
+  Action,
   BrowserWalletBehaviour,
+  FinalExecutionOutcome,
   NetworkId,
   setupWalletSelector,
   WalletModuleFactory,
@@ -47,9 +49,9 @@ export type MethodCall = {
   deposit?: string;
 };
 
-type CallMethodsProps = {
-  methodCalls: MethodCall[];
-  contractId: string;
+type CallContractsProps = {
+  // Map from contractId to method calls on that contract
+  contractCalls: Record<string, MethodCall[]>;
   callbackUrl?: string;
 };
 
@@ -67,7 +69,7 @@ interface NearContextType {
   getBalance: (accountId: string) => Promise<string>;
   signAndSendTransactions: (options: TransactionsProps) => Promise<any>;
   getAccessKeys: (accountId: string) => Promise<any[]>;
-  callMethods: ({ contractId, methodCalls }: CallMethodsProps) => Promise<any>;
+  callContracts: (props: CallContractsProps) => Promise<any>;
 }
 
 export const NearContext = createContext<NearContextType>({
@@ -80,7 +82,7 @@ export const NearContext = createContext<NearContextType>({
   getBalance: async () => "",
   signAndSendTransactions: async () => null,
   getAccessKeys: async () => [],
-  callMethods: async () => null,
+  callContracts: async () => null,
 });
 
 export const useNear = () => useContext(NearContext);
@@ -246,44 +248,48 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     [selector]
   );
 
-  const callMethods = useCallback(
-    async ({ contractId, methodCalls, callbackUrl }: CallMethodsProps) => {
+  const callContracts = useCallback(
+    async ({ contractCalls, callbackUrl }: CallContractsProps) => {
       try {
         if (!selector) return null;
 
         const selectedWallet = await selector.wallet();
 
-        const actions: Parameters<
-          BrowserWalletBehaviour["signAndSendTransaction"]
-        >[0]["actions"] = methodCalls.map(
-          ({ methodName, args, gas, deposit }) => ({
-            type: "FunctionCall",
-            params: {
-              methodName,
-              args: args ?? {},
-              gas: gas ? convertUnit(gas) : DEFAULT_GAS,
-              deposit: deposit ? convertUnit(deposit) : DEFAULT_DEPOSIT,
-            },
-          })
-        );
-
         debugLog(
-          `FunctionCalls on ${contractId}: ${JSON.stringify(actions, null, 2)} `
+          `[Contract Calls req]: ${JSON.stringify(contractCalls, null, 2)}`
         );
 
-        const outcome = await selectedWallet.signAndSendTransaction({
-          receiverId: contractId,
-          actions,
+        const outcomes = await selectedWallet.signAndSendTransactions({
+          transactions: Object.keys(contractCalls).map((contractId) => {
+            return {
+              receiverId: contractId,
+              // Putting all the transactions for a given contract into the actions prop means it will
+              // rollback if one of the transactions fail.
+              actions: contractCalls[contractId].map(
+                ({ methodName, args, gas, deposit }) => ({
+                  type: "FunctionCall",
+                  params: {
+                    methodName,
+                    args: args ?? {},
+                    gas: gas ? convertUnit(gas) : DEFAULT_GAS,
+                    deposit: deposit ? convertUnit(deposit) : DEFAULT_DEPOSIT,
+                  },
+                })
+              ),
+            };
+          }),
           callbackUrl,
         });
 
-        if (!outcome) return null;
+        if (!outcomes) return null;
 
-        const result = providers.getTransactionLastResult(outcome);
+        const results = outcomes.map((outcome) =>
+          providers.getTransactionLastResult(outcome)
+        );
 
-        debugLog(`Transaction result: ${JSON.stringify(result, null, 2)}`);
+        debugLog(`[Contract Calls res]: ${JSON.stringify(results, null, 2)}`);
 
-        return result;
+        return results;
       } catch (e) {
         console.error("Error calling methods:", e);
         return null;
@@ -399,7 +405,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         getBalance,
         signAndSendTransactions,
         getAccessKeys,
-        callMethods,
+        callContracts,
       }}
     >
       {children}

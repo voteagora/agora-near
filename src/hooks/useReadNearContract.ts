@@ -34,6 +34,8 @@ type QueryResults<T extends readonly MethodName[]> = {
   [K in keyof T]: UseQueryResult<MethodResult<T[K]>, Error>;
 };
 
+export const READ_NEAR_CONTRACT_QK = "near-read";
+
 export function useReadHOSContract<const T extends readonly MethodName[]>(
   queries: readonly [...{ [K in keyof T]: ReadContractQuery<T[K]> }]
 ): QueryResults<T> {
@@ -42,7 +44,12 @@ export function useReadHOSContract<const T extends readonly MethodName[]>(
   const mappedQueries = useMemo(
     () =>
       queries.map(({ contractId, methodName, config }) => ({
-        queryKey: ["near-read", contractId, methodName, config.args] as const,
+        queryKey: [
+          READ_NEAR_CONTRACT_QK,
+          contractId,
+          methodName,
+          config.args,
+        ] as const,
         queryFn: async () => {
           const res = await viewMethod({
             contractId,

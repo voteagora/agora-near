@@ -120,7 +120,7 @@ export default function VeNearInfoClient() {
     try {
       const yoctoAmount = utils.format.parseNearAmount(stakeAmount);
       if (!yoctoAmount) throw new Error("Invalid amount");
-      stakeNear(yoctoAmount, "chorusone.pool.f863973.m0");
+      stakeNear(yoctoAmount, accountInfo?.stakingPool);
     } catch (error) {
       console.error("Error converting stake amount:", error);
     }
@@ -251,13 +251,6 @@ export default function VeNearInfoClient() {
                 />
               </>
             )}
-            <InfoItem
-              label="Available to stake balance"
-              value={utils.format.formatNearAmount(
-                accountInfo.liquidBalance || "0"
-              )}
-              unit="NEAR"
-            />
             <Separator />
             <CardTitle>Locking/Unlocking</CardTitle>
             {accountInfo.veNearLiquidBalance && (
