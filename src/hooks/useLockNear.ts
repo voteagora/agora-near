@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useWriteHOSContract } from "./useWriteHOSContract";
 import { useQueryClient } from "@tanstack/react-query";
 import { READ_NEAR_CONTRACT_QK } from "./useReadNearContract";
+import { TESTNET_CONTRACTS } from "@/lib/near/constants";
 
 type Props = {
   lockupAccountId: string;
@@ -11,9 +12,14 @@ export const useLockNear = ({ lockupAccountId }: Props) => {
   const queryClient = useQueryClient();
 
   const onLockUnlockSuccess = useCallback(() => {
-    queryClient.invalidateQueries({
-      queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
-    });
+    Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
+      }),
+      queryClient.invalidateQueries({
+        queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
+      }),
+    ]);
   }, [lockupAccountId, queryClient]);
 
   const {

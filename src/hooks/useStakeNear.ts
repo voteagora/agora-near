@@ -58,11 +58,7 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
         });
 
         queryClient.invalidateQueries({
-          queryKey: [
-            READ_NEAR_CONTRACT_QK,
-            lockupAccountId,
-            "get_liquid_owners_balance",
-          ],
+          queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
         });
       } catch (e) {
         setStakingNearError(e as Error);

@@ -11,22 +11,9 @@ export const useRegisterLockup = () => {
   const queryClient = useQueryClient();
 
   const onRegisterLockupSuccess = useCallback(() => {
-    Promise.all([
-      queryClient.invalidateQueries({
-        queryKey: [
-          READ_NEAR_CONTRACT_QK,
-          TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
-          "get_lockup_account_id",
-        ],
-      }),
-      queryClient.invalidateQueries({
-        queryKey: [
-          READ_NEAR_CONTRACT_QK,
-          TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
-          "get_account_info",
-        ],
-      }),
-    ]);
+    queryClient.invalidateQueries({
+      queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
+    });
   }, [queryClient]);
 
   const {

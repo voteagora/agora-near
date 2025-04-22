@@ -1,13 +1,13 @@
 import Tenant from "@/lib/tenant/tenant";
-import NearWalletClient from "./NearWalletClient";
+import NearDebug from "./NearDebug";
 
 export async function generateMetadata({}) {
   const tenant = Tenant.current();
   const page = tenant.ui.page("/near");
 
   const { title, description } = page?.meta || {
-    title: "NEAR Wallet Connection",
-    description: "Connect and manage your NEAR wallet",
+    title: "NEAR Debug",
+    description: "Debug your NEAR wallet",
   };
 
   const preview = `/api/images/og/generic?title=${encodeURIComponent(
@@ -34,10 +34,10 @@ export async function generateMetadata({}) {
   };
 }
 
-export default function NearWalletPage() {
+export default function NearDebugPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <NearWalletClient />
+      <NearDebug />
     </div>
   );
 }
