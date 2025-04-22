@@ -7,7 +7,8 @@ export const votingMethodRequirements: MethodRequirementsConfig<VotingWriteContr
       deposit: "1", // Requires exactly 1 yoctoNEAR
     },
     create_proposal: {
-      deposit: undefined, // Requires dynamic deposit amount
+      gas: "100 Tgas",
+      deposit: "0.2", // Requires dynamic deposit amount
     },
     migrate_state: {},
     new: {},
@@ -37,6 +38,6 @@ export const votingMethodRequirements: MethodRequirementsConfig<VotingWriteContr
       deposit: "1", // Requires exactly 1 yoctoNEAR
     },
     vote: {
-      deposit: undefined, // Requires dynamic deposit amount
+      gas: "100 Tgas",
     },
   };

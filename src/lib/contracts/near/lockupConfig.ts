@@ -71,6 +71,7 @@ export const lockupMethodRequirements: MethodRequirementsConfig<LockupWriteContr
       gas: "175 Tgas", // Requires 175 TGas (7 * BASE_GAS)
     },
     withdraw_from_staking_pool: {
+      gas: "125 Tgas", // Requires 125 TGas (5 * BASE_GAS)
       deposit: "1", // Requires exactly 1 yoctoNEAR
     },
   };

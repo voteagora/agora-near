@@ -37,13 +37,26 @@ export default function VeNearDebugCards() {
     lockupAccountId: accountInfo?.lockupAccountId || "",
   });
 
-  const { stakeNear, isStakingNear, stakingNearError } = useStakeNear({
+  const {
+    stakeNear,
+    unstakeNear,
+    withdrawNear,
+    knownDepositedBalance,
+    isStakingNear,
+    isUnstakingNear,
+    isWithdrawingNear,
+    stakingNearError,
+    unstakingNearError,
+    withdrawingNearError,
+  } = useStakeNear({
     lockupAccountId: accountInfo?.lockupAccountId || "",
   });
 
   const [stakeAmount, setStakeAmount] = useState("");
   const [lockAmount, setLockAmount] = useState("");
   const [unlockAmount, setUnlockAmount] = useState("");
+  const [unstakeAmount, setUnstakeAmount] = useState("");
+  const [withdrawAmount, setWithdrawAmount] = useState("");
 
   const lockAllNear = useCallback(() => {
     if (accountInfo?.lockupAccountId) {
@@ -120,6 +133,46 @@ export default function VeNearDebugCards() {
       stakeNear(yoctoAmount, accountInfo?.stakingPool);
     } catch (error) {
       console.error("Error converting stake amount:", error);
+    }
+  };
+
+  const handleUnstakeAmountChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      setUnstakeAmount(value);
+    }
+  };
+
+  const handleUnstake = () => {
+    if (!unstakeAmount) return;
+    try {
+      const yoctoAmount = utils.format.parseNearAmount(unstakeAmount);
+      if (!yoctoAmount) throw new Error("Invalid amount");
+      unstakeNear(yoctoAmount);
+    } catch (error) {
+      console.error("Error converting unstake amount:", error);
+    }
+  };
+
+  const handleWithdrawAmountChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      setWithdrawAmount(value);
+    }
+  };
+
+  const handleWithdraw = () => {
+    if (!withdrawAmount) return;
+    try {
+      const yoctoAmount = utils.format.parseNearAmount(withdrawAmount);
+      if (!yoctoAmount) throw new Error("Invalid amount");
+      withdrawNear(yoctoAmount);
+    } catch (error) {
+      console.error("Error converting withdraw amount:", error);
     }
   };
 
@@ -415,6 +468,57 @@ export default function VeNearDebugCards() {
                 </Button>
                 {stakingNearError && (
                   <p className="text-red-500 text-sm">{`Error: ${stakingNearError.message}`}</p>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-3 p-4 border rounded-lg">
+                <h3 className="font-semibold">Unstake NEAR</h3>
+                <InfoItem
+                  label="Known deposited balance"
+                  value={utils.format.formatNearAmount(
+                    knownDepositedBalance || "0"
+                  )}
+                  unit="NEAR"
+                />
+                <Input
+                  type="text"
+                  placeholder="Amount to unstake"
+                  value={unstakeAmount}
+                  onChange={handleUnstakeAmountChange}
+                  className="w-full"
+                />
+                <Button
+                  loading={isUnstakingNear}
+                  onClick={handleUnstake}
+                  disabled={isUnstakingNear || !unstakeAmount}
+                  className="w-full"
+                >
+                  Unstake NEAR
+                </Button>
+                {unstakingNearError && (
+                  <p className="text-red-500 text-sm">{`Error: ${unstakingNearError.message}`}</p>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-3 p-4 border rounded-lg">
+                <h3 className="font-semibold">Withdraw Unstaked NEAR</h3>
+                <Input
+                  type="text"
+                  placeholder="Amount to withdraw"
+                  value={withdrawAmount}
+                  onChange={handleWithdrawAmountChange}
+                  className="w-full"
+                />
+                <Button
+                  loading={isWithdrawingNear}
+                  onClick={handleWithdraw}
+                  disabled={isWithdrawingNear || !withdrawAmount}
+                  className="w-full"
+                >
+                  Withdraw NEAR
+                </Button>
+                {withdrawingNearError && (
+                  <p className="text-red-500 text-sm">{`Error: ${withdrawingNearError.message}`}</p>
                 )}
               </div>
             </div>
