@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { TESTNET_CONTRACTS } from "@/lib/near/constants";
+import { convertUnit } from "@fastnear/utils";
 import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 import {
-  Action,
-  BrowserWalletBehaviour,
-  FinalExecutionOutcome,
   NetworkId,
   setupWalletSelector,
   WalletModuleFactory,
@@ -21,12 +20,9 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
-import { convertUnit } from "@fastnear/utils";
-import { TESTNET_CONTRACTS } from "@/lib/near/constants";
 
 const DEFAULT_GAS = convertUnit("30 Tgas");
 const DEFAULT_DEPOSIT = "0";
@@ -377,13 +373,6 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     },
     [selector]
   );
-
-  const rpcProvider = useMemo(() => {
-    if (!selector) return null;
-    const { network } = selector.options;
-    const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
-    return provider;
-  }, [selector]);
 
   useEffect(() => {
     init();

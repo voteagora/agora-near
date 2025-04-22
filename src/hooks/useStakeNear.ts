@@ -39,6 +39,14 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
           });
         }
 
+        queryClient.invalidateQueries({
+          queryKey: [
+            READ_NEAR_CONTRACT_QK,
+            lockupAccountId,
+            "get_staking_pool_account_id",
+          ],
+        });
+
         await mutateStakeNear({
           contractId: lockupAccountId,
           methodCalls: [
@@ -49,29 +57,20 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
           ],
         });
 
-        await Promise.all([
-          queryClient.invalidateQueries({
-            queryKey: [
-              READ_NEAR_CONTRACT_QK,
-              lockupAccountId,
-              "get_staking_pool_account_id",
-            ],
-          }),
-          queryClient.invalidateQueries({
-            queryKey: [
-              READ_NEAR_CONTRACT_QK,
-              lockupAccountId,
-              "get_liquid_owners_balance",
-            ],
-          }),
-        ]);
+        queryClient.invalidateQueries({
+          queryKey: [
+            READ_NEAR_CONTRACT_QK,
+            lockupAccountId,
+            "get_liquid_owners_balance",
+          ],
+        });
       } catch (e) {
         setStakingNearError(e as Error);
       } finally {
         setIsStakingNear(false);
       }
     },
-    [mutateStakeNear, lockupAccountId]
+    [mutateStakeNear, lockupAccountId, queryClient]
   );
 
   return { stakeNear, isStakingNear, stakingNearError };
