@@ -176,7 +176,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       const provider = new providers.JsonRpcProvider({ url });
 
       debugLog(
-        `viewMethod: ${contractId}.${method}(${JSON.stringify(args, null, 2)})`
+        `viewMethod [req - ${contractId}.${method}]: ${JSON.stringify(args, null, 2)}`
       );
 
       try {
@@ -189,7 +189,13 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         });
 
         const resultArray = (res as any).result;
-        return JSON.parse(Buffer.from(resultArray).toString());
+        const jsonResult = JSON.parse(Buffer.from(resultArray).toString());
+
+        debugLog(
+          `viewMethod [res - ${contractId}.${method}]: ${JSON.stringify(jsonResult, null, 2)}`
+        );
+
+        return jsonResult;
       } catch (error) {
         debugLog(`Error calling ${contractId}.${method}: ${error}`);
         return null;

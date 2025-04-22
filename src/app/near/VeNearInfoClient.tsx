@@ -40,6 +40,8 @@ export default function VeNearInfoClient() {
   });
 
   const [stakeAmount, setStakeAmount] = useState("");
+  const [lockAmount, setLockAmount] = useState("");
+  const [unlockAmount, setUnlockAmount] = useState("");
 
   const lockAllNear = useCallback(() => {
     if (accountInfo?.lockupAccountId) {
@@ -54,6 +56,45 @@ export default function VeNearInfoClient() {
       });
     }
   }, [accountInfo?.lockupAccountId, unlockNear]);
+
+  const handleLockAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      setLockAmount(value);
+    }
+  };
+
+  const handleUnlockAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      setUnlockAmount(value);
+    }
+  };
+
+  const handleLockSpecificAmount = () => {
+    if (!lockAmount || !accountInfo?.lockupAccountId) return;
+    try {
+      const yoctoAmount = utils.format.parseNearAmount(lockAmount);
+      if (!yoctoAmount) throw new Error("Invalid amount");
+      lockNear(accountInfo.lockupAccountId, yoctoAmount);
+    } catch (error) {
+      console.error("Error converting lock amount:", error);
+    }
+  };
+
+  const handleUnlockSpecificAmount = () => {
+    if (!unlockAmount || !accountInfo?.lockupAccountId) return;
+    try {
+      const yoctoAmount = utils.format.parseNearAmount(unlockAmount);
+      if (!yoctoAmount) throw new Error("Invalid amount");
+      unlockNear({
+        lockupAccountId: accountInfo.lockupAccountId,
+        amount: yoctoAmount,
+      });
+    } catch (error) {
+      console.error("Error converting unlock amount:", error);
+    }
+  };
 
   const onRegisterToVote = useCallback(() => {
     registerAndDeployLockup(
@@ -260,52 +301,98 @@ export default function VeNearInfoClient() {
               />
             )}
             <Separator />
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
               <CardTitle>Account actions</CardTitle>
-              <div className="flex flex-row gap-2">
-                <div className="flex flex-col gap-2">
-                  <Button
-                    loading={isLockingNear}
-                    onClick={lockAllNear}
-                    disabled={isUnlockingNear}
-                  >
-                    {`Lock all NEAR`}
-                  </Button>
-                  {lockingNearError && (
-                    <p className="text-red-500">{`Lock error: ${lockingNearError.message}`}</p>
-                  )}
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Button
-                    loading={isUnlockingNear}
-                    onClick={unlockAllNear}
-                    disabled={isLockingNear}
-                  >
-                    {`Unlock all veNEAR`}
-                  </Button>
-                  {unlockingNearError && (
-                    <p className="text-red-500">{`Unlock error: ${unlockingNearError.message}`}</p>
-                  )}
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col items-center gap-2">
-                    <Input
-                      type="text"
-                      placeholder="Amount to stake"
-                      value={stakeAmount}
-                      onChange={handleStakeAmountChange}
-                      className="w-42"
-                    />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Lock NEAR Section */}
+                <div className="flex flex-col gap-3 p-4 border rounded-lg">
+                  <h3 className="font-semibold">Lock NEAR</h3>
+                  <Input
+                    type="text"
+                    placeholder="Amount to lock"
+                    value={lockAmount}
+                    onChange={handleLockAmountChange}
+                    className="w-full"
+                  />
+                  <div className="flex flex-col gap-2">
                     <Button
-                      loading={isStakingNear}
-                      onClick={handleStake}
-                      disabled={isStakingNear || !stakeAmount}
+                      loading={isLockingNear}
+                      onClick={handleLockSpecificAmount}
+                      disabled={isLockingNear || !lockAmount}
+                      className="w-full"
                     >
-                      {`Stake NEAR`}
+                      Lock Amount
+                    </Button>
+                    <Button
+                      loading={isLockingNear}
+                      onClick={lockAllNear}
+                      disabled={isLockingNear}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Lock All
                     </Button>
                   </div>
+                  {lockingNearError && (
+                    <p className="text-red-500 text-sm">{`Error: ${lockingNearError.message}`}</p>
+                  )}
+                </div>
+
+                {/* Unlock NEAR Section */}
+                <div className="flex flex-col gap-3 p-4 border rounded-lg">
+                  <h3 className="font-semibold">Unlock veNEAR</h3>
+                  <Input
+                    type="text"
+                    placeholder="Amount to unlock"
+                    value={unlockAmount}
+                    onChange={handleUnlockAmountChange}
+                    className="w-full"
+                  />
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      loading={isUnlockingNear}
+                      onClick={handleUnlockSpecificAmount}
+                      disabled={isUnlockingNear || !unlockAmount}
+                      className="w-full"
+                    >
+                      Unlock Amount
+                    </Button>
+                    <Button
+                      loading={isUnlockingNear}
+                      onClick={unlockAllNear}
+                      disabled={isUnlockingNear}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Unlock All
+                    </Button>
+                  </div>
+                  {unlockingNearError && (
+                    <p className="text-red-500 text-sm">{`Error: ${unlockingNearError.message}`}</p>
+                  )}
+                </div>
+
+                {/* Stake NEAR Section */}
+                <div className="flex flex-col gap-3 p-4 border rounded-lg">
+                  <h3 className="font-semibold">Stake NEAR</h3>
+                  <Input
+                    type="text"
+                    placeholder="Amount to stake"
+                    value={stakeAmount}
+                    onChange={handleStakeAmountChange}
+                    className="w-full"
+                  />
+                  <Button
+                    loading={isStakingNear}
+                    onClick={handleStake}
+                    disabled={isStakingNear || !stakeAmount}
+                    className="w-full"
+                  >
+                    Stake NEAR
+                  </Button>
                   {stakingNearError && (
-                    <p className="text-red-500">{`Stake error: ${stakingNearError.message}`}</p>
+                    <p className="text-red-500 text-sm">{`Error: ${stakingNearError.message}`}</p>
                   )}
                 </div>
               </div>
