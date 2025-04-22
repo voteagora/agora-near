@@ -12,6 +12,9 @@ import { useAccountInfo, useVeNearContractInfo } from "@/lib/near/veNear";
 import { utils } from "near-api-js";
 import { useCallback, useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useProposals } from "@/hooks/useProposals";
+import { useCreateProposal } from "@/hooks/useCreateProposal";
+import { useProposalConfig } from "@/hooks/useProposalConfig";
 
 export default function VeNearDebugCards() {
   const { signedAccountId } = useNear();
@@ -57,6 +60,19 @@ export default function VeNearDebugCards() {
   const [unlockAmount, setUnlockAmount] = useState("");
   const [unstakeAmount, setUnstakeAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
+
+  const { proposals, isLoading: isLoadingProposals } = useProposals(0, 10);
+  const { config, isLoading: isLoadingConfig } = useProposalConfig();
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [link, setLink] = useState("");
+  const [votingOptions, setVotingOptions] = useState(["Yes", "No"]);
+  const { createProposal, isCreatingProposal, createProposalError } =
+    useCreateProposal({
+      baseFee: config?.base_proposal_fee || "0",
+      storageFee: config?.vote_storage_fee || "0",
+    });
 
   const lockAllNear = useCallback(() => {
     if (accountInfo?.lockupAccountId) {
@@ -528,12 +544,271 @@ export default function VeNearDebugCards() {
     );
   };
 
+  const renderProposals = () => {
+    const handleSubmit = async () => {
+      await createProposal({
+        title,
+        description,
+        link,
+        voting_options: votingOptions,
+      });
+      // Reset form
+      setTitle("");
+      setDescription("");
+      setLink("");
+      setVotingOptions(["Yes", "No"]);
+      setShowCreateForm(false);
+    };
+
+    const handleVotingOptionChange = (index: number, value: string) => {
+      const newOptions = [...votingOptions];
+      newOptions[index] = value;
+      setVotingOptions(newOptions);
+    };
+
+    const addVotingOption = () => {
+      setVotingOptions([...votingOptions, ""]);
+    };
+
+    const removeVotingOption = (index: number) => {
+      setVotingOptions(votingOptions.filter((_, i) => i !== index));
+    };
+
+    return (
+      <Card className="flex flex-col grow">
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle>Proposals</CardTitle>
+            <Button onClick={() => setShowCreateForm(!showCreateForm)}>
+              {showCreateForm ? "Cancel" : "Create New Proposal"}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {showCreateForm && (
+            <div className="mb-8 p-4 border rounded-lg space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Create Proposal</h3>
+                <p className="text-sm text-muted-foreground">
+                  Create a new proposal for the community to vote on.
+                </p>
+              </div>
+
+              {isLoadingConfig ? (
+                <LoadingState />
+              ) : config ? (
+                <div className="space-y-4 py-2">
+                  <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
+                    <InfoItem
+                      label="Base Proposal Fee"
+                      value={utils.format.formatNearAmount(
+                        config.base_proposal_fee
+                      )}
+                      unit="NEAR"
+                    />
+                    <InfoItem
+                      label="Vote Storage Fee"
+                      value={utils.format.formatNearAmount(
+                        config.vote_storage_fee
+                      )}
+                      unit="NEAR"
+                    />
+                    <InfoItem
+                      label="Max Voting Options"
+                      value={config.max_number_of_voting_options.toString()}
+                    />
+                    <InfoItem
+                      label="Voting Duration"
+                      value={`${parseInt(config.voting_duration_ns) / 1e9 / (60 * 60 * 24)} days`}
+                      isRaw
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Title
+                      </label>
+                      <Input
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Enter proposal title"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Description
+                      </label>
+                      <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        className="w-full min-h-[100px] p-2 border rounded-md"
+                        placeholder="Enter proposal description"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Link
+                      </label>
+                      <Input
+                        value={link}
+                        onChange={(e) => setLink(e.target.value)}
+                        placeholder="Enter proposal link"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Voting Options (Max:{" "}
+                        {config.max_number_of_voting_options})
+                      </label>
+                      <div className="space-y-2">
+                        {votingOptions.map((option, index) => (
+                          <div key={index} className="flex gap-2">
+                            <Input
+                              value={option}
+                              onChange={(e) =>
+                                handleVotingOptionChange(index, e.target.value)
+                              }
+                              placeholder="Enter option"
+                            />
+                            {votingOptions.length > 2 && (
+                              <Button
+                                onClick={() => removeVotingOption(index)}
+                                variant="outline"
+                                size="icon"
+                              >
+                                ×
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                        {votingOptions.length <
+                          config.max_number_of_voting_options && (
+                          <Button
+                            onClick={addVotingOption}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            Add Option
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              {createProposalError && (
+                <p className="text-red-500 text-sm">
+                  {createProposalError.message}
+                </p>
+              )}
+
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCreateForm(false)}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleSubmit} disabled={isCreatingProposal}>
+                  {isCreatingProposal ? "Creating..." : "Create Proposal"}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {isLoadingProposals ? (
+            <LoadingState />
+          ) : (
+            <div className="space-y-4">
+              {proposals.map((proposal) => (
+                <div
+                  key={proposal.id}
+                  className="p-4 border rounded-lg space-y-2"
+                >
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-lg font-semibold">
+                      {proposal.title || `Proposal #${proposal.id}`}
+                    </h3>
+                    <span className="px-2 py-1 text-sm rounded-full bg-primary/10">
+                      {proposal.status}
+                    </span>
+                  </div>
+                  {proposal.description && (
+                    <p className="text-muted-foreground">
+                      {proposal.description}
+                    </p>
+                  )}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <InfoItem label="Proposer" value={proposal.proposer_id} />
+                    <InfoItem
+                      label="Created"
+                      value={new Date(
+                        parseInt(proposal.creation_time_ns) / 1_000_000
+                      ).toLocaleString()}
+                      isRaw
+                    />
+                    <InfoItem
+                      label="Duration"
+                      value={`${parseInt(proposal.voting_duration_ns) / 1e9 / (60 * 60 * 24)} days`}
+                      isRaw
+                    />
+                    <InfoItem
+                      label="Total Votes"
+                      value={proposal.votes
+                        .reduce((acc, vote) => acc + vote.total_votes, 0)
+                        .toString()}
+                      isRaw
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="font-medium">Voting Results</h4>
+                    {proposal.votes.map((vote, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center"
+                      >
+                        <span>{proposal.voting_options[index]}</span>
+                        <div className="space-x-4">
+                          <span>{vote.total_votes} votes</span>
+                          <span>
+                            {utils.format.formatNearAmount(vote.total_venear)}{" "}
+                            veNEAR
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {proposal.link && (
+                    <a
+                      href={proposal.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary hover:underline"
+                    >
+                      View Details →
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <>
       {renderContractInfo()}
       {renderAccountInfo()}
       {renderLockUnlockActions()}
       {renderStakeActions()}
+      {renderProposals()}
     </>
   );
 }
