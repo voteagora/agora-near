@@ -1,0 +1,90 @@
+import { useNear } from "@/contexts/NearContext";
+import { MerkleProof } from "@/lib/contracts/near/common";
+import { VAccount } from "@/lib/contracts/near/venearTypes";
+import { TESTNET_CONTRACTS } from "@/lib/near/constants";
+import { useQueryClient } from "@tanstack/react-query";
+import { BlockHeight } from "near-api-js/lib/providers/provider";
+import { useCallback, useMemo } from "react";
+import { READ_NEAR_CONTRACT_QK } from "./useReadNearContract";
+import { useWriteHOSContract } from "./useWriteHOSContract";
+
+interface CastVoteArgs {
+  proposalId: number;
+  voteIndex: number;
+  voteStorageFee: string;
+  blockHeight: BlockHeight;
+}
+
+export function useCastVote() {
+  const { signedAccountId } = useNear();
+  const queryClient = useQueryClient();
+  const { viewMethod } = useNear();
+
+  const onVoteSuccess = useCallback(() => {
+    Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VOTING_CONTRACT_ID],
+      }),
+      queryClient.invalidateQueries({
+        queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
+      }),
+    ]);
+  }, [queryClient]);
+
+  const {
+    mutateAsync: mutateVote,
+    isPending: isVoting,
+    error: votingError,
+  } = useWriteHOSContract({
+    contractType: "VOTING",
+    onSuccess: onVoteSuccess,
+  });
+
+  const castVote = useCallback(
+    async ({
+      proposalId,
+      voteIndex,
+      voteStorageFee,
+      blockHeight,
+    }: CastVoteArgs) => {
+      const proof = (await viewMethod({
+        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        method: "get_proof",
+        args: { account_id: signedAccountId },
+        blockHeight,
+      })) as [MerkleProof, VAccount] | null;
+
+      if (!proof) {
+        throw new Error("Failed to fetch merkle proof");
+      }
+
+      const [merkleProof, vAccount] = proof;
+
+      return mutateVote({
+        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        methodCalls: [
+          {
+            methodName: "vote",
+            args: {
+              proposal_id: proposalId,
+              vote: voteIndex,
+              merkle_proof: merkleProof,
+              v_account: vAccount,
+            },
+            deposit: voteStorageFee,
+          },
+        ],
+      });
+    },
+    [viewMethod, signedAccountId, mutateVote]
+  );
+
+  return useMemo(
+    () => ({
+      castVote,
+      isVoting,
+      error: votingError,
+    }),
+    [castVote, isVoting, votingError]
+  );
+}

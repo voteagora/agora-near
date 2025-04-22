@@ -14,6 +14,7 @@ import { setupModal } from "@near-wallet-selector/modal-ui";
 import "@near-wallet-selector/modal-ui/styles.css";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { providers, utils } from "near-api-js";
+import { BlockHeight } from "near-api-js/lib/providers/provider";
 import {
   createContext,
   ReactNode,
@@ -31,6 +32,7 @@ interface ViewMethodProps {
   contractId: string;
   method: string;
   args?: Record<string, unknown>;
+  blockHeight?: BlockHeight;
 }
 
 interface CallMethodProps extends ViewMethodProps {
@@ -169,7 +171,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
    * @returns {Promise<any>} - the result of the method call
    */
   const viewMethod = useCallback(
-    async ({ contractId, method, args = {} }: ViewMethodProps) => {
+    async ({ contractId, method, args = {}, blockHeight }: ViewMethodProps) => {
       const url = `https://rpc.${networkId}.near.org`;
       const provider = new providers.JsonRpcProvider({ url });
 
@@ -184,6 +186,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
           method_name: method,
           args_base64: Buffer.from(JSON.stringify(args)).toString("base64"),
           finality: "optimistic",
+          block_height: blockHeight,
         });
 
         const resultArray = (res as any).result;

@@ -4,6 +4,7 @@ import { VotingReadContractMethods } from "@/lib/contracts/near/votingTypes";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { useNear } from "../contexts/NearContext";
 import { useMemo } from "react";
+import { BlockHeight } from "near-api-js/lib/providers/provider";
 
 type CombinedMethods = VenearReadContractMethods &
   LockupReadContractMethods &
@@ -27,6 +28,7 @@ export type ReadContractQuery<M extends MethodName> = {
   contractId: string;
   methodName: M;
   config: ReadContractConfig<MethodArgs<M>>;
+  blockHeight?: BlockHeight;
 };
 
 // Helper type to map a tuple of method names to their corresponding query results
@@ -43,7 +45,7 @@ export function useReadHOSContract<const T extends readonly MethodName[]>(
 
   const mappedQueries = useMemo(
     () =>
-      queries.map(({ contractId, methodName, config }) => ({
+      queries.map(({ contractId, methodName, config, blockHeight }) => ({
         queryKey: [
           READ_NEAR_CONTRACT_QK,
           contractId,
@@ -55,6 +57,7 @@ export function useReadHOSContract<const T extends readonly MethodName[]>(
             contractId,
             method: methodName,
             args: config.args,
+            blockHeight,
           });
           return res as MethodResult<typeof methodName> | null | undefined;
         },

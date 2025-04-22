@@ -29,6 +29,7 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
   const queryClient = useQueryClient();
 
   // Query for getting the known deposited balance in the staking pool
+  // TODO: Eventually we'll want to read the staking balance info directly from the staking pool contract
   const [{ data: knownDepositedBalance }] = useReadHOSContract([
     {
       contractId: lockupAccountId,

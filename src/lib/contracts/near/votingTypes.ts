@@ -28,7 +28,10 @@ export interface ProposalInfo {
   rejected: boolean;
   reviewer_id: AccountId | null;
   status: string;
-  total_votes: number;
+  total_votes: {
+    total_venear: string;
+    total_votes: number;
+  };
   votes: Array<{ total_venear: string; total_votes: number }>;
   voting_duration_ns: string;
   voting_options: string[];

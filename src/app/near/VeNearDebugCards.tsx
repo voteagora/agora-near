@@ -15,7 +15,16 @@ import { Input } from "@/components/ui/input";
 import { useProposals } from "@/hooks/useProposals";
 import { useCreateProposal } from "@/hooks/useCreateProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
-
+import { useCastVote } from "@/hooks/useCastVote";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ProposalInfo } from "@/lib/contracts/near/votingTypes";
+import Big from "big.js";
 export default function VeNearDebugCards() {
   const { signedAccountId } = useNear();
   const { data: contractInfo, isLoading: isLoadingContractInfo } =
@@ -73,6 +82,10 @@ export default function VeNearDebugCards() {
       baseFee: config?.base_proposal_fee || "0",
       storageFee: config?.vote_storage_fee || "0",
     });
+  const { castVote, isVoting, error: votingError } = useCastVote();
+  const [selectedVotes, setSelectedVotes] = useState<Record<number, number>>(
+    {}
+  );
 
   const lockAllNear = useCallback(() => {
     if (accountInfo?.lockupAccountId) {
@@ -190,6 +203,55 @@ export default function VeNearDebugCards() {
     } catch (error) {
       console.error("Error converting withdraw amount:", error);
     }
+  };
+
+  const handleVote = async (proposalId: number, voteIndex: number) => {
+    if (!config?.vote_storage_fee || !proposals) return;
+
+    const proposal = proposals.find((p) => p.id === proposalId);
+    if (!proposal?.snapshot_and_state?.snapshot.block_height) {
+      console.error("No snapshot block height found for proposal");
+      return;
+    }
+
+    try {
+      await castVote({
+        proposalId,
+        voteIndex,
+        blockHeight: proposal.snapshot_and_state.snapshot.block_height,
+        voteStorageFee: config.vote_storage_fee,
+      });
+      // Clear the selected vote after successful submission
+      setSelectedVotes((prev) => {
+        const next = { ...prev };
+        delete next[proposalId];
+        return next;
+      });
+    } catch (error) {
+      console.error("Error casting vote:", error);
+    }
+  };
+
+  const calculateVotingStats = (proposal: ProposalInfo) => {
+    if (!proposal.snapshot_and_state) return null;
+
+    const totalVotingPower = proposal.snapshot_and_state.total_venear;
+
+    const votingPowerPercentage = Big(proposal.total_votes.total_venear)
+      .div(Big(totalVotingPower))
+      .mul(100)
+      .toFixed(2);
+
+    const accountParticipationPercentage = String(
+      (proposal.total_votes.total_votes /
+        proposal.snapshot_and_state.snapshot.length) *
+        100
+    );
+
+    return {
+      votingPowerPercentage,
+      accountParticipationPercentage,
+    };
   };
 
   const renderContractInfo = () => (
@@ -725,76 +787,143 @@ export default function VeNearDebugCards() {
             <LoadingState />
           ) : (
             <div className="space-y-4">
-              {proposals.map((proposal) => (
-                <div
-                  key={proposal.id}
-                  className="p-4 border rounded-lg space-y-2"
-                >
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-lg font-semibold">
-                      {proposal.title || `Proposal #${proposal.id}`}
-                    </h3>
-                    <span className="px-2 py-1 text-sm rounded-full bg-primary/10">
-                      {proposal.status}
-                    </span>
-                  </div>
-                  {proposal.description && (
-                    <p className="text-muted-foreground">
-                      {proposal.description}
-                    </p>
-                  )}
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <InfoItem label="Proposer" value={proposal.proposer_id} />
-                    <InfoItem
-                      label="Created"
-                      value={new Date(
-                        parseInt(proposal.creation_time_ns) / 1_000_000
-                      ).toLocaleString()}
-                      isRaw
-                    />
-                    <InfoItem
-                      label="Duration"
-                      value={`${parseInt(proposal.voting_duration_ns) / 1e9 / (60 * 60 * 24)} days`}
-                      isRaw
-                    />
-                    <InfoItem
-                      label="Total Votes"
-                      value={proposal.votes
-                        .reduce((acc, vote) => acc + vote.total_votes, 0)
-                        .toString()}
-                      isRaw
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Voting Results</h4>
-                    {proposal.votes.map((vote, index) => (
-                      <div
-                        key={index}
-                        className="flex justify-between items-center"
-                      >
-                        <span>{proposal.voting_options[index]}</span>
-                        <div className="space-x-4">
-                          <span>{vote.total_votes} votes</span>
-                          <span>
-                            {utils.format.formatNearAmount(vote.total_venear)}{" "}
-                            veNEAR
-                          </span>
+              {proposals.map((proposal) => {
+                const votingStats = calculateVotingStats(proposal);
+                return (
+                  <div
+                    key={proposal.id}
+                    className="p-4 border rounded-lg space-y-2"
+                  >
+                    <div className="flex justify-between items-start">
+                      <h3 className="text-lg font-semibold">
+                        {proposal.title || `Proposal #${proposal.id}`}
+                      </h3>
+                      <span className="px-2 py-1 text-sm rounded-full bg-primary/10">
+                        {proposal.status}
+                      </span>
+                    </div>
+                    {proposal.description && (
+                      <p className="text-muted-foreground">
+                        {proposal.description}
+                      </p>
+                    )}
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <InfoItem label="Proposer" value={proposal.proposer_id} />
+                      <InfoItem
+                        label="Created"
+                        value={new Date(
+                          parseInt(proposal.creation_time_ns) / 1_000_000
+                        ).toLocaleString()}
+                        isRaw
+                      />
+                      <InfoItem
+                        label="Duration"
+                        value={`${parseInt(proposal.voting_duration_ns) / 1e9 / (60 * 60 * 24)} days`}
+                        isRaw
+                      />
+                      <InfoItem
+                        label="Total Votes"
+                        value={proposal.votes
+                          .reduce((acc, vote) => acc + vote.total_votes, 0)
+                          .toString()}
+                        isRaw
+                      />
+                      {votingStats && (
+                        <>
+                          <InfoItem
+                            label="Voting Power Participation"
+                            value={`${votingStats.votingPowerPercentage}%`}
+                            isRaw
+                          />
+                          <InfoItem
+                            label="Account Participation"
+                            value={`${votingStats.accountParticipationPercentage}%`}
+                            isRaw
+                          />
+                        </>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="font-medium">Voting Results</h4>
+                      {proposal.votes.map((vote, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center"
+                        >
+                          <span>{proposal.voting_options[index]}</span>
+                          <div className="space-x-4">
+                            <span>{vote.total_votes} votes</span>
+                            <span>
+                              {utils.format.formatNearAmount(vote.total_venear)}{" "}
+                              veNEAR
+                            </span>
+                          </div>
                         </div>
+                      ))}
+                    </div>
+                    {proposal.link && (
+                      <a
+                        href={proposal.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline"
+                      >
+                        {proposal.link}
+                      </a>
+                    )}
+
+                    {proposal.status === "Voting" && (
+                      <div className="mt-4 space-y-2">
+                        <h4 className="font-medium">Cast Your Vote</h4>
+                        <div className="flex gap-2">
+                          <Select
+                            value={selectedVotes[proposal.id]?.toString()}
+                            onValueChange={(value) =>
+                              setSelectedVotes((prev) => ({
+                                ...prev,
+                                [proposal.id]: parseInt(value),
+                              }))
+                            }
+                          >
+                            <SelectTrigger className="w-[200px]">
+                              <SelectValue placeholder="Select option" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {proposal.voting_options.map((option, index) => (
+                                <SelectItem
+                                  key={index}
+                                  value={index.toString()}
+                                >
+                                  {option}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            onClick={() =>
+                              handleVote(
+                                proposal.id,
+                                selectedVotes[proposal.id]
+                              )
+                            }
+                            disabled={
+                              isVoting ||
+                              selectedVotes[proposal.id] === undefined
+                            }
+                          >
+                            {isVoting ? "Voting..." : "Vote"}
+                          </Button>
+                        </div>
+                        {votingError && (
+                          <p className="text-red-500 text-sm">
+                            {votingError.message}
+                          </p>
+                        )}
                       </div>
-                    ))}
+                    )}
                   </div>
-                  {proposal.link && (
-                    <a
-                      href={proposal.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline"
-                    >
-                      View Details →
-                    </a>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </CardContent>
