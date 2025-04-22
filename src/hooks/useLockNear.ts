@@ -1,13 +1,28 @@
 import { useCallback, useMemo } from "react";
 import { useWriteHOSContract } from "./useWriteHOSContract";
+import { useQueryClient } from "@tanstack/react-query";
+import { READ_NEAR_CONTRACT_QK } from "./useReadNearContract";
 
-export const useLockNear = () => {
+type Props = {
+  lockupAccountId: string;
+};
+
+export const useLockNear = ({ lockupAccountId }: Props) => {
+  const queryClient = useQueryClient();
+
+  const onLockUnlockSuccess = useCallback(() => {
+    queryClient.invalidateQueries({
+      queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
+    });
+  }, [lockupAccountId, queryClient]);
+
   const {
     mutate: mutateLockNear,
     isPending: isLockingNear,
     error: lockingNearError,
   } = useWriteHOSContract({
     contractType: "LOCKUP",
+    onSuccess: onLockUnlockSuccess,
   });
 
   const {
@@ -16,10 +31,11 @@ export const useLockNear = () => {
     error: unlockingNearError,
   } = useWriteHOSContract({
     contractType: "LOCKUP",
+    onSuccess: onLockUnlockSuccess,
   });
 
   const lockNear = useCallback(
-    (lockupAccountId: string, amount?: string) => {
+    ({ amount }: { amount?: string }) => {
       return mutateLockNear({
         contractId: lockupAccountId,
         methodCalls: [
@@ -33,17 +49,11 @@ export const useLockNear = () => {
         ],
       });
     },
-    [mutateLockNear]
+    [lockupAccountId, mutateLockNear]
   );
 
   const unlockNear = useCallback(
-    ({
-      lockupAccountId,
-      amount,
-    }: {
-      lockupAccountId: string;
-      amount?: string;
-    }) => {
+    ({ amount }: { amount?: string }) => {
       return mutateUnlockNear({
         contractId: lockupAccountId,
         methodCalls: [
@@ -52,7 +62,7 @@ export const useLockNear = () => {
         ],
       });
     },
-    [mutateUnlockNear]
+    [lockupAccountId, mutateUnlockNear]
   );
   return useMemo(() => {
     return {

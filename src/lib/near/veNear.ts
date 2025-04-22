@@ -282,6 +282,7 @@ export function useAccountInfo(accountId: string | undefined | null) {
     veNearUnlockTimestamp,
     veNearLockedBalance,
     lockupAccountId,
+    ownersBalance,
   ]);
 
   return {

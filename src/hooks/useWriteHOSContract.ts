@@ -48,12 +48,15 @@ type MethodRequirements<T extends ContractType> = MethodRequirementsConfig<
 // TODO: Make this work for calling multiple contracts
 export function useWriteHOSContract<T extends ContractType>({
   contractType,
+  onSuccess,
 }: {
   contractType: T;
+  onSuccess?: () => void;
 }) {
   const { callContracts: callMethods } = useNear();
 
   return useMutation({
+    onSuccess,
     mutationFn: ({
       methodCalls,
       contractId,

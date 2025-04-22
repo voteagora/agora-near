@@ -33,7 +33,9 @@ export default function VeNearInfoClient() {
     isUnlockingNear,
     lockingNearError,
     unlockingNearError,
-  } = useLockNear();
+  } = useLockNear({
+    lockupAccountId: accountInfo?.lockupAccountId || "",
+  });
 
   const { stakeNear, isStakingNear, stakingNearError } = useStakeNear({
     lockupAccountId: accountInfo?.lockupAccountId || "",
@@ -45,15 +47,13 @@ export default function VeNearInfoClient() {
 
   const lockAllNear = useCallback(() => {
     if (accountInfo?.lockupAccountId) {
-      lockNear(accountInfo.lockupAccountId);
+      lockNear({});
     }
   }, [accountInfo?.lockupAccountId, lockNear]);
 
   const unlockAllNear = useCallback(() => {
     if (accountInfo?.lockupAccountId) {
-      unlockNear({
-        lockupAccountId: accountInfo.lockupAccountId,
-      });
+      unlockNear({});
     }
   }, [accountInfo?.lockupAccountId, unlockNear]);
 
@@ -76,7 +76,7 @@ export default function VeNearInfoClient() {
     try {
       const yoctoAmount = utils.format.parseNearAmount(lockAmount);
       if (!yoctoAmount) throw new Error("Invalid amount");
-      lockNear(accountInfo.lockupAccountId, yoctoAmount);
+      lockNear({ amount: yoctoAmount });
     } catch (error) {
       console.error("Error converting lock amount:", error);
     }
@@ -87,10 +87,7 @@ export default function VeNearInfoClient() {
     try {
       const yoctoAmount = utils.format.parseNearAmount(unlockAmount);
       if (!yoctoAmount) throw new Error("Invalid amount");
-      unlockNear({
-        lockupAccountId: accountInfo.lockupAccountId,
-        amount: yoctoAmount,
-      });
+      unlockNear({ amount: yoctoAmount });
     } catch (error) {
       console.error("Error converting unlock amount:", error);
     }
