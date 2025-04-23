@@ -14,7 +14,6 @@ import { setupModal } from "@near-wallet-selector/modal-ui";
 import "@near-wallet-selector/modal-ui/styles.css";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { providers, utils } from "near-api-js";
-import { BlockHeight } from "near-api-js/lib/providers/provider";
 import {
   createContext,
   ReactNode,
@@ -25,7 +24,8 @@ import {
   useState,
 } from "react";
 
-const DEFAULT_GAS = convertUnit("30 Tgas");
+// Default to max Tgas since it gets refunded if not used
+const DEFAULT_GAS = convertUnit("300 Tgas");
 const DEFAULT_DEPOSIT = "0";
 
 interface ViewMethodProps {

@@ -30,9 +30,10 @@ export const useCreateProposal = ({ baseFee, storageFee }: Props) => {
   });
 
   const totalDeposit = useMemo(() => {
+    // TODO: Proper calculation is to take size of JSON stringified metadata * storage cost per byte and add some padding
     return Big(baseFee)
       .plus(storageFee)
-      .plus("100000000000000000000000") // TODO: Hack for now since the base fee + storage fee do not seem to be enough
+      .plus("100000000000000000000000")
       .toFixed();
   }, [baseFee, storageFee]);
 
