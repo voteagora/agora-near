@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useWriteHOSContract } from "./useWriteHOSContract";
 import { useQueryClient } from "@tanstack/react-query";
-import { READ_NEAR_CONTRACT_QK } from "./useReadNearContract";
+import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { TESTNET_CONTRACTS } from "@/lib/near/constants";
 
 type Props = {

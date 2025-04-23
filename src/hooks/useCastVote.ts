@@ -4,7 +4,7 @@ import { VAccount } from "@/lib/contracts/near/venearTypes";
 import { TESTNET_CONTRACTS } from "@/lib/near/constants";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
-import { READ_NEAR_CONTRACT_QK } from "./useReadNearContract";
+import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { useWriteHOSContract } from "./useWriteHOSContract";
 
 interface CastVoteArgs {

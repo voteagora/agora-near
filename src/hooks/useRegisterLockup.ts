@@ -4,7 +4,7 @@ import { useWriteHOSContract } from "./useWriteHOSContract";
 import { TESTNET_CONTRACTS } from "@/lib/near/constants";
 import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { READ_NEAR_CONTRACT_QK } from "./useReadNearContract";
+import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 
 export const useRegisterLockup = () => {
   const { signedAccountId } = useNear();

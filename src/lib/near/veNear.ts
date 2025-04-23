@@ -1,4 +1,4 @@
-import { useReadHOSContract } from "@/hooks/useReadNearContract";
+import { useReadHOSContract } from "@/hooks/useReadHOSContract";
 import { useMemo } from "react";
 import { TESTNET_CONTRACTS } from "./constants";
 

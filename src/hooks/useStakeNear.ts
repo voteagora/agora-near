@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   READ_NEAR_CONTRACT_QK,
   useReadHOSContract,
-} from "./useReadNearContract";
+} from "./useReadHOSContract";
 
 type Props = {
   lockupAccountId: string;

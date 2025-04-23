@@ -1,4 +1,4 @@
-import { useReadHOSContract } from "./useReadNearContract";
+import { useReadHOSContract } from "./useReadHOSContract";
 import { TESTNET_CONTRACTS } from "@/lib/near/constants";
 import { VotingConfig } from "@/lib/contracts/near/votingTypes";
 
