@@ -35,6 +35,7 @@ export const TENANT_NAMESPACES = {
   ENS: "ens",
   ETHERFI: "etherfi",
   OPTIMISM: "optimism",
+  NEAR: "near",
   UNISWAP: "uniswap",
   CYBER: "cyber",
   SCROLL: "scroll",

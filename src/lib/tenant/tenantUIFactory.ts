@@ -4,6 +4,7 @@ import { uniswapTenantUIConfig } from "@/lib/tenant/configs/ui/uniswap";
 import { etherfiTenantUIConfig } from "@/lib/tenant/configs/ui/etherfi";
 import { ensTenantUIConfig } from "@/lib/tenant/configs/ui/ens";
 import { optimismTenantUIConfig } from "@/lib/tenant/configs/ui/optimism";
+import { nearTenantUIConfig } from "@/lib/tenant/configs/ui/near";
 import { cyberTenantUIConfig } from "@/lib/tenant/configs/ui/cyber";
 import { deriveTenantUIConfig } from "@/lib/tenant/configs/ui/derive";
 import { scrollTenantUIConfig } from "@/lib/tenant/configs/ui/scroll";
@@ -18,6 +19,9 @@ export default class TenantUIFactory {
     switch (namespace) {
       case TENANT_NAMESPACES.OPTIMISM:
         return optimismTenantUIConfig;
+
+      case TENANT_NAMESPACES.NEAR:
+        return nearTenantUIConfig;
 
       case TENANT_NAMESPACES.ETHERFI:
         return etherfiTenantUIConfig;

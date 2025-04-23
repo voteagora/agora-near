@@ -21,6 +21,8 @@ export function findDelagatee({
   switch (namespace) {
     case TENANT_NAMESPACES.OPTIMISM:
       return prismaWeb3Client.optimismDelegatees.findFirst(condition);
+    case TENANT_NAMESPACES.NEAR:
+      return prismaWeb3Client.optimismDelegatees.findFirst(condition);
     case TENANT_NAMESPACES.ENS:
       return prismaWeb3Client.ensDelegatees.findFirst(condition);
     case TENANT_NAMESPACES.ETHERFI:
@@ -67,6 +69,8 @@ export function findAdvancedDelegatee({
 
   switch (namespace) {
     case TENANT_NAMESPACES.OPTIMISM:
+      return prismaWeb3Client.optimismAdvancedDelegatees.findMany(condition);
+    case TENANT_NAMESPACES.NEAR:
       return prismaWeb3Client.optimismAdvancedDelegatees.findMany(condition);
     case TENANT_NAMESPACES.ENS:
       return prismaWeb3Client.ensAdvancedDelegatees.findMany(condition);
@@ -167,6 +171,8 @@ export function findProposalsQuery({
   switch (namespace) {
     case TENANT_NAMESPACES.OPTIMISM:
       return prismaWeb3Client.optimismProposals.findMany(condition);
+    case TENANT_NAMESPACES.NEAR:
+      return prismaWeb3Client.optimismProposals.findMany(condition);
     case TENANT_NAMESPACES.ENS:
       return prismaWeb3Client.ensProposals.findMany(condition);
     case TENANT_NAMESPACES.ETHERFI:
@@ -209,6 +215,8 @@ export function findProposal({
 
   switch (namespace) {
     case TENANT_NAMESPACES.OPTIMISM:
+      return prismaWeb3Client.optimismProposals.findFirst(condition);
+    case TENANT_NAMESPACES.NEAR:
       return prismaWeb3Client.optimismProposals.findFirst(condition);
     case TENANT_NAMESPACES.ENS:
       return prismaWeb3Client.ensProposals.findFirst(condition);
@@ -256,6 +264,8 @@ export function findProposalType({
   switch (namespace) {
     case TENANT_NAMESPACES.OPTIMISM:
       return prismaWeb3Client.optimismProposalTypes.findMany(condition);
+    case TENANT_NAMESPACES.NEAR:
+      return prismaWeb3Client.optimismProposalTypes.findMany(condition);
     case TENANT_NAMESPACES.ENS:
       return prismaWeb3Client.ensProposalTypes.findMany(condition);
     case TENANT_NAMESPACES.ETHERFI:
@@ -298,6 +308,8 @@ export function findVotes({
 
   switch (namespace) {
     case TENANT_NAMESPACES.OPTIMISM:
+      return prismaWeb3Client.optimismVotes.findMany(condition);
+    case TENANT_NAMESPACES.NEAR:
       return prismaWeb3Client.optimismVotes.findMany(condition);
     case TENANT_NAMESPACES.ENS:
       return prismaWeb3Client.ensVotes.findMany(condition);
@@ -345,6 +357,8 @@ export function findVotingPower({
   switch (namespace) {
     case TENANT_NAMESPACES.OPTIMISM:
       return prismaWeb3Client.optimismVotingPower.findFirst(condition);
+    case TENANT_NAMESPACES.NEAR:
+      return prismaWeb3Client.optimismVotingPower.findFirst(condition);
     case TENANT_NAMESPACES.ENS:
       return prismaWeb3Client.ensVotingPower.findFirst(condition);
     case TENANT_NAMESPACES.ETHERFI:
@@ -391,6 +405,8 @@ export function findAdvancedVotingPower({
   switch (namespace) {
     case TENANT_NAMESPACES.OPTIMISM:
       return prismaWeb3Client.optimismAdvancedVotingPower.findFirst(condition);
+    case TENANT_NAMESPACES.NEAR:
+      return prismaWeb3Client.optimismAdvancedVotingPower.findFirst(condition);
     case TENANT_NAMESPACES.ENS:
       return prismaWeb3Client.ensAdvancedVotingPower.findFirst(condition);
     case TENANT_NAMESPACES.ETHERFI:
@@ -433,6 +449,8 @@ export async function findStakedDeposit({
 
   switch (namespace) {
     case TENANT_NAMESPACES.OPTIMISM:
+      return prismaWeb3Client.optimismStakedDeposits.findFirst(condition);
+    case TENANT_NAMESPACES.NEAR:
       return prismaWeb3Client.optimismStakedDeposits.findFirst(condition);
     case TENANT_NAMESPACES.ENS:
       return prismaWeb3Client.ensStakedDeposits.findFirst(condition);
@@ -489,6 +507,8 @@ export function findStakedDeposits({
   switch (namespace) {
     case TENANT_NAMESPACES.OPTIMISM:
       return prismaWeb3Client.optimismStakedDeposits.findMany(condition);
+    case TENANT_NAMESPACES.NEAR:
+      return prismaWeb3Client.optimismStakedDeposits.findMany(condition);
     case TENANT_NAMESPACES.ENS:
       return prismaWeb3Client.ensStakedDeposits.findMany(condition);
     case TENANT_NAMESPACES.ETHERFI:
@@ -532,6 +552,8 @@ export function getProposalsCount({
 
   switch (namespace) {
     case TENANT_NAMESPACES.OPTIMISM:
+      return prismaWeb3Client.optimismProposals.count(condition);
+    case TENANT_NAMESPACES.NEAR:
       return prismaWeb3Client.optimismProposals.count(condition);
     case TENANT_NAMESPACES.ENS:
       return prismaWeb3Client.ensProposals.count(condition);
