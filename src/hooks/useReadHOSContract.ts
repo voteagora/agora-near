@@ -1,10 +1,9 @@
-import { LockupReadContractMethods } from "@/lib/contracts/near/lockupTypes";
-import { VenearReadContractMethods } from "@/lib/contracts/near/venearTypes";
-import { VotingReadContractMethods } from "@/lib/contracts/near/votingTypes";
+import { LockupReadContractMethods } from "@/lib/contracts/types/lockup";
+import { VenearReadContractMethods } from "@/lib/contracts/types/venear";
+import { VotingReadContractMethods } from "@/lib/contracts/types/voting";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
-import { useNear } from "../contexts/NearContext";
 import { useMemo } from "react";
-import { BlockHeight } from "near-api-js/lib/providers/provider";
+import { useNear } from "../contexts/NearContext";
 
 type CombinedMethods = VenearReadContractMethods &
   LockupReadContractMethods &

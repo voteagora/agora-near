@@ -1,6 +1,6 @@
 import { useNear } from "@/contexts/NearContext";
-import { MerkleProof } from "@/lib/contracts/near/common";
-import { VAccount } from "@/lib/contracts/near/venearTypes";
+import { MerkleProof } from "@/lib/contracts/types/common";
+import { VAccount } from "@/lib/contracts/types/venear";
 import { TESTNET_CONTRACTS } from "@/lib/near/constants";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";

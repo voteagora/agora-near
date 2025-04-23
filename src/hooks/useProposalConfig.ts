@@ -1,6 +1,6 @@
 import { useReadHOSContract } from "./useReadHOSContract";
 import { TESTNET_CONTRACTS } from "@/lib/near/constants";
-import { VotingConfig } from "@/lib/contracts/near/votingTypes";
+import { VotingConfig } from "@/lib/contracts/types/voting";
 
 export function useProposalConfig() {
   const [{ data, isLoading, error }] = useReadHOSContract([

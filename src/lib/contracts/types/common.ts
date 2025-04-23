@@ -1,6 +1,5 @@
 export type AccountId = string;
 
-// ----- Shared value types -----
 export interface Fraction {
   numerator: string;
   denominator: string;
@@ -11,7 +10,6 @@ export interface VenearBalance {
   near_balance: string;
 }
 
-// ----- Core record types -----
 export interface Account {
   account_id: AccountId;
   balance: VenearBalance;
@@ -46,12 +44,7 @@ export interface MerkleTreeSnapshot {
   root: string;
 }
 
-export interface ContractMethodRequirements {
-  gas?: string; // Optional gas amount in TGas (10^12)
-  deposit?: string; // Optional deposit amount in yoctoNEAR
-}
-
-export type MethodRequirementsConfig<T> = {
+export type MethodConfig<T> = {
   [K in keyof T]: {
     gas?: string; // Gas amount in TGas (10^12)
     deposit?: string; // Deposit amount in yoctoNEAR

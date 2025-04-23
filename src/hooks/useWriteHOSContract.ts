@@ -1,12 +1,12 @@
-import { lockupMethodRequirements } from "@/lib/contracts/near/lockupConfig";
-import { LockupWriteContractMethods } from "@/lib/contracts/near/lockupTypes";
-import { venearMethodRequirements } from "@/lib/contracts/near/venearConfig";
-import { VenearWriteContractMethods } from "@/lib/contracts/near/venearTypes";
-import { votingMethodRequirements } from "@/lib/contracts/near/votingConfig";
-import { VotingWriteContractMethods } from "@/lib/contracts/near/votingTypes";
+import { lockupMethodConfig } from "@/lib/contracts/config/methods/lockup";
+import { LockupWriteContractMethods } from "@/lib/contracts/types/lockup";
+import { venearMethodConfig } from "@/lib/contracts/config/methods/venear";
+import { VenearWriteContractMethods } from "@/lib/contracts/types/venear";
+import { votingMethodConfig } from "@/lib/contracts/config/methods/voting";
+import { VotingWriteContractMethods } from "@/lib/contracts/types/voting";
 import { useMutation } from "@tanstack/react-query";
 import { MethodCall, useNear } from "../contexts/NearContext";
-import { MethodRequirementsConfig } from "@/lib/contracts/near/common";
+import { MethodConfig } from "@/lib/contracts/types/common";
 
 type ContractMethodMap = {
   VENEAR: VenearWriteContractMethods;
@@ -35,13 +35,13 @@ type ContractSpecificMethodCall<
 
 export type MethodName<T extends ContractType> = keyof ContractMethodMap[T];
 
-const methodRequirementsMap = {
-  VENEAR: venearMethodRequirements,
-  LOCKUP: lockupMethodRequirements,
-  VOTING: votingMethodRequirements,
+const methodConfigMap = {
+  VENEAR: venearMethodConfig,
+  LOCKUP: lockupMethodConfig,
+  VOTING: votingMethodConfig,
 } as const;
 
-type MethodRequirements<T extends ContractType> = MethodRequirementsConfig<
+type MethodRequirements<T extends ContractType> = MethodConfig<
   ContractMethodMap[T]
 >;
 
@@ -64,7 +64,7 @@ export function useWriteHOSContract<T extends ContractType>({
       methodCalls: ContractSpecificMethodCall<T>[];
       contractId: string;
     }) => {
-      const methodRequirements = methodRequirementsMap[
+      const methodRequirements = methodConfigMap[
         contractType
       ] as MethodRequirements<T>;
 

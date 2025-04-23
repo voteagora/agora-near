@@ -1,5 +1,4 @@
 import {
-  AbiRoot,
   AbiFunctionKind,
   AbiFunctionModifier,
   AbiSerializationType,

@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProposalInfo } from "@/lib/contracts/near/votingTypes";
+import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
 export default function VeNearDebugCards() {
   const { signedAccountId } = useNear();
