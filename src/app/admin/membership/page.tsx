@@ -12,7 +12,7 @@ const AdminMembershipPage = () => {
     address: tenant.contracts.token.address as `0x${string}`,
     abi: tenant.contracts.token.abi,
     functionName: "balanceOf",
-    args: "hello",
+    args: [address as `0x${string}`],
     chainId: tenant.contracts.token.chain.id,
   });
 
