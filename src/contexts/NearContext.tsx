@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { TESTNET_CONTRACTS } from "@/lib/near/constants";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { convertUnit } from "@fastnear/utils";
 import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 import {

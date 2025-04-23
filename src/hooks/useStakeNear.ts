@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useWriteHOSContract } from "./useWriteHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/near/constants";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   READ_NEAR_CONTRACT_QK,

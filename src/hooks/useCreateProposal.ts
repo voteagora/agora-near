@@ -1,5 +1,5 @@
 import { ProposalMetadata } from "@/lib/contracts/types/voting";
-import { TESTNET_CONTRACTS } from "@/lib/near/constants";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { useQueryClient } from "@tanstack/react-query";
 import Big from "big.js";
 import { useCallback, useMemo } from "react";

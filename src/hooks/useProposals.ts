@@ -1,5 +1,5 @@
 import { useReadHOSContract } from "./useReadHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/near/constants";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 
 export function useProposals(fromIndex: number = 0, limit: number | null = 10) {

@@ -2,20 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useNear } from "@/contexts/NearContext";
-import { useLockNear } from "@/hooks/useLockNear";
-import { useRegisterLockup } from "@/hooks/useRegisterLockup";
-import { useStakeNear } from "@/hooks/useStakeNear";
-import { useAccountInfo, useVeNearContractInfo } from "@/lib/near/veNear";
-import { utils } from "near-api-js";
-import { useCallback, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { useProposals } from "@/hooks/useProposals";
-import { useCreateProposal } from "@/hooks/useCreateProposal";
-import { useProposalConfig } from "@/hooks/useProposalConfig";
-import { useCastVote } from "@/hooks/useCastVote";
 import {
   Select,
   SelectContent,
@@ -23,14 +10,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useNear } from "@/contexts/NearContext";
+import { useCastVote } from "@/hooks/useCastVote";
+import { useCreateProposal } from "@/hooks/useCreateProposal";
+import { useLockNear } from "@/hooks/useLockNear";
+import { useProposalConfig } from "@/hooks/useProposalConfig";
+import { useProposals } from "@/hooks/useProposals";
+import { useRegisterLockup } from "@/hooks/useRegisterLockup";
+import { useStakeNear } from "@/hooks/useStakeNear";
+import { useVenearAccountStats } from "@/hooks/useVenearAccountStats";
+import { useVenearStats } from "@/hooks/useVenearStats";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
+import { utils } from "near-api-js";
+import { useCallback, useState } from "react";
+
 export default function VeNearDebugCards() {
   const { signedAccountId } = useNear();
   const { data: contractInfo, isLoading: isLoadingContractInfo } =
-    useVeNearContractInfo();
+    useVenearStats();
   const { data: accountInfo, isLoading: isLoadingAccount } =
-    useAccountInfo(signedAccountId);
+    useVenearAccountStats(signedAccountId);
 
   const {
     registerAndDeployLockup,

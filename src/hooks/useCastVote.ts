@@ -1,7 +1,7 @@
 import { useNear } from "@/contexts/NearContext";
 import { MerkleProof } from "@/lib/contracts/types/common";
 import { VAccount } from "@/lib/contracts/types/venear";
-import { TESTNET_CONTRACTS } from "@/lib/near/constants";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
