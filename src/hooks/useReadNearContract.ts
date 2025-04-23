@@ -28,7 +28,7 @@ export type ReadContractQuery<M extends MethodName> = {
   contractId: string;
   methodName: M;
   config: ReadContractConfig<MethodArgs<M>>;
-  blockHeight?: BlockHeight;
+  blockId?: number;
 };
 
 // Helper type to map a tuple of method names to their corresponding query results
@@ -45,7 +45,7 @@ export function useReadHOSContract<const T extends readonly MethodName[]>(
 
   const mappedQueries = useMemo(
     () =>
-      queries.map(({ contractId, methodName, config, blockHeight }) => ({
+      queries.map(({ contractId, methodName, config, blockId }) => ({
         queryKey: [
           READ_NEAR_CONTRACT_QK,
           contractId,
@@ -57,7 +57,7 @@ export function useReadHOSContract<const T extends readonly MethodName[]>(
             contractId,
             method: methodName,
             args: config.args,
-            blockHeight,
+            blockId,
           });
           return res as MethodResult<typeof methodName> | null | undefined;
         },
