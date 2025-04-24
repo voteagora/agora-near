@@ -25,7 +25,7 @@ import {
 } from "react";
 
 // Default to max Tgas since it gets refunded if not used
-const DEFAULT_GAS = convertUnit("300 Tgas");
+const DEFAULT_GAS = convertUnit("30 Tgas");
 const DEFAULT_DEPOSIT = "0";
 
 interface ViewMethodProps {
