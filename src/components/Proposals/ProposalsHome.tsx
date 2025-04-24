@@ -1,20 +1,19 @@
 import { fetchNeedsMyVoteProposals as apiFetchNeedsMyVoteProposals } from "@/app/api/common/proposals/getNeedsMyVoteProposals";
 import {
-  fetchDraftProposalForSponsor as apiFetchDraftProposalsForSponsorship,
   fetchDraftProposals as apiFetchDraftProposals,
+  fetchDraftProposalForSponsor as apiFetchDraftProposalsForSponsorship,
   fetchProposals as apiFetchProposals,
 } from "@/app/api/common/proposals/getProposals";
 import { fetchVotableSupply as apiFetchVotableSupply } from "@/app/api/common/votableSupply/getVotableSupply";
-import { fetchGovernanceCalendar as apiFetchGovernanceCalendar } from "@/app/api/common/governanceCalendar/getGovernanceCalendar";
+import { PaginationParams } from "@/app/lib/pagination";
 import Hero from "@/components/Hero/Hero";
+import SubscribeDialogLauncher from "@/components/Notifications/SubscribeDialogRootLauncher";
+import MyDraftProposals from "@/components/Proposals/DraftProposals/MyDraftProposals";
+import MySponsorshipRequests from "@/components/Proposals/DraftProposals/MySponsorshipRequests";
 import NeedsMyVoteProposalsList from "@/components/Proposals/NeedsMyVoteProposalsList/NeedsMyVoteProposalsList";
 import ProposalsList from "@/components/Proposals/ProposalsList/ProposalsList";
 import { proposalsFilterOptions } from "@/lib/constants";
 import Tenant from "@/lib/tenant/tenant";
-import MyDraftProposals from "@/components/Proposals/DraftProposals/MyDraftProposals";
-import MySponsorshipRequests from "@/components/Proposals/DraftProposals/MySponsorshipRequests";
-import { PaginationParams } from "@/app/lib/pagination";
-import SubscribeDialogLauncher from "@/components/Notifications/SubscribeDialogRootLauncher";
 
 async function fetchProposals(
   filter: string,
@@ -36,7 +35,7 @@ async function fetchVotableSupply() {
 
 async function fetchGovernanceCalendar() {
   "use server";
-  return apiFetchGovernanceCalendar();
+  return null;
 }
 
 export default async function ProposalsHome() {
