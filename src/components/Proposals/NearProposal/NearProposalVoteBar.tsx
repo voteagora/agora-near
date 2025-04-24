@@ -1,9 +1,11 @@
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 
-export default function NearProposalVoteBar({ proposal }: {
-  proposal: ProposalInfo
+export default function NearProposalVoteBar({
+  proposal,
+}: {
+  proposal: ProposalInfo;
 }) {
-  const hasVotes = proposal.total_votes.total_venear !== '0';
+  const hasVotes = proposal.total_votes.total_venear !== "0";
 
   const forVotes = Number(proposal.votes[0].total_venear);
   const againstVotes = Number(proposal.votes[1].total_venear);

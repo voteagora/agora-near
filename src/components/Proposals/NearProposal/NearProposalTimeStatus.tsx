@@ -8,11 +8,18 @@ import { format } from "date-fns";
 export default function NearProposalTimeStatus({
   proposal,
 }: {
-  proposal: ProposalInfo
+  proposal: ProposalInfo;
 }) {
-  const votingStartTime = proposal.voting_start_time_ns ? Number(proposal.voting_start_time_ns) / 1000000 : null;
-  const votingDuration = proposal.voting_duration_ns ? Number(proposal.voting_duration_ns) / 1000000 : null;
-  const votingEndTime = votingStartTime && votingDuration ? new Date(votingStartTime + votingDuration) : null;
+  const votingStartTime = proposal.voting_start_time_ns
+    ? Number(proposal.voting_start_time_ns) / 1000000
+    : null;
+  const votingDuration = proposal.voting_duration_ns
+    ? Number(proposal.voting_duration_ns) / 1000000
+    : null;
+  const votingEndTime =
+    votingStartTime && votingDuration
+      ? new Date(votingStartTime + votingDuration)
+      : null;
 
   const activeProposalStartTime = votingStartTime
     ? format(votingStartTime, "h:mm aaa MMM dd, yyyy")

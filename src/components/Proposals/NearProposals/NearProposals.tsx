@@ -20,18 +20,16 @@ const Loader = () => {
         Loading...
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default function NearProposals() {
   const { proposals, isLoading: isLoadingProposals } = useProposals(0, 10);
   console.log(proposals);
 
   const [hasMore, setHasMore] = useState(false);
-  
-  const loadMore = () => {
 
-  }
+  const loadMore = () => {};
 
   return (
     <div className="flex flex-col max-w-[76rem]">
@@ -54,10 +52,7 @@ export default function NearProposals() {
               element="main"
             >
               {proposals.map((proposal) => (
-                <Link
-                  key={proposal.id}
-                  href={`/proposals/${proposal.id}`}
-                >
+                <Link key={proposal.id} href={`/proposals/${proposal.id}`}>
                   <div className="border-b border-line items-center flex flex-row bg-neutral">
                     <div
                       className={cn(
@@ -66,9 +61,7 @@ export default function NearProposals() {
                       )}
                     >
                       <div className="flex flex-row text-xs text-secondary gap-1">
-                        <div>
-                          Proposal by {proposal.proposer_id}
-                        </div>
+                        <div>Proposal by {proposal.proposer_id}</div>
                       </div>
                     </div>
                     <div className="flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6 w-[20%] flex-start justify-center hidden sm:block">
@@ -83,7 +76,8 @@ export default function NearProposals() {
                         </div>
                         <div
                           className={cn(
-                            proposal.status.toLowerCase() === 'finished' && "text-positive",
+                            proposal.status.toLowerCase() === "finished" &&
+                              "text-positive",
                             "capitalize"
                           )}
                         >

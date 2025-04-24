@@ -26,7 +26,7 @@ export default function NearProposalHome({
       >
         Loading...
       </div>
-    )
+    );
   }
 
   if (!proposal) {

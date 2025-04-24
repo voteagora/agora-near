@@ -17,7 +17,12 @@ export default function NearProposalDescription({
           Proposal by {proposal.proposer_id}
           {proposal.link && (
             <a
-              href={proposal.link.startsWith("http") || proposal.link.startsWith("https") ? proposal.link : `https://${proposal.link}`}
+              href={
+                proposal.link.startsWith("http") ||
+                proposal.link.startsWith("https")
+                  ? proposal.link
+                  : `https://${proposal.link}`
+              }
               target="_blank"
               rel="noreferrer noopener"
             >
@@ -29,11 +34,9 @@ export default function NearProposalDescription({
       </div>
       <div className="flex flex-col gap-2">
         <div className={styles.proposal_description_md}>
-          <Markdown
-            content={proposal.description ?? ""}
-          />
+          <Markdown content={proposal.description ?? ""} />
         </div>
       </div>
     </div>
-  )
+  );
 }

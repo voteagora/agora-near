@@ -7,7 +7,13 @@ import { VStack } from "@/components/Layout/Stack";
 import { useState } from "react";
 import { useTransition } from "react";
 
-export default function NearProposalOptionsResult({ proposal, className }: { proposal: ProposalInfo, className?: string }) {
+export default function NearProposalOptionsResult({
+  proposal,
+  className,
+}: {
+  proposal: ProposalInfo;
+  className?: string;
+}) {
   const [activeTab, setActiveTab] = useState(1);
   const [isPending, startTransition] = useTransition();
 
@@ -16,7 +22,7 @@ export default function NearProposalOptionsResult({ proposal, className }: { pro
       setActiveTab(index);
     });
   }
-  
+
   return (
     <div className="flex flex-col gap-4 sticky top-20 flex-shrink max-w-[24rem] bg-neutral border-line border rounded-xl shadow-newDefault mb-8 items-stretch sm:items-start justify-end sm:justify-between w-full max-h-none h-auto">
       <div className="flex flex-col gap-4 w-full">
@@ -36,7 +42,9 @@ export default function NearProposalOptionsResult({ proposal, className }: { pro
                 >
                   <span
                     className={
-                      activeTab === index + 1 ? "text-secondary" : "text-tertiary"
+                      activeTab === index + 1
+                        ? "text-secondary"
+                        : "text-tertiary"
                     }
                   >
                     {tab}
@@ -58,7 +66,7 @@ export default function NearProposalOptionsResult({ proposal, className }: { pro
                     votes={Number(proposal.votes[index].total_venear)}
                     totalVotes={Number(proposal.total_votes.total_venear)}
                   />
-                  ))}
+                ))}
               </div>
             ) : (
               <div />
@@ -67,13 +75,13 @@ export default function NearProposalOptionsResult({ proposal, className }: { pro
         </motion.div>
       </div>
     </div>
-  )
+  );
 }
 
 function SingleOption({
   description,
   votes,
-  totalVotes
+  totalVotes,
 }: {
   description: string;
   votes: number;
@@ -94,21 +102,12 @@ function SingleOption({
             hideCurrency
             specialFormatting
           />
-          <span
-            className={cn(
-              "ml-1 text-tertiary",
-            )}
-          >
-            {percentage === 0
-              ? "0%"
-              : percentage.toFixed(2) + "%"}
+          <span className={cn("ml-1 text-tertiary")}>
+            {percentage === 0 ? "0%" : percentage.toFixed(2) + "%"}
           </span>
         </div>
       </div>
-      <ProgressBar
-        percentage={percentage}
-        isApproved={false}
-      />
+      <ProgressBar percentage={percentage} isApproved={false} />
     </div>
   );
 }

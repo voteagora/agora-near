@@ -2,9 +2,9 @@ import { ProposalInfo } from "@/lib/contracts/types/voting";
 import NearProposalTimeStatus from "./NearProposalTimeStatus";
 
 export default function NearProposalStatusDetail({
-  proposal
+  proposal,
 }: {
-  proposal: ProposalInfo
+  proposal: ProposalInfo;
 }) {
   return (
     <div className="flex flex-row justify-between items-center gap-4 bg-wash border-t border-line -mx-4 px-4 py-2 text-secondary rounded-b-md text-xs">
