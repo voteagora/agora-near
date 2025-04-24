@@ -3,6 +3,7 @@ import { cache } from "react";
 import { addressOrEnsNameWrap } from "../utils/ensName";
 import Tenant from "@/lib/tenant/tenant";
 import { prismaWeb2Client } from "@/app/lib/prisma";
+import { DaoSlug } from "@prisma/client";
 
 const allowlist = [
   "0xa18d0226043a76683950f3baabf0a87cfb32e1cb",
@@ -39,7 +40,7 @@ async function getBadgeholderForAddress({ address }: { address: string }) {
 
   const badgehodler = await prismaWeb2Client.badgeholders.findFirst({
     where: {
-      dao_slug: slug,
+      dao_slug: slug as DaoSlug,
       address: address,
       retro_funding_round: "6",
     },

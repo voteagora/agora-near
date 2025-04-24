@@ -90,7 +90,17 @@ export function DelegateActions({
         twitter={twitter}
         warpcast={warpcast}
       />
-      <div>
+      {/* TODO: Delegation functionality */}
+      <UpdatedButton
+        type="secondary"
+        onClick={(e: SyntheticEvent) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
+        Delegate
+      </UpdatedButton>
+      {/* <div>
         {isConnected && address ? (
           delegationButton()
         ) : (
@@ -109,7 +119,7 @@ export function DelegateActions({
             )}
           </ConnectKitButton.Custom>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }

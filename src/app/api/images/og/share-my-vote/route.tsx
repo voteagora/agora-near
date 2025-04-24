@@ -1,8 +1,7 @@
 import { rgbStringToHex } from "@/app/lib/utils/color";
 import { getScaledBarPercentage } from "@/components/Proposals/ProposalPage/OPProposalApprovalPage/OptionResultsPanel/OptionResultsPanel";
 import { TENANT_NAMESPACES } from "@/lib/constants";
-import { BRAND_NAME_MAPPINGS } from "@/lib/tenant/tenant";
-import TenantTokenFactory from "@/lib/tenant/tenantTokenFactory";
+import Tenant, { BRAND_NAME_MAPPINGS } from "@/lib/tenant/tenant";
 import { TenantUI } from "@/lib/tenant/tenantUI";
 import TenantUIFactory from "@/lib/tenant/tenantUIFactory";
 import { TenantNamespace } from "@/lib/types";
@@ -117,12 +116,8 @@ function SingleOption({
 
   const barPercentageNumber = Number(barPercentage);
 
-  const tenantUI = TenantUIFactory.create(
-    TENANT_NAMESPACES[namespace as keyof typeof TENANT_NAMESPACES]
-  );
-  const tenantToken = TenantTokenFactory.create(
-    TENANT_NAMESPACES[namespace as keyof typeof TENANT_NAMESPACES]
-  );
+  const tenantUI = Tenant.current().ui;
+  const tenantToken = Tenant.current().token;
   const primary = tenantUI.customization?.primary
     ? rgbStringToHex(tenantUI.customization?.primary)
     : rgbStringToHex("0 0 0");

@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { authenticateApiUser } from "@/app/lib/auth/serverAuth";
 import { prismaWeb2Client } from "@/app/lib/prisma";
 import Tenant from "@/lib/tenant/tenant";
+import { DaoSlug } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
   const { slug } = Tenant.current();
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
       data: {
         event_name,
         event_data,
-        dao_slug: slug,
+        dao_slug: slug as DaoSlug,
       },
     });
     return NextResponse.json({ success: true });

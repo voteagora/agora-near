@@ -335,7 +335,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       });
       // return amount on NEAR
       const accountAmount = (account as any).amount;
-      return accountAmount ? utils.format.formatNearAmount(accountAmount) : "0";
+      return accountAmount ?? "0";
     },
     [selector]
   );

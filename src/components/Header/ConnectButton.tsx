@@ -1,33 +1,26 @@
 "use client";
 
-import { MobileConnectButton } from "./MobileConnectButton";
+import { useNear } from "@/contexts/NearContext";
 import { DesktopConnectButton } from "./DesktopConnectButton";
-import { useAccount } from "wagmi";
-import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
-import { useEffect } from "react";
-import Tenant from "@/lib/tenant/tenant";
+import { MobileConnectButton } from "./MobileConnectButton";
 
 export function ConnectButton() {
-  const { contracts } = Tenant.current();
-  const { chain, address } = useAccount();
-  const openDialog = useOpenDialog();
-
-  useEffect(() => {
-    if (!address) return;
-    if (!chain || (chain?.id && chain.id !== contracts.token.chain.id)) {
-      openDialog({
-        type: "SWITCH_NETWORK",
-        params: {
-          chain: contracts.token.chain,
-        },
-      });
-    }
-  }, [chain?.id, contracts.token.chain.id, openDialog]);
+  const { signedAccountId, signIn, signOut } = useNear();
 
   return (
     <div>
-      <MobileConnectButton />
-      <DesktopConnectButton />
+      <MobileConnectButton
+        accountId={signedAccountId}
+        isConnected={!!signedAccountId}
+        show={signIn}
+        signOut={signOut}
+      />
+      <DesktopConnectButton
+        accountId={signedAccountId}
+        isConnected={!!signedAccountId}
+        show={signIn}
+        signOut={signOut}
+      />
     </div>
   );
 }

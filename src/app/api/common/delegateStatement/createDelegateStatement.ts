@@ -4,7 +4,7 @@ import { prismaWeb2Client } from "@/app/lib/prisma";
 import { DelegateStatementFormValues } from "@/components/DelegateStatement/CurrentDelegateStatement";
 import verifyMessage from "@/lib/serverVerifyMessage";
 import Tenant from "@/lib/tenant/tenant";
-import { Prisma } from "@prisma/client";
+import { DaoSlug, Prisma } from "@prisma/client";
 import { sanitizeContent } from "@/lib/sanitizationUtils";
 
 export async function createDelegateStatement({
@@ -42,7 +42,7 @@ export async function createDelegateStatement({
 
   const data = {
     address: address.toLowerCase(),
-    dao_slug: slug,
+    dao_slug: slug as DaoSlug,
     signature,
     payload: sanitizedStatement as Prisma.InputJsonValue,
     twitter,
@@ -60,7 +60,7 @@ export async function createDelegateStatement({
     where: {
       address_dao_slug: {
         address: address.toLowerCase(),
-        dao_slug: slug,
+        dao_slug: slug as DaoSlug,
       },
     },
     update: data,
