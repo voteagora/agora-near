@@ -61,9 +61,9 @@ export const nearTenantUIConfig = new TenantUI({
         "NEAR House of Stake governance empowers token holders to lock NEAR for voting rights, delegate votes to trusted representatives, and earn rewards for active participation.",
       meta: {
         title: "NEAR Agora",
-        description: "Home of House of Stake governance",
+        description: "Home of the NEAR House of Stake governance",
         imageTitle: "NEAR Agora",
-        imageDescription: "Home of House of Stake governance",
+        imageDescription: "Home of the NEAR House of Stake governance",
       },
     },
     {
@@ -73,9 +73,9 @@ export const nearTenantUIConfig = new TenantUI({
         "NEAR House of Stake governance empowers token holders to lock NEAR for voting rights, delegate votes to trusted representatives, and earn rewards for active participation.",
       meta: {
         title: "NEAR Agora",
-        description: "Home of House of Stake governance",
+        description: "Home of the NEAR House of Stake governance",
         imageTitle: "NEAR Agora",
-        imageDescription: "Home of House of Stake governance",
+        imageDescription: "Home of the NEAR House of Stake governance",
       },
     },
     {
