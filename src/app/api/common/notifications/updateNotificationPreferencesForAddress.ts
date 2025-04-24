@@ -4,6 +4,7 @@ import { cache } from "react";
 import { z } from "zod";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { revalidateDelegateAddressPage } from "@/app/delegates/actions";
+import { DaoSlug } from "@prisma/client";
 
 const NotificationPreferencesOptionsSchema = z.object({
   wants_proposal_created_email: z.union([
@@ -41,7 +42,7 @@ const updateNotificationPreferencesForAddress = async (
       where: {
         address_dao_slug: {
           address: validatedAddress,
-          dao_slug: slug,
+          dao_slug: slug as DaoSlug,
         },
       },
       data: {

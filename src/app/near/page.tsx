@@ -1,7 +1,7 @@
 import Tenant from "@/lib/tenant/tenant";
 import NearDebug from "./NearDebug";
 
-export async function generateMetadata({}) {
+export async function generateMetadata() {
   const tenant = Tenant.current();
   const page = tenant.ui.page("/near");
 

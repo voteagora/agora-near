@@ -1,9 +1,8 @@
-import { ethers } from "ethers";
-import Tenant from "@/lib/tenant/tenant";
-import TenantTokenFactory from "@/lib/tenant/tenantTokenFactory";
-import { ITokenContract } from "@/lib/contracts/common/interfaces/ITokenContract";
 import { IMembershipContract } from "@/lib/contracts/common/interfaces/IMembershipContract";
+import { ITokenContract } from "@/lib/contracts/common/interfaces/ITokenContract";
+import Tenant from "@/lib/tenant/tenant";
 import { TenantContract } from "@/lib/tenant/tenantContract";
+import { ethers } from "ethers";
 import { TenantContracts } from "./types";
 
 // TODO: This file seems messy -- consider refactoring
@@ -14,14 +13,8 @@ const format = new Intl.NumberFormat("en", {
   notation: "compact",
 });
 
-export const tokenForContractAddress = (address: string) => {
-  switch (address) {
-    case "0x42000000000000000000000000000000000000420":
-      return TenantTokenFactory.create("optimism");
-
-    default:
-      return TenantTokenFactory.create("optimism");
-  }
+export const tokenForContractAddress = (_: string) => {
+  return Tenant.current().token;
 };
 
 export function pluralizeVote(count: BigInt) {

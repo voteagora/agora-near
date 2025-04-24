@@ -3,6 +3,7 @@
 import { prismaWeb2Client } from "@/app/lib/prisma";
 import Tenant from "@/lib/tenant/tenant";
 import { PLMConfig } from "@/app/proposals/draft/types";
+import { DaoSlug } from "@prisma/client";
 
 async function createProposalDraft(address: `0x${string}`) {
   const tenant = Tenant.current();
@@ -29,7 +30,7 @@ async function createProposalDraft(address: `0x${string}`) {
       author_address: address,
       sponsor_address: "",
       stage: firstStage.stage,
-      dao_slug: tenant.slug,
+      dao_slug: tenant.slug as DaoSlug,
     },
   });
 

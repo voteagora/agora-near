@@ -3,6 +3,7 @@ import "server-only";
 import { prismaWeb2Client } from "@/app/lib/prisma";
 import Tenant from "@/lib/tenant/tenant";
 import { unstable_cache } from "next/cache";
+import { DaoSlug } from "@prisma/client";
 
 // Returns an owner delegate for a given SCW address
 async function getDelegateForSCW(address: string) {
@@ -10,7 +11,7 @@ async function getDelegateForSCW(address: string) {
 
   return prismaWeb2Client.delegateStatements
     .findFirst({
-      where: { scw_address: address.toLowerCase(), dao_slug: slug },
+      where: { scw_address: address.toLowerCase(), dao_slug: slug as DaoSlug },
     })
     .catch((error) => console.error(error));
 }

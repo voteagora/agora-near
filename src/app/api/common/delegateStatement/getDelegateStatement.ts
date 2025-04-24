@@ -5,6 +5,7 @@ import { cache } from "react";
 import Tenant from "@/lib/tenant/tenant";
 
 import { doInSpan } from "@/app/lib/logging";
+import { DaoSlug } from "@prisma/client";
 
 export const getDelegateStatement = (addressOrENSName: string) => {
   return doInSpan(
@@ -26,7 +27,9 @@ async function getDelegateStatementForAddress({
   const { slug } = Tenant.current();
 
   return prismaWeb2Client.delegateStatements
-    .findFirst({ where: { address: address.toLowerCase(), dao_slug: slug } })
+    .findFirst({
+      where: { address: address.toLowerCase(), dao_slug: slug as DaoSlug },
+    })
     .catch((error) => console.error(error));
 }
 
