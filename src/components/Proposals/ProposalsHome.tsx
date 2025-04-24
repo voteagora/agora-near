@@ -21,7 +21,49 @@ async function fetchProposals(
   pagination = { limit: 10, offset: 0 }
 ) {
   "use server";
-  return apiFetchProposals({ filter, pagination });
+  return {
+    meta: {
+      has_next: false,
+      total_returned: 0,
+      next_offset: 0,
+    },
+    data: [
+      {
+        id: "1",
+        proposer: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+        snapshotBlockNumber: 17000000,
+        createdTime: new Date("2024-01-15T10:00:00Z"),
+        startTime: new Date("2024-01-15T12:00:00Z"),
+        startBlock: "17000100",
+        endTime: new Date("2024-01-22T12:00:00Z"),
+        endBlock: "17100000",
+        cancelledTime: null,
+        executedTime: null,
+        executedBlock: null,
+        queuedTime: null,
+        markdowntitle: "Proposal to Upgrade Protocol Parameters",
+        description:
+          "This proposal aims to adjust key protocol parameters to improve efficiency and security.",
+        quorum: BigInt("1000000000000000000000"), // 1000 tokens
+        approvalThreshold: BigInt("500000000000000000000"), // 500 tokens
+        proposalData: {
+          options: [],
+        },
+        unformattedProposalData:
+          "0x0000000000000000000000000000000000000000000000000000000000000001",
+        proposalResults: {
+          for: BigInt("750000000000000000000"),
+          against: BigInt("250000000000000000000"),
+          abstain: BigInt("0"),
+        },
+        proposalType: "STANDARD" as const,
+        status: "ACTIVE" as const,
+        createdTransactionHash: "0x123...abc",
+        cancelledTransactionHash: null,
+        executedTransactionHash: null,
+      },
+    ],
+  };
 }
 
 async function fetchNeedsMyVoteProposals(address: string) {

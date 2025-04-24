@@ -243,7 +243,7 @@ async function getVotersWhoHaveNotVotedForProposal({
   pagination?: PaginationParams;
 }) {
   return withMetrics("getVotersWhoHaveNotVotedForProposal", async () => {
-    const { namespace, contracts, slug } = Tenant.current();
+    const { namespace, contracts } = Tenant.current();
 
     let eventsViewName;
 

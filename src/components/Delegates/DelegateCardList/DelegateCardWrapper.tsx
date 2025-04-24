@@ -1,42 +1,7 @@
-import { fetchCitizens as apiFetchCitizens } from "@/app/api/common/citizens/getCitizens";
-import { fetchDelegates as apiFetchDelegates } from "@/app/api/common/delegates/getDelegates";
-import { fetchCurrentDelegators as apiFetchCurrentDelegators } from "@/app/api/common/delegations/getDelegations";
-import CitizenCardList from "@/components/Delegates/DelegateCardList/CitzenCardList";
-import DelegateTabs from "@/components/Delegates/DelegatesTabs/DelegatesTabs";
-import { TabsContent } from "@/components/ui/tabs";
-import { citizensFilterOptions, delegatesFilterOptions } from "@/lib/constants";
+import { delegatesFilterOptions } from "@/lib/constants";
 import Tenant from "@/lib/tenant/tenant";
-import React from "react";
-import { PaginationParams } from "@/app/lib/pagination";
 import { UIEndorsedConfig } from "@/lib/tenant/tenantUI";
 import DelegateContent from "./DelegateContent";
-
-async function fetchCitizens(
-  sort: string,
-  seed: number,
-  pagination?: PaginationParams
-) {
-  "use server";
-
-  return apiFetchCitizens({ pagination, seed, sort });
-}
-
-async function fetchDelegates(
-  sort: string,
-  seed: number,
-  filters: any,
-  pagination?: PaginationParams
-) {
-  "use server";
-
-  return apiFetchDelegates({ pagination, seed, sort, filters });
-}
-
-async function fetchDelegators(address: string) {
-  "use server";
-
-  return apiFetchCurrentDelegators(address);
-}
 
 const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
   const { ui } = Tenant.current();
@@ -45,10 +10,6 @@ const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
     Object.entries(delegatesFilterOptions).find(
       ([, value]) => value.sort === searchParams.orderBy
     )?.[1]?.sort || delegatesFilterOptions.weightedRandom.sort;
-  const citizensSort =
-    Object.entries(citizensFilterOptions).find(
-      ([, value]) => value.sort === searchParams.citizensOrderBy
-    )?.[1]?.sort || citizensFilterOptions.shuffle.sort;
 
   const filters = {
     ...(searchParams.delegatorFilter && {
@@ -70,39 +31,133 @@ const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
         : searchParams.endorsedFilter === "true";
   }
 
-  const tab = searchParams.tab;
-  const seed = Math.random();
-  const delegates =
-    tab === "citizens"
-      ? await fetchCitizens(citizensSort, seed)
-      : await fetchDelegates(sort, seed, filters);
+  const delegates = {
+    meta: {
+      has_next: false,
+      total_returned: 0,
+      next_offset: 0,
+    },
+    data: [
+      {
+        address: "0x123456",
+        votingPower: {
+          total: "100000000000000000000000",
+          direct: "100",
+          advanced: "100",
+        },
+        statement: {
+          endorsed: true,
+          discord: "discord",
+          payload: { delegateStatement: "A trustworthy delegate" },
+          twitter: "agora",
+        },
+        citizen: false,
+      },
+      {
+        address: "0x123456",
+        votingPower: {
+          total: "100000000000000000000000",
+          direct: "100",
+          advanced: "100",
+        },
+        statement: {
+          endorsed: true,
+          discord: "discord",
+          payload: { delegateStatement: "A trustworthy delegate" },
+          twitter: "agora",
+        },
+        citizen: false,
+      },
+      {
+        address: "0x123456",
+        votingPower: {
+          total: "100000000000000000000000",
+          direct: "100",
+          advanced: "100",
+        },
+        statement: {
+          endorsed: true,
+          discord: "discord",
+          payload: { delegateStatement: "A trustworthy delegate" },
+          twitter: "agora",
+        },
+        citizen: false,
+      },
+      {
+        address: "0x123456",
+        votingPower: {
+          total: "100000000000000000000000",
+          direct: "100",
+          advanced: "100",
+        },
+        statement: {
+          endorsed: true,
+          discord: "discord",
+          payload: { delegateStatement: "A trustworthy delegate" },
+          twitter: "agora",
+        },
+        citizen: false,
+      },
+      {
+        address: "0x123456",
+        votingPower: {
+          total: "100000000000000000000000",
+          direct: "100",
+          advanced: "100",
+        },
+        statement: {
+          endorsed: true,
+          discord: "discord",
+          payload: { delegateStatement: "A trustworthy delegate" },
+          twitter: "agora",
+        },
+        citizen: false,
+      },
+      {
+        address: "0x123456",
+        votingPower: {
+          total: "100000000000000000000000",
+          direct: "100",
+          advanced: "100",
+        },
+        statement: {
+          endorsed: true,
+          discord: "discord",
+          payload: { delegateStatement: "A trustworthy delegate" },
+          twitter: "agora",
+        },
+        citizen: false,
+      },
+    ],
+  };
 
   return (
-    <DelegateTabs>
-      <TabsContent value="delegates">
-        <DelegateContent
-          initialDelegates={delegates}
-          fetchDelegates={async (pagination, seed) => {
-            "use server";
-            return apiFetchDelegates({ pagination, seed, sort, filters });
-          }}
-          // @ts-ignore
-          fetchDelegators={fetchDelegators}
-        />
-      </TabsContent>
-      <TabsContent value="citizens">
-        <CitizenCardList
-          initialDelegates={delegates}
-          fetchDelegates={async (pagination, seed) => {
-            "use server";
-
-            return apiFetchCitizens({ pagination, seed, sort: citizensSort });
-          }}
-          // @ts-ignore
-          fetchDelegators={fetchDelegators}
-        />
-      </TabsContent>
-    </DelegateTabs>
+    <DelegateContent
+      initialDelegates={delegates}
+      fetchDelegates={async () => {
+        "use server";
+        return {
+          meta: {
+            has_next: false,
+            total_returned: 0,
+            next_offset: 0,
+          },
+          data: [],
+        };
+      }}
+      // @ts-ignore
+      fetchDelegators={async () => {
+        "use server";
+        return {
+          meta: {
+            has_next: false,
+            total_returned: 0,
+            next_offset: 0,
+          },
+          data: [],
+        };
+      }}
+    />
   );
 };
 

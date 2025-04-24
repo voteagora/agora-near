@@ -31,6 +31,7 @@ export default function Navbar() {
       )}
 
       {ui.toggle("delegates") && ui.toggle("delegates").enabled && (
+        // TODO: Voters tab disabled for now
         <HeaderLink href="/delegates" isActive={pathname.includes("delegates")}>
           Voters
         </HeaderLink>

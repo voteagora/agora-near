@@ -64,7 +64,7 @@ export function AdvancedDelegateDialog({
   const [directDelegatedVP, setDirectDelegatedVP] = useState<bigint>(0n);
   const { setOpen } = useModal();
   const params = useParams<{ addressOrENSName: string }>();
-  const { ui, slug } = Tenant.current();
+  const { ui } = Tenant.current();
   const shouldHideAgoraBranding = ui.hideAgoraBranding;
 
   const fetchData = useCallback(async () => {
