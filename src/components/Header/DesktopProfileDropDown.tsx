@@ -1,8 +1,7 @@
 "use client";
 
 import { rgbStringToHex } from "@/app/lib/utils/color";
-import { useNear } from "@/contexts/NearContext";
-import { useTokenBalance } from "@/hooks/useTokenBalance";
+import { useNearTokenBalance } from "@/hooks/useNearTokenBalance";
 import { useVotingPower } from "@/hooks/useVotingPower";
 import { Logout } from "@/icons/logout";
 import Tenant from "@/lib/tenant/tenant";
@@ -11,7 +10,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { ReactNode, useState } from "react";
 import { PanelRow } from "../Delegates/DelegateCard/DelegateCard";
-import TokenAmountDecorated from "../shared/TokenAmountDecorated";
+import NearTokenAmount from "../shared/NearTokenAmount";
 
 type Props = {
   accountId?: string;
@@ -25,7 +24,7 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
   const [shouldHydrate, setShouldHydrate] = useState(false);
 
   const { data: tokenBalance, isFetching: isFetchingTokenBalance } =
-    useTokenBalance(shouldHydrate ? accountId : undefined);
+    useNearTokenBalance(shouldHydrate ? accountId : undefined);
   const { data: votingPower, isLoading: isLoadingVotingPower } = useVotingPower(
     shouldHydrate ? accountId : undefined
   );
@@ -87,7 +86,7 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                               <RowSkeletonWrapper
                                 isLoading={isFetchingTokenBalance}
                               >
-                                <TokenAmountDecorated
+                                <NearTokenAmount
                                   amount={tokenBalance || BigInt(0)}
                                 />
                               </RowSkeletonWrapper>
@@ -101,7 +100,7 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                               <RowSkeletonWrapper
                                 isLoading={isLoadingVotingPower}
                               >
-                                <TokenAmountDecorated
+                                <NearTokenAmount
                                   amount={votingPower || BigInt(0)}
                                 />
                               </RowSkeletonWrapper>

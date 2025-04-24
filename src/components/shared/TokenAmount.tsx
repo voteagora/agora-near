@@ -1,6 +1,6 @@
+import { formatNumber } from "@/lib/utils";
+import React, { useMemo } from "react";
 import Tenant from "@/lib/tenant/tenant";
-import { utils } from "near-api-js";
-import { useMemo } from "react";
 const { token } = Tenant.current();
 
 type Props = {
@@ -14,16 +14,20 @@ type Props = {
 
 export default function TokenAmount({
   amount,
+  decimals = token.decimals,
   currency = token.symbol,
   maximumSignificantDigits = 2,
   hideCurrency = false,
+  specialFormatting = false,
 }: Props) {
   const formattedNumber = useMemo(() => {
-    return utils.format.formatNearAmount(
-      String(amount),
-      maximumSignificantDigits
+    return formatNumber(
+      amount,
+      decimals,
+      maximumSignificantDigits,
+      specialFormatting
     );
-  }, [amount, maximumSignificantDigits]);
+  }, [amount, decimals, maximumSignificantDigits, specialFormatting]);
 
   return (
     <span>{`${formattedNumber}${hideCurrency ? "" : ` ${currency}`}`} </span>
