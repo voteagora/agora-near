@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import NearProposalTimeStatus from "./NearProposalTimeStatus";
 import Link from "next/link";
 import PageHeader from "@/components/Layout/PageHeader/PageHeader";
+import { VStack } from "@/components/Layout/Stack";
+import NearProposalStatus from "./NearProposalStatus";
 
 const Loader = () => {
   return (
@@ -67,11 +69,8 @@ export default function NearProposals() {
                         <div>
                           Proposal by {proposal.proposer_id}
                         </div>
-                        </div>
-                        <div className="overflow-ellipsis overflow-visible whitespace-normal break-words text-primary">
-                          {proposal.title}
-                        </div>
                       </div>
+                    </div>
                     <div className="flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6 w-[20%] flex-start justify-center hidden sm:block">
                       <div className="flex flex-col items-end">
                         <div className="text-xs text-secondary">
@@ -90,6 +89,18 @@ export default function NearProposals() {
                         >
                           {proposal.status.toLowerCase()}
                         </div>
+                      </div>
+                    </div>
+                    <div className="flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6 w-[25%] flex-start justify-center hidden sm:block">
+                      <div className="overflow-hidden overflow-ellipsis">
+                        {proposal.voting_options.length !== 2 && (
+                          <VStack className="text-right">
+                            <p>{proposal.voting_options.length} Choices</p>
+                          </VStack>
+                        )}
+                        {proposal.voting_options.length === 2 && (
+                          <NearProposalStatus proposal={proposal} />
+                        )}
                       </div>
                     </div>
                   </div>
