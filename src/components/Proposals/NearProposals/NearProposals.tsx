@@ -67,8 +67,10 @@ export default function NearProposals() {
                         "w-full sm:w-[55%] items-start justify-center"
                       )}
                     >
-                      <div className="flex flex-row text-xs text-secondary gap-1">
-                        <div>Proposal by {proposal.proposer_id}</div>
+                      <div className="overflow-hidden ">
+                        <p className="line-clamp-1 whitespace-normal break-words text-primary">
+                          Proposal by {proposal.proposer_id}
+                        </p>
                       </div>
                     </div>
                     <div className="flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6 w-[20%] flex-start justify-center hidden sm:block">
