@@ -6,6 +6,7 @@ import {
 } from "../types";
 import { demoTenantConfig } from "./configs/contracts/demo";
 import { nearTenantUIConfig } from "./configs/ui/near";
+import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 
 export const BRAND_NAME_MAPPINGS: Record<string, string> = {
   near: "NEAR",
@@ -43,7 +44,7 @@ export default class Tenant {
     return {
       name: "NEAR Protocol",
       symbol: "NEAR",
-      decimals: 18,
+      decimals: NEAR_NOMINATION_EXP,
     };
   }
 
