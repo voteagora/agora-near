@@ -22,6 +22,7 @@ import { useRegisterLockup } from "@/hooks/useRegisterLockup";
 import { useStakeNear } from "@/hooks/useStakeNear";
 import { useVenearAccountStats } from "@/hooks/useVenearAccountStats";
 import { useVenearStats } from "@/hooks/useVenearStats";
+import { useApproveProposal } from "@/hooks/useApproveProposal";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
 import { utils } from "near-api-js";
@@ -75,6 +76,8 @@ export default function VeNearDebugCards() {
 
   const { proposals, isLoading: isLoadingProposals } = useProposals(0, 10);
   const { config, isLoading: isLoadingConfig } = useProposalConfig();
+  const { approveProposal, isApprovingProposal, approveProposalError } =
+    useApproveProposal();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -803,10 +806,27 @@ export default function VeNearDebugCards() {
                       <h3 className="text-lg font-semibold">
                         {proposal.title || `Proposal #${proposal.id}`}
                       </h3>
-                      <span className="px-2 py-1 text-sm rounded-full bg-primary/10">
-                        {proposal.status}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-1 text-sm rounded-full bg-primary/10">
+                          {proposal.status}
+                        </span>
+                        {proposal.status === "Created" && (
+                          <Button
+                            onClick={() => approveProposal(proposal.id)}
+                            loading={isApprovingProposal}
+                            variant="outline"
+                            size="sm"
+                          >
+                            Approve
+                          </Button>
+                        )}
+                      </div>
                     </div>
+                    {approveProposalError && proposal.status === "Created" && (
+                      <p className="text-red-500 text-sm">
+                        {approveProposalError.message}
+                      </p>
+                    )}
                     {proposal.description && (
                       <p className="text-muted-foreground">
                         {proposal.description}
