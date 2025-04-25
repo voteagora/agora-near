@@ -1,14 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import NearProposalVoteSummary from "./NearProposalVoteSummary";
-import ProposalVotesList from "@/components/Votes/ProposalVotesList/ProposalVotesList";
-import CastVoteInput from "@/components/Votes/CastVoteInput/CastVoteInput";
-import { icons } from "@/assets/icons/icons";
-import { Proposal } from "@/app/api/common/proposals/proposal";
-import NearProposalVoteFilter from "./NearProposalVoteFilter";
-import ProposalNonVoterList from "@/components/Votes/ProposalVotesList/ProposalNonVoterList";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { useState } from "react";
+import NearProposalVoteFilter from "./NearProposalVoteFilter";
+import NearProposalVoteSummary from "./NearProposalVoteSummary";
 
 const NearProposalVoteResult = ({ proposal }: { proposal: ProposalInfo }) => {
   const [isClicked, setIsClicked] = useState(false);
@@ -29,7 +24,7 @@ const NearProposalVoteResult = ({ proposal }: { proposal: ProposalInfo }) => {
         <div className="flex flex-col gap-4">
           <div className="font-semibold px-4 text-primary">Voting activity</div>
           <NearProposalVoteSummary proposal={proposal} />
-          <div className="px-4">
+          <div className="px-4 pb-4">
             <NearProposalVoteFilter
               initialSelection={showVoters ? "Voters" : "Hasn't voted"}
               onSelectionChange={(value) => {

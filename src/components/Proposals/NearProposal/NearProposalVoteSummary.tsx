@@ -1,9 +1,9 @@
 "use client";
-import { useState } from "react";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { useState } from "react";
 import NearProposalStatusDetail from "./NearProposalStatusDetail";
-import TokenAmountDecorated from "@/components/shared/TokenAmountDecorated";
 import NearProposalVoteBar from "./NearProposalVoteBar";
 
 export default function NearProposalVoteSummary({
@@ -25,28 +25,18 @@ export default function NearProposalVoteSummary({
           <HoverCardTrigger className="w-full cursor-pointer flex flex-col gap-2 px-4 pt-2">
             <div className="flex flex-row justify-between mt-2">
               <div className="text-positive">
-                FOR -{" "}
-                {proposal.votes[0].total_venear === "0" ? (
-                  0
-                ) : (
-                  <TokenAmountDecorated
-                    amount={proposal.votes[0].total_venear}
-                    hideCurrency
-                    specialFormatting
-                  />
-                )}
+                {proposal.voting_options[0]} -{" "}
+                <NearTokenAmount
+                  amount={proposal.votes[0].total_venear}
+                  hideCurrency
+                />
               </div>
               <div className="text-negative">
-                AGAINST -{" "}
-                {proposal.votes[1].total_venear === "0" ? (
-                  0
-                ) : (
-                  <TokenAmountDecorated
-                    amount={proposal.votes[1].total_venear}
-                    hideCurrency
-                    specialFormatting
-                  />
-                )}
+                {proposal.voting_options[1]} -{" "}
+                <NearTokenAmount
+                  amount={proposal.votes[1].total_venear}
+                  hideCurrency
+                />
               </div>
             </div>
             <NearProposalVoteBar proposal={proposal} />

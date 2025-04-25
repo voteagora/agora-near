@@ -2,6 +2,7 @@
 "use client";
 
 import { HStack } from "@/components/Layout/Stack";
+import { ProposalStatus } from "@/lib/contracts/types/voting";
 import { format } from "date-fns";
 
 export default function ProposalTimeStatus({
@@ -10,7 +11,7 @@ export default function ProposalTimeStatus({
   proposalStartTime,
   proposalDuration,
 }: {
-  proposalStatus: string;
+  proposalStatus: ProposalStatus;
   proposalCreateTime: string | null;
   proposalStartTime: string | null;
   proposalDuration: string | null;
@@ -20,7 +21,7 @@ export default function ProposalTimeStatus({
       ? Number(proposalStartTime) + Number(proposalDuration)
       : null;
 
-  const proposalDEndTimeDisplay = proposalEndTime
+  const proposalEndTimeDisplay = proposalEndTime
     ? format(proposalEndTime / 1000000, "h:mm aaa MMM dd, yyyy")
     : null;
 
@@ -28,12 +29,24 @@ export default function ProposalTimeStatus({
     ? format(Number(proposalCreateTime) / 1000000, "h:mm aaa MMM dd, yyyy")
     : null;
 
-  switch (proposalStatus) {
-    case "Finished":
-      return <HStack gap={1}>Finished at {proposalDEndTimeDisplay}</HStack>;
+  const proposalStartTimeDisplay = proposalStartTime
+    ? format(Number(proposalStartTime) / 1000000, "h:mm aaa MMM dd, yyyy")
+    : null;
 
-    case "Created":
-    default:
-      return <HStack gap={1}>Created at {proposalCreateTimeDisplay}</HStack>;
+  switch (proposalStatus) {
+    case ProposalStatus.Created:
+      return <HStack gap={1}>Created {proposalCreateTimeDisplay}</HStack>;
+
+    case ProposalStatus.Voting:
+      return <HStack gap={1}>Ends {proposalEndTimeDisplay}</HStack>;
+
+    case ProposalStatus.Rejected:
+      return <HStack gap={1}>Rejected</HStack>;
+
+    case ProposalStatus.Approved:
+      return <HStack gap={1}>Starts {proposalStartTimeDisplay}</HStack>;
+
+    case ProposalStatus.Finished:
+      return <HStack gap={1}>Finished {proposalEndTimeDisplay}</HStack>;
   }
 }

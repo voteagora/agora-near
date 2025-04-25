@@ -1,3 +1,4 @@
+import { VOTING_THRESHOLDS } from "@/lib/constants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 
 export default function NearProposalVoteBar({
@@ -31,6 +32,10 @@ export default function NearProposalVoteBar({
       ) : (
         <div className="w-full bg-wash h-[10px]"></div>
       )}
+      <div
+        className="bg-primary h-4 w-[2px] absolute -top-[3px] z-50"
+        style={{ left: `${VOTING_THRESHOLDS.SIMPLE_MAJORITY}%` }} // Assume simple majority for now
+      />
     </div>
   );
 }

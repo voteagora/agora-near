@@ -1,11 +1,11 @@
-import { cn } from "@/lib/utils";
+import { HStack, VStack } from "@/components/Layout/Stack";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import { VOTING_THRESHOLDS } from "@/lib/constants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
-import TokenAmountDecorated from "@/components/shared/TokenAmountDecorated";
-import { HStack } from "@/components/Layout/Stack";
+import { votingOptionsToVoteStats } from "@/lib/nearProposalUtils";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { VStack } from "@/components/Layout/Stack";
-import { useState } from "react";
-import { useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 
 export default function NearProposalOptionsResult({
   proposal,
@@ -22,6 +22,20 @@ export default function NearProposalOptionsResult({
       setActiveTab(index);
     });
   }
+
+  const optionsToStats = useMemo(() => {
+    return votingOptionsToVoteStats(proposal);
+  }, [proposal]);
+
+  const sortedVotingOptions = useMemo(() => {
+    return proposal.voting_options.sort((a, b) => {
+      const diff =
+        BigInt(optionsToStats[b].total_venear) -
+        BigInt(optionsToStats[a].total_venear);
+
+      return diff > 0 ? 1 : -1;
+    });
+  }, [proposal.voting_options, optionsToStats]);
 
   return (
     <div className="flex flex-col gap-4 sticky top-20 flex-shrink max-w-[24rem] bg-neutral border-line border rounded-xl shadow-newDefault mb-8 items-stretch sm:items-start justify-end sm:justify-between w-full max-h-none h-auto">
@@ -59,12 +73,13 @@ export default function NearProposalOptionsResult({
                   className
                 )}
               >
-                {proposal.voting_options.map((option, index) => (
+                {sortedVotingOptions.map((option, index) => (
                   <SingleOption
                     key={index}
                     description={option}
-                    votes={Number(proposal.votes[index].total_venear)}
+                    votes={Number(optionsToStats[option].total_venear)}
                     totalVotes={Number(proposal.total_votes.total_venear)}
+                    thresholdPosition={VOTING_THRESHOLDS.SIMPLE_MAJORITY} // Assume simple majority for now
                   />
                 ))}
               </div>
@@ -82,10 +97,12 @@ function SingleOption({
   description,
   votes,
   totalVotes,
+  thresholdPosition,
 }: {
   description: string;
   votes: number;
   totalVotes: number;
+  thresholdPosition: number;
 }) {
   const percentage = totalVotes ? (votes / totalVotes) * 100 : 0;
 
@@ -97,17 +114,17 @@ function SingleOption({
           {description}
         </div>
         <div className="text-primary flex items-center gap-1">
-          <TokenAmountDecorated
-            amount={votes.toString()}
-            hideCurrency
-            specialFormatting
-          />
+          <NearTokenAmount amount={votes.toString()} hideCurrency />
           <span className={cn("ml-1 text-tertiary")}>
             {percentage === 0 ? "0%" : percentage.toFixed(2) + "%"}
           </span>
         </div>
       </div>
-      <ProgressBar percentage={percentage} isApproved={false} />
+      <ProgressBar
+        percentage={percentage}
+        isApproved={percentage >= thresholdPosition}
+        thresholdPosition={thresholdPosition}
+      />
     </div>
   );
 }
@@ -115,9 +132,11 @@ function SingleOption({
 export function ProgressBar({
   percentage,
   isApproved,
+  thresholdPosition,
 }: {
   percentage: number;
   isApproved: boolean;
+  thresholdPosition: number;
 }) {
   const progressBarColor = isApproved ? "bg-positive" : "bg-tertiary";
 
@@ -129,6 +148,12 @@ export function ProgressBar({
           className={`h-[6px] absolute rounded-[10px] top-0 right-0 ${progressBarColor}`}
           style={{ width: `${percentage}%` }}
         ></div>
+        {!!thresholdPosition && (
+          <div
+            className={`w-[2px] h-[6px] absolute top-0 rounded-[10px] bg-secondary`}
+            style={{ right: `${thresholdPosition}%` }}
+          ></div>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { useProposals } from "@/hooks/useProposals";
+import { useProposal } from "@/hooks/useProposal";
 import NearProposalDescription from "./NearProposalDescription";
 import NearProposalOptionsResult from "./NearProposalOptionsResult";
 import NearProposalVoteResult from "./NearProposalVoteResult";
@@ -14,11 +13,9 @@ export default function NearProposalHome({
 }: {
   proposalId: string;
 }) {
-  const { proposals, isLoading: isLoadingProposals } = useProposals(0, 10);
+  const { proposal, isLoading } = useProposal(proposalId);
 
-  const proposal = proposals.find((p) => String(p.id) === proposalId);
-
-  if (isLoadingProposals) {
+  if (isLoading) {
     return (
       <div
         className="flex flex-row gl_loader justify-center py-6 text-sm text-secondary"

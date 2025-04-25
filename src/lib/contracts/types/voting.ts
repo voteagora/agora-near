@@ -18,6 +18,17 @@ export interface ProposalMetadata {
 }
 
 /** Full on‑chain proposal info */
+
+export enum ProposalStatus {
+  Created = "Created",
+  Rejected = "Rejected",
+  Approved = "Approved",
+  Voting = "Voting",
+  Finished = "Finished",
+}
+
+export type VoterStats = { total_venear: string; total_votes: number };
+
 export interface ProposalInfo {
   id: number;
   proposer_id: AccountId;
@@ -27,12 +38,9 @@ export interface ProposalInfo {
   title: string | null;
   rejected: boolean;
   reviewer_id: AccountId | null;
-  status: string;
-  total_votes: {
-    total_venear: string;
-    total_votes: number;
-  };
-  votes: Array<{ total_venear: string; total_votes: number }>;
+  status: ProposalStatus;
+  total_votes: VoterStats;
+  votes: Array<VoterStats>;
   voting_duration_ns: string;
   voting_options: string[];
   voting_start_time_ns: string | null;

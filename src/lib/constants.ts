@@ -1,4 +1,6 @@
-import { TenantNamespace } from "./types";
+import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
+import { TenantToken } from "./types";
+import { C } from "vitest/dist/chunks/reporters.6vxQttCV.js";
 
 export const INDEXER_DELAY = 3000;
 
@@ -138,3 +140,14 @@ export enum TIMELOCK_TYPE {
   TIMELOCKCONTROLLER_WITH_ACCESS_CONTROL = "TIMELOCKCONTROLLER_WITH_ACCESS_CONTROL",
   TIMELOCKCONTROLLER_WITH_ACCESS_CONTROL_ERC721_ERC115 = "TIMELOCKCONTROLLER_WITH_ACCESS_CONTROL_ERC721_ERC115",
 }
+
+export const NEAR_TOKEN: TenantToken = {
+  name: "NEAR Protocol",
+  symbol: "NEAR",
+  decimals: NEAR_NOMINATION_EXP,
+};
+
+export const VOTING_THRESHOLDS = {
+  SIMPLE_MAJORITY: 51,
+  SUPER_MAJORITY: 75,
+};
