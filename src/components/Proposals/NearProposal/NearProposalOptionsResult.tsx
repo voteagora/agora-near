@@ -1,17 +1,20 @@
 import { HStack, VStack } from "@/components/Layout/Stack";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { VOTING_THRESHOLDS } from "@/lib/constants";
-import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { votingOptionsToVoteStats } from "@/lib/nearProposalUtils";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useMemo, useState, useTransition } from "react";
+import NearProposalVoting from "./NearProposalVoting";
 
 export default function NearProposalOptionsResult({
   proposal,
+  config,
   className,
 }: {
   proposal: ProposalInfo;
+  config: VotingConfig;
   className?: string;
 }) {
   const [activeTab, setActiveTab] = useState(1);
@@ -28,7 +31,7 @@ export default function NearProposalOptionsResult({
   }, [proposal]);
 
   const sortedVotingOptions = useMemo(() => {
-    return proposal.voting_options.sort((a, b) => {
+    return [...proposal.voting_options].sort((a, b) => {
       const diff =
         BigInt(optionsToStats[b].total_venear) -
         BigInt(optionsToStats[a].total_venear);
@@ -86,6 +89,7 @@ export default function NearProposalOptionsResult({
             ) : (
               <div />
             )}
+            <NearProposalVoting proposal={proposal} config={config} />
           </VStack>
         </motion.div>
       </div>

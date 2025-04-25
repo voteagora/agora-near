@@ -33,6 +33,9 @@ import { ShareDialog as ShareVoteDialog } from "@/components/Proposals/ProposalP
 import { Vote } from "@/app/api/common/votes/vote";
 import { SimulationReportDialog } from "../SimulationReportDialog/SimulationReportDialog";
 import { StructuredSimulationReport } from "@/lib/seatbelt/types";
+import { NearVoteDialog } from "../NearVoteDialog";
+import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
+import { NearVoteOptionsDialog } from "../NearVoteOptionsDialog";
 
 export type DialogType =
   | AdvancedDelegateDialogType
@@ -53,7 +56,9 @@ export type DialogType =
   | OpenGithubPRDialog
   | SubscribeDialog
   | ShareVoteDialogType
-  | SimulationReportDialogType;
+  | SimulationReportDialogType
+  | NearVoteDialogType
+  | NearVoteOptionsDialogType;
 // | FaqDialogType
 
 export type DelegateDialogType = {
@@ -251,6 +256,23 @@ export type SimulationReportDialogType = {
     report: StructuredSimulationReport | null;
   };
   className?: string;
+};
+
+export type NearVoteDialogType = {
+  type: "NEAR_VOTE";
+  params: {
+    proposal: ProposalInfo;
+    config: VotingConfig;
+    preSelectedVote?: number;
+  };
+};
+
+export type NearVoteOptionsDialogType = {
+  type: "NEAR_VOTE_OPTIONS";
+  params: {
+    proposal: ProposalInfo;
+    config: VotingConfig;
+  };
 };
 
 export const dialogs: DialogDefinitions<DialogType> = {
@@ -458,6 +480,21 @@ export const dialogs: DialogDefinitions<DialogType> = {
   },
   SIMULATION_REPORT: ({ report }, closeDialog) => (
     <SimulationReportDialog report={report} closeDialog={closeDialog} />
+  ),
+  NEAR_VOTE: ({ proposal, config, preSelectedVote }, closeDialog) => (
+    <NearVoteDialog
+      proposal={proposal}
+      config={config}
+      preSelectedVote={preSelectedVote}
+      closeDialog={closeDialog}
+    />
+  ),
+  NEAR_VOTE_OPTIONS: ({ proposal, config }, closeDialog) => (
+    <NearVoteOptionsDialog
+      proposal={proposal}
+      config={config}
+      closeDialog={closeDialog}
+    />
   ),
   // FAQ: () => {
   //   return <FaqDialog />;

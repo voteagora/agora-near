@@ -54,7 +54,7 @@ export function useCastVote() {
       })) as [MerkleProof, VAccount] | null;
 
       if (!proof) {
-        throw new Error("Failed to fetch merkle proof");
+        throw new Error("Account merkle proof not found");
       }
 
       const [merkleProof, vAccount] = proof;

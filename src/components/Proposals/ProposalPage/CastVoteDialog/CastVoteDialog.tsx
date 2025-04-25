@@ -396,11 +396,11 @@ export function LoadingVote() {
 
   return (
     <div className="flex flex-col w-full">
-      <Image
+      {/* <Image
         src={ui.assets.pending}
         className="w-full mb-3"
         alt="Vote pending"
-      />
+      /> */}
       <div className="mb-2 text-2xl font-black text-primary">
         Casting your vote
       </div>

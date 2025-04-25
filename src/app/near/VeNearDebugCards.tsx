@@ -22,10 +22,14 @@ import { useRegisterLockup } from "@/hooks/useRegisterLockup";
 import { useStakeNear } from "@/hooks/useStakeNear";
 import { useVenearAccountStats } from "@/hooks/useVenearAccountStats";
 import { useVenearStats } from "@/hooks/useVenearStats";
+import { useApproveProposal } from "@/hooks/useApproveProposal";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
 import { utils } from "near-api-js";
 import { useCallback, useState } from "react";
+import toast from "react-hot-toast";
+import { useDelegateAll } from "@/hooks/useDelegateAll";
+import { useUndelegate } from "@/hooks/useUndelegate";
 
 export default function VeNearDebugCards() {
   const { signedAccountId } = useNear();
@@ -71,9 +75,12 @@ export default function VeNearDebugCards() {
   const [unlockAmount, setUnlockAmount] = useState("");
   const [unstakeAmount, setUnstakeAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [delegateAddress, setDelegateAddress] = useState("");
 
   const { proposals, isLoading: isLoadingProposals } = useProposals(0, 10);
   const { config, isLoading: isLoadingConfig } = useProposalConfig();
+  const { approveProposal, isApprovingProposal, approveProposalError } =
+    useApproveProposal();
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -88,6 +95,16 @@ export default function VeNearDebugCards() {
   const [selectedVotes, setSelectedVotes] = useState<Record<number, number>>(
     {}
   );
+  const {
+    delegateAll,
+    isDelegating,
+    error: delegationError,
+  } = useDelegateAll();
+  const {
+    undelegate,
+    isUndelegating,
+    error: undelegationError,
+  } = useUndelegate();
 
   const lockAllNear = useCallback(() => {
     if (accountInfo?.lockupAccountId) {
@@ -230,7 +247,9 @@ export default function VeNearDebugCards() {
         return next;
       });
     } catch (error) {
-      console.error("Error casting vote:", error);
+      toast.error(`Error casting vote: ${error}`, {
+        duration: 5000,
+      });
     }
   };
 
@@ -254,6 +273,15 @@ export default function VeNearDebugCards() {
       votingPowerPercentage,
       accountParticipationPercentage,
     };
+  };
+
+  const handleDelegateAll = () => {
+    if (!delegateAddress) return;
+    delegateAll(delegateAddress);
+  };
+
+  const handleUndelegate = () => {
+    undelegate();
   };
 
   const renderContractInfo = () => (
@@ -340,30 +368,60 @@ export default function VeNearDebugCards() {
             />
 
             <Separator />
-            <CardTitle>Delegation</CardTitle>
-            <InfoItem
-              label="Delegated NEAR Balance"
-              value={utils.format.formatNearAmount(
-                accountInfo.delegatedBalance.near
+            <div className="flex flex-col gap-4">
+              <CardTitle>Delegation</CardTitle>
+              <InfoItem
+                label="Delegated NEAR Balance"
+                value={utils.format.formatNearAmount(
+                  accountInfo.delegatedBalance.near
+                )}
+                unit="NEAR"
+              />
+              <InfoItem
+                label="Delegated Rewards Balance"
+                value={utils.format.formatNearAmount(
+                  accountInfo.delegatedBalance.extraBalance
+                )}
+                unit="NEAR"
+              />
+              {accountInfo.delegation ? (
+                <>
+                  <InfoItem
+                    label="Delegated To"
+                    value={accountInfo.delegation.delegatee}
+                  />
+                  <Button
+                    loading={isUndelegating}
+                    onClick={handleUndelegate}
+                    variant="destructive"
+                  >
+                    Undelegate All
+                  </Button>
+                  {undelegationError && (
+                    <p className="text-red-500 text-sm">{`Error: ${undelegationError.message}`}</p>
+                  )}
+                </>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Enter delegate account ID"
+                    value={delegateAddress}
+                    onChange={(e) => setDelegateAddress(e.target.value)}
+                  />
+                  <Button
+                    loading={isDelegating}
+                    onClick={handleDelegateAll}
+                    disabled={!delegateAddress}
+                  >
+                    Delegate All
+                  </Button>
+                  {delegationError && (
+                    <p className="text-red-500 text-sm">{`Error: ${delegationError.message}`}</p>
+                  )}
+                </div>
               )}
-              unit="NEAR"
-            />
-            <InfoItem
-              label="Delegated Rewards Balance"
-              value={utils.format.formatNearAmount(
-                accountInfo.delegatedBalance.extraBalance
-              )}
-              unit="NEAR"
-            />
-            {accountInfo.delegation && (
-              <>
-                <Separator />
-                <InfoItem
-                  label="Delegated To"
-                  value={accountInfo.delegation.delegatee}
-                />
-              </>
-            )}
+            </div>
             <Separator />
           </div>
         ) : (
@@ -800,13 +858,31 @@ export default function VeNearDebugCards() {
                       <h3 className="text-lg font-semibold">
                         {proposal.title || `Proposal #${proposal.id}`}
                       </h3>
-                      <span className="px-2 py-1 text-sm rounded-full bg-primary/10">
-                        {proposal.status}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-1 text-sm rounded-full bg-primary/10">
+                          {proposal.status}
+                        </span>
+                        {proposal.status === "Created" && (
+                          <Button
+                            onClick={() => approveProposal(proposal.id)}
+                            loading={isApprovingProposal}
+                            variant="outline"
+                            size="sm"
+                          >
+                            Approve
+                          </Button>
+                        )}
+                      </div>
                     </div>
+                    {approveProposalError && proposal.status === "Created" && (
+                      <p className="text-red-500 text-sm">
+                        {approveProposalError.message}
+                      </p>
+                    )}
                     {proposal.description && (
                       <p className="text-muted-foreground">
-                        {proposal.description}
+                        {proposal.description.slice(0, 50)}
+                        {"..."}
                       </p>
                     )}
                     <div className="grid grid-cols-2 gap-4 text-sm">

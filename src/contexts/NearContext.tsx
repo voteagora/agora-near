@@ -13,7 +13,7 @@ import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupModal } from "@near-wallet-selector/modal-ui";
 import "@near-wallet-selector/modal-ui/styles.css";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
-import { providers, utils } from "near-api-js";
+import { providers } from "near-api-js";
 import {
   createContext,
   ReactNode,
@@ -199,7 +199,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         return jsonResult;
       } catch (error) {
         debugLog(`Error calling ${contractId}.${method}: ${error}`);
-        return null;
+        throw error;
       }
     },
     [networkId]
@@ -291,7 +291,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         return results;
       } catch (e) {
         console.error("Error calling methods:", e);
-        return null;
+        throw e;
       }
     },
     [selector]
