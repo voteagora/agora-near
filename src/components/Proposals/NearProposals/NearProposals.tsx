@@ -2,7 +2,7 @@
 
 import { useProposals } from "@/hooks/useProposals";
 import InfiniteScroll from "react-infinite-scroller";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import NearProposalTimeStatus from "./NearProposalTimeStatus";
 import Link from "next/link";
@@ -24,8 +24,15 @@ const Loader = () => {
 };
 
 export default function NearProposals() {
-  const { proposals, isLoading: isLoadingProposals } = useProposals(0, 10);
-  console.log(proposals);
+  // TODO: Implement pagination
+  const { proposals, isLoading: isLoadingProposals } = useProposals(0, 30);
+
+  // TODO: Determine the correct sorting order
+  const sortedProposals = useMemo(() => {
+    return proposals.sort((a, b) => {
+      return Number(b.creation_time_ns) - Number(a.creation_time_ns);
+    });
+  }, [proposals]);
 
   const [hasMore, setHasMore] = useState(false);
 
@@ -51,7 +58,7 @@ export default function NearProposals() {
               loader={<Loader />}
               element="main"
             >
-              {proposals.map((proposal) => (
+              {sortedProposals.map((proposal) => (
                 <Link key={proposal.id} href={`/proposals/${proposal.id}`}>
                   <div className="border-b border-line items-center flex flex-row bg-neutral">
                     <div
