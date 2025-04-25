@@ -2,13 +2,14 @@
 
 import { useProposals } from "@/hooks/useProposals";
 import InfiniteScroll from "react-infinite-scroller";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import NearProposalTimeStatus from "./NearProposalTimeStatus";
 import Link from "next/link";
 import PageHeader from "@/components/Layout/PageHeader/PageHeader";
 import { VStack } from "@/components/Layout/Stack";
 import NearProposalStatus from "./NearProposalStatus";
+import { ProposalInfo } from "@/lib/contracts/types/voting";
 
 const Loader = () => {
   return (
@@ -23,9 +24,19 @@ const Loader = () => {
   );
 };
 
+const pageSize = 30;
+
 export default function NearProposals() {
-  // TODO: Implement pagination
-  const { proposals, isLoading: isLoadingProposals } = useProposals(0, 30);
+  const [startIndex, setStartIndex] = useState(0);
+
+  const { proposals: initialProposals, isLoading } = useProposals(
+    startIndex,
+    startIndex + pageSize
+  );
+
+  const [proposals, setProposals] = useState<ProposalInfo[]>([]);
+
+  const isLoadingProposals = !proposals.length && isLoading;
 
   // TODO: Determine the correct sorting order
   const sortedProposals = useMemo(() => {
@@ -34,9 +45,18 @@ export default function NearProposals() {
     });
   }, [proposals]);
 
-  const [hasMore, setHasMore] = useState(false);
+  useEffect(() => {
+    if (isLoading) return;
 
-  const loadMore = () => {};
+    if (initialProposals.length > 0) {
+      setProposals((prev) => [...prev, ...initialProposals]);
+    }
+  }, [initialProposals, isLoading]);
+
+  const loadMore = () => {
+    if (isLoading || initialProposals.length === 0) return;
+    setStartIndex(startIndex + pageSize);
+  };
 
   return (
     <div className="flex flex-col max-w-[76rem]">
@@ -52,7 +72,7 @@ export default function NearProposals() {
             </div>
           ) : (
             <InfiniteScroll
-              hasMore={hasMore}
+              hasMore={initialProposals.length > 0}
               pageStart={0}
               loadMore={loadMore}
               loader={<Loader />}
