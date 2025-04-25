@@ -28,6 +28,8 @@ import Big from "big.js";
 import { utils } from "near-api-js";
 import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
+import { useDelegateAll } from "@/hooks/useDelegateAll";
+import { useUndelegate } from "@/hooks/useUndelegate";
 
 export default function VeNearDebugCards() {
   const { signedAccountId } = useNear();
@@ -73,6 +75,7 @@ export default function VeNearDebugCards() {
   const [unlockAmount, setUnlockAmount] = useState("");
   const [unstakeAmount, setUnstakeAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [delegateAddress, setDelegateAddress] = useState("");
 
   const { proposals, isLoading: isLoadingProposals } = useProposals(0, 10);
   const { config, isLoading: isLoadingConfig } = useProposalConfig();
@@ -92,6 +95,16 @@ export default function VeNearDebugCards() {
   const [selectedVotes, setSelectedVotes] = useState<Record<number, number>>(
     {}
   );
+  const {
+    delegateAll,
+    isDelegating,
+    error: delegationError,
+  } = useDelegateAll();
+  const {
+    undelegate,
+    isUndelegating,
+    error: undelegationError,
+  } = useUndelegate();
 
   const lockAllNear = useCallback(() => {
     if (accountInfo?.lockupAccountId) {
@@ -262,6 +275,15 @@ export default function VeNearDebugCards() {
     };
   };
 
+  const handleDelegateAll = () => {
+    if (!delegateAddress) return;
+    delegateAll(delegateAddress);
+  };
+
+  const handleUndelegate = () => {
+    undelegate();
+  };
+
   const renderContractInfo = () => (
     <Card className="flex flex-col grow">
       <CardHeader>
@@ -346,30 +368,60 @@ export default function VeNearDebugCards() {
             />
 
             <Separator />
-            <CardTitle>Delegation</CardTitle>
-            <InfoItem
-              label="Delegated NEAR Balance"
-              value={utils.format.formatNearAmount(
-                accountInfo.delegatedBalance.near
+            <div className="flex flex-col gap-4">
+              <CardTitle>Delegation</CardTitle>
+              <InfoItem
+                label="Delegated NEAR Balance"
+                value={utils.format.formatNearAmount(
+                  accountInfo.delegatedBalance.near
+                )}
+                unit="NEAR"
+              />
+              <InfoItem
+                label="Delegated Rewards Balance"
+                value={utils.format.formatNearAmount(
+                  accountInfo.delegatedBalance.extraBalance
+                )}
+                unit="NEAR"
+              />
+              {accountInfo.delegation ? (
+                <>
+                  <InfoItem
+                    label="Delegated To"
+                    value={accountInfo.delegation.delegatee}
+                  />
+                  <Button
+                    loading={isUndelegating}
+                    onClick={handleUndelegate}
+                    variant="destructive"
+                  >
+                    Undelegate All
+                  </Button>
+                  {undelegationError && (
+                    <p className="text-red-500 text-sm">{`Error: ${undelegationError.message}`}</p>
+                  )}
+                </>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Enter delegate account ID"
+                    value={delegateAddress}
+                    onChange={(e) => setDelegateAddress(e.target.value)}
+                  />
+                  <Button
+                    loading={isDelegating}
+                    onClick={handleDelegateAll}
+                    disabled={!delegateAddress}
+                  >
+                    Delegate All
+                  </Button>
+                  {delegationError && (
+                    <p className="text-red-500 text-sm">{`Error: ${delegationError.message}`}</p>
+                  )}
+                </div>
               )}
-              unit="NEAR"
-            />
-            <InfoItem
-              label="Delegated Rewards Balance"
-              value={utils.format.formatNearAmount(
-                accountInfo.delegatedBalance.extraBalance
-              )}
-              unit="NEAR"
-            />
-            {accountInfo.delegation && (
-              <>
-                <Separator />
-                <InfoItem
-                  label="Delegated To"
-                  value={accountInfo.delegation.delegatee}
-                />
-              </>
-            )}
+            </div>
             <Separator />
           </div>
         ) : (
@@ -829,7 +881,8 @@ export default function VeNearDebugCards() {
                     )}
                     {proposal.description && (
                       <p className="text-muted-foreground">
-                        {proposal.description}
+                        {proposal.description.slice(0, 50)}
+                        {"..."}
                       </p>
                     )}
                     <div className="grid grid-cols-2 gap-4 text-sm">
