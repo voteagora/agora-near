@@ -31,17 +31,15 @@ export default function NearProposalHome({
   }
 
   return (
-    <div className="flex justify-between mt-12">
-      <div className="flex flex-col">
-        <div className="flex gap-16 justify-between items-start max-w-[76rem] flex-col sm:flex-row sm:items-start sm:justify-between">
-          <NearProposalDescription proposal={proposal} />
-          {proposal.voting_options.length !== 2 && (
-            <NearProposalOptionsResult proposal={proposal} />
-          )}
-          {proposal.voting_options.length === 2 && (
-            <NearProposalVoteResult proposal={proposal} />
-          )}
-        </div>
+    <div className="flex flex-col items-center mt-12">
+      <div className="flex gap-16 justify-between items-start max-w-[76rem] w-full flex-col sm:flex-row">
+        <NearProposalDescription proposal={proposal} />
+        {proposal.voting_options.length !== 2 && (
+          <NearProposalOptionsResult proposal={proposal} />
+        )}
+        {proposal.voting_options.length === 2 && (
+          <NearProposalVoteResult proposal={proposal} />
+        )}
       </div>
     </div>
   );
