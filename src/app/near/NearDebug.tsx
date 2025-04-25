@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import VeNearDebugCards from "./VeNearDebugCards";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
 
 export default function NearDebug() {
   const { signedAccountId, signIn, signOut, getBalance } = useNear();
@@ -73,9 +74,10 @@ export default function NearDebug() {
                     {isLoading ? (
                       <p className="text-lg">Loading...</p>
                     ) : (
-                      <p className="text-lg font-medium">
-                        {balance !== null ? `${balance} NEAR` : "N/A"}
-                      </p>
+                      <NearTokenAmount
+                        amount={balance ?? "0"}
+                        maximumSignificantDigits={24}
+                      />
                     )}
                   </div>
                   <Button
