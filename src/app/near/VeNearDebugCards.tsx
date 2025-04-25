@@ -26,6 +26,7 @@ import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
 import { utils } from "near-api-js";
 import { useCallback, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function VeNearDebugCards() {
   const { signedAccountId } = useNear();
@@ -230,7 +231,9 @@ export default function VeNearDebugCards() {
         return next;
       });
     } catch (error) {
-      console.error("Error casting vote:", error);
+      toast.error(`Error casting vote: ${error}`, {
+        duration: 5000,
+      });
     }
   };
 

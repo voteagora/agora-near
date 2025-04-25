@@ -105,6 +105,7 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
                               >
                                 <NearTokenAmount
                                   amount={votingPower || BigInt(0)}
+                                  currency="veNEAR"
                                 />
                               </RowSkeletonWrapper>
                             }

@@ -102,6 +102,7 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                               >
                                 <NearTokenAmount
                                   amount={votingPower || BigInt(0)}
+                                  currency="veNEAR"
                                 />
                               </RowSkeletonWrapper>
                             }

@@ -13,7 +13,7 @@ import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupModal } from "@near-wallet-selector/modal-ui";
 import "@near-wallet-selector/modal-ui/styles.css";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
-import { providers, utils } from "near-api-js";
+import { providers } from "near-api-js";
 import {
   createContext,
   ReactNode,

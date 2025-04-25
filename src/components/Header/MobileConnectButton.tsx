@@ -1,8 +1,7 @@
 "use client";
 
-import { ConnectKitButton } from "connectkit";
-import Image from "next/image";
 import walletIcon from "@/icons/wallet.svg";
+import Image from "next/image";
 import { MobileProfileDropDown } from "./MobileProfileDropDown";
 
 type MobileConnectButtonProps = {
