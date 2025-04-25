@@ -199,7 +199,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         return jsonResult;
       } catch (error) {
         debugLog(`Error calling ${contractId}.${method}: ${error}`);
-        return null;
+        throw error;
       }
     },
     [networkId]
@@ -291,7 +291,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         return results;
       } catch (e) {
         console.error("Error calling methods:", e);
-        return null;
+        throw e;
       }
     },
     [selector]
