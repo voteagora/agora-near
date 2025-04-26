@@ -7,9 +7,15 @@ import { useNumProposals } from "./useNumProposals";
 
 const PROPOSAL_QUERY_KEY = "proposals";
 
-const PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 10;
 
-export function useProposals() {
+type UseProposalsProps = {
+  pageSize?: number;
+};
+
+export function useProposals({
+  pageSize = DEFAULT_PAGE_SIZE,
+}: UseProposalsProps) {
   const { viewMethod } = useNear();
 
   const { numProposals } = useNumProposals();
@@ -19,7 +25,7 @@ export function useProposals() {
       const result = (await viewMethod({
         contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
         method: "get_proposals",
-        args: { from_index: pageParam, limit: PAGE_SIZE },
+        args: { from_index: pageParam, limit: pageSize },
       })) as ProposalInfo[];
       return result;
     },
@@ -39,7 +45,7 @@ export function useProposals() {
     queryFn: fetchProposals,
     getNextPageParam: (currentPage, pages) => {
       // If we have numProposals, use that as source of truth
-      if (numProposals && pages.length * PAGE_SIZE >= numProposals) {
+      if (numProposals && pages.length * pageSize >= numProposals) {
         return undefined;
       }
 
@@ -49,7 +55,7 @@ export function useProposals() {
         return undefined;
       }
 
-      return pages.length * PAGE_SIZE;
+      return pages.length * pageSize;
     },
     initialPageParam: 0,
   });

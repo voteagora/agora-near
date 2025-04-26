@@ -28,7 +28,7 @@ function NearProposalsList() {
     isFetchingNextPage,
     status,
     error,
-  } = useProposals();
+  } = useProposals({ pageSize: 10 });
 
   const onLoadMore = useCallback(() => {
     if (!hasNextPage || isFetching || isFetchingNextPage) {
