@@ -3,7 +3,7 @@ import { useReadHOSContract } from "./useReadHOSContract";
 import { useMemo } from "react";
 
 export const useNumProposals = () => {
-  const [{ data: numProposals = 0, isLoading, error }] = useReadHOSContract([
+  const [{ data: numProposals, isLoading, error }] = useReadHOSContract([
     {
       contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
       methodName: "get_num_proposals",

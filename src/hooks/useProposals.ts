@@ -3,6 +3,7 @@ import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
+import { useNumProposals } from "./useNumProposals";
 
 const PROPOSAL_QUERY_KEY = "proposals";
 
@@ -10,6 +11,8 @@ const PAGE_SIZE = 10;
 
 export function useProposals() {
   const { viewMethod } = useNear();
+
+  const { numProposals } = useNumProposals();
 
   const fetchProposals = useCallback(
     async ({ pageParam = 0 }) => {
@@ -35,9 +38,17 @@ export function useProposals() {
     queryKey: [PROPOSAL_QUERY_KEY],
     queryFn: fetchProposals,
     getNextPageParam: (currentPage, pages) => {
+      // If we have numProposals, use that as source of truth
+      if (numProposals && pages.length * PAGE_SIZE >= numProposals) {
+        return undefined;
+      }
+
+      // We may not have fetched numProposals yet, in which case fallback to using the currently fetched
+      // page to determine if we've reached the end
       if (!currentPage || currentPage.length === 0) {
         return undefined;
       }
+
       return pages.length * PAGE_SIZE;
     },
     initialPageParam: 0,
