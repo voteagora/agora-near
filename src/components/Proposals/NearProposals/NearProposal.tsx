@@ -45,14 +45,7 @@ export const NearProposal = memo(({ proposal }: { proposal: ProposalInfo }) => {
                 proposalDuration={proposal.voting_duration_ns}
               />
             </div>
-            <div
-              className={cn(
-                proposal.status.toLowerCase() === "finished" && "text-positive",
-                "capitalize"
-              )}
-            >
-              {proposal.status.toLowerCase()}
-            </div>
+            <NearProposalStatusText proposal={proposal} />
           </div>
         </div>
         <div className="flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6 w-[25%] flex-start justify-center hidden sm:block">

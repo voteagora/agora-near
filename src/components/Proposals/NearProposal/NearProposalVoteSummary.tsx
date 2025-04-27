@@ -40,7 +40,12 @@ export default function NearProposalVoteSummary({
               </div>
             </div>
             <NearProposalVoteBar proposal={proposal} />
-            <NearProposalStatusDetail proposal={proposal} />
+            <div>
+              <NearProposalStatusDetail
+                proposal={proposal}
+                className="-mx-4 border-t border-line"
+              />
+            </div>
           </HoverCardTrigger>
         </div>
       </div>
