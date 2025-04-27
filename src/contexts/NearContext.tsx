@@ -33,6 +33,7 @@ interface ViewMethodProps {
   method: string;
   args?: Record<string, unknown>;
   blockId?: number;
+  useArchivalNode?: boolean;
 }
 
 interface CallMethodProps extends ViewMethodProps {
@@ -171,8 +172,14 @@ export const NearProvider: React.FC<NearProviderProps> = ({
    * @returns {Promise<any>} - the result of the method call
    */
   const viewMethod = useCallback(
-    async ({ contractId, method, args = {}, blockId }: ViewMethodProps) => {
-      const url = `https://rpc.${networkId}.near.org`;
+    async ({
+      contractId,
+      method,
+      args = {},
+      blockId,
+      useArchivalNode = false,
+    }: ViewMethodProps) => {
+      const url = `https://${useArchivalNode ? "archival-" : ""}rpc.${networkId}.near.org`;
       const provider = new providers.JsonRpcProvider({ url });
 
       debugLog(

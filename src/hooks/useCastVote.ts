@@ -51,6 +51,7 @@ export function useCastVote() {
         method: "get_proof",
         args: { account_id: signedAccountId },
         blockId,
+        useArchivalNode: true,
       })) as [MerkleProof, VAccount] | null;
 
       if (!proof) {
