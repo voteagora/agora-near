@@ -77,7 +77,9 @@ export default function VeNearDebugCards() {
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [delegateAddress, setDelegateAddress] = useState("");
 
-  const { proposals, isLoading: isLoadingProposals } = useProposals(0, 10);
+  const { proposals, isFetching: isLoadingProposals } = useProposals({
+    pageSize: 50,
+  });
   const { config, isLoading: isLoadingConfig } = useProposalConfig();
   const { approveProposal, isApprovingProposal, approveProposalError } =
     useApproveProposal();
@@ -847,7 +849,7 @@ export default function VeNearDebugCards() {
             <LoadingState />
           ) : (
             <div className="space-y-4">
-              {proposals.map((proposal) => {
+              {proposals?.map((proposal) => {
                 const votingStats = calculateVotingStats(proposal);
                 return (
                   <div
