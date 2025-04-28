@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useMemo, useState, useTransition } from "react";
 import NearProposalVoting from "./NearProposalVoting";
+import NearProposalStatusDetail from "./NearProposalStatusDetail";
 
 export default function NearProposalOptionsResult({
   proposal,
@@ -70,21 +71,29 @@ export default function NearProposalOptionsResult({
               ))}
             </HStack>
             {activeTab === 1 ? (
-              <div
-                className={cn(
-                  "flex flex-col max-h-[calc(100vh-482px)] overflow-y-scroll flex-shrink px-4",
-                  className
-                )}
-              >
-                {sortedVotingOptions.map((option, index) => (
-                  <SingleOption
-                    key={index}
-                    description={option}
-                    votes={Number(optionsToStats[option].total_venear)}
-                    totalVotes={Number(proposal.total_votes.total_venear)}
-                    thresholdPosition={VOTING_THRESHOLDS.SIMPLE_MAJORITY} // Assume simple majority for now
+              <div>
+                <div
+                  className={cn(
+                    "flex flex-col max-h-[calc(100vh-482px)] overflow-y-scroll border-b border-line flex-shrink px-4",
+                    className
+                  )}
+                >
+                  {sortedVotingOptions.map((option, index) => (
+                    <SingleOption
+                      key={index}
+                      description={option}
+                      votes={Number(optionsToStats[option].total_venear)}
+                      totalVotes={Number(proposal.total_votes.total_venear)}
+                      thresholdPosition={VOTING_THRESHOLDS.SIMPLE_MAJORITY} // Assume simple majority for now
+                    />
+                  ))}
+                </div>
+                <div className="px-4 m-4 border border-line rounded-md">
+                  <NearProposalStatusDetail
+                    proposal={proposal}
+                    className="-mx-4"
                   />
-                ))}
+                </div>
               </div>
             ) : (
               <div />
