@@ -24,64 +24,7 @@ import { createDelegateStatement } from "@/app/api/common/delegateStatement/crea
 import Tenant from "@/lib/tenant/tenant";
 import { PaginationParams } from "../lib/pagination";
 import { fetchUpdateNotificationPreferencesForAddress } from "@/app/api/common/notifications/updateNotificationPreferencesForAddress";
-
-const MockDelegate = {
-  address: '0x06ad892ce23c136bbda3a821570343a2af3e2914',
-  citizen: false,
-  votingPower: {
-    total: '5562646021903899843106375',
-    direct: '5562646021903899843106375',
-    advanced: '0'
-  },
-  votingPowerRelativeToVotableSupply: 0,
-  votingPowerRelativeToQuorum: 0,
-  proposalsCreated: '0',
-  proposalsVotedOn: '25',
-  votedFor: '24',
-  votedAgainst: '0',
-  votedAbstain: '1',
-  votingParticipation: 0.2403846153846154,
-  lastTenProps: '6',
-  numOfDelegators: '0',
-  totalProposals: '104',
-  statement: {
-    signature: '0xacc9bfd1bff20c242eb78c32002005fb8e01ad4b979ed9d164f3713bb483c2f85665dffdc59f32e6464891b42e49c21345e1226bea5cb92eb1210d2437fd807e1b',
-    payload: {
-      email: 'taem.park@testinprod.io',
-      daoSlug: 'OP',
-      discord: 'https://discord.gg/42DFTeZwUZ',
-      twitter: '@testinprod_io',
-      warpcast: 'testinprod-io',
-      topIssues: [Array],
-      topStakeholders: [],
-      agreeCodeConduct: true,
-      delegateStatement: 'Test in Prod is a core development team of Near Collective. TiP has been an active developer to all parts of the OP Stack since 2022—OP-Erigon (execution), Delta network upgrade (consensus), Asterisc (proof), and infrastructures.\n' +
-        '\n' +
-        "We decided to become a delegate to contribute our technical understanding. Near governance decides major protocol upgrades and allocates funds for technical initiatives. As a team building the Collective's core technology at the frontline, we hope our knowledge contributes to the Collective's wiser decisions.\n" +
-        '\n' +
-        "Our common goal of the Near Collective is building the technology for a more open Internet by scaling Ethereum. We believe such a crucial infrastructure for humanity should be resilient, performant, and beneficial. With that in mind, let's summon Ether's Phoenix together.\n" +
-        '\n' +
-        'Our Discourse username is **testinprod_io**.',
-      mostValuableProposals: [],
-      leastValuableProposals: [],
-      openToSponsoringProposals: null
-    },
-    twitter: '@testinprod_io',
-    email: 'taem.park@testinprod.io',
-    discord: 'https://discord.gg/42DFTeZwUZ',
-    created_at: '2024-10-12',
-    updated_at: '2024-10-12',
-    warpcast: 'testinprod-io',
-    endorsed: false,
-    scw_address: null,
-    notification_preferences: {
-      last_updated: '2025-04-08T04:07:11.259Z',
-      wants_proposal_created_email: true,
-      wants_proposal_ending_soon_email: true
-    }
-  },
-  relativeVotingPowerToVotableSupply: '0.04794'
-}
+import { MockDelegate, MockDelegateVotes, MockDelegators } from "./mockData";
 
 export const fetchDelegate = async (address: string) => {
   try {
@@ -186,10 +129,11 @@ export async function fetchVotesForDelegate(
     limit: number;
   }
 ) {
-  return apiFetchVotesForDelegate({
-    addressOrENSName,
-    pagination,
-  });
+  return MockDelegateVotes;
+  // return apiFetchVotesForDelegate({
+  //   addressOrENSName,
+  //   pagination,
+  // });
 }
 
 // Pass address of the connected wallet
@@ -204,7 +148,8 @@ export async function fetchCurrentDelegators(
     limit: 20,
   }
 ) {
-  return apiFetchCurrentDelegators(addressOrENSName, pagination);
+  return MockDelegators;
+  // return apiFetchCurrentDelegators(addressOrENSName, pagination);
 }
 
 // TODO temporary fetch all query - optimization via API needed
