@@ -63,7 +63,6 @@ export default async function Page({
       : null,
     ui.toggle("show-efp-stats")?.enabled ? resolveEFPStats(address) : null,
   ]);
-  console.log("delegate", delegate);
 
   if (!delegate) {
     return (

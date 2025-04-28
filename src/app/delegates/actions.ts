@@ -22,15 +22,18 @@ import {
 } from "@/app/api/common/delegations/getDelegations";
 import { createDelegateStatement } from "@/app/api/common/delegateStatement/createDelegateStatement";
 import Tenant from "@/lib/tenant/tenant";
-import { PaginationParams } from "../lib/pagination";
+import { PaginatedResult, PaginationParams } from "../lib/pagination";
 import { fetchUpdateNotificationPreferencesForAddress } from "@/app/api/common/notifications/updateNotificationPreferencesForAddress";
 import { MockDelegate, MockDelegateVotes, MockDelegators } from "./mockData";
+import { Delegate } from "@/app/api/common/delegates/delegate";
+import { Vote } from "@/app/api/common/votes/vote";
+import { Delegation } from "@/app/api/common/delegations/delegation";
 
 export const fetchDelegate = async (address: string) => {
   try {
     const cachedFetchDelegate = unstable_cache(
       async () => {
-        return MockDelegate;
+        return MockDelegate as unknown as Delegate;
         // return await apiFetchDelegate(address);
       },
       [`delegate-${address.toLowerCase()}`],
@@ -129,7 +132,7 @@ export async function fetchVotesForDelegate(
     limit: number;
   }
 ) {
-  return MockDelegateVotes;
+  return MockDelegateVotes as unknown as PaginatedResult<Vote[]>;
   // return apiFetchVotesForDelegate({
   //   addressOrENSName,
   //   pagination,
@@ -149,7 +152,7 @@ export async function fetchCurrentDelegators(
     limit: 20,
   }
 ) {
-  return MockDelegators;
+  return MockDelegators as unknown as PaginatedResult<Delegation[]>;
   // return apiFetchCurrentDelegators(addressOrENSName, pagination);
 }
 
