@@ -21,7 +21,7 @@ export default function DelegationFromRow({
           maximumSignificantDigits: 3,
         })}
       </TableCell>
-      <TableCell>{format(delegation.timestamp || 0, "MM/dd/yyyy")}</TableCell>
+      <TableCell>{delegation.timestamp?.toString()}</TableCell>
       <TableCell>
         <Link
           href={`/delegates/${delegation.from}`}

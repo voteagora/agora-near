@@ -138,7 +138,8 @@ export async function fetchVotesForDelegate(
 
 // Pass address of the connected wallet
 export async function fetchCurrentDelegatees(addressOrENSName: string) {
-  return apiFetchCurrentDelegatees(addressOrENSName);
+  return [];
+  // return apiFetchCurrentDelegatees(addressOrENSName);
 }
 
 export async function fetchCurrentDelegators(

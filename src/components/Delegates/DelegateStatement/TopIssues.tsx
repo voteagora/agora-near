@@ -18,7 +18,7 @@ export default function TopIssues({ statement }: Props) {
     }
   ).topIssues;
 
-  if (topIssues.length === 0 || !ui.governanceIssues) {
+  if (!topIssues || topIssues.length === 0 || !ui.governanceIssues) {
     return null;
   }
 
