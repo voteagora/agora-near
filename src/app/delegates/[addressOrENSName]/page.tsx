@@ -4,10 +4,7 @@ import ResourceNotFound from "@/components/shared/ResourceNotFound/ResourceNotFo
 import { fetchDelegateForSCW } from "@/app/api/common/delegates/getDelegateForSCW";
 import { fetchDelegate } from "@/app/delegates/actions";
 
-import {
-  resolveENSTextRecords,
-  resolveEFPStats,
-} from "@/app/lib/ENSUtils";
+import { resolveENSTextRecords, resolveEFPStats } from "@/app/lib/ENSUtils";
 import Tenant from "@/lib/tenant/tenant";
 import { redirect } from "next/navigation";
 
@@ -19,9 +16,11 @@ import VotesContainerWrapper from "@/components/Delegates/DelegateVotes/VotesCon
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function generateMetadata(
-  { params }: { params: { addressOrENSName: string } },
-): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { addressOrENSName: string };
+}): Promise<Metadata> {
   const address = params.addressOrENSName;
 
   const { token } = Tenant.current();
