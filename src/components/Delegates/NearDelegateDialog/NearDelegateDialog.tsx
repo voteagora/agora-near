@@ -29,7 +29,7 @@ export default function NearDelegateDialog({
 
   const handleToggleDelegate = () => {
     if (isDelegated) {
-      undelegate(delegate.address);
+      undelegate();
     } else {
       delegateAll(delegate.address);
     }
