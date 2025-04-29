@@ -9,11 +9,14 @@ import { useAgoraContext } from "@/contexts/AgoraContext";
 import { DelegateChunk } from "@/app/api/common/delegates/delegate";
 import { UpdatedButton } from "@/components/Button";
 import { ConnectKitButton } from "connectkit";
-import { type SyntheticEvent } from "react";
+import { useState, type SyntheticEvent } from "react";
 import Tenant from "@/lib/tenant/tenant";
 import { DELEGATION_MODEL } from "@/lib/constants";
 import { useGetDelegatee } from "@/hooks/useGetDelegatee";
 import { PartialDelegateButton } from "./PartialDelegateButton";
+import { useNear } from "@/contexts/NearContext";
+import NearDelegateDialog from "../NearDelegateDialog/NearDelegateDialog";
+import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 
 export function DelegateActions({
   delegate,
@@ -26,7 +29,12 @@ export function DelegateActions({
   isAdvancedUser: boolean;
   delegators: string[] | null;
 }) {
-  const { isConnected } = useAgoraContext();
+  const { signedAccountId, signIn } = useNear();
+  const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
+  const [showDelegateDialog, setShowDelegateDialog] = useState(false);
+
+  const isDelegated = accountInfo?.delegation?.delegatee === delegate.address;
+
   const { address } = useAccount();
   const twitter = delegate?.statement?.twitter;
   const discord = delegate?.statement?.discord;
@@ -46,6 +54,16 @@ export function DelegateActions({
   const ButtonToShow = isConnectedAccountDelegate
     ? UndelegateButton
     : DelegateButton;
+
+  const handleDelegate = (e: SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!signedAccountId) {
+      signIn();
+    } else {
+      setShowDelegateDialog(true);
+    }
+  };
 
   const delegationButton = () => {
     switch (contracts.delegationModel) {
@@ -85,20 +103,20 @@ export function DelegateActions({
 
   return (
     <div className="flex flex-row items-stretch justify-between">
+      {showDelegateDialog && (
+        <NearDelegateDialog
+          onClose={() => setShowDelegateDialog(false)}
+          delegate={delegate}
+        />
+      )}
       <DelegateSocialLinks
         discord={discord}
         twitter={twitter}
         warpcast={warpcast}
       />
       {/* TODO: Delegation functionality */}
-      <UpdatedButton
-        type="secondary"
-        onClick={(e: SyntheticEvent) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-      >
-        Delegate
+      <UpdatedButton type="secondary" onClick={handleDelegate}>
+        {isDelegated ? "Undelegate" : "Delegate"}
       </UpdatedButton>
       {/* <div>
         {isConnected && address ? (

@@ -39,7 +39,7 @@ const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
     },
     data: [
       {
-        address: "0x123456",
+        address: "acc-1745564703-user1.testnet",
         votingPower: {
           total: "100000000000000000000000",
           direct: "100",
@@ -54,7 +54,7 @@ const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
         citizen: false,
       },
       {
-        address: "0x123456",
+        address: "lighttea2007.testnet",
         votingPower: {
           total: "100000000000000000000000",
           direct: "100",
@@ -69,52 +69,7 @@ const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
         citizen: false,
       },
       {
-        address: "0x123456",
-        votingPower: {
-          total: "100000000000000000000000",
-          direct: "100",
-          advanced: "100",
-        },
-        statement: {
-          endorsed: true,
-          discord: "discord",
-          payload: { delegateStatement: "A trustworthy delegate" },
-          twitter: "agora",
-        },
-        citizen: false,
-      },
-      {
-        address: "0x123456",
-        votingPower: {
-          total: "100000000000000000000000",
-          direct: "100",
-          advanced: "100",
-        },
-        statement: {
-          endorsed: true,
-          discord: "discord",
-          payload: { delegateStatement: "A trustworthy delegate" },
-          twitter: "agora",
-        },
-        citizen: false,
-      },
-      {
-        address: "0x123456",
-        votingPower: {
-          total: "100000000000000000000000",
-          direct: "100",
-          advanced: "100",
-        },
-        statement: {
-          endorsed: true,
-          discord: "discord",
-          payload: { delegateStatement: "A trustworthy delegate" },
-          twitter: "agora",
-        },
-        citizen: false,
-      },
-      {
-        address: "0x123456",
+        address: "fararena9024.testnet",
         votingPower: {
           total: "100000000000000000000000",
           direct: "100",
