@@ -23,7 +23,6 @@ export default function NearDelegateDialog({
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
 
   const isDelegated = accountInfo?.delegation?.delegatee === delegate.address;
-  console.log(isDelegated);
 
   const { delegateAll } = useDelegateAll();
   const { undelegate } = useUndelegate();
