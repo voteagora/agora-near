@@ -22,14 +22,19 @@ import {
 } from "@/app/api/common/delegations/getDelegations";
 import { createDelegateStatement } from "@/app/api/common/delegateStatement/createDelegateStatement";
 import Tenant from "@/lib/tenant/tenant";
-import { PaginationParams } from "../lib/pagination";
+import { PaginatedResult, PaginationParams } from "../lib/pagination";
 import { fetchUpdateNotificationPreferencesForAddress } from "@/app/api/common/notifications/updateNotificationPreferencesForAddress";
+import { MockDelegate, MockDelegateVotes, MockDelegators } from "./mockData";
+import { Delegate } from "@/app/api/common/delegates/delegate";
+import { Vote } from "@/app/api/common/votes/vote";
+import { Delegation } from "@/app/api/common/delegations/delegation";
 
 export const fetchDelegate = async (address: string) => {
   try {
     const cachedFetchDelegate = unstable_cache(
       async () => {
-        return await apiFetchDelegate(address);
+        return MockDelegate as unknown as Delegate;
+        // return await apiFetchDelegate(address);
       },
       [`delegate-${address.toLowerCase()}`],
       {
@@ -127,15 +132,17 @@ export async function fetchVotesForDelegate(
     limit: number;
   }
 ) {
-  return apiFetchVotesForDelegate({
-    addressOrENSName,
-    pagination,
-  });
+  return MockDelegateVotes as unknown as PaginatedResult<Vote[]>;
+  // return apiFetchVotesForDelegate({
+  //   addressOrENSName,
+  //   pagination,
+  // });
 }
 
 // Pass address of the connected wallet
 export async function fetchCurrentDelegatees(addressOrENSName: string) {
-  return apiFetchCurrentDelegatees(addressOrENSName);
+  return [];
+  // return apiFetchCurrentDelegatees(addressOrENSName);
 }
 
 export async function fetchCurrentDelegators(
@@ -145,7 +152,8 @@ export async function fetchCurrentDelegators(
     limit: 20,
   }
 ) {
-  return apiFetchCurrentDelegators(addressOrENSName, pagination);
+  return MockDelegators as unknown as PaginatedResult<Delegation[]>;
+  // return apiFetchCurrentDelegators(addressOrENSName, pagination);
 }
 
 // TODO temporary fetch all query - optimization via API needed

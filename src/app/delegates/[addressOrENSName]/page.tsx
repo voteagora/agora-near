@@ -1,16 +1,10 @@
-import { Metadata, ResolvingMetadata } from "next";
+import { Metadata } from "next";
 import DelegateCard from "@/components/Delegates/DelegateCard/DelegateCard";
 import ResourceNotFound from "@/components/shared/ResourceNotFound/ResourceNotFound";
 import { fetchDelegateForSCW } from "@/app/api/common/delegates/getDelegateForSCW";
 import { fetchDelegate } from "@/app/delegates/actions";
 
-import { formatNumber } from "@/lib/tokenUtils";
-import {
-  ensNameToAddress,
-  processAddressOrEnsName,
-  resolveENSTextRecords,
-  resolveEFPStats,
-} from "@/app/lib/ENSUtils";
+import { resolveENSTextRecords, resolveEFPStats } from "@/app/lib/ENSUtils";
 import Tenant from "@/lib/tenant/tenant";
 import { redirect } from "next/navigation";
 
@@ -22,51 +16,21 @@ import VotesContainerWrapper from "@/components/Delegates/DelegateVotes/VotesCon
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function generateMetadata(
-  { params }: { params: { addressOrENSName: string } },
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  // cache ENS address upfront for all subsequent queries
-  // TODO: change subqueries to use react cache
-  const [address, ensOrTruncatedAddress] = await Promise.all([
-    ensNameToAddress(params.addressOrENSName),
-    processAddressOrEnsName(params.addressOrENSName),
-  ]);
-
-  const delegate = await fetchDelegate(address);
+export async function generateMetadata({
+  params,
+}: {
+  params: { addressOrENSName: string };
+}): Promise<Metadata> {
+  const address = params.addressOrENSName;
 
   const { token } = Tenant.current();
 
-  const statement = (
-    delegate.statement?.payload as { delegateStatement: string }
-  )?.delegateStatement;
-
-  const imgParams = [
-    delegate.votingPower &&
-      `votes=${encodeURIComponent(
-        `${formatNumber(delegate.votingPower.total || "0")} ${token.symbol}`
-      )}`,
-    statement && `statement=${encodeURIComponent(statement)}`,
-  ].filter(Boolean);
-
-  const preview = `/api/images/og/delegate?${imgParams.join(
-    "&"
-  )}&address=${ensOrTruncatedAddress}`;
-  const title = `${ensOrTruncatedAddress} on Agora`;
-  const description = `See what ${ensOrTruncatedAddress} believes and how they vote on ${token.name} governance.`;
+  const title = `${address} on Agora`;
+  const description = `See what ${address} believes and how they vote on ${token.name} governance.`;
 
   return {
     title: title,
     description: description,
-    openGraph: {
-      images: [
-        {
-          url: preview,
-          width: 1200,
-          height: 630,
-        },
-      ],
-    },
     twitter: {
       card: "summary_large_image",
       title,
@@ -76,12 +40,12 @@ export async function generateMetadata(
 }
 
 export default async function Page({
-  params: { addressOrENSName },
+  params,
 }: {
   params: { addressOrENSName: string };
 }) {
   const { ui } = Tenant.current();
-  const address = await ensNameToAddress(addressOrENSName);
+  const address = params.addressOrENSName;
 
   // Check if this is a SCW address
   const scwConfig = ui.smartAccountConfig;
