@@ -53,7 +53,7 @@ export default function NearDelegateDialog({
                       Currently delegated to
                     </p>
                     <div className="font-medium text-primary max-w-[6rem] sm:max-w-full">
-                      <p>N/A</p>
+                      <p>{accountInfo?.delegation?.delegatee ?? "N/A"}</p>
                     </div>
                   </div>
                 </div>
