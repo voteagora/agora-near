@@ -4,6 +4,7 @@ import { VotingReadContractMethods } from "@/lib/contracts/types/voting";
 import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useNear } from "../contexts/NearContext";
+import { CACHE_TTL } from "@/lib/constants";
 
 type CombinedMethods = VenearReadContractMethods &
   LockupReadContractMethods &
@@ -61,7 +62,7 @@ export function useReadHOSContract<const T extends readonly MethodName[]>(
           return res as MethodResult<typeof methodName> | null | undefined;
         },
         enabled: config.enabled ?? true,
-        staleTime: config.staleTime ?? 1000 * 60 * 5,
+        staleTime: config.staleTime ?? CACHE_TTL.SHORT, // Cache for 5 minutes by default
         gcTime: config.gcTime,
       })),
     [queries, viewMethod]
