@@ -1,6 +1,7 @@
 import { DialogDefinitions } from "./types";
 import { DelegateDialog } from "../DelegateDialog/DelegateDialog";
-import { UndelegateDialog } from "../UndelegateDialog/UndelegateDialog";
+import { NearDelegateDialog } from "../DelegateDialog/NearDelegateDialog";
+import { NearUndelegateDialog } from "../UndelegateDialog/NearUndelegateDialog";
 import { SwitchNetwork } from "../SwitchNetworkDialog/SwitchNetworkDialog";
 import { CastProposalDialog } from "@/components/Proposals/ProposalCreation/CastProposalDialog";
 import {
@@ -44,6 +45,8 @@ export type DialogType =
   | CastVoteDialogType
   | CreateDraftProposalDialog
   | DelegateDialogType
+  | NearDelegateDialogType
+  | NearUndelegateDialogType
   | DeleteDraftProposalDialog
   | OpenGithubPRDialog
   | PartialDelegateDialogType
@@ -60,6 +63,20 @@ export type DialogType =
   | NearVoteDialogType
   | NearVoteOptionsDialogType;
 // | FaqDialogType
+
+export type NearDelegateDialogType = {
+  type: "NEAR_DELEGATE";
+  params: {
+    delegate: DelegateChunk;
+  };
+};
+
+export type NearUndelegateDialogType = {
+  type: "NEAR_UNDELEGATE";
+  params: {
+    delegate: DelegateChunk;
+  };
+};
 
 export type DelegateDialogType = {
   type: "DELEGATE";
@@ -276,6 +293,12 @@ export type NearVoteOptionsDialogType = {
 };
 
 export const dialogs: DialogDefinitions<DialogType> = {
+  NEAR_DELEGATE: ({ delegate }, closeDialog) => {
+    return <NearDelegateDialog delegate={delegate} />;
+  },
+  NEAR_UNDELEGATE: ({ delegate }, closeDialog) => {
+    return <NearUndelegateDialog delegate={delegate} />;
+  },
   DELEGATE: (
     { delegate, fetchBalanceForDirectDelegation, fetchDirectDelegatee },
     closeDialog

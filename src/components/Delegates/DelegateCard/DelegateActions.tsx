@@ -15,8 +15,8 @@ import { DELEGATION_MODEL } from "@/lib/constants";
 import { useGetDelegatee } from "@/hooks/useGetDelegatee";
 import { PartialDelegateButton } from "./PartialDelegateButton";
 import { useNear } from "@/contexts/NearContext";
-import NearDelegateDialog from "../NearDelegateDialog/NearDelegateDialog";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 
 export function DelegateActions({
   delegate,
@@ -32,6 +32,8 @@ export function DelegateActions({
   const { signedAccountId, signIn } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
   const [showDelegateDialog, setShowDelegateDialog] = useState(false);
+
+  const openDialog = useOpenDialog();
 
   const isDelegated = accountInfo?.delegation?.delegatee === delegate.address;
 
@@ -61,7 +63,12 @@ export function DelegateActions({
     if (!signedAccountId) {
       signIn();
     } else {
-      setShowDelegateDialog(true);
+      openDialog({
+        type: isDelegated ? "NEAR_UNDELEGATE" : "NEAR_DELEGATE",
+        params: {
+          delegate,
+        },
+      });
     }
   };
 
