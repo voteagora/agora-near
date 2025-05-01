@@ -5,11 +5,9 @@ import { UndelegateButton } from "./UndelegateButton";
 import { DelegateSocialLinks } from "./DelegateSocialLinks";
 import { useAccount } from "wagmi";
 import { AdvancedDelegateButton } from "./AdvancedDelegateButton";
-import { useAgoraContext } from "@/contexts/AgoraContext";
 import { DelegateChunk } from "@/app/api/common/delegates/delegate";
 import { UpdatedButton } from "@/components/Button";
-import { ConnectKitButton } from "connectkit";
-import { useState, type SyntheticEvent } from "react";
+import { type SyntheticEvent } from "react";
 import Tenant from "@/lib/tenant/tenant";
 import { DELEGATION_MODEL } from "@/lib/constants";
 import { useGetDelegatee } from "@/hooks/useGetDelegatee";
@@ -31,7 +29,6 @@ export function DelegateActions({
 }) {
   const { signedAccountId, signIn } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
-  const [showDelegateDialog, setShowDelegateDialog] = useState(false);
 
   const openDialog = useOpenDialog();
 
@@ -110,12 +107,6 @@ export function DelegateActions({
 
   return (
     <div className="flex flex-row items-stretch justify-between">
-      {showDelegateDialog && (
-        <NearDelegateDialog
-          onClose={() => setShowDelegateDialog(false)}
-          delegate={delegate}
-        />
-      )}
       <DelegateSocialLinks
         discord={discord}
         twitter={twitter}
