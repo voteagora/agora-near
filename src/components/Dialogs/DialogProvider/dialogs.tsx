@@ -37,6 +37,7 @@ import { StructuredSimulationReport } from "@/lib/seatbelt/types";
 import { NearVoteDialog } from "../NearVoteDialog";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { NearVoteOptionsDialog } from "../NearVoteOptionsDialog";
+import { UndelegateDialog } from "../UndelegateDialog/UndelegateDialog";
 
 export type DialogType =
   | AdvancedDelegateDialogType
