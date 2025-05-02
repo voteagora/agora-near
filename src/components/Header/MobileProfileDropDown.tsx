@@ -4,12 +4,14 @@ import { rgbStringToHex } from "@/app/lib/utils/color";
 import { useNearTokenBalance } from "@/hooks/useNearTokenBalance";
 import { useVotingPower } from "@/hooks/useVotingPower";
 import { Logout } from "@/icons/logout";
+import walletIcon from "@/icons/wallet.svg";
 import Tenant from "@/lib/tenant/tenant";
 import { Popover, Transition } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import Link from "next/link";
+import Image from "next/image";
 import { ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
+import { AccountActionsButton } from "../AccountActions/AccountActionsButton";
 import { PanelRow } from "../Delegates/DelegateCard/DelegateCard";
 import NearTokenAmount from "../shared/NearTokenAmount";
 
@@ -48,7 +50,12 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
               onClick={() => setShouldHydrate(true)}
             >
               <div className="w-6 h-6 shadow-newDefault rounded-full">
-                {accountId}
+                <Image
+                  height={walletIcon.height}
+                  width={walletIcon.width}
+                  src={walletIcon.src}
+                  alt="Wallet"
+                />
               </div>
             </Popover.Button>
 
@@ -110,15 +117,7 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
                               </RowSkeletonWrapper>
                             }
                           />
-                          <Link
-                            href={`/delegates/${accountId}`}
-                            onClick={() => close()}
-                            className="px-5 py-3 rounded-lg shadow-[0px_2px_2px_0px_rgba(0,0,0,0.03)] border border-neutral-200 flex justify-center"
-                          >
-                            <span className="text-primary text-base font-semibold">
-                              View my profile
-                            </span>
-                          </Link>
+                          <AccountActionsButton />
                         </div>
                         <div className="py-4 border-t border-line bg-neutral rounded-[0px_0px_12px_12px]">
                           <div

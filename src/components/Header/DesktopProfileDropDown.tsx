@@ -7,23 +7,10 @@ import { Logout } from "@/icons/logout";
 import Tenant from "@/lib/tenant/tenant";
 import { Popover, Transition } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import Link from "next/link";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useState } from "react";
+import { AccountActionsButton } from "../AccountActions/AccountActionsButton";
 import { PanelRow } from "../Delegates/DelegateCard/DelegateCard";
 import NearTokenAmount from "../shared/NearTokenAmount";
-import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
-import { Skeleton } from "../ui/skeleton";
-import { Button } from "../ui/button";
-import { useVenearConfig } from "@/hooks/useVenearConfig";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { InfoIcon } from "lucide-react";
-import { useRegisterLockup } from "@/hooks/useRegisterLockup";
-import toast from "react-hot-toast";
 
 type Props = {
   accountId?: string;
@@ -41,136 +28,6 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
 
   const { data: votingPower = "0", isLoading: isLoadingVotingPower } =
     useVotingPower(shouldHydrate ? accountId : undefined);
-
-  const { totalRegistrationCost, lockupStorageCost, venearStorageCost } =
-    useVenearConfig({
-      enabled: shouldHydrate,
-    });
-
-  const { isRegisteredToVote, isLoading: isLoadingVoterRegistration } =
-    useCheckVoterStatus({
-      enabled: shouldHydrate,
-    });
-
-  const {
-    registerAndDeployLockup,
-    isPending: isRegisteringToVote,
-    error,
-  } = useRegisterLockup({
-    onSuccess: () => {
-      toast.success("Voter registration successful");
-    },
-  });
-
-  const accountActionButton = useMemo(() => {
-    if (isLoadingVoterRegistration) {
-      return <Skeleton className="w-full mx-2 h-12 rounded-full" />;
-    }
-
-    if (!isRegisteredToVote) {
-      return (
-        <div className="flex flex-col gap-2">
-          <Button
-            variant="outline"
-            className="flex flex-row items-center gap-2"
-            disabled={isRegisteringToVote}
-            onClick={() =>
-              registerAndDeployLockup(
-                String(venearStorageCost),
-                String(lockupStorageCost)
-              )
-            }
-          >
-            {isRegisteringToVote
-              ? "Registering..."
-              : error
-                ? "Error registering - try again"
-                : "Register to vote"}
-          </Button>
-          <TooltipProvider>
-            <div className="flex flex-row items-center gap-2 justify-center">
-              <p className="text-sm">
-                <NearTokenAmount amount={totalRegistrationCost} /> required
-              </p>
-              <Tooltip>
-                <TooltipTrigger>
-                  <InfoIcon size={14} className="opacity-60" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <div className="max-w-[350px] p-3">
-                    <h4 className="font-semibold mb-2">
-                      Registration Requirements
-                    </h4>
-                    <p className="mb-4">
-                      To participate in voting, you&apos;ll need to make two
-                      deposits:
-                    </p>
-
-                    <div className="space-y-4">
-                      <div className="border-b border-neutral-200 pb-2">
-                        <div className="flex justify-between items-center">
-                          <span className="font-semibold">
-                            Account Deposit:
-                          </span>
-                          <NearTokenAmount amount={venearStorageCost} />
-                        </div>
-                        <p className="text-sm mt-1 text-neutral-600">
-                          This covers your account storage in the veNEAR
-                          contract. This amount is locked immediately and cannot
-                          be withdrawn.
-                        </p>
-                      </div>
-
-                      <div className="border-b border-neutral-200 pb-2">
-                        <div className="flex justify-between items-center">
-                          <span className="font-semibold">Lockup Deposit:</span>
-                          <NearTokenAmount amount={lockupStorageCost} />
-                        </div>
-                        <p className="text-sm mt-1 text-neutral-600">
-                          This covers your lockup contract&apos;s deployment and
-                          storage costs. This is refundable, and can be locked
-                          but cannot be staked.
-                        </p>
-                      </div>
-
-                      <div className="pt-2 font-bold">
-                        <div className="flex justify-between items-center">
-                          <span>Total Required:</span>
-                          <NearTokenAmount amount={totalRegistrationCost} />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          </TooltipProvider>
-        </div>
-      );
-    }
-
-    return (
-      <Link
-        href={`/delegates/${accountId}`}
-        className="px-5 py-3 rounded-lg shadow-[0px_2px_2px_0px_rgba(0,0,0,0.03)] border border-neutral-200 flex justify-center"
-        onClick={() => close()}
-      >
-        <span className="text-neutral-900 text-base font-semibold">
-          View my profile
-        </span>
-      </Link>
-    );
-  }, [
-    isLoadingVoterRegistration,
-    isRegisteredToVote,
-    accountId,
-    isRegisteringToVote,
-    error,
-    totalRegistrationCost,
-    venearStorageCost,
-    lockupStorageCost,
-    registerAndDeployLockup,
-  ]);
 
   return (
     <Popover className="relative cursor-auto">
@@ -252,7 +109,7 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                             className="w-[300px] justify-between"
                           />
                         </div>
-                        <div className="">{accountActionButton}</div>
+                        <AccountActionsButton />
                       </div>
                       <div className="p-4 border-t border-line bg-neutral rounded-[0px_0px_12px_12px]">
                         <div onClick={signOut} className="cursor-pointer flex">
