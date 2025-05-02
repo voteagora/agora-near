@@ -42,8 +42,8 @@ export const RegisterToVoteButton = () => {
         ) : (
           <div className="flex flex-row items-center gap-2 justify-center">
             <p className="text-sm">
-              Register to vote for{" "}
-              <NearTokenAmount amount={totalRegistrationCost} />
+              Deposit <NearTokenAmount amount={totalRegistrationCost} />{" "}
+              {" to vote"}
             </p>
             <TooltipWithTap
               content={
