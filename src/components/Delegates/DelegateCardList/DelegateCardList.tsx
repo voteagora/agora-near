@@ -1,61 +1,36 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import InfiniteScroll from "react-infinite-scroller";
-import { DialogProvider } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import { DelegateChunk } from "@/app/api/common/delegates/delegate";
-import useIsAdvancedUser from "@/app/lib/hooks/useIsAdvancedUser";
 import { Delegation } from "@/app/api/common/delegations/delegation";
-import { useAgoraContext } from "@/contexts/AgoraContext";
 import { PaginatedResult, PaginationParams } from "@/app/lib/pagination";
-import DelegateCard from "./DelegateCard";
+import { DialogProvider } from "@/components/Dialogs/DialogProvider/DialogProvider";
+import { useAgoraContext } from "@/contexts/AgoraContext";
 import { stripMarkdown } from "@/lib/sanitizationUtils";
+import { useEffect, useState } from "react";
+import InfiniteScroll from "react-infinite-scroller";
+import DelegateCard from "./DelegateCard";
 
 interface Props {
   initialDelegates: PaginatedResult<DelegateChunk[]>;
-  fetchDelegates: (
-    pagination: PaginationParams,
-    seed?: number
-  ) => Promise<PaginatedResult<DelegateChunk[]>>;
-  fetchDelegators: (addressOrENSName: string) => Promise<Delegation[] | null>;
 }
 
-export default function DelegateCardList({
-  initialDelegates,
-  fetchDelegates,
-}: Props) {
-  const fetching = useRef(false);
-  const [meta, setMeta] = useState(initialDelegates.meta);
+export default function DelegateCardList({ initialDelegates }: Props) {
   const [delegates, setDelegates] = useState(initialDelegates.data);
   const { isDelegatesFiltering, setIsDelegatesFiltering } = useAgoraContext();
 
   useEffect(() => {
     setIsDelegatesFiltering(false);
     setDelegates(initialDelegates.data);
-    setMeta(initialDelegates.meta);
   }, [initialDelegates, setIsDelegatesFiltering]);
 
-  const loadMore = async () => {
-    if (!fetching.current && meta.has_next) {
-      fetching.current = true;
-      const data = await fetchDelegates(
-        { offset: meta.next_offset, limit: meta.total_returned },
-        initialDelegates.seed || Math.random()
-      );
-      setDelegates(delegates.concat(data.data));
-      setMeta(data.meta);
-      fetching.current = false;
-    }
-  };
-
-  const { isAdvancedUser } = useIsAdvancedUser();
+  const loadMore = async () => {};
 
   return (
     <DialogProvider>
       {/* @ts-ignore */}
       <InfiniteScroll
         className="grid grid-flow-row grid-cols-1 sm:grid-cols-3 justify-around sm:justify-between py-4 gap-4 sm:gap-8"
-        hasMore={meta.has_next}
+        hasMore={false}
         pageStart={1}
         loadMore={loadMore}
         loader={
@@ -86,7 +61,6 @@ export default function DelegateCardList({
               delegate={delegate}
               truncatedStatement={truncatedStatement}
               isDelegatesFiltering={isDelegatesFiltering}
-              isAdvancedUser={isAdvancedUser}
             />
           );
         })}

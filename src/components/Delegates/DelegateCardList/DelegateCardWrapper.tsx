@@ -2,6 +2,7 @@ import { delegatesFilterOptions } from "@/lib/constants";
 import Tenant from "@/lib/tenant/tenant";
 import { UIEndorsedConfig } from "@/lib/tenant/tenantUI";
 import DelegateContent from "./DelegateContent";
+import DelegateTabs from "../DelegatesTabs/DelegatesTabs";
 
 const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
   const { ui } = Tenant.current();
@@ -87,32 +88,9 @@ const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
   };
 
   return (
-    <DelegateContent
-      initialDelegates={delegates}
-      fetchDelegates={async () => {
-        "use server";
-        return {
-          meta: {
-            has_next: false,
-            total_returned: 0,
-            next_offset: 0,
-          },
-          data: [],
-        };
-      }}
-      // @ts-ignore
-      fetchDelegators={async () => {
-        "use server";
-        return {
-          meta: {
-            has_next: false,
-            total_returned: 0,
-            next_offset: 0,
-          },
-          data: [],
-        };
-      }}
-    />
+    <DelegateTabs>
+      <DelegateContent initialDelegates={delegates} />
+    </DelegateTabs>
   );
 };
 

@@ -23,84 +23,22 @@ import { SCWProfileImage } from "./SCWProfileImage";
 
 interface Props {
   address: string;
-  citizen?: boolean;
-  copyable?: boolean;
   endorsed: boolean;
-  votingPower: string;
-  scwAddress?: string;
 }
 
-export function DelegateProfileImage({
-  address,
-  citizen,
-  copyable = false,
-  endorsed,
-  votingPower,
-}: Props) {
+export function DelegateProfileImage({ address, endorsed }: Props) {
   const { ui } = Tenant.current();
-  const { refetchDelegate, setRefetchDelegate } = useConnectButtonContext();
-  const formattedNumber = useMemo(() => {
-    return formatNumber(votingPower);
-  }, [votingPower]);
 
   const endorsedToggle = ui.toggle("delegates/endorsed-filter");
   const hasEndorsedFilter = Boolean(
     endorsedToggle?.enabled && endorsedToggle?.config !== undefined
   );
 
-  const { data } = useEnsName({
-    chainId: 1,
-    address: address as `0x${string}`,
-  });
-
-  useEffect(() => {
-    /**
-     * When formatted voting power is different from refetch it means it has been updated
-     */
-    if (
-      refetchDelegate?.address === address &&
-      refetchDelegate?.prevVotingPowerDelegatee
-    ) {
-      const _votingPowerFormatted = Number(
-        formatEther(BigInt(refetchDelegate?.prevVotingPowerDelegatee))
-      ).toFixed(2);
-      const _formattedNumber = Number(formattedNumber).toFixed(2);
-      if (_votingPowerFormatted !== _formattedNumber) {
-        setRefetchDelegate(null);
-      }
-    }
-
-    return () => {
-      // If this component unmounts for a given address there is no point to refetch it when it is not on the UI anymore
-      if (
-        refetchDelegate?.address === address &&
-        refetchDelegate?.prevVotingPowerDelegatee
-      ) {
-        setRefetchDelegate(null);
-      }
-    };
-  }, [address, formattedNumber, refetchDelegate, setRefetchDelegate]);
-
   return (
     <div className="flex flex-row gap-4 items-center">
-      <div className="relative aspect-square">
-        {citizen && (
-          <Image
-            className="absolute bottom-[-5px] right-[-7px] z-10"
-            src={icons.badge}
-            alt="citizen badge"
-          />
-        )}
-        <ENSAvatar className="rounded-full w-[44px] h-[44px]" ensName={data} />
-      </div>
-
       <div className="flex flex-col">
         <div className="text-primary flex flex-row gap-1 font-semibold hover:opacity-90">
-          {copyable ? (
-            <CopyableHumanAddress address={address} />
-          ) : (
-            <ENSName address={address} />
-          )}
+          <CopyableHumanAddress address={address} />
           {endorsed && hasEndorsedFilter && endorsedToggle && (
             <TooltipProvider delayDuration={0}>
               <Tooltip>

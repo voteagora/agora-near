@@ -28,14 +28,10 @@ export default function DelegateCard({
           <DelegateProfileImageWithMetadata
             endorsed={delegate.statement?.endorsed}
             address={delegate.address}
-            citizen={delegate.citizen}
-            votingPower={delegate.votingPower.total}
-            copyable={true}
             description={description}
             location={location}
             followersCount={followersCount}
             followingCount={followingCount}
-            scwAddress={delegate.statement?.scw_address}
           />
         </div>
         {!isEditMode && (
