@@ -6,7 +6,11 @@ import { useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 
-export const useRegisterLockup = () => {
+type Props = {
+  onSuccess?: () => void;
+};
+
+export const useRegisterLockup = ({ onSuccess }: Props) => {
   const { signedAccountId } = useNear();
   const queryClient = useQueryClient();
 
@@ -14,7 +18,8 @@ export const useRegisterLockup = () => {
     queryClient.invalidateQueries({
       queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
     });
-  }, [queryClient]);
+    onSuccess?.();
+  }, [queryClient, onSuccess]);
 
   const {
     mutate: callMethod,
