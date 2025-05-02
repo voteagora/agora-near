@@ -6,7 +6,7 @@ import { votingOptionsToVoteStats } from "@/lib/nearProposalUtils";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useMemo, useState, useTransition } from "react";
-import NearProposalVoting from "./NearProposalVoting";
+import NearProposalVotingActions from "./NearProposalVotingActions";
 import NearProposalStatusDetail from "./NearProposalStatusDetail";
 
 export default function NearProposalOptionsResult({
@@ -98,7 +98,7 @@ export default function NearProposalOptionsResult({
             ) : (
               <div />
             )}
-            <NearProposalVoting proposal={proposal} config={config} />
+            <NearProposalVotingActions proposal={proposal} config={config} />
           </VStack>
         </motion.div>
       </div>

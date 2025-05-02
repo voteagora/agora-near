@@ -12,7 +12,7 @@ import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
 import { RegisterToVoteButton } from "@/components/AccountActions/RegisterToVoteButton";
 import { capitalizeFirstLetter } from "@/lib/utils";
 
-export default function NearProposalVoting({
+export default function NearProposalVotingActions({
   proposal,
   config,
 }: {
