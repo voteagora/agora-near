@@ -29,12 +29,7 @@ export default function NearProposalStatusDetail({
         </p>
       </div>
       <div className="font-normal">
-        <NearProposalTimeStatus
-          proposalStatus={proposalStatus}
-          proposalCreateTime={proposal.creation_time_ns}
-          proposalStartTime={proposal.voting_start_time_ns}
-          proposalDuration={proposal.voting_duration_ns}
-        />
+        <NearProposalTimeStatus proposal={proposal} />
       </div>
     </div>
   );

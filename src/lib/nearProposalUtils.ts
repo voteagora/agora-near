@@ -3,7 +3,7 @@ import {
   ProposalStatus,
   VoterStats,
 } from "./contracts/types/voting";
-
+import { format } from "date-fns";
 export function votingOptionsToVoteStats(proposal: ProposalInfo) {
   return proposal.voting_options.reduce(
     (prev, curr, index) => {
@@ -50,3 +50,25 @@ export function getProposalStatusColor(proposalStatus: ProposalStatus) {
       };
   }
 }
+
+export const formatNearTime = (time: string | null | undefined) => {
+  return time ? format(Number(time) / 1000000, "h:mm aaa MMM dd, yyyy") : null;
+};
+
+export const getNearProposalTimes = (proposal: ProposalInfo) => {
+  const endTime =
+    proposal.voting_start_time_ns && proposal.voting_duration_ns
+      ? Number(proposal.voting_start_time_ns) +
+        Number(proposal.voting_duration_ns)
+      : null;
+
+  return {
+    createdTime: formatNearTime(proposal.creation_time_ns),
+    startTime: formatNearTime(proposal.voting_start_time_ns),
+    endTime: formatNearTime(endTime?.toString()),
+  };
+};
+
+export const getNearQuorum = (proposal: ProposalInfo) => {
+  return Number(proposal.snapshot_and_state?.total_venear ?? 0) / 10;
+};
