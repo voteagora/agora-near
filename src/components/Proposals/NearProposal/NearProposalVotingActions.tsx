@@ -8,8 +8,11 @@ import { useState } from "react";
 import { useVotingPower } from "@/hooks/useVotingPower";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
+import { RegisterToVoteButton } from "@/components/AccountActions/RegisterToVoteButton";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
-export default function NearProposalVoting({
+export default function NearProposalVotingActions({
   proposal,
   config,
 }: {
@@ -21,6 +24,10 @@ export default function NearProposalVoting({
   const { signIn } = useNear();
   const [selectedVote, setSelectedVote] = useState<number>();
   const { data: votingPower } = useVotingPower(signedAccountId);
+
+  const { isRegisteredToVote } = useCheckVoterStatus({
+    enabled: !!signedAccountId,
+  });
 
   if (!signedAccountId) {
     return (
@@ -38,6 +45,14 @@ export default function NearProposalVoting({
         <Button className="w-full" disabled>
           Not open to voting
         </Button>
+      </div>
+    );
+  }
+
+  if (!isRegisteredToVote) {
+    return (
+      <div className="flex flex-col justify-between py-3 px-3 border-t border-line">
+        <RegisterToVoteButton />
       </div>
     );
   }
@@ -68,7 +83,7 @@ export default function NearProposalVoting({
     return (
       <div className="flex flex-col justify-between py-3 px-3 border-t border-line">
         <Button className="w-full" onClick={handleOpenMultiOptionVoteDialog}>
-          Cast your vote
+          Cast vote
         </Button>
       </div>
     );
@@ -107,10 +122,14 @@ export default function NearProposalVoting({
       >
         {selectedVote !== undefined ? (
           <>
-            Vote {proposal.voting_options[selectedVote].toLowerCase()} with
+            Vote{" "}
+            {capitalizeFirstLetter(
+              proposal.voting_options[selectedVote].toLowerCase()
+            )}{" "}
+            with
             {"\u00A0"}
             {votingPower ? (
-              <NearTokenAmount amount={votingPower} />
+              <NearTokenAmount amount={votingPower} currency="veNEAR" />
             ) : (
               <Skeleton className="w-4 h-4 inline-block" />
             )}

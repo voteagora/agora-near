@@ -42,7 +42,7 @@ export default function VeNearDebugCards() {
     registerAndDeployLockup,
     isPending: isLoadingRegistration,
     error: venearContractError,
-  } = useRegisterLockup();
+  } = useRegisterLockup({});
 
   const {
     lockNear,

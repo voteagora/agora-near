@@ -7,8 +7,8 @@ import { Logout } from "@/icons/logout";
 import Tenant from "@/lib/tenant/tenant";
 import { Popover, Transition } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import Link from "next/link";
 import { ReactNode, useState } from "react";
+import { AccountActionsButton } from "../AccountActions/AccountActionsButton";
 import { PanelRow } from "../Delegates/DelegateCard/DelegateCard";
 import NearTokenAmount from "../shared/NearTokenAmount";
 
@@ -25,9 +25,9 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
 
   const { data: tokenBalance, isFetching: isFetchingTokenBalance } =
     useNearTokenBalance(shouldHydrate ? accountId : undefined);
-  const { data: votingPower, isLoading: isLoadingVotingPower } = useVotingPower(
-    shouldHydrate ? accountId : undefined
-  );
+
+  const { data: votingPower = "0", isLoading: isLoadingVotingPower } =
+    useVotingPower(shouldHydrate ? accountId : undefined);
 
   return (
     <Popover className="relative cursor-auto">
@@ -109,17 +109,7 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                             className="w-[300px] justify-between"
                           />
                         </div>
-                        <div className="">
-                          <Link
-                            href={`/delegates/${accountId}`}
-                            className="px-5 py-3 rounded-lg shadow-[0px_2px_2px_0px_rgba(0,0,0,0.03)] border border-neutral-200 flex justify-center"
-                            onClick={() => close()}
-                          >
-                            <span className="text-neutral-900 text-base font-semibold">
-                              View my profile
-                            </span>
-                          </Link>
-                        </div>
+                        <AccountActionsButton />
                       </div>
                       <div className="p-4 border-t border-line bg-neutral rounded-[0px_0px_12px_12px]">
                         <div onClick={signOut} className="cursor-pointer flex">

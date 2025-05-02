@@ -151,3 +151,9 @@ export const VOTING_THRESHOLDS = {
   SIMPLE_MAJORITY: 51,
   SUPER_MAJORITY: 75,
 };
+
+export const CACHE_TTL = {
+  SHORT: 1000 * 60 * 5, // 5 minutes
+  MEDIUM: 1000 * 60 * 60, // 1 hour
+  LONG: 1000 * 60 * 60 * 24, // 24 hours
+};

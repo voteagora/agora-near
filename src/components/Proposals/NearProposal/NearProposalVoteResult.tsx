@@ -4,7 +4,7 @@ import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { useState } from "react";
 import NearProposalVoteFilter from "./NearProposalVoteFilter";
 import NearProposalVoteSummary from "./NearProposalVoteSummary";
-import NearProposalVoting from "./NearProposalVoting";
+import NearProposalVotingActions from "./NearProposalVotingActions";
 
 const NearProposalVoteResult = ({
   proposal,
@@ -34,7 +34,7 @@ const NearProposalVoteResult = ({
               }}
             />
           </div>
-          <NearProposalVoting proposal={proposal} config={config} />
+          <NearProposalVotingActions proposal={proposal} config={config} />
         </div>
       </div>
     </div>
