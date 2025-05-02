@@ -54,6 +54,7 @@ export function TooltipWithTap({
           onClick={(e) => {
             if (!hasHover) {
               e.preventDefault();
+              e.stopPropagation();
               setOpen(true);
             }
           }}
