@@ -1,13 +1,12 @@
-import Link from "next/link";
 import { DelegateChunk } from "@/app/api/common/delegates/delegate";
-import { cn } from "@/lib/utils";
-import { formatNumber } from "@/lib/tokenUtils";
-import { DelegateProfileImage } from "../DelegateCard/DelegateProfileImage";
-import { DelegateActions } from "../DelegateCard/DelegateActions";
-import Tenant from "@/lib/tenant/tenant";
 import useConnectedDelegate from "@/hooks/useConnectedDelegate";
 import { useVoterStats } from "@/hooks/useVoterStats";
 import { sanitizeContent } from "@/lib/sanitizationUtils";
+import Tenant from "@/lib/tenant/tenant";
+import { formatNumber } from "@/lib/tokenUtils";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { DelegateActions } from "../DelegateCard/DelegateActions";
 
 const DelegateCard = ({
   delegate,
@@ -45,12 +44,7 @@ const DelegateCard = ({
         <div className="flex flex-col gap-4 h-full rounded-xl bg-wash border border-line shadow-newDefault">
           <div className="flex flex-col gap-4 justify-center pt-4">
             <div className="border-b border-line px-4 pb-4">
-              <DelegateProfileImage
-                endorsed={delegate.statement?.endorsed}
-                address={delegate.address}
-                votingPower={delegate.votingPower.total}
-                citizen={delegate.citizen}
-              />
+              {delegate.address}
             </div>
             <div className="px-4 flex flex-row gap-4">
               <span className="text-primary font-bold">

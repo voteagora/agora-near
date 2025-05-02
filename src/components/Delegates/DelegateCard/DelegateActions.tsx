@@ -24,6 +24,8 @@ export function DelegateActions({
 
   const isDelegated = accountInfo?.delegation?.delegatee === delegate.address;
 
+  const isOwnAccount = delegate.address === signedAccountId;
+
   const twitter = delegate?.statement?.twitter;
   const discord = delegate?.statement?.discord;
   const warpcast = delegate?.statement?.warpcast;
@@ -65,9 +67,11 @@ export function DelegateActions({
         twitter={twitter}
         warpcast={warpcast}
       />
-      <UpdatedButton type="secondary" onClick={handleDelegate}>
-        {isDelegated ? "Undelegate" : "Delegate"}
-      </UpdatedButton>
+      {!isOwnAccount && (
+        <UpdatedButton type="secondary" onClick={handleDelegate}>
+          {isDelegated ? "Undelegate" : "Delegate"}
+        </UpdatedButton>
+      )}
     </div>
   );
 }
