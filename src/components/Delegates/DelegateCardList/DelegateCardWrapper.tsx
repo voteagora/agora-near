@@ -2,6 +2,7 @@ import { delegatesFilterOptions } from "@/lib/constants";
 import Tenant from "@/lib/tenant/tenant";
 import { UIEndorsedConfig } from "@/lib/tenant/tenantUI";
 import DelegateContent from "./DelegateContent";
+import DelegateTabs from "../DelegatesTabs/DelegatesTabs";
 
 const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
   const { ui } = Tenant.current();
@@ -39,7 +40,7 @@ const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
     },
     data: [
       {
-        address: "0x123456",
+        address: "acc-1745564703-user1.testnet",
         votingPower: {
           total: "100000000000000000000000",
           direct: "100",
@@ -54,7 +55,7 @@ const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
         citizen: false,
       },
       {
-        address: "0x123456",
+        address: "lighttea2007.testnet",
         votingPower: {
           total: "100000000000000000000000",
           direct: "100",
@@ -69,52 +70,7 @@ const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
         citizen: false,
       },
       {
-        address: "0x123456",
-        votingPower: {
-          total: "100000000000000000000000",
-          direct: "100",
-          advanced: "100",
-        },
-        statement: {
-          endorsed: true,
-          discord: "discord",
-          payload: { delegateStatement: "A trustworthy delegate" },
-          twitter: "agora",
-        },
-        citizen: false,
-      },
-      {
-        address: "0x123456",
-        votingPower: {
-          total: "100000000000000000000000",
-          direct: "100",
-          advanced: "100",
-        },
-        statement: {
-          endorsed: true,
-          discord: "discord",
-          payload: { delegateStatement: "A trustworthy delegate" },
-          twitter: "agora",
-        },
-        citizen: false,
-      },
-      {
-        address: "0x123456",
-        votingPower: {
-          total: "100000000000000000000000",
-          direct: "100",
-          advanced: "100",
-        },
-        statement: {
-          endorsed: true,
-          discord: "discord",
-          payload: { delegateStatement: "A trustworthy delegate" },
-          twitter: "agora",
-        },
-        citizen: false,
-      },
-      {
-        address: "0x123456",
+        address: "fararena9024.testnet",
         votingPower: {
           total: "100000000000000000000000",
           direct: "100",
@@ -132,32 +88,9 @@ const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
   };
 
   return (
-    <DelegateContent
-      initialDelegates={delegates}
-      fetchDelegates={async () => {
-        "use server";
-        return {
-          meta: {
-            has_next: false,
-            total_returned: 0,
-            next_offset: 0,
-          },
-          data: [],
-        };
-      }}
-      // @ts-ignore
-      fetchDelegators={async () => {
-        "use server";
-        return {
-          meta: {
-            has_next: false,
-            total_returned: 0,
-            next_offset: 0,
-          },
-          data: [],
-        };
-      }}
-    />
+    <DelegateTabs>
+      <DelegateContent initialDelegates={delegates} />
+    </DelegateTabs>
   );
 };
 

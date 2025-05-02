@@ -81,21 +81,6 @@ describe("DelegateProfileImageWithMetadata", () => {
     expect(screen.getByText("100")).toBeInTheDocument();
   });
 
-  it("renders citizen badge when citizen prop is true", () => {
-    render(<DelegateProfileImageWithMetadata {...defaultProps} />);
-
-    const citizenBadge = screen.getByAltText("citizen badge");
-    expect(citizenBadge).toBeInTheDocument();
-  });
-
-  it("does not render citizen badge when citizen prop is false", () => {
-    render(
-      <DelegateProfileImageWithMetadata {...defaultProps} citizen={false} />
-    );
-
-    expect(screen.queryByAltText("citizen badge")).not.toBeInTheDocument();
-  });
-
   it("renders endorsed icon when endorsed prop is true", () => {
     render(<DelegateProfileImageWithMetadata {...defaultProps} />);
 

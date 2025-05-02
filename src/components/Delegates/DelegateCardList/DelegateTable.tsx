@@ -17,41 +17,19 @@ import DelegateTableRow from "./DelegateTableRow";
 
 interface Props {
   initialDelegates: PaginatedResult<DelegateChunk[]>;
-  fetchDelegates: (
-    pagination: PaginationParams,
-    seed?: number
-  ) => Promise<PaginatedResult<DelegateChunk[]>>;
 }
 
-export default function DelegateTable({
-  initialDelegates,
-  fetchDelegates,
-}: Props) {
-  const [meta, setMeta] = useState(initialDelegates.meta);
+export default function DelegateTable({ initialDelegates }: Props) {
   const [delegates, setDelegates] = useState(initialDelegates.data);
-
-  const fetching = useRef(false);
 
   const { setIsDelegatesFiltering } = useAgoraContext();
 
   useEffect(() => {
     setIsDelegatesFiltering(false);
     setDelegates(initialDelegates.data);
-    setMeta(initialDelegates.meta);
   }, [initialDelegates, setIsDelegatesFiltering]);
 
-  const loadMore = async () => {
-    if (!fetching.current && meta.has_next) {
-      fetching.current = true;
-      const data = await fetchDelegates(
-        { offset: meta.next_offset, limit: meta.total_returned },
-        initialDelegates.seed || Math.random()
-      );
-      setDelegates(delegates.concat(data.data));
-      setMeta(data.meta);
-      fetching.current = false;
-    }
-  };
+  const loadMore = async () => {};
 
   return (
     <DialogProvider>
@@ -72,7 +50,7 @@ export default function DelegateTable({
             </TableRow>
           </TableHeader>
           <InfiniteScroll
-            hasMore={meta.has_next}
+            hasMore={false}
             pageStart={1}
             loadMore={loadMore}
             loader={

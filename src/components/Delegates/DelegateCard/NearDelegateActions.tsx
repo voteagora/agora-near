@@ -9,13 +9,11 @@ import Tenant from "@/lib/tenant/tenant";
 import { type SyntheticEvent } from "react";
 import { DelegateSocialLinks } from "./DelegateSocialLinks";
 
-export function DelegateActions({
+export function NearDelegateActions({
   delegate,
 }: {
   delegate: DelegateChunk;
   className?: string;
-  isAdvancedUser: boolean;
-  delegators: string[] | null;
 }) {
   const { signedAccountId, signIn } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);

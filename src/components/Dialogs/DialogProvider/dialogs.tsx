@@ -1,6 +1,7 @@
 import { DialogDefinitions } from "./types";
 import { DelegateDialog } from "../DelegateDialog/DelegateDialog";
-import { UndelegateDialog } from "../UndelegateDialog/UndelegateDialog";
+import { NearDelegateDialog } from "../DelegateDialog/NearDelegateDialog";
+import { NearUndelegateDialog } from "../UndelegateDialog/NearUndelegateDialog";
 import { SwitchNetwork } from "../SwitchNetworkDialog/SwitchNetworkDialog";
 import { CastProposalDialog } from "@/components/Proposals/ProposalCreation/CastProposalDialog";
 import {
@@ -36,6 +37,7 @@ import { StructuredSimulationReport } from "@/lib/seatbelt/types";
 import { NearVoteDialog } from "../NearVoteDialog";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { NearVoteOptionsDialog } from "../NearVoteOptionsDialog";
+import { UndelegateDialog } from "../UndelegateDialog/UndelegateDialog";
 
 export type DialogType =
   | AdvancedDelegateDialogType
@@ -44,6 +46,8 @@ export type DialogType =
   | CastVoteDialogType
   | CreateDraftProposalDialog
   | DelegateDialogType
+  | NearDelegateDialogType
+  | NearUndelegateDialogType
   | DeleteDraftProposalDialog
   | OpenGithubPRDialog
   | PartialDelegateDialogType
@@ -60,6 +64,20 @@ export type DialogType =
   | NearVoteDialogType
   | NearVoteOptionsDialogType;
 // | FaqDialogType
+
+export type NearDelegateDialogType = {
+  type: "NEAR_DELEGATE";
+  params: {
+    delegateAddress: string;
+  };
+};
+
+export type NearUndelegateDialogType = {
+  type: "NEAR_UNDELEGATE";
+  params: {
+    delegateAddress: string;
+  };
+};
 
 export type DelegateDialogType = {
   type: "DELEGATE";
@@ -276,6 +294,22 @@ export type NearVoteOptionsDialogType = {
 };
 
 export const dialogs: DialogDefinitions<DialogType> = {
+  NEAR_DELEGATE: ({ delegateAddress }, closeDialog) => {
+    return (
+      <NearDelegateDialog
+        delegateAddress={delegateAddress}
+        closeDialog={closeDialog}
+      />
+    );
+  },
+  NEAR_UNDELEGATE: ({ delegateAddress }, closeDialog) => {
+    return (
+      <NearUndelegateDialog
+        delegateAddress={delegateAddress}
+        closeDialog={closeDialog}
+      />
+    );
+  },
   DELEGATE: (
     { delegate, fetchBalanceForDirectDelegation, fetchDirectDelegatee },
     closeDialog
