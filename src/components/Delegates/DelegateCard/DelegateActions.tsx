@@ -1,26 +1,16 @@
 "use client";
 
-import { DelegateButton } from "./DelegateButton";
-import { UndelegateButton } from "./UndelegateButton";
-import { DelegateSocialLinks } from "./DelegateSocialLinks";
-import { useAccount } from "wagmi";
-import { AdvancedDelegateButton } from "./AdvancedDelegateButton";
 import { DelegateChunk } from "@/app/api/common/delegates/delegate";
 import { UpdatedButton } from "@/components/Button";
-import { type SyntheticEvent } from "react";
-import Tenant from "@/lib/tenant/tenant";
-import { DELEGATION_MODEL } from "@/lib/constants";
-import { useGetDelegatee } from "@/hooks/useGetDelegatee";
-import { PartialDelegateButton } from "./PartialDelegateButton";
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
-import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
+import Tenant from "@/lib/tenant/tenant";
+import { type SyntheticEvent } from "react";
+import { DelegateSocialLinks } from "./DelegateSocialLinks";
 
 export function DelegateActions({
   delegate,
-  className,
-  isAdvancedUser,
-  delegators,
 }: {
   delegate: DelegateChunk;
   className?: string;
@@ -34,25 +24,15 @@ export function DelegateActions({
 
   const isDelegated = accountInfo?.delegation?.delegatee === delegate.address;
 
-  const { address } = useAccount();
   const twitter = delegate?.statement?.twitter;
   const discord = delegate?.statement?.discord;
   const warpcast = delegate?.statement?.warpcast;
 
-  const { contracts, ui, namespace } = Tenant.current();
-  const hasAlligator = contracts?.alligator;
+  const { ui } = Tenant.current();
 
   const isRetired = ui.delegates?.retired.includes(
     delegate.address.toLowerCase() as `0x${string}`
   );
-
-  // gets the delegatee for the connected account
-  const { data: delegatee } = useGetDelegatee({ address });
-  const isConnectedAccountDelegate = delegatee?.delegatee === delegate.address;
-
-  const ButtonToShow = isConnectedAccountDelegate
-    ? UndelegateButton
-    : DelegateButton;
 
   const handleDelegate = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -63,36 +43,9 @@ export function DelegateActions({
       openDialog({
         type: isDelegated ? "NEAR_UNDELEGATE" : "NEAR_DELEGATE",
         params: {
-          delegate,
+          delegateAddress: delegate.address,
         },
       });
-    }
-  };
-
-  const delegationButton = () => {
-    switch (contracts.delegationModel) {
-      case DELEGATION_MODEL.PARTIAL:
-        return <PartialDelegateButton full={false} delegate={delegate} />;
-
-      // Optimism in the only tenant currently supporting advanced delegation
-      case DELEGATION_MODEL.ADVANCED:
-        if (isAdvancedUser && hasAlligator) {
-          return (
-            <AdvancedDelegateButton
-              delegate={delegate}
-              delegators={delegators}
-            />
-          );
-        } else {
-          return (
-            <ButtonToShow full={!twitter && !discord} delegate={delegate} />
-          );
-        }
-
-      //   The following tenants only support full token-based delegation:
-      //   ENS,Cyber,Ether.fi, Uniswap
-      default:
-        return <ButtonToShow full={!twitter && !discord} delegate={delegate} />;
     }
   };
 
@@ -112,30 +65,9 @@ export function DelegateActions({
         twitter={twitter}
         warpcast={warpcast}
       />
-      {/* TODO: Delegation functionality */}
       <UpdatedButton type="secondary" onClick={handleDelegate}>
         {isDelegated ? "Undelegate" : "Delegate"}
       </UpdatedButton>
-      {/* <div>
-        {isConnected && address ? (
-          delegationButton()
-        ) : (
-          <ConnectKitButton.Custom>
-            {({ show }) => (
-              <UpdatedButton
-                type="secondary"
-                onClick={(e: SyntheticEvent) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  show?.();
-                }}
-              >
-                {isConnectedAccountDelegate ? "Undelegate" : "Delegate"}
-              </UpdatedButton>
-            )}
-          </ConnectKitButton.Custom>
-        )}
-      </div> */}
     </div>
   );
 }

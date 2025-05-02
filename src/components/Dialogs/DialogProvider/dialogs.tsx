@@ -68,14 +68,14 @@ export type DialogType =
 export type NearDelegateDialogType = {
   type: "NEAR_DELEGATE";
   params: {
-    delegate: DelegateChunk;
+    delegateAddress: string;
   };
 };
 
 export type NearUndelegateDialogType = {
   type: "NEAR_UNDELEGATE";
   params: {
-    delegate: DelegateChunk;
+    delegateAddress: string;
   };
 };
 
@@ -294,11 +294,21 @@ export type NearVoteOptionsDialogType = {
 };
 
 export const dialogs: DialogDefinitions<DialogType> = {
-  NEAR_DELEGATE: ({ delegate }, closeDialog) => {
-    return <NearDelegateDialog delegate={delegate} />;
+  NEAR_DELEGATE: ({ delegateAddress }, closeDialog) => {
+    return (
+      <NearDelegateDialog
+        delegateAddress={delegateAddress}
+        closeDialog={closeDialog}
+      />
+    );
   },
-  NEAR_UNDELEGATE: ({ delegate }, closeDialog) => {
-    return <NearUndelegateDialog delegate={delegate} />;
+  NEAR_UNDELEGATE: ({ delegateAddress }, closeDialog) => {
+    return (
+      <NearUndelegateDialog
+        delegateAddress={delegateAddress}
+        closeDialog={closeDialog}
+      />
+    );
   },
   DELEGATE: (
     { delegate, fetchBalanceForDirectDelegation, fetchDirectDelegatee },

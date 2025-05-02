@@ -1,18 +1,31 @@
-import { DelegateChunk } from "@/app/api/common/delegates/delegate";
 import { UpdatedButton } from "@/components/Button";
 import { useNear } from "@/contexts/NearContext";
 import { useDelegateAll } from "@/hooks/useDelegateAll";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
+import { useCallback } from "react";
+import toast from "react-hot-toast";
 
-export function NearDelegateDialog({ delegate }: { delegate: DelegateChunk }) {
+export function NearDelegateDialog({
+  delegateAddress,
+  closeDialog,
+}: {
+  delegateAddress: string;
+  closeDialog: () => void;
+}) {
   const { signedAccountId } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
-  const { delegateAll } = useDelegateAll();
 
-  const handleDelegate = () => {
-    delegateAll(delegate.address);
-  };
+  const { delegateAll, isDelegating, error } = useDelegateAll({
+    onSuccess: () => {
+      toast.success("Delegation completed!");
+      closeDialog();
+    },
+  });
+
+  const handleDelegate = useCallback(() => {
+    delegateAll(delegateAddress);
+  }, [delegateAll, delegateAddress]);
 
   return (
     <div className="flex flex-col items-center w-full bg-neutral max-w-[28rem]">
@@ -20,10 +33,10 @@ export function NearDelegateDialog({ delegate }: { delegate: DelegateChunk }) {
         <div className="flex flex-col gap-6 justify-center min-h-[318px] w-full">
           <div className="flex flex-col gap-4">
             <p className="text-xl font-bold text-left text-primary">
-              Set {delegate.address} as your delegate
+              Set {delegateAddress} as your delegate
             </p>
             <div className="text-secondary">
-              {delegate.address} will be able to vote with any token owned by
+              {delegateAddress} will be able to vote with any token owned by
               your address
             </div>
             <div className="flex flex-col relative border border-line rounded-lg">
@@ -46,12 +59,22 @@ export function NearDelegateDialog({ delegate }: { delegate: DelegateChunk }) {
                     Delegating to
                   </p>
                   <div className="font-medium text-primary max-w-[6rem] sm:max-w-full">
-                    {delegate.address}
+                    {delegateAddress}
                   </div>
                 </div>
               </div>
             </div>
-            <UpdatedButton onClick={handleDelegate}>Delegate</UpdatedButton>
+            <UpdatedButton
+              type={isDelegating || error ? "secondary" : "primary"}
+              onClick={handleDelegate}
+              disabled={isDelegating}
+            >
+              {isDelegating
+                ? "Submitting your delegation..."
+                : error
+                  ? "Delegation failed - try again"
+                  : "Delegate"}
+            </UpdatedButton>
           </div>
         </div>
       </div>
