@@ -74,7 +74,10 @@ export default async function Page({
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 justify-between mt-12 w-full max-w-full">
       <div className="flex flex-col static sm:sticky top-16 shrink-0 w-full sm:max-w-[350px]">
         <DelegateCard
-          delegate={delegate}
+          delegate={{
+            ...delegate,
+            address,
+          }}
           description={textRecords?.description}
           location={textRecords?.location}
           followersCount={efpStats?.followers_count}

@@ -101,12 +101,12 @@ export default function VeNearDebugCards() {
     delegateAll,
     isDelegating,
     error: delegationError,
-  } = useDelegateAll();
+  } = useDelegateAll({});
   const {
     undelegate,
     isUndelegating,
     error: undelegationError,
-  } = useUndelegate();
+  } = useUndelegate({});
 
   const lockAllNear = useCallback(() => {
     if (accountInfo?.lockupAccountId) {
