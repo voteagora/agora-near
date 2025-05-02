@@ -11,6 +11,7 @@ import { LoadingVote } from "../Proposals/ProposalPage/CastVoteDialog/CastVoteDi
 import NearTokenAmount from "../shared/NearTokenAmount";
 import { RadioButton } from "../ui/radio-button";
 import { Skeleton } from "../ui/skeleton";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 export function NearVoteOptionsDialog({
   proposal,
@@ -81,10 +82,12 @@ export function NearVoteOptionsDialog({
           <Button onClick={handleVote} disabled={selectedOption === undefined}>
             {selectedOption !== undefined ? (
               <>
-                {`Vote with`}
+                {`Vote ${capitalizeFirstLetter(
+                  proposal.voting_options[selectedOption].toLowerCase()
+                )} with`}
                 {"\u00A0"}
                 {votingPower ? (
-                  <NearTokenAmount amount={votingPower} />
+                  <NearTokenAmount amount={votingPower} currency="veNEAR" />
                 ) : (
                   <Skeleton className="w-4 h-4" />
                 )}
