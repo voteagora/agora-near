@@ -2,23 +2,29 @@ import { ProposalInfo } from "@/lib/contracts/types/voting";
 import NearProposalVoteBar from "./NearProposalVoteBar";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { getNearProposalTimes, getNearQuorum } from "@/lib/nearProposalUtils";
+import checkIcon from "@/icons/check.svg";
+import Image from "next/image";
+import Big from "big.js";
 
 const NearProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
   const { createdTime, startTime, endTime } = getNearProposalTimes(proposal);
+
+  const quorum = getNearQuorum(proposal);
+  const hasMetQuorum = Big(proposal.total_votes.total_venear).gte(quorum);
 
   return (
     <div className="flex flex-col font-inter font-semibold text-xs w-full max-w-[317px] sm:min-w-[317px] bg-wash">
       <NearProposalVoteBar proposal={proposal} />
       <div className="flex flex-col gap-2 w-full mt-4">
         <div className="flex justify-between text-positive">
-          FOR{" "}
+          {proposal.voting_options[0]}
           <AmountAndPercent
             amount={proposal.votes[0].total_venear}
             total={proposal.total_votes.total_venear}
           />
         </div>
         <div className="text-negative flex justify-between">
-          AGAINST{" "}
+          {proposal.voting_options[1]}
           <AmountAndPercent
             amount={proposal.votes[1].total_venear}
             total={proposal.total_votes.total_venear}
@@ -31,16 +37,15 @@ const NearProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
             Quorum
           </div>
           <div className="flex items-center gap-1 ">
+            {hasMetQuorum && (
+              <Image width="12" height="12" src={checkIcon} alt="check icon" />
+            )}
             <p className="text-xs font-semibold text-secondary">
               <NearTokenAmount
-                amount={proposal.votes[0].total_venear}
+                amount={proposal.total_votes.total_venear}
                 hideCurrency
               />{" "}
-              /{" "}
-              <NearTokenAmount
-                amount={getNearQuorum(proposal).toString()}
-                hideCurrency
-              />
+              / <NearTokenAmount amount={quorum.toFixed()} hideCurrency />
               Required
             </p>
           </div>
@@ -70,9 +75,13 @@ function AmountAndPercent({
   amount: string;
   total: string;
 }) {
-  const percent = total
-    ? ((Number(amount) / Number(total)) * 100).toFixed(2)
-    : undefined;
+  const parsedTotal = Big(total);
+  const parsedAmount = Big(amount);
+
+  const percent = parsedTotal.eq(0)
+    ? "0"
+    : parsedAmount.div(parsedTotal).mul(100).toFixed(2);
+
   return (
     <span>
       <NearTokenAmount amount={amount} hideCurrency />

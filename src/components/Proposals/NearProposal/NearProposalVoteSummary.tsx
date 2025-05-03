@@ -11,6 +11,7 @@ import NearProposalStatusDetail from "./NearProposalStatusDetail";
 import NearProposalVoteBar from "./NearProposalVoteBar";
 import NearProposalPopover from "./NearProposalPopover";
 import { getNearQuorum } from "@/lib/nearProposalUtils";
+
 export default function NearProposalVoteSummary({
   proposal,
 }: {
@@ -46,8 +47,8 @@ export default function NearProposalVoteSummary({
               </div>
             </div>
             <NearProposalVoteBar proposal={proposal} />
-            <div>
-              Quorum <NearTokenAmount amount={quorum.toString()} hideCurrency />
+            <div className="text-secondary font-normal">
+              Quorum <NearTokenAmount amount={quorum.toFixed()} hideCurrency />
             </div>
             <div>
               <NearProposalStatusDetail

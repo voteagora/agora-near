@@ -4,6 +4,8 @@ import {
   VoterStats,
 } from "./contracts/types/voting";
 import { format } from "date-fns";
+import Big from "big.js";
+
 export function votingOptionsToVoteStats(proposal: ProposalInfo) {
   return proposal.voting_options.reduce(
     (prev, curr, index) => {
@@ -70,5 +72,12 @@ export const getNearProposalTimes = (proposal: ProposalInfo) => {
 };
 
 export const getNearQuorum = (proposal: ProposalInfo) => {
-  return Number(proposal.snapshot_and_state?.total_venear ?? 0) / 10;
+  const quorumPercentage = Big(
+    process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.10"
+  );
+
+  return Big(proposal.snapshot_and_state?.total_venear ?? 0)
+    .mul(quorumPercentage)
+    .round(0, 3)
+    .toNumber();
 };
