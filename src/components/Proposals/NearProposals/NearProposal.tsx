@@ -38,12 +38,7 @@ export const NearProposal = memo(({ proposal }: { proposal: ProposalInfo }) => {
         <div className="flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6 w-[20%] flex-start justify-center hidden sm:block">
           <div className="flex flex-col items-end">
             <div className="text-xs text-secondary">
-              <NearProposalTimeStatus
-                proposalStatus={proposal.status}
-                proposalCreateTime={proposal.creation_time_ns}
-                proposalStartTime={proposal.voting_start_time_ns}
-                proposalDuration={proposal.voting_duration_ns}
-              />
+              <NearProposalTimeStatus proposal={proposal} />
             </div>
             <NearProposalStatusText proposal={proposal} />
           </div>

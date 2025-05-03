@@ -2,36 +2,21 @@
 "use client";
 
 import { HStack } from "@/components/Layout/Stack";
-import { ProposalStatus } from "@/lib/contracts/types/voting";
-import { format } from "date-fns";
+import { ProposalInfo, ProposalStatus } from "@/lib/contracts/types/voting";
+import { getNearProposalTimes } from "@/lib/nearProposalUtils";
 
 export default function ProposalTimeStatus({
-  proposalStatus,
-  proposalCreateTime,
-  proposalStartTime,
-  proposalDuration,
+  proposal,
 }: {
-  proposalStatus: ProposalStatus;
-  proposalCreateTime: string | null;
-  proposalStartTime: string | null;
-  proposalDuration: string | null;
+  proposal: ProposalInfo;
 }) {
-  const proposalEndTime =
-    proposalStartTime && proposalDuration
-      ? Number(proposalStartTime) + Number(proposalDuration)
-      : null;
+  const {
+    createdTime: proposalCreateTimeDisplay,
+    startTime: proposalStartTimeDisplay,
+    endTime: proposalEndTimeDisplay,
+  } = getNearProposalTimes(proposal);
 
-  const proposalEndTimeDisplay = proposalEndTime
-    ? format(proposalEndTime / 1000000, "h:mm aaa MMM dd, yyyy")
-    : null;
-
-  const proposalCreateTimeDisplay = proposalCreateTime
-    ? format(Number(proposalCreateTime) / 1000000, "h:mm aaa MMM dd, yyyy")
-    : null;
-
-  const proposalStartTimeDisplay = proposalStartTime
-    ? format(Number(proposalStartTime) / 1000000, "h:mm aaa MMM dd, yyyy")
-    : null;
+  const { status: proposalStatus } = proposal;
 
   switch (proposalStatus) {
     case ProposalStatus.Created:

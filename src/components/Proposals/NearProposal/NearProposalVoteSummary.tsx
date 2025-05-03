@@ -1,10 +1,16 @@
 "use client";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
-import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { useState } from "react";
 import NearProposalStatusDetail from "./NearProposalStatusDetail";
 import NearProposalVoteBar from "./NearProposalVoteBar";
+import NearProposalPopover from "./NearProposalPopover";
+import { getNearQuorum } from "@/lib/nearProposalUtils";
 
 export default function NearProposalVoteSummary({
   proposal,
@@ -12,6 +18,7 @@ export default function NearProposalVoteSummary({
   proposal: ProposalInfo;
 }) {
   const [showDetails, setShowDetails] = useState(false);
+  const quorum = getNearQuorum(proposal);
 
   return (
     <HoverCard
@@ -40,6 +47,9 @@ export default function NearProposalVoteSummary({
               </div>
             </div>
             <NearProposalVoteBar proposal={proposal} />
+            <div className="text-secondary font-normal">
+              Quorum <NearTokenAmount amount={quorum.toFixed()} hideCurrency />
+            </div>
             <div>
               <NearProposalStatusDetail
                 proposal={proposal}
@@ -48,6 +58,13 @@ export default function NearProposalVoteSummary({
             </div>
           </HoverCardTrigger>
         </div>
+        <HoverCardContent
+          className="pb-0 absolute w-auto mt-1"
+          side="top"
+          align={"start"}
+        >
+          <NearProposalPopover proposal={proposal} />
+        </HoverCardContent>
       </div>
     </HoverCard>
   );
