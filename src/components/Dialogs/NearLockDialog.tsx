@@ -196,7 +196,7 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
                 : "Lock NEAR"}
           </UpdatedButton>
           <p className="text-sm text-secondary text-center">
-            You can unlock at any time. Unlocking takes{" "}
+            Unlock at any time. Unlocked NEAR is available after{" "}
             {formattedUnlockDuration}.
           </p>
         </div>
