@@ -186,7 +186,8 @@ export function formatNumber(
   decimals: number,
   maximumSignificantDigits = 4,
   useSpecialFormatting?: boolean,
-  useCompactDisplay = true
+  useCompactDisplay = true,
+  minimumFractionDigits = 0
 ) {
   let bigIntAmount: bigint;
 
@@ -225,6 +226,7 @@ export function formatNumber(
   const numberFormat = new Intl.NumberFormat("en", {
     notation: useCompactDisplay ? "compact" : "standard",
     maximumFractionDigits: maximumSignificantDigits,
+    minimumFractionDigits,
   });
 
   return numberFormat.format(standardUnitAmount);
