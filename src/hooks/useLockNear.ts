@@ -6,9 +6,10 @@ import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 
 type Props = {
   lockupAccountId: string;
+  onSuccess?: () => void;
 };
 
-export const useLockNear = ({ lockupAccountId }: Props) => {
+export const useLockNear = ({ lockupAccountId, onSuccess }: Props) => {
   const queryClient = useQueryClient();
 
   const onLockUnlockSuccess = useCallback(() => {
@@ -20,7 +21,8 @@ export const useLockNear = ({ lockupAccountId }: Props) => {
         queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
       }),
     ]);
-  }, [lockupAccountId, queryClient]);
+    onSuccess?.();
+  }, [lockupAccountId, queryClient, onSuccess]);
 
   const {
     mutate: mutateLockNear,

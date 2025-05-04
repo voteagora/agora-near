@@ -157,3 +157,6 @@ export const CACHE_TTL = {
   MEDIUM: 1000 * 60 * 60, // 1 hour
   LONG: 1000 * 60 * 60 * 24, // 24 hours
 };
+
+export const NANO_SECONDS_IN_DAY = 1000000000 * 60 * 60 * 24;
+export const NANO_SECONDS_IN_YEAR = 365 * NANO_SECONDS_IN_DAY;

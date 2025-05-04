@@ -1,5 +1,7 @@
 "use client";
 
+import { UpdatedButton } from "@/components/Button";
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { useState } from "react";
 import NearProposalVoteFilter from "./NearProposalVoteFilter";
@@ -14,6 +16,14 @@ const NearProposalVoteResult = ({
   config: VotingConfig;
 }) => {
   const [showVoters, setShowVoters] = useState(true);
+  const openDialog = useOpenDialog();
+
+  const handleOpenLockDialog = () => {
+    openDialog({
+      type: "NEAR_LOCK",
+      params: {},
+    });
+  };
 
   return (
     <div
@@ -35,6 +45,15 @@ const NearProposalVoteResult = ({
             />
           </div>
           <NearProposalVotingActions proposal={proposal} config={config} />
+          <div className="px-4 pb-4">
+            <UpdatedButton
+              type="secondary"
+              className="w-full"
+              onClick={handleOpenLockDialog}
+            >
+              Lock NEAR
+            </UpdatedButton>
+          </div>
         </div>
       </div>
     </div>

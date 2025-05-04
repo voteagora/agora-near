@@ -8,6 +8,8 @@ import { motion } from "framer-motion";
 import { useMemo, useState, useTransition } from "react";
 import NearProposalVotingActions from "./NearProposalVotingActions";
 import NearProposalStatusDetail from "./NearProposalStatusDetail";
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
+import { LockClosedIcon } from "@heroicons/react/20/solid";
 
 export default function NearProposalOptionsResult({
   proposal,
@@ -20,12 +22,20 @@ export default function NearProposalOptionsResult({
 }) {
   const [activeTab, setActiveTab] = useState(1);
   const [isPending, startTransition] = useTransition();
+  const openDialog = useOpenDialog();
 
   function handleTabsChange(index: number) {
     startTransition(() => {
       setActiveTab(index);
     });
   }
+
+  const handleOpenLockDialog = () => {
+    openDialog({
+      type: "NEAR_LOCK",
+      params: {},
+    });
+  };
 
   const optionsToStats = useMemo(() => {
     return votingOptionsToVoteStats(proposal);
@@ -99,6 +109,15 @@ export default function NearProposalOptionsResult({
               <div />
             )}
             <NearProposalVotingActions proposal={proposal} config={config} />
+            <div className="px-4 pb-4">
+              <button
+                onClick={handleOpenLockDialog}
+                className="flex items-center justify-center w-full text-secondary text-sm font-medium gap-2 p-2 hover:bg-line/30 rounded-md transition-colors"
+              >
+                <LockClosedIcon className="w-4 h-4" />
+                Lock more NEAR for voting power
+              </button>
+            </div>
           </VStack>
         </motion.div>
       </div>

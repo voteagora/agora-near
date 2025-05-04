@@ -38,6 +38,7 @@ import { NearVoteDialog } from "../NearVoteDialog";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { NearVoteOptionsDialog } from "../NearVoteOptionsDialog";
 import { UndelegateDialog } from "../UndelegateDialog/UndelegateDialog";
+import { NearLockDialog } from "../NearLockDialog";
 
 export type DialogType =
   | AdvancedDelegateDialogType
@@ -62,7 +63,8 @@ export type DialogType =
   | ShareVoteDialogType
   | SimulationReportDialogType
   | NearVoteDialogType
-  | NearVoteOptionsDialogType;
+  | NearVoteOptionsDialogType
+  | NearLockDialogType;
 // | FaqDialogType
 
 export type NearDelegateDialogType = {
@@ -77,6 +79,11 @@ export type NearUndelegateDialogType = {
   params: {
     delegateAddress: string;
   };
+};
+
+export type NearLockDialogType = {
+  type: "NEAR_LOCK";
+  params: Record<string, never>;
 };
 
 export type DelegateDialogType = {
@@ -309,6 +316,9 @@ export const dialogs: DialogDefinitions<DialogType> = {
         closeDialog={closeDialog}
       />
     );
+  },
+  NEAR_LOCK: (_params, closeDialog) => {
+    return <NearLockDialog closeDialog={closeDialog} />;
   },
   DELEGATE: (
     { delegate, fetchBalanceForDirectDelegation, fetchDirectDelegatee },
