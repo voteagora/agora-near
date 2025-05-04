@@ -1,21 +1,15 @@
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
-import { useReadHOSContract } from "./useReadHOSContract";
-import { useMemo } from "react";
 import { CACHE_TTL } from "@/lib/constants";
-import { Fraction } from "@/lib/contracts/types/common";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import Big from "big.js";
+import { useMemo } from "react";
+import { useReadHOSContract } from "./useReadHOSContract";
 
 interface VenearSnapshotResult {
-  // Total veNEAR balance including NEAR and veNEAR components
   totalVenearBalance: {
     nearBalance: string;
     extraVenearBalance: string;
   };
-
-  // Annual growth rate in nanoseconds
   growthRateNs: Big;
-
-  // Raw data
   isLoading: boolean;
   error: Error | null;
 }
@@ -50,15 +44,11 @@ export const useVenearSnapshot = ({
   }, [data]);
 
   return useMemo(() => {
-    // The get_snapshot method returns [MerkleTreeSnapshot, VGlobalState]
-    // We want to extract the VGlobalState (which is at index 1)
-    const globalState = data?.[1]?.V0;
-
     return {
       totalVenearBalance: {
-        nearBalance: globalState?.total_venear_balance?.near_balance || "0",
+        nearBalance: data?.[1]?.V0?.total_venear_balance?.near_balance || "0",
         extraVenearBalance:
-          globalState?.total_venear_balance?.extra_venear_balance || "0",
+          data?.[1]?.V0?.total_venear_balance?.extra_venear_balance || "0",
       },
       growthRateNs,
       isLoading,
