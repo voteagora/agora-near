@@ -93,6 +93,8 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
       <NearTokenAmount
         amount={utils.format.parseNearAmount(estimatedVeNearBalance) ?? "0"}
         hideCurrency
+        minimumFractionDigits={2}
+        className="tabular-nums"
       />
     ),
     [estimatedVeNearBalance]
@@ -102,9 +104,7 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
     <div className="flex flex-col items-center w-full bg-neutral max-w-[28rem]">
       <div className="flex flex-col gap-6 justify-center min-h-[318px] w-full">
         <div className="flex flex-col gap-4">
-          <p className="text-xl font-bold text-left text-primary">
-            Create New Lock
-          </p>
+          <p className="text-xl font-bold text-left text-primary">Lock NEAR</p>
           <div className="flex flex-col">
             <div className="relative flex h-[200px] flex-col border border-line rounded-lg">
               <div className="flex-1 flex">
@@ -140,7 +140,9 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
               <div className="flex-1 flex">
                 <div className="flex flex-row w-full items-center justify-between p-4">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">veNEAR (est.)</span>
+                    <span className="font-medium">
+                      veNEAR{lockPeriod === 0 ? "" : " (est.)"}
+                    </span>
                   </div>
                   <span className="text-lg">{formattedEstVenearBalance}</span>
                 </div>

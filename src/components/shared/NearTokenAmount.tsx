@@ -1,5 +1,5 @@
 import { NEAR_TOKEN } from "@/lib/constants";
-import { formatNumber } from "@/lib/utils";
+import { cn, formatNumber } from "@/lib/utils";
 import { useMemo } from "react";
 
 type Props = {
@@ -8,6 +8,8 @@ type Props = {
   hideCurrency?: boolean;
   currency?: string;
   compact?: boolean;
+  minimumFractionDigits?: number;
+  className?: string;
 };
 
 export default function NearTokenAmount({
@@ -16,6 +18,8 @@ export default function NearTokenAmount({
   hideCurrency = false,
   compact = true,
   currency = NEAR_TOKEN.symbol,
+  minimumFractionDigits,
+  className,
 }: Props) {
   const formattedNumber = useMemo(() => {
     const formattedNearAmount = formatNumber(
@@ -23,13 +27,16 @@ export default function NearTokenAmount({
       NEAR_TOKEN.decimals,
       maximumSignificantDigits,
       false,
-      compact
+      compact,
+      minimumFractionDigits
     );
 
     return formattedNearAmount;
-  }, [amount, compact, maximumSignificantDigits]);
+  }, [amount, compact, maximumSignificantDigits, minimumFractionDigits]);
 
   return (
-    <span>{`${formattedNumber}${hideCurrency ? "" : ` ${currency}`}`} </span>
+    <span className={cn(className)}>
+      {`${formattedNumber}${hideCurrency ? "" : ` ${currency}`}`}
+    </span>
   );
 }
