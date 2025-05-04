@@ -154,7 +154,7 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
               <span className="text-secondary font-medium">
                 Available to lock
               </span>
-              <span className="text-secondary font-medium">Annual APY</span>
+              <span className="text-secondary font-medium">APY</span>
               <label className="text-secondary font-medium">
                 Lock duration
               </label>
