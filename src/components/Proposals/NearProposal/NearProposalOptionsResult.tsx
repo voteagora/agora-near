@@ -6,8 +6,8 @@ import { votingOptionsToVoteStats } from "@/lib/nearProposalUtils";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { useMemo, useState, useTransition } from "react";
-import NearProposalVotingActions from "./NearProposalVotingActions";
 import NearProposalStatusDetail from "./NearProposalStatusDetail";
+import NearProposalVotingActions from "./NearProposalVotingActions";
 
 export default function NearProposalOptionsResult({
   proposal,

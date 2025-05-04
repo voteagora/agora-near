@@ -1,9 +1,11 @@
+import { useNear } from "@/contexts/NearContext";
 import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { memo } from "react";
+import { UpdatedButton } from "../Button";
+import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
 import { Skeleton } from "../ui/skeleton";
 import { RegisterToVoteButton } from "./RegisterToVoteButton";
-import { useNear } from "@/contexts/NearContext";
 
 export const AccountActionsButton = memo(() => {
   const { signedAccountId } = useNear();
@@ -11,6 +13,16 @@ export const AccountActionsButton = memo(() => {
     useCheckVoterStatus({
       enabled: !!signedAccountId,
     });
+  const openDialog = useOpenDialog();
+
+  const handleOpenLockDialog = () => {
+    openDialog({
+      type: "NEAR_LOCK",
+      params: {},
+    });
+  };
+
+  const route = useRouter();
 
   if (!signedAccountId) {
     return null;
@@ -27,15 +39,22 @@ export const AccountActionsButton = memo(() => {
   // TODO (AXB-34): Button to create a delegate statement
 
   return (
-    <Link
-      href={`/delegates/${signedAccountId}`}
-      className="px-5 py-3 rounded-lg shadow-[0px_2px_2px_0px_rgba(0,0,0,0.03)] border border-neutral-200 flex justify-center"
-      onClick={() => close()}
-    >
-      <span className="text-neutral-900 text-base font-semibold">
+    <div className="flex flex-col gap-2">
+      <UpdatedButton
+        type="secondary"
+        className="w-full"
+        onClick={() => route.push(`/delegates/${signedAccountId}`)}
+      >
         View my profile
-      </span>
-    </Link>
+      </UpdatedButton>
+      <UpdatedButton
+        type="secondary"
+        className="w-full"
+        onClick={handleOpenLockDialog}
+      >
+        Lock NEAR
+      </UpdatedButton>
+    </div>
   );
 });
 
