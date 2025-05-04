@@ -196,7 +196,8 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
                 : "Lock NEAR"}
           </UpdatedButton>
           <p className="text-sm text-secondary text-center">
-            There is a {formattedUnlockDuration} unlocking period
+            You can unlock at any time. Unlocking takes{" "}
+            {formattedUnlockDuration}.
           </p>
         </div>
       </div>
