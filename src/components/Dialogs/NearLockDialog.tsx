@@ -147,41 +147,25 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2 px-1 w-full">
-            <div className="flex items-center">
-              <div className="w-32 mr-4 flex-shrink-0">
-                <span className="text-secondary font-medium">
-                  Available to lock
-                </span>
-              </div>
-              <div className="flex-1">
-                <span className="text-primary font-medium">
-                  <NearTokenAmount amount={availableNearAmount} hideCurrency />
-                </span>
-              </div>
+          <div className="flex flex-row justify-between">
+            <div className="flex mr-12 flex-col gap-2">
+              <span className="text-secondary font-medium">
+                Available to lock
+              </span>
+              <span className="text-secondary font-medium">Annual APY</span>
+              <label className="text-secondary font-medium">
+                Lock duration
+              </label>
             </div>
-
-            <div className="flex items-center">
-              <div className="w-32 mr-4 flex-shrink-0">
-                <span className="text-secondary font-medium">Annual APY</span>
-              </div>
-              <div className="flex-1">
-                <span className="text-primary font-medium">{annualAPY}%</span>
-              </div>
-            </div>
-
-            <div className="flex items-center">
-              <div className="w-32 mr-4 flex-shrink-0">
-                <label className="text-secondary font-medium">
-                  Lock duration
-                </label>
-              </div>
-              <div className="flex-1">
-                <span className="font-medium">
-                  {lockPeriod}{" "}
-                  {lockPeriod > 1 || lockPeriod === 0 ? "months" : "month"}
-                </span>
-              </div>
+            <div className="flex flex-1 flex-col gap-2 px-2">
+              <span className="text-primary font-medium">
+                <NearTokenAmount amount={availableNearAmount} />
+              </span>
+              <span className="text-primary font-medium">{annualAPY}%</span>
+              <span className="text-primary font-medium">
+                <span className="tabular-nums">{lockPeriod}</span>{" "}
+                {lockPeriod > 1 || lockPeriod === 0 ? "months" : "month"}
+              </span>
             </div>
           </div>
           <div>
