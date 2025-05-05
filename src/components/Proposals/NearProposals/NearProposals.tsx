@@ -80,6 +80,7 @@ export default function NearProposals() {
   const handleOpenModal = () => {
     openDialog({
       type: "NEAR_PROPOSAL",
+      params: {},
     });
   };
 
