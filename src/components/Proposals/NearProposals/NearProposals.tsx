@@ -8,6 +8,7 @@ import { NearProposal } from "./NearProposal";
 import { UpdatedButton } from "@/components/Button";
 import { PlusIcon } from "lucide-react";
 import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
+import { useNear } from "@/contexts/NearContext";
 
 const Loader = () => {
   return (
@@ -72,6 +73,8 @@ function NearProposalsList() {
 }
 
 export default function NearProposals() {
+  const { signedAccountId } = useNear();
+
   const openDialog = useOpenDialog();
 
   const handleOpenModal = () => {
@@ -85,14 +88,16 @@ export default function NearProposals() {
       <div className="flex flex-col sm:flex-row justify-between items-baseline gap-2 mb-4 sm:mb-auto">
         <div className="flex flex-row gap-8 items-center mb-4">
           <PageHeader headerText="All Proposals" />
-          <UpdatedButton
-            onClick={handleOpenModal}
-            type="secondary"
-            className="mb-2"
-            variant="rounded"
-          >
-            <PlusIcon className="w-6 h-6" />
-          </UpdatedButton>
+          {signedAccountId && (
+            <UpdatedButton
+              onClick={handleOpenModal}
+              type="secondary"
+              className="mb-2"
+              variant="rounded"
+            >
+              <PlusIcon className="w-6 h-6" />
+            </UpdatedButton>
+          )}
         </div>
       </div>
       <NearProposalsList />

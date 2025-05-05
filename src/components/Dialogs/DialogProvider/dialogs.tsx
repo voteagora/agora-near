@@ -85,6 +85,7 @@ export type NearUndelegateDialogType = {
 
 export type NearProposalDialogType = {
   type: "NEAR_PROPOSAL";
+  params: object;
 };
 
 export type NearLockDialogType = {
