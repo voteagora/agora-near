@@ -5,6 +5,9 @@ import { useProposals } from "@/hooks/useProposals";
 import { useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { NearProposal } from "./NearProposal";
+import { UpdatedButton } from "@/components/Button";
+import { PlusIcon } from "lucide-react";
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 
 const Loader = () => {
   return (
@@ -69,10 +72,28 @@ function NearProposalsList() {
 }
 
 export default function NearProposals() {
+  const openDialog = useOpenDialog();
+
+  const handleOpenModal = () => {
+    openDialog({
+      type: "NEAR_PROPOSAL",
+    });
+  };
+
   return (
     <div className="flex flex-col max-w-[76rem]">
       <div className="flex flex-col sm:flex-row justify-between items-baseline gap-2 mb-4 sm:mb-auto">
-        <PageHeader headerText="All Proposals" />
+        <div className="flex flex-row gap-8 items-center mb-4">
+          <PageHeader headerText="All Proposals" />
+          <UpdatedButton
+            onClick={handleOpenModal}
+            type="secondary"
+            className="mb-2"
+            variant="rounded"
+          >
+            <PlusIcon className="w-6 h-6" />
+          </UpdatedButton>
+        </div>
       </div>
       <NearProposalsList />
     </div>
