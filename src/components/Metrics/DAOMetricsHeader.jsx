@@ -21,7 +21,10 @@ export default function DAOMetricsHeader() {
   const { token, ui, contracts } = Tenant.current();
   const [isClient, setIsClient] = useState(false);
   const { votableSupply, totalSupply, isLoading } = useDAOMetrics();
-  const { votableSupply: votableSupplyFromNear, totalSupply: totalSupplyFromNear } = useNear();
+  const {
+    votableSupply: votableSupplyFromNear,
+    totalSupply: totalSupplyFromNear,
+  } = useNear();
 
   const governanceForumLink = ui.link("governance-forum");
   const bugsLink = ui.link("bugs");
@@ -64,7 +67,14 @@ export default function DAOMetricsHeader() {
                   <HoverCard openDelay={100} closeDelay={100}>
                     <HoverCardTrigger>
                       <span className="cursor-default">
-                        {isLoading ? "-" : <NearTokenAmount amount={totalSupplyFromNear} hideCurrency />}{" "}
+                        {isLoading ? (
+                          "-"
+                        ) : (
+                          <NearTokenAmount
+                            amount={totalSupplyFromNear}
+                            hideCurrency
+                          />
+                        )}{" "}
                         {token.symbol}
                         <span className="hidden sm:inline">&nbsp;supply</span>
                       </span>
@@ -81,7 +91,14 @@ export default function DAOMetricsHeader() {
                     <HoverCard openDelay={100} closeDelay={100}>
                       <HoverCardTrigger>
                         <span className="cursor-default">
-                          {isLoading ? "-" : <NearTokenAmount amount={votableSupplyFromNear} hideCurrency />}{" "}
+                          {isLoading ? (
+                            "-"
+                          ) : (
+                            <NearTokenAmount
+                              amount={votableSupplyFromNear}
+                              hideCurrency
+                            />
+                          )}{" "}
                           {token.symbol} votable
                           <span className="hidden sm:inline">&nbsp;supply</span>
                         </span>

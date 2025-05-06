@@ -138,11 +138,13 @@ export const NearProvider: React.FC<NearProviderProps> = ({
 
       const { network } = selector.options;
       const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
-      const block = await provider.block({ finality: 'final' });
+      const block = await provider.block({ finality: "final" });
       setTotalSupply(block.header.total_supply);
       const validators = await provider.validators(null);
-      const totalVoteSupply = validators.current_validators
-        .reduce((sum, val) => sum + BigInt(val.stake), 0n);
+      const totalVoteSupply = validators.current_validators.reduce(
+        (sum, val) => sum + BigInt(val.stake),
+        0n
+      );
       setVotableSupply(totalVoteSupply.toString());
 
       unsubscribeRef.current = selector.store.observable.subscribe(
