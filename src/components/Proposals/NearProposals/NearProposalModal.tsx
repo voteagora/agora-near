@@ -119,10 +119,7 @@ export function NearProposalModal({
           </div>
         </div>
 
-        <div className="flex justify-center gap-2 mt-4">
-          <Button variant="outline" onClick={closeDialog}>
-            Cancel
-          </Button>
+        <div className="flex justify-center mt-4">
           <div className="flex flex-col gap-2">
             <Button type="submit" disabled={isCreatingProposal}>
               {isCreatingProposal ? "Creating..." : "Create Proposal"}
