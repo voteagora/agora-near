@@ -87,7 +87,7 @@ export default function NearProposals() {
   return (
     <div className="flex flex-col max-w-[76rem]">
       <div className="flex flex-col sm:flex-row justify-between items-baseline gap-2 mb-4 sm:mb-auto">
-        <div className="flex flex-row gap-8 items-center mb-4">
+        <div className="flex flex-row gap-4 items-center mb-4">
           <PageHeader headerText="All Proposals" />
           {signedAccountId && (
             <UpdatedButton

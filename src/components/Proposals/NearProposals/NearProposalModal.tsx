@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCreateProposal } from "@/hooks/useCreateProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
+import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
 import { utils } from "near-api-js";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -38,30 +39,26 @@ export function NearProposalModal({
       title: data.title,
       description: data.description,
       link: data.link,
-      voting_options: ["Yes", "No"],
+      voting_options: NEAR_VOTING_OPTIONS,
     });
   };
 
   if (!config) return null;
 
-  if (createProposalError) {
-    return (
-      <div className="p-4 space-y-4">
-        <div>
-          <h3 className="text-lg font-semibold text-red-500">
-            {createProposalError.message}
-          </h3>
-        </div>
-      </div>
-    );
-  }
+  const votingDuration = `${parseInt(config.voting_duration_ns) / 1e9 / (60 * 60 * 24)} days`;
+  const baseProposalFee = utils.format.formatNearAmount(
+    config.base_proposal_fee
+  );
+  const voteStorageFee = utils.format.formatNearAmount(config.vote_storage_fee);
 
   return (
     <div className="p-4 space-y-4">
       <div>
         <h3 className="text-lg font-semibold mb-2">Create Proposal</h3>
         <p className="text-sm text-muted-foreground">
-          Create a new proposal for the community to vote on.
+          Proposals must adhere to the style guide, and be approved by the
+          Screening Committee. Once approved, the voting period will last{" "}
+          {votingDuration}.
         </p>
       </div>
 
@@ -75,18 +72,10 @@ export function NearProposalModal({
             />
             <InfoItem
               label="Vote Storage Fee"
-              value={utils.format.formatNearAmount(config.vote_storage_fee)}
+              value={voteStorageFee}
               unit="NEAR"
             />
-            <InfoItem
-              label="Max Voting Options"
-              value={config.max_number_of_voting_options.toString()}
-            />
-            <InfoItem
-              label="Voting Duration"
-              value={`${parseInt(config.voting_duration_ns) / 1e9 / (60 * 60 * 24)} days`}
-              isRaw
-            />
+            <InfoItem label="Voting Duration" value={votingDuration} isRaw />
           </div>
 
           <div className="space-y-4">
@@ -127,31 +116,33 @@ export function NearProposalModal({
                 <p className="text-red-500">Valid link format is required</p>
               )}
             </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Voting Options (Max: {config.max_number_of_voting_options})
-              </label>
-              <div className="space-y-2">
-                {["Yes", "No"].map((option, index) => (
-                  <div key={index} className="flex gap-2">
-                    <Input value={option} placeholder="Enter option" disabled />
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
 
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-center gap-2 mt-4">
           <Button variant="outline" onClick={closeDialog}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isCreatingProposal}>
-            {isCreatingProposal ? "Creating..." : "Create Proposal"}
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button type="submit" disabled={isCreatingProposal}>
+              {isCreatingProposal ? "Creating..." : "Create Proposal"}
+            </Button>
+            <p className="text-sm text-muted-foreground">
+              Creating a proposal requires a {baseProposalFee} NEAR fee, and a{" "}
+              {voteStorageFee} NEAR deposit
+            </p>
+          </div>
         </div>
       </form>
+      {createProposalError && (
+        <div className="p-4 space-y-4">
+          <div>
+            <h3 className="text-lg font-semibold text-red-500">
+              {createProposalError.message}
+            </h3>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
