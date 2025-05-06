@@ -14,11 +14,14 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { useDAOMetrics } from "@/hooks/useDAOMetrics";
+import { useNear } from "@/contexts/NearContext";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
 
 export default function DAOMetricsHeader() {
   const { token, ui, contracts } = Tenant.current();
   const [isClient, setIsClient] = useState(false);
   const { votableSupply, totalSupply, isLoading } = useDAOMetrics();
+  const { votableSupply: votableSupplyFromNear, totalSupply: totalSupplyFromNear } = useNear();
 
   const governanceForumLink = ui.link("governance-forum");
   const bugsLink = ui.link("bugs");
@@ -61,8 +64,8 @@ export default function DAOMetricsHeader() {
                   <HoverCard openDelay={100} closeDelay={100}>
                     <HoverCardTrigger>
                       <span className="cursor-default">
-                        {isLoading ? "-" : formattedMetrics.totalSupply}{" "}
-                        {token.symbol} total
+                        {isLoading ? "-" : <NearTokenAmount amount={totalSupplyFromNear} hideCurrency />}{" "}
+                        {token.symbol}
                         <span className="hidden sm:inline">&nbsp;supply</span>
                       </span>
                     </HoverCardTrigger>
@@ -78,7 +81,7 @@ export default function DAOMetricsHeader() {
                     <HoverCard openDelay={100} closeDelay={100}>
                       <HoverCardTrigger>
                         <span className="cursor-default">
-                          {isLoading ? "-" : formattedMetrics.votableSupply}{" "}
+                          {isLoading ? "-" : <NearTokenAmount amount={votableSupplyFromNear} hideCurrency />}{" "}
                           {token.symbol} votable
                           <span className="hidden sm:inline">&nbsp;supply</span>
                         </span>
