@@ -36,7 +36,7 @@ export default function NearTokenAmount({
 
   return (
     <span className={cn(className)}>
-      {`${formattedNumber}${hideCurrency ? "" : ` ${currency}`}`}
+      {`${formattedNumber}${hideCurrency ? "" : ` ${currency}`} `}
     </span>
   );
 }
