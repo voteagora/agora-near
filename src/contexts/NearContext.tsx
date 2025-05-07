@@ -60,8 +60,6 @@ interface TransactionsProps {
 
 interface NearContextType {
   signedAccountId: string | undefined;
-  totalSupply: string | undefined;
-  votableSupply: string | undefined;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   viewMethod: (options: ViewMethodProps) => Promise<any>;
@@ -75,8 +73,6 @@ interface NearContextType {
 
 export const NearContext = createContext<NearContextType>({
   signedAccountId: undefined,
-  totalSupply: undefined,
-  votableSupply: undefined,
   signIn: async () => {},
   signOut: async () => {},
   viewMethod: async () => null,
@@ -108,8 +104,6 @@ export const NearProvider: React.FC<NearProviderProps> = ({
 }) => {
   const [selector, setSelector] = useState<WalletSelector | undefined>();
   const [signedAccountId, setSignedAccountId] = useState<string | undefined>();
-  const [totalSupply, setTotalSupply] = useState<string | undefined>();
-  const [votableSupply, setVotableSupply] = useState<string | undefined>();
   const unsubscribeRef = useRef<() => void>();
 
   /**
@@ -135,17 +129,6 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         : undefined;
       setSignedAccountId(accountId);
       setSelector(selector);
-
-      const { network } = selector.options;
-      const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
-      const block = await provider.block({ finality: "final" });
-      setTotalSupply(block.header.total_supply);
-      const validators = await provider.validators(null);
-      const totalVoteSupply = validators.current_validators.reduce(
-        (sum, val) => sum + BigInt(val.stake),
-        0n
-      );
-      setVotableSupply(totalVoteSupply.toString());
 
       unsubscribeRef.current = selector.store.observable.subscribe(
         async (state) => {
@@ -413,8 +396,6 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     <NearContext.Provider
       value={{
         signedAccountId,
-        totalSupply,
-        votableSupply,
         signIn,
         signOut,
         viewMethod,

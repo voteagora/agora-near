@@ -2,7 +2,6 @@
 
 import discord from "@/icons/discord.svg";
 import Tenant from "@/lib/tenant/tenant";
-import { formatNumber } from "@/lib/tokenUtils";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,18 +12,18 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { useDAOMetrics } from "@/hooks/useDAOMetrics";
-import { useNear } from "@/contexts/NearContext";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import { useNearSupplies } from "@/hooks/useNearSupply";
 
 export default function DAOMetricsHeader() {
   const { token, ui, contracts } = Tenant.current();
   const [isClient, setIsClient] = useState(false);
-  const { votableSupply, totalSupply, isLoading } = useDAOMetrics();
+
   const {
-    votableSupply: votableSupplyFromNear,
     totalSupply: totalSupplyFromNear,
-  } = useNear();
+    votableSupply: votableSupplyFromNear,
+    isLoading: isLoadingSupply,
+  } = useNearSupplies();
 
   const governanceForumLink = ui.link("governance-forum");
   const bugsLink = ui.link("bugs");
@@ -41,11 +40,6 @@ export default function DAOMetricsHeader() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const formattedMetrics = {
-    votableSupply: formatNumber(votableSupply),
-    totalSupply: formatNumber(totalSupply),
-  };
 
   if (!isClient) {
     return null;
@@ -67,7 +61,7 @@ export default function DAOMetricsHeader() {
                   <HoverCard openDelay={100} closeDelay={100}>
                     <HoverCardTrigger>
                       <span className="cursor-default">
-                        {isLoading ? (
+                        {isLoadingSupply || !totalSupplyFromNear ? (
                           "-"
                         ) : (
                           <NearTokenAmount
@@ -91,7 +85,7 @@ export default function DAOMetricsHeader() {
                     <HoverCard openDelay={100} closeDelay={100}>
                       <HoverCardTrigger>
                         <span className="cursor-default">
-                          {isLoading ? (
+                          {isLoadingSupply || !votableSupplyFromNear ? (
                             "-"
                           ) : (
                             <NearTokenAmount
