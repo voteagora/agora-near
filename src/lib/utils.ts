@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useMemo } from "react";
 import Tenant from "./tenant/tenant";
-import { TENANT_NAMESPACES } from "./constants";
+import { NANO_SECONDS_IN_DAY, TENANT_NAMESPACES } from "./constants";
 import { http, fallback } from "wagmi";
 import {
   DERIVE_MAINNET_RPC,
@@ -631,3 +631,7 @@ export function getFunctionSignature(decodedData: any): string | null {
     return null;
   }
 }
+
+export const convertNanoSecondsToDays = (nanoSeconds: string) => {
+  return Number(nanoSeconds) / NANO_SECONDS_IN_DAY;
+};

@@ -1,10 +1,12 @@
 "use client";
 
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCreateProposal } from "@/hooks/useCreateProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
+import { convertNanoSecondsToDays } from "@/lib/utils";
 import { utils } from "near-api-js";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -16,11 +18,7 @@ type Inputs = {
   link: string;
 };
 
-export function NearProposalModal({
-  closeDialog,
-}: {
-  closeDialog: () => void;
-}) {
+export function NearProposalModal() {
   const {
     register,
     handleSubmit,
@@ -45,11 +43,8 @@ export function NearProposalModal({
 
   if (!config) return null;
 
-  const votingDuration = `${parseInt(config.voting_duration_ns) / 1e9 / (60 * 60 * 24)} days`;
-  const baseProposalFee = utils.format.formatNearAmount(
-    config.base_proposal_fee
-  );
-  const voteStorageFee = utils.format.formatNearAmount(config.vote_storage_fee);
+  const votingDays = convertNanoSecondsToDays(config.voting_duration_ns);
+  const votingDuration = `${votingDays} ${votingDays === 1 ? "day" : "days"}`;
 
   return (
     <div className="p-4 space-y-4">
@@ -64,20 +59,6 @@ export function NearProposalModal({
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4 py-2">
-          <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
-            <InfoItem
-              label="Base Proposal Fee"
-              value={utils.format.formatNearAmount(config.base_proposal_fee)}
-              unit="NEAR"
-            />
-            <InfoItem
-              label="Vote Storage Fee"
-              value={voteStorageFee}
-              unit="NEAR"
-            />
-            <InfoItem label="Voting Duration" value={votingDuration} isRaw />
-          </div>
-
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-1">
@@ -125,8 +106,13 @@ export function NearProposalModal({
               {isCreatingProposal ? "Creating..." : "Create Proposal"}
             </Button>
             <p className="text-sm text-muted-foreground">
-              Creating a proposal requires a {baseProposalFee} NEAR fee, and a{" "}
-              {voteStorageFee} NEAR deposit
+              Creating a proposal requires a{" "}
+              <NearTokenAmount amount={config.base_proposal_fee} /> fee, and a{" "}
+              <NearTokenAmount
+                amount={config.vote_storage_fee}
+                maximumSignificantDigits={5}
+              />{" "}
+              deposit
             </p>
           </div>
         </div>

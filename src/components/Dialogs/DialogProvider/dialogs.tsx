@@ -85,7 +85,7 @@ export type NearUndelegateDialogType = {
 
 export type NearProposalDialogType = {
   type: "NEAR_PROPOSAL";
-  params: object;
+  params: {};
 };
 
 export type NearLockDialogType = {
@@ -324,8 +324,8 @@ export const dialogs: DialogDefinitions<DialogType> = {
       />
     );
   },
-  NEAR_PROPOSAL: (_params, closeDialog) => {
-    return <NearProposalModal closeDialog={closeDialog} />;
+  NEAR_PROPOSAL: () => {
+    return <NearProposalModal />;
   },
   NEAR_LOCK: (_params, closeDialog) => {
     return <NearLockDialog closeDialog={closeDialog} />;
