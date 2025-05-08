@@ -11,14 +11,23 @@ type Props = {
   storageFee: string;
 };
 
-export const useCreateProposal = ({ baseFee, storageFee }: Props) => {
+type CreateProposalProps = {
+  onSuccess?: () => void;
+};
+
+export const useCreateProposal = ({
+  baseFee,
+  storageFee,
+  onSuccess,
+}: Props & CreateProposalProps) => {
   const queryClient = useQueryClient();
 
-  const onSuccess = useCallback(() => {
+  const onProposalCreateSuccess = useCallback(() => {
     queryClient.invalidateQueries({
       queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VOTING_CONTRACT_ID],
     });
-  }, [queryClient]);
+    onSuccess?.();
+  }, [queryClient, onSuccess]);
 
   const {
     mutate: mutateCreateProposal,
@@ -26,7 +35,7 @@ export const useCreateProposal = ({ baseFee, storageFee }: Props) => {
     error: createProposalError,
   } = useWriteHOSContract({
     contractType: "VOTING",
-    onSuccess,
+    onSuccess: onProposalCreateSuccess,
   });
 
   const totalDeposit = useMemo(() => {

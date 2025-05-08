@@ -5,9 +5,18 @@ import { getNearProposalTimes, getNearQuorum } from "@/lib/nearProposalUtils";
 import checkIcon from "@/icons/check.svg";
 import Image from "next/image";
 import Big from "big.js";
+import { useMemo } from "react";
 
 const NearProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
   const { createdTime, startTime, endTime } = getNearProposalTimes(proposal);
+
+  const totalRows = useMemo(() => {
+    let row = 0;
+    if (createdTime) row++;
+    if (startTime) row++;
+    if (endTime) row++;
+    return row;
+  }, [createdTime, startTime, endTime]);
 
   const quorum = getNearQuorum(proposal);
   const hasMetQuorum = Big(proposal.total_votes.total_venear).gte(quorum);
@@ -53,13 +62,25 @@ const NearProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
       </div>
       <ol className="overflow-hidden space-y-6 w-[calc(100%+32px)] bg-wash -ml-4 p-4 pb-6 rounded-br-lg rounded-bl-lg">
         {createdTime && (
-          <StepperRow label="Proposal created" value={createdTime} />
+          <StepperRow
+            label="Proposal created"
+            value={createdTime}
+            isLastStep={totalRows === 1}
+          />
         )}
         {startTime && (
-          <StepperRow label="Voting period start" value={startTime} />
+          <StepperRow
+            label="Voting period start"
+            value={startTime}
+            isLastStep={totalRows === 2}
+          />
         )}
         {endTime && (
-          <StepperRow label="Voting period end" value={endTime} isLastStep />
+          <StepperRow
+            label="Voting period end"
+            value={endTime}
+            isLastStep={totalRows === 3}
+          />
         )}
       </ol>
     </div>
