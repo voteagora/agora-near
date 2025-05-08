@@ -2,6 +2,7 @@ import { UpdatedButton } from "@/components/Button";
 import { useNear } from "@/contexts/NearContext";
 import { useUndelegate } from "@/hooks/useUndelegate";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
+import { formatNearAccountId } from "@/lib/utils";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
@@ -32,7 +33,7 @@ export function NearUndelegateDialog({
         <div className="flex flex-col gap-6 justify-center min-h-[318px] w-full">
           <div className="flex flex-col gap-4">
             <p className="text-xl font-bold text-left text-primary">
-              Remove {delegateAddress} as your delegate
+              Remove {formatNearAccountId(delegateAddress)} as your delegate
             </p>
             <div className="text-secondary">
               This delegate will no longer be able to vote on your behalf. Your
@@ -45,7 +46,11 @@ export function NearUndelegateDialog({
                     Currently delegated to
                   </p>
                   <div className="font-medium text-primary max-w-[6rem] sm:max-w-full">
-                    <p>{accountInfo?.delegation?.delegatee ?? "N/A"}</p>
+                    <p>
+                      {accountInfo?.delegation?.delegatee
+                        ? formatNearAccountId(accountInfo.delegation.delegatee)
+                        : "N/A"}
+                    </p>
                   </div>
                 </div>
               </div>

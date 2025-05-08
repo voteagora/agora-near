@@ -3,7 +3,7 @@ import Link from "next/link";
 import { VStack } from "@/components/Layout/Stack";
 import NearProposalTimeStatus from "./NearProposalTimeStatus";
 import NearProposalStatus from "./NearProposalStatus";
-import { cn } from "@/lib/utils";
+import { cn, formatNearAccountId } from "@/lib/utils";
 import { memo } from "react";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { NearProposalStatusText } from "./NearProposalStatusText";
@@ -23,7 +23,7 @@ export const NearProposal = memo(({ proposal }: { proposal: ProposalInfo }) => {
         >
           <div className="flex flex-row text-xs text-secondary gap-1">
             <div className="hidden sm:inline">
-              Proposal by {proposal.proposer_id}
+              Proposal by {formatNearAccountId(proposal.proposer_id)}
             </div>
             <div className="block sm:hidden">
               <NearProposalStatusText proposal={proposal} />

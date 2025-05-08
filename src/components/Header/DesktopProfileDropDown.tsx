@@ -11,6 +11,7 @@ import { ReactNode, useState } from "react";
 import { AccountActionsButton } from "../AccountActions/AccountActionsButton";
 import { PanelRow } from "../Delegates/DelegateCard/DelegateCard";
 import NearTokenAmount from "../shared/NearTokenAmount";
+import { formatNearAccountId } from "@/lib/utils";
 
 type Props = {
   accountId?: string;
@@ -39,7 +40,7 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
               onClick={() => setShouldHydrate(true)}
             >
               <div className="text-primary flex items-center gap-3">
-                {accountId}
+                {formatNearAccountId(accountId)}
               </div>
             </Popover.Button>
 
@@ -71,7 +72,7 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                         <div className="p-4 border-b border-line">
                           <div className="flex flex-row items-center px-4 py-3">
                             <div className="flex flex-col justify-center">
-                              {accountId}
+                              {formatNearAccountId(accountId)}
                             </div>
                           </div>
                         </div>

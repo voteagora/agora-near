@@ -2,6 +2,7 @@ import Markdown from "@/components/shared/Markdown/Markdown";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import styles from "./NearProposalDescription.module.scss";
+import { formatNearAccountId } from "@/lib/utils";
 
 export default function NearProposalDescription({
   proposal,
@@ -14,7 +15,7 @@ export default function NearProposalDescription({
     >
       <div className="flex-col items-start">
         <div className="text-xs font-semibold text-secondary flex items-center">
-          Proposal by {proposal.proposer_id}
+          Proposal by {formatNearAccountId(proposal.proposer_id)}
           {proposal.link && (
             <a
               href={

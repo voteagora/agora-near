@@ -5,6 +5,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { formatNumber } from "@/lib/tokenUtils";
 import { useRouter } from "next/navigation";
 import { DelegateProfileImage } from "../DelegateCard/DelegateProfileImage";
+import { formatNearAccountId } from "@/lib/utils";
 
 export default function DelegateTableRow({
   delegate,
@@ -23,7 +24,7 @@ export default function DelegateTableRow({
       <TableCell>
         <DelegateProfileImage
           endorsed={delegate.statement?.endorsed}
-          address={delegate.address}
+          address={formatNearAccountId(delegate.address)}
         />
       </TableCell>
       <TableCell>{formatNumber(delegate.votingPower.total)}</TableCell>
