@@ -1,13 +1,14 @@
 "use client";
 
+import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useCreateProposal } from "@/hooks/useCreateProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
 import { convertNanoSecondsToDays } from "@/lib/utils";
-import { utils } from "near-api-js";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 const Required = () => <span className="text-red-500">*</span>;
@@ -25,7 +26,7 @@ export function NearProposalModal() {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const { config } = useProposalConfig();
+  const { config, isLoading } = useProposalConfig();
   const { createProposal, isCreatingProposal, createProposalError } =
     useCreateProposal({
       baseFee: config?.base_proposal_fee || "0",
@@ -41,7 +42,13 @@ export function NearProposalModal() {
     });
   };
 
-  if (!config) return null;
+  if (!config || isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-4 space-y-4 min-h-[400px]">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   const votingDays = convertNanoSecondsToDays(config.voting_duration_ns);
   const votingDuration = `${votingDays} ${votingDays === 1 ? "day" : "days"}`;
@@ -50,11 +57,15 @@ export function NearProposalModal() {
     <div className="p-4 space-y-4">
       <div>
         <h3 className="text-lg font-semibold mb-2">Create Proposal</h3>
-        <p className="text-sm text-muted-foreground">
-          Proposals must adhere to the style guide, and be approved by the
-          Screening Committee. Once approved, the voting period will last{" "}
-          {votingDuration}.
-        </p>
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-muted-foreground">
+            Proposals must adhere to the style guide and be approved by the
+            Screening Committee.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Once approved, voting will be open for {votingDuration}.
+          </p>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -74,8 +85,8 @@ export function NearProposalModal() {
               <label className="block text-sm font-medium mb-1">
                 Description <Required />
               </label>
-              <textarea
-                className="w-full min-h-[100px] p-2 border rounded-md"
+              <Textarea
+                className="h-[200px] resize-none"
                 placeholder="Enter proposal description"
                 {...register("description", { required: true })}
               />
@@ -90,7 +101,7 @@ export function NearProposalModal() {
                 {...register("link", {
                   required: true,
                   pattern:
-                    /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
+                    /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
                 })}
               />
               {errors.link?.type === "pattern" && (
@@ -129,19 +140,3 @@ export function NearProposalModal() {
     </div>
   );
 }
-
-interface InfoItemProps {
-  label: string;
-  value: string;
-  unit?: string;
-  isRaw?: boolean;
-}
-
-const InfoItem = ({ label, value, unit, isRaw }: InfoItemProps) => (
-  <div className="flex flex-col gap-1">
-    <p className="text-sm text-muted-foreground">{label}</p>
-    <p className="text-lg font-medium">
-      {isRaw ? value : `${value}${unit ? ` ${unit}` : ""}`}
-    </p>
-  </div>
-);
