@@ -1,14 +1,12 @@
 "use client";
 
+import { UpdatedButton } from "@/components/Button";
 import PageHeader from "@/components/Layout/PageHeader/PageHeader";
 import { useProposals } from "@/hooks/useProposals";
+import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { NearProposal } from "./NearProposal";
-import { UpdatedButton } from "@/components/Button";
-import { PlusIcon } from "lucide-react";
-import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
-import { useNear } from "@/contexts/NearContext";
 
 const Loader = () => {
   return (
@@ -73,32 +71,20 @@ function NearProposalsList() {
 }
 
 export default function NearProposals() {
-  const { signedAccountId } = useNear();
+  const router = useRouter();
 
-  const openDialog = useOpenDialog();
-
-  const handleOpenModal = () => {
-    openDialog({
-      type: "NEAR_PROPOSAL",
-      params: {},
-    });
+  const onCreateProposalClicked = () => {
+    router.push("/proposals/create");
   };
 
   return (
     <div className="flex flex-col max-w-[76rem]">
       <div className="flex flex-col sm:flex-row justify-between items-baseline gap-2 mb-4 sm:mb-auto">
-        <div className="flex flex-row gap-4 items-center mb-4">
+        <div className="flex flex-row justify-between w-full gap-4 items-center mb-4">
           <PageHeader headerText="All Proposals" />
-          {signedAccountId && (
-            <UpdatedButton
-              onClick={handleOpenModal}
-              type="secondary"
-              className="mb-2"
-              variant="rounded"
-            >
-              <PlusIcon className="w-6 h-6" />
-            </UpdatedButton>
-          )}
+          <UpdatedButton onClick={onCreateProposalClicked}>
+            Create Proposal
+          </UpdatedButton>
         </div>
       </div>
       <NearProposalsList />

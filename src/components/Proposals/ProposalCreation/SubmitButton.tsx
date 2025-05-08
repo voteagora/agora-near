@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { useNear } from "@/contexts/NearContext";
 import { useCreateProposal } from "@/hooks/useCreateProposal";
-import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
 import { cx } from "@emotion/css";
 import { useRouter } from "next/navigation";
@@ -59,12 +58,11 @@ export default function SubmitButton({
   }, [createProposal, getValues, isConnected, signIn, trigger]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       <Button
         type="button"
         variant={"outline"}
-        disabled={isCreatingProposal || !!createProposalError}
-        className={cx([createProposalError && "cursor-not-allowed bg-line"])}
+        disabled={isCreatingProposal}
         onClick={onSubmitProposal}
       >
         {isConnected
@@ -74,7 +72,7 @@ export default function SubmitButton({
           : "Connect wallet"}
       </Button>
       {createProposalError && (
-        <p className="text-secondary text-sm break-words">
+        <p className="text-negative text-sm break-words">
           {createProposalError?.message}
         </p>
       )}
