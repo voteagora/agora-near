@@ -26,6 +26,9 @@ export default function InfoPanel({ votingConfig }: InfoPanelProps) {
             Proposals must adhere to the style guide and be approved by the
             Screening Committee.
           </li>
+          <li>
+            All created proposals will have two voting options: For and Against.
+          </li>
           <li>Once approved, voting will be open for {votingDuration}.</li>
           <li>
             Creating a proposal requires a minimum deposit of{" "}
