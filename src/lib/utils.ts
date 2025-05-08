@@ -631,3 +631,8 @@ export function getFunctionSignature(decodedData: any): string | null {
     return null;
   }
 }
+
+export const getNearRpcUrl = (networkId: string, params: { useArchivalNode: boolean }) => {
+  const url = `https://${params.useArchivalNode ? "archival-" : ""}rpc.${networkId}.near.org`;
+  return url;
+};

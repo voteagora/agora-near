@@ -1,15 +1,14 @@
-import { setupWalletSelector } from "@near-wallet-selector/core";
-import { useEffect, useState } from "react";
-import { NetworkId } from "@near-wallet-selector/core";
+import { useCallback, useEffect, useState } from "react";
 import { providers } from "near-api-js";
 import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { useReadHOSContract } from "./useReadHOSContract";
-
-const networkId = "testnet" as NetworkId;
+import { useNear } from "@/contexts/NearContext";
 
 export const useNearSupplies = () => {
   const [isLoadingTotalSupply, setIsLoadingTotalSupply] = useState(true);
   const [totalSupply, setTotalSupply] = useState<string | undefined>(undefined);
+
+  const { rpcUrl } = useNear();
 
   const [{ data: votableSupply, isLoading: isLoadingVotableSupply }] =
     useReadHOSContract([
@@ -20,23 +19,17 @@ export const useNearSupplies = () => {
       },
     ]);
 
-  const init = async () => {
-    const selector = await setupWalletSelector({
-      network: networkId,
-      modules: [],
-    });
-
-    const { network } = selector.options;
-    const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+  const init = useCallback(async () => {
+    const provider = new providers.JsonRpcProvider({ url: rpcUrl });
     const block = await provider.block({ finality: "final" });
     setTotalSupply(block.header.total_supply);
 
     setIsLoadingTotalSupply(false);
-  };
+  }, [rpcUrl]);
 
   useEffect(() => {
     init();
-  }, []);
+  }, [init]);
 
   return {
     totalSupply,

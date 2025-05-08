@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { getNearRpcUrl } from "@/lib/utils";
 import { convertUnit } from "@fastnear/utils";
 import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 import {
@@ -60,6 +61,7 @@ interface TransactionsProps {
 
 interface NearContextType {
   signedAccountId: string | undefined;
+  rpcUrl: string;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   viewMethod: (options: ViewMethodProps) => Promise<any>;
@@ -73,6 +75,7 @@ interface NearContextType {
 
 export const NearContext = createContext<NearContextType>({
   signedAccountId: undefined,
+  rpcUrl: "",
   signIn: async () => {},
   signOut: async () => {},
   viewMethod: async () => null,
@@ -105,6 +108,10 @@ export const NearProvider: React.FC<NearProviderProps> = ({
   const [selector, setSelector] = useState<WalletSelector | undefined>();
   const [signedAccountId, setSignedAccountId] = useState<string | undefined>();
   const unsubscribeRef = useRef<() => void>();
+
+  const rpcUrl = getNearRpcUrl(networkId, {
+    useArchivalNode: false,
+  });
 
   /**
    * To be called when the website loads
@@ -179,7 +186,9 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       blockId,
       useArchivalNode = false,
     }: ViewMethodProps) => {
-      const url = `https://${useArchivalNode ? "archival-" : ""}rpc.${networkId}.near.org`;
+      const url = getNearRpcUrl(networkId, {
+        useArchivalNode,
+      });
       const provider = new providers.JsonRpcProvider({ url });
 
       debugLog(
@@ -312,14 +321,13 @@ export const NearProvider: React.FC<NearProviderProps> = ({
   const getTransactionResult = useCallback(
     async (txhash: string) => {
       if (!selector) return null;
-      const { network } = selector.options;
-      const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+      const provider = new providers.JsonRpcProvider({ url: rpcUrl });
 
       // Retrieve transaction result from the network
       const transaction = await provider.txStatus(txhash, "unnused");
       return providers.getTransactionLastResult(transaction);
     },
-    [selector]
+    [selector, rpcUrl]
   );
 
   /**
@@ -331,8 +339,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
   const getBalance = useCallback(
     async (accountId: string) => {
       if (!selector) return "";
-      const { network } = selector.options;
-      const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+      const provider = new providers.JsonRpcProvider({ url: rpcUrl });
 
       // Retrieve account state from the network
       const account = await provider.query({
@@ -344,7 +351,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       const accountAmount = (account as any).amount;
       return accountAmount ?? "0";
     },
-    [selector]
+    [selector, rpcUrl]
   );
 
   /**
@@ -370,8 +377,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
   const getAccessKeys = useCallback(
     async (accountId: string) => {
       if (!selector) return [];
-      const { network } = selector.options;
-      const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+      const provider = new providers.JsonRpcProvider({ url: rpcUrl });
 
       // Retrieve account state from the network
       const keys = await provider.query({
@@ -381,7 +387,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       });
       return (keys as any).keys || [];
     },
-    [selector]
+    [selector, rpcUrl]
   );
 
   useEffect(() => {
@@ -396,6 +402,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     <NearContext.Provider
       value={{
         signedAccountId,
+        rpcUrl,
         signIn,
         signOut,
         viewMethod,
