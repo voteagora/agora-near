@@ -1,22 +1,21 @@
 "use client";
 
 import DelegateCard from "@/components/Delegates/DelegateCard/DelegateCard";
-import DelegateStatementFormSection from "./DelegateStatementFormSection";
-import TopIssuesFormSection from "./TopIssuesFormSection";
-import OtherInfoFormSection from "./OtherInfoFormSection";
-import { Button } from "@/components/ui/button";
-import { type UseFormReturn, useWatch } from "react-hook-form";
-import { Form } from "@/components/ui/form";
-import { useAccount, useSignMessage, useWalletClient } from "wagmi";
-import { submitDelegateStatement } from "@/app/delegates/actions";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { type DelegateStatementFormValues } from "./CurrentDelegateStatement";
-import Tenant from "@/lib/tenant/tenant";
 import TopStakeholdersFormSection from "@/components/DelegateStatement/TopStakeholdersFormSection";
-import { useSmartAccountAddress } from "@/hooks/useSmartAccountAddress";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { useNear } from "@/contexts/NearContext";
 import { useDelegate } from "@/hooks/useDelegate";
+import Tenant from "@/lib/tenant/tenant";
 import { useDelegateStatementStore } from "@/stores/delegateStatement";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { type UseFormReturn, useWatch } from "react-hook-form";
+import { useAccount } from "wagmi";
+import { type DelegateStatementFormValues } from "./CurrentDelegateStatement";
+import DelegateStatementFormSection from "./DelegateStatementFormSection";
+import OtherInfoFormSection from "./OtherInfoFormSection";
+import TopIssuesFormSection from "./TopIssuesFormSection";
 
 export default function DelegateStatementForm({
   form,
@@ -26,11 +25,9 @@ export default function DelegateStatementForm({
   const router = useRouter();
   const { ui } = Tenant.current();
   const { address } = useAccount();
-  const walletClient = useWalletClient();
-  const messageSigner = useSignMessage();
+  const { signMessage, signedAccountId } = useNear();
   const [submissionError, setSubmissionError] = useState<string | null>(null);
 
-  const { data: scwAddress } = useSmartAccountAddress({ owner: address });
   const { data: delegate } = useDelegate({ address });
 
   const hasTopIssues = Boolean(
@@ -45,74 +42,45 @@ export default function DelegateStatementForm({
     name: "agreeCodeConduct",
   });
 
-  const agreeDaoPrinciples = useWatch({
-    control: form.control,
-    name: "agreeDaoPrinciples",
-  });
-
   const setSaveSuccess = useDelegateStatementStore(
     (state) => state.setSaveSuccess
   );
 
   async function onSubmit(values: DelegateStatementFormValues) {
-    /* agreeCodeConduct and agreeDaoPrinciples default values are !enabled so if it's not enabled for a tenant, it will be true, skipping the check below.
-    If enabled, it will be false by default and the user will need to check the box. */
-    if (!agreeCodeConduct && !agreeDaoPrinciples) {
+    if (!agreeCodeConduct) {
       return;
     }
-    if (!walletClient) {
+    if (!signedAccountId) {
       throw new Error("signer not available");
     }
 
     values.topIssues = values.topIssues.filter((issue) => issue.value !== "");
 
-    const {
-      daoSlug,
-      discord,
-      delegateStatement,
-      email,
-      twitter,
-      warpcast,
-      topIssues,
-      topStakeholders,
-      notificationPreferences,
-    } = values;
+    const { discord, delegateStatement, email, twitter, warpcast, topIssues } =
+      values;
 
     // User will only sign what they are seeing on the frontend
     const body = {
       agreeCodeConduct: values.agreeCodeConduct,
-      agreeDaoPrinciples: values.agreeDaoPrinciples,
-      daoSlug,
       discord,
       delegateStatement,
       email,
       twitter,
       warpcast,
       topIssues,
-      topStakeholders,
-      scwAddress,
-      notificationPreferences,
     };
 
     const serializedBody = JSON.stringify(body, undefined, "\t");
-    const signature = await messageSigner
-      .signMessageAsync({
-        message: serializedBody,
-      })
-      .catch((error) => console.error(error));
+
+    const signature = await signMessage(serializedBody);
 
     if (!signature) {
       setSubmissionError("Signature failed, please try again");
       return;
     }
 
-    const response = await submitDelegateStatement({
-      address: address as `0x${string}`,
-      delegateStatement: values,
-      signature,
-      message: serializedBody,
-      scwAddress,
-    }).catch((error) => console.error(error));
+    // TODO: Call API
+    const response = {};
 
     if (!response) {
       setSubmissionError(
@@ -126,11 +94,10 @@ export default function DelegateStatementForm({
   }
 
   const canSubmit =
-    !!walletClient &&
+    !!signedAccountId &&
     !form.formState.isSubmitting &&
     !!form.formState.isValid &&
-    !!agreeCodeConduct &&
-    !!agreeDaoPrinciples;
+    !!agreeCodeConduct;
 
   return (
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-16 justify-between mt-12 w-full max-w-full">
@@ -165,11 +132,6 @@ export default function DelegateStatementForm({
                 {form.formState.isSubmitted && !agreeCodeConduct && (
                   <span className="text-red-700 text-sm">
                     You must agree with the code of conduct to continue
-                  </span>
-                )}
-                {form.formState.isSubmitted && !agreeDaoPrinciples && (
-                  <span className="text-red-700 text-sm">
-                    You must agree with the DAO principles to continue
                   </span>
                 )}
                 {submissionError && (
