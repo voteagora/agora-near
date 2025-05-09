@@ -5,6 +5,21 @@ import { useState } from "react";
 import NearProposalVoteFilter from "./NearProposalVoteFilter";
 import NearProposalVoteSummary from "./NearProposalVoteSummary";
 import NearProposalVotingActions from "./NearProposalVotingActions";
+import InfiniteScroll from "react-infinite-scroller";
+import { useNearProposalVotingHistory } from "@/hooks/useNearProposalVotingHistory";
+import { HStack } from "@/components/Layout/Stack";
+import { VStack } from "@/components/Layout/Stack";
+import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { CheckIcon, X } from "lucide-react";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import clsx from "clsx";
+import { useNear } from "@/contexts/NearContext";
 
 const NearProposalVoteResult = ({
   proposal,
@@ -14,6 +29,17 @@ const NearProposalVoteResult = ({
   config: VotingConfig;
 }) => {
   const [showVoters, setShowVoters] = useState(true);
+  const { signedAccountId } = useNear();
+
+  const {
+    data: votingHistory,
+    isFetching: isVotingHistoryFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useNearProposalVotingHistory({
+    proposalId: proposal.id.toString(),
+    pageSize: 10,
+  });
 
   return (
     <div
@@ -33,6 +59,100 @@ const NearProposalVoteResult = ({
                 setShowVoters(value === "Voters");
               }}
             />
+          </div>
+          <div className="px-4 pb-4 overflow-y-auto max-h-[calc(100vh-437px)]">
+            {!isVotingHistoryFetching && votingHistory ? (
+              <InfiniteScroll
+                hasMore={hasNextPage}
+                pageStart={0}
+                loadMore={() => {
+                  if (hasNextPage) {
+                    fetchNextPage();
+                  }
+                }}
+                useWindow={false}
+                loader={
+                  <div
+                    className="flex text-xs font-medium text-secondary"
+                    key={0}
+                  >
+                    Loading more votes...
+                  </div>
+                }
+                element="main"
+              >
+                <ul className="flex flex-col">
+                  {votingHistory.map((vote) => (
+                    <li key={vote.id}>
+                      <VStack
+                        gap={2}
+                        className="text-xs text-tertiary px-0 py-1"
+                      >
+                        <VStack>
+                          <HoverCard openDelay={100} closeDelay={100}>
+                            <HoverCardTrigger>
+                              <HStack
+                                justifyContent="justify-between"
+                                className="font-semibold text-secondary"
+                              >
+                                <HStack gap={1} alignItems="items-center">
+                                  {vote.voterId}
+                                  {vote.voterId === signedAccountId && (
+                                    <p className="text-primary">(you)</p>
+                                  )}
+                                </HStack>
+                                <HStack alignItems="items-center">
+                                  <TooltipProvider delayDuration={0}>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div
+                                          className={clsx(
+                                            "flex items-center gap-1",
+                                            vote.voteOption === 0
+                                              ? "text-positive"
+                                              : "text-negative"
+                                          )}
+                                        >
+                                          <NearTokenAmount
+                                            amount={vote.votingPower}
+                                          />
+                                          {vote.voteOption === 0 ? (
+                                            <CheckIcon
+                                              strokeWidth={4}
+                                              className="w-3 h-3 text-positive"
+                                            />
+                                          ) : (
+                                            <X
+                                              strokeWidth={4}
+                                              className="w-3 h-3 text-negative"
+                                            />
+                                          )}
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent className="p-4">
+                                        <NearTokenAmount
+                                          amount={vote.votingPower}
+                                        />
+                                        Voted{" "}
+                                        {vote.voteOption === 0
+                                          ? "For"
+                                          : "Against"}
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                </HStack>
+                              </HStack>
+                            </HoverCardTrigger>
+                          </HoverCard>
+                        </VStack>
+                      </VStack>
+                    </li>
+                  ))}
+                </ul>
+              </InfiniteScroll>
+            ) : (
+              <div className="text-secondary text-xs">Loading...</div>
+            )}
           </div>
           <NearProposalVotingActions proposal={proposal} config={config} />
         </div>
