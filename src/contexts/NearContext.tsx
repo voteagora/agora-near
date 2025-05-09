@@ -8,11 +8,7 @@ import {
   WalletModuleFactory,
   WalletSelector,
 } from "@near-wallet-selector/core";
-import {
-  SignedMessage,
-  SignMessageMethod,
-  SignMessageParams,
-} from "@near-wallet-selector/core/src/lib/wallet";
+import { VerifiedOwner } from "@near-wallet-selector/core/src/lib/wallet";
 import { setupLedger } from "@near-wallet-selector/ledger";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupModal } from "@near-wallet-selector/modal-ui";
@@ -74,7 +70,7 @@ interface NearContextType {
   signAndSendTransactions: (options: TransactionsProps) => Promise<any>;
   getAccessKeys: (accountId: string) => Promise<any[]>;
   callContracts: (props: CallContractsProps) => Promise<any>;
-  signMessage: (message: string) => Promise<SignedMessage | void>;
+  signMessage: (message: string) => Promise<VerifiedOwner | void>;
 }
 
 export const NearContext = createContext<NearContextType>({
@@ -395,14 +391,8 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     async (message: string) => {
       if (!selector) return;
       const selectedWallet = await selector.wallet();
-      return selectedWallet.signMessage({
+      return selectedWallet.verifyOwner({
         message,
-        nonce: Buffer.from(Array.from(Array(32).keys())), // TODO: Generate nonce on BE
-        recipient:
-          process.env.NODE_ENV === "production"
-            ? (process.env.NEXT_PUBLIC_AGORA_BASE_URL ??
-              "http://localhost:3000")
-            : "http://localhost:3000",
       });
     },
     [selector]
