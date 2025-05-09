@@ -38,7 +38,7 @@ const NearProposalVoteResult = ({
     fetchNextPage,
   } = useNearProposalVotingHistory({
     proposalId: proposal.id.toString(),
-    pageSize: 10,
+    pageSize: 20,
   });
 
   return (
