@@ -632,7 +632,7 @@ export function getFunctionSignature(decodedData: any): string | null {
   }
 }
 
-export const getNearRpcUrl = (
+export const getRpcUrl = (
   networkId: string,
   params: { useArchivalNode: boolean }
 ) => {

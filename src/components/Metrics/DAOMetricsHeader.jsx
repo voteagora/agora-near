@@ -13,17 +13,18 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
-import { useNearSupplies } from "@/hooks/useNearSupply";
+
+import { useTotalSupply } from "@/hooks/useTotalNearSupply";
 
 export default function DAOMetricsHeader() {
-  const { token, ui, contracts } = Tenant.current();
+  const { ui, contracts } = Tenant.current();
   const [isClient, setIsClient] = useState(false);
 
   const {
     totalSupply: totalSupplyFromNear,
     votableSupply: votableSupplyFromNear,
     isLoading: isLoadingSupply,
-  } = useNearSupplies();
+  } = useTotalSupply();
 
   const governanceForumLink = ui.link("governance-forum");
   const bugsLink = ui.link("bugs");
@@ -64,13 +65,9 @@ export default function DAOMetricsHeader() {
                         {isLoadingSupply || !totalSupplyFromNear ? (
                           "-"
                         ) : (
-                          <NearTokenAmount
-                            amount={totalSupplyFromNear}
-                            hideCurrency
-                          />
-                        )}{" "}
-                        {token.symbol}
-                        <span className="hidden sm:inline">&nbsp;supply</span>
+                          <NearTokenAmount amount={totalSupplyFromNear} />
+                        )}
+                        <span className="hidden sm:inline">supply</span>
                       </span>
                     </HoverCardTrigger>
                     <HoverCardContent
@@ -78,7 +75,7 @@ export default function DAOMetricsHeader() {
                       side="bottom"
                       sideOffset={3}
                     >
-                      <span>Total amount of {token.symbol} in existence</span>
+                      <span>Total amount of NEAR in existence</span>
                     </HoverCardContent>
                   </HoverCard>
                   {contracts.token.isERC20() && (
@@ -90,11 +87,10 @@ export default function DAOMetricsHeader() {
                           ) : (
                             <NearTokenAmount
                               amount={votableSupplyFromNear}
-                              hideCurrency
+                              currency="veNEAR"
                             />
-                          )}{" "}
-                          {token.symbol} votable
-                          <span className="hidden sm:inline">&nbsp;supply</span>
+                          )}
+                          <span className="hidden sm:inline">supply</span>
                         </span>
                       </HoverCardTrigger>
                       <HoverCardContent
@@ -102,9 +98,7 @@ export default function DAOMetricsHeader() {
                         side="bottom"
                         sideOffset={3}
                       >
-                        <span>
-                          {token.symbol} currently delegated to a voter
-                        </span>
+                        <span>Total amount of veNEAR in existence</span>
                       </HoverCardContent>
                     </HoverCard>
                   )}

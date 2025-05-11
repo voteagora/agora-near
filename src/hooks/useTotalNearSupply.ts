@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
-import { providers } from "near-api-js";
 import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { providers } from "near-api-js";
+import { useCallback, useEffect, useState } from "react";
 import { useReadHOSContract } from "./useReadHOSContract";
-import { useNear } from "@/contexts/NearContext";
+import { useRpcUrl } from "./useRpcUrl";
 
-export const useNearSupplies = () => {
+export const useTotalSupply = () => {
   const [isLoadingTotalSupply, setIsLoadingTotalSupply] = useState(true);
   const [totalSupply, setTotalSupply] = useState<string | undefined>(undefined);
 
-  const { rpcUrl } = useNear();
+  const rpcUrl = useRpcUrl({});
 
   const [{ data: votableSupply, isLoading: isLoadingVotableSupply }] =
     useReadHOSContract([
