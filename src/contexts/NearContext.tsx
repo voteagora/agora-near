@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { getRpcUrl } from "@/lib/utils";
 import { convertUnit } from "@fastnear/utils";
 import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 import {
@@ -71,6 +72,7 @@ interface NearContextType {
   getAccessKeys: (accountId: string) => Promise<any[]>;
   callContracts: (props: CallContractsProps) => Promise<any>;
   signMessage: (message: string) => Promise<VerifiedOwner | void>;
+  networkId: NetworkId;
 }
 
 export const NearContext = createContext<NearContextType>({
@@ -85,6 +87,7 @@ export const NearContext = createContext<NearContextType>({
   getAccessKeys: async () => [],
   callContracts: async () => null,
   signMessage: async () => {},
+  networkId: "mainnet" as NetworkId,
 });
 
 export const useNear = () => useContext(NearContext);
@@ -182,7 +185,10 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       blockId,
       useArchivalNode = false,
     }: ViewMethodProps) => {
-      const url = `https://${useArchivalNode ? "archival-" : ""}rpc.${networkId}.near.org`;
+      const url = getRpcUrl(networkId, {
+        useArchivalNode,
+      });
+
       const provider = new providers.JsonRpcProvider({ url });
 
       debugLog(
@@ -420,6 +426,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         getAccessKeys,
         callContracts,
         signMessage,
+        networkId,
       }}
     >
       {children}
