@@ -1,9 +1,9 @@
-import { Endpoint } from "@/services/constants";
-import { fetchProposalVotingHistory } from "@/services/requests";
+import { Endpoint } from "@/lib/api/constants";
+import { fetchProposalVotingHistory } from "@/lib/api/proposal/requests";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-export const useNearProposalVotingHistory = ({
+export const useProposalVotes = ({
   proposalId,
   pageSize,
 }: {
@@ -20,10 +20,10 @@ export const useNearProposalVotingHistory = ({
     status,
   } = useInfiniteQuery({
     queryKey: [Endpoint.GetProposalVotingHistory, proposalId, pageSize],
-    queryFn: async ({ pageParam = 1 }) => {
-      return await fetchProposalVotingHistory(proposalId, pageSize, pageParam);
+    queryFn: ({ pageParam = 1 }) => {
+      return fetchProposalVotingHistory(proposalId, pageSize, pageParam);
     },
-    getNextPageParam: (currentPage, pages, pageParam) => {
+    getNextPageParam: (currentPage, _, pageParam) => {
       if (currentPage.count <= pageParam * pageSize) return undefined;
 
       return pageParam + 1;

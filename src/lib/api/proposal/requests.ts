@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Endpoint } from "./constants";
+import { Endpoint } from "../constants";
 
 interface ProposalVotingHistoryRecord {
   accountId: string;

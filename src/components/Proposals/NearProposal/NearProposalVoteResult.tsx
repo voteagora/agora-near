@@ -6,7 +6,7 @@ import NearProposalVoteFilter from "./NearProposalVoteFilter";
 import NearProposalVoteSummary from "./NearProposalVoteSummary";
 import NearProposalVotingActions from "./NearProposalVotingActions";
 import InfiniteScroll from "react-infinite-scroller";
-import { useNearProposalVotingHistory } from "@/hooks/useNearProposalVotingHistory";
+import { useProposalVotes } from "@/hooks/useNearProposalVotingHistory";
 import { HStack } from "@/components/Layout/Stack";
 import { VStack } from "@/components/Layout/Stack";
 import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card";
@@ -36,7 +36,7 @@ const NearProposalVoteResult = ({
     isFetching: isVotingHistoryFetching,
     hasNextPage,
     fetchNextPage,
-  } = useNearProposalVotingHistory({
+  } = useProposalVotes({
     proposalId: proposal.id.toString(),
     pageSize: 20,
   });
