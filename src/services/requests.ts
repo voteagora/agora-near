@@ -2,11 +2,9 @@ import axios from "axios";
 import { Endpoint } from "./constants";
 
 interface ProposalVotingHistoryRecord {
-  id: string;
-  proposalId: number;
+  accountId: string;
   votingPower: string;
-  voterId: string;
-  voteOption: number;
+  voteOption: string;
 }
 
 export const fetchProposalVotingHistory = async (
@@ -15,10 +13,11 @@ export const fetchProposalVotingHistory = async (
   currentPage: number
 ) => {
   const response = await axios.get<{
-    records: ProposalVotingHistoryRecord[];
+    votes: ProposalVotingHistoryRecord[];
     count: number;
   }>(
     `${Endpoint.GetProposalVotingHistory}/${proposalId}?page_size=${pageSize}&page=${currentPage}`
   );
+
   return response.data;
 };

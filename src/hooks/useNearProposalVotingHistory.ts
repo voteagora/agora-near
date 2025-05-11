@@ -1,6 +1,6 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { fetchProposalVotingHistory } from "@/services/requests";
 import { Endpoint } from "@/services/constants";
+import { fetchProposalVotingHistory } from "@/services/requests";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 export const useNearProposalVotingHistory = ({
@@ -32,7 +32,7 @@ export const useNearProposalVotingHistory = ({
   });
 
   const flatData = useMemo(() => {
-    const records = data?.pages.map((page) => page.records).flat();
+    const records = data?.pages.map((page) => page.votes).flat();
     return records?.flat();
   }, [data]);
 

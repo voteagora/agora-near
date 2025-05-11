@@ -83,7 +83,7 @@ const NearProposalVoteResult = ({
               >
                 <ul className="flex flex-col">
                   {votingHistory.map((vote) => (
-                    <li key={vote.id}>
+                    <li key={vote.accountId}>
                       <VStack
                         gap={2}
                         className="text-xs text-tertiary px-0 py-1"
@@ -96,8 +96,8 @@ const NearProposalVoteResult = ({
                                 className="font-semibold text-secondary"
                               >
                                 <HStack gap={1} alignItems="items-center">
-                                  {vote.voterId}
-                                  {vote.voterId === signedAccountId && (
+                                  {vote.accountId}
+                                  {vote.accountId === signedAccountId && (
                                     <p className="text-primary">(you)</p>
                                   )}
                                 </HStack>
@@ -108,7 +108,7 @@ const NearProposalVoteResult = ({
                                         <div
                                           className={clsx(
                                             "flex items-center gap-1",
-                                            vote.voteOption === 0
+                                            Number(vote.voteOption) === 0
                                               ? "text-positive"
                                               : "text-negative"
                                           )}
@@ -116,7 +116,7 @@ const NearProposalVoteResult = ({
                                           <NearTokenAmount
                                             amount={vote.votingPower}
                                           />
-                                          {vote.voteOption === 0 ? (
+                                          {Number(vote.voteOption) === 0 ? (
                                             <CheckIcon
                                               strokeWidth={4}
                                               className="w-3 h-3 text-positive"
@@ -134,7 +134,7 @@ const NearProposalVoteResult = ({
                                           amount={vote.votingPower}
                                         />
                                         Voted{" "}
-                                        {vote.voteOption === 0
+                                        {Number(vote.voteOption) === 0
                                           ? "For"
                                           : "Against"}
                                       </TooltipContent>
