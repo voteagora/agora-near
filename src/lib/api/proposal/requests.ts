@@ -7,7 +7,7 @@ interface ProposalVotingHistoryRecord {
   voteOption: string;
 }
 
-export const fetchProposalVotingHistory = async (
+export const fetchProposalVotes = async (
   proposalId: string,
   pageSize: number,
   currentPage: number
@@ -16,7 +16,7 @@ export const fetchProposalVotingHistory = async (
     votes: ProposalVotingHistoryRecord[];
     count: number;
   }>(
-    `${Endpoint.GetProposalVotingHistory}/${proposalId}?page_size=${pageSize}&page=${currentPage}`
+    `${Endpoint.Proposals}/${proposalId}/votes?page_size=${pageSize}&page=${currentPage}`
   );
 
   return response.data;
