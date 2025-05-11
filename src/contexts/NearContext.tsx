@@ -397,8 +397,10 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     async (message: string) => {
       if (!selector) return;
       const selectedWallet = await selector.wallet();
-      return selectedWallet.verifyOwner({
+      return selectedWallet.signMessage({
         message,
+        recipient: "agora-near-be",
+        nonce: Buffer.from(Array.from(Array(32).keys())),
       });
     },
     [selector]

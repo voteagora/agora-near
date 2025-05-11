@@ -1,17 +1,15 @@
 "use client";
 
-import DelegateCard from "@/components/Delegates/DelegateCard/DelegateCard";
 import TopStakeholdersFormSection from "@/components/DelegateStatement/TopStakeholdersFormSection";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { useNear } from "@/contexts/NearContext";
-import { useDelegate } from "@/hooks/useDelegate";
+import { createDelegateStatement } from "@/lib/api/delegateStatement";
 import Tenant from "@/lib/tenant/tenant";
 import { useDelegateStatementStore } from "@/stores/delegateStatement";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { type UseFormReturn, useWatch } from "react-hook-form";
-import { useAccount } from "wagmi";
 import { type DelegateStatementFormValues } from "./CurrentDelegateStatement";
 import DelegateStatementFormSection from "./DelegateStatementFormSection";
 import OtherInfoFormSection from "./OtherInfoFormSection";
@@ -24,11 +22,8 @@ export default function DelegateStatementForm({
 }) {
   const router = useRouter();
   const { ui } = Tenant.current();
-  const { address } = useAccount();
   const { signMessage, signedAccountId } = useNear();
   const [submissionError, setSubmissionError] = useState<string | null>(null);
-
-  const { data: delegate } = useDelegate({ address });
 
   const hasTopIssues = Boolean(
     ui.governanceIssues && ui.governanceIssues.length > 0
@@ -79,8 +74,19 @@ export default function DelegateStatementForm({
       return;
     }
 
-    // TODO: Call API
-    const response = {};
+    const response = await createDelegateStatement({
+      address: signedAccountId,
+      message: serializedBody,
+      signature: signature.signature,
+      publicKey: signature.publicKey,
+      twitter,
+      discord,
+      email,
+      warpcast,
+      topIssues,
+      agreeCodeConduct: agreeCodeConduct,
+      statement: delegateStatement,
+    });
 
     if (!response) {
       setSubmissionError(
@@ -90,7 +96,7 @@ export default function DelegateStatementForm({
     }
 
     setSaveSuccess(true);
-    router.push(`/delegates/${address}`);
+    router.push(`/delegates/${signedAccountId}`);
   }
 
   const canSubmit =
@@ -101,11 +107,11 @@ export default function DelegateStatementForm({
 
   return (
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-16 justify-between mt-12 w-full max-w-full">
-      {delegate && (
+      {/* {delegate && (
         <div className="flex flex-col static sm:sticky top-16 shrink-0 w-full sm:max-w-[350px]">
           <DelegateCard delegate={delegate} isEditMode />
         </div>
-      )}
+      )} */}
       <div className="flex flex-col w-full">
         <div className="flex flex-col bg-neutral border rounded-xl border-line shadow-newDefault">
           <Form {...form}>
