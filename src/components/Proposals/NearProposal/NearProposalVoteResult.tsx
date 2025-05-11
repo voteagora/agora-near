@@ -115,6 +115,7 @@ const NearProposalVoteResult = ({
                                         >
                                           <NearTokenAmount
                                             amount={vote.votingPower}
+                                            hideCurrency
                                           />
                                           {Number(vote.voteOption) === 0 ? (
                                             <CheckIcon
