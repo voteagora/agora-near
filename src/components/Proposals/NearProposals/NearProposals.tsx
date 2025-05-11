@@ -1,7 +1,9 @@
 "use client";
 
+import { UpdatedButton } from "@/components/Button";
 import PageHeader from "@/components/Layout/PageHeader/PageHeader";
 import { useProposals } from "@/hooks/useProposals";
+import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { NearProposal } from "./NearProposal";
@@ -69,10 +71,21 @@ function NearProposalsList() {
 }
 
 export default function NearProposals() {
+  const router = useRouter();
+
+  const onCreateProposalClicked = () => {
+    router.push("/proposals/create");
+  };
+
   return (
     <div className="flex flex-col max-w-[76rem]">
       <div className="flex flex-col sm:flex-row justify-between items-baseline gap-2 mb-4 sm:mb-auto">
-        <PageHeader headerText="All Proposals" />
+        <div className="flex flex-row justify-between w-full gap-4 items-center mb-4">
+          <PageHeader headerText="All Proposals" />
+          <UpdatedButton onClick={onCreateProposalClicked}>
+            Create Proposal
+          </UpdatedButton>
+        </div>
       </div>
       <NearProposalsList />
     </div>

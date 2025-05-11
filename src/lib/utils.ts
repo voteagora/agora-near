@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useMemo } from "react";
 import Tenant from "./tenant/tenant";
-import { TENANT_NAMESPACES } from "./constants";
+import { NANO_SECONDS_IN_DAY, TENANT_NAMESPACES } from "./constants";
 import { http, fallback } from "wagmi";
 import {
   DERIVE_MAINNET_RPC,
@@ -632,7 +632,14 @@ export function getFunctionSignature(decodedData: any): string | null {
   }
 }
 
-export const getNearRpcUrl = (networkId: string, params: { useArchivalNode: boolean }) => {
+export const getNearRpcUrl = (
+  networkId: string,
+  params: { useArchivalNode: boolean }
+) => {
   const url = `https://${params.useArchivalNode ? "archival-" : ""}rpc.${networkId}.near.org`;
   return url;
+};
+
+export const convertNanoSecondsToDays = (nanoSeconds: string) => {
+  return Number(nanoSeconds) / NANO_SECONDS_IN_DAY;
 };

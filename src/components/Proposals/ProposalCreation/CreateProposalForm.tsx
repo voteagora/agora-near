@@ -1,107 +1,68 @@
 "use client";
 
-import { useRef } from "react";
-import { UseForm, useForm } from "@/app/lib/hooks/useForm";
 import { HStack, VStack } from "@/components/Layout/Stack";
-import ProposalTypeRow from "./ProposalTypeRow";
-import TitleDescriptionRow from "./TitleDescriptionRow";
-import ApprovalCriteriaRow from "./ApprovalCriteriaRow";
-import ApprovalOptionsRow from "./ApprovalOptionsRow";
-import StandardForm from "./StandardForm";
+import { VotingConfig } from "@/lib/contracts/types/voting";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
+import ProposalDetailsForm from "./ProposalDetailsForm";
 import SubmitButton from "./SubmitButton";
 
-type FormValues = {
-  proposalType: "Basic" | "Approval" | "Optimistic";
-  proposalSettings: string;
-  title: string;
-  description: string;
-  budget: number;
-  maxOptions: number;
-  criteriaType: "Threshold" | "Top Choices";
-  threshold: number;
-  topChoices: number;
-  options: Option[];
-};
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  link: z.string().min(1, "Link is required").url("Must be a valid URL"),
+  options: z
+    .array(
+      z.object({
+        title: z.string().min(1, "Option title is required"),
+      })
+    )
+    .min(2, "At least two options are required"),
+});
 
-type Option = {
-  title: string;
-  transactions: Transaction[];
-};
+export type FormValues = z.infer<typeof formSchema>;
 
-export type Transaction = {
-  type: "Transfer" | "Custom";
-  target: string;
-  value: number;
-  calldata: string;
-  transferAmount: bigint;
-  transferTo: string;
+type CreateProposalFormProps = {
+  votingConfig: VotingConfig;
 };
-
-export type Form = UseForm<FormValues>;
 
 export default function CreateProposalForm({
-  proposalSettingsList,
-}: {
-  proposalSettingsList: any[];
-}) {
-  const initialFormValues: FormValues = {
-    proposalType: "Basic",
-    proposalSettings: "0",
-    title: "",
-    description: "",
-    budget: 0,
-    maxOptions: 1,
-    criteriaType: "Threshold",
-    threshold: 0,
-    topChoices: 1,
-    options: [{ title: "", transactions: [] }],
-  };
-  const form = useForm<FormValues>(() => initialFormValues);
-  const formTarget = useRef<HTMLFormElement>(null);
+  votingConfig,
+}: CreateProposalFormProps) {
+  const methods = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      link: "",
+      options: [{ title: "For" }, { title: "Against" }],
+    },
+    mode: "onBlur",
+  });
 
   return (
     <VStack className="w-full">
-      <form ref={formTarget}>
+      <FormProvider {...methods}>
         <VStack className="bg-neutral rounded-xl border border-line shadow-newDefault">
           <div className="p-8 border-b border-line">
             <h1 className="text-2xl font-extrabold pb-1 text-primary">
               Create proposal
             </h1>
-            <p className="text-secondary">
-              Select the type of vote and proposal you want to create, and
-              describe its intent to voters. Remember to proofread as proposals
-              cannot be edited once published.
-            </p>
-            <ProposalTypeRow
-              form={form}
-              proposalSettingsList={proposalSettingsList}
-            />
-            <TitleDescriptionRow form={form} />
+            <ProposalDetailsForm />
           </div>
-          {form.state.proposalType === "Approval" && (
-            <>
-              <div className="p-8 border-b border-line">
-                <ApprovalCriteriaRow form={form} />
-              </div>
-              <div className="p-8 border-b border-line">
-                <ApprovalOptionsRow form={form} />
-              </div>
-            </>
-          )}
-          {form.state.proposalType === "Basic" && (
-            <div className="p-8 border-b border-line">
-              <StandardForm form={form} />
-            </div>
-          )}
           <HStack
             justifyContent="justify-between"
             alignItems="items-center"
             className="p-8"
           >
-            <SubmitButton formTarget={formTarget} form={form} />
+            <SubmitButton
+              baseFee={votingConfig.base_proposal_fee || "0"}
+              voteStorageFee={votingConfig.vote_storage_fee || "0"}
+            />
           </HStack>
         </VStack>
-      </form>
+      </FormProvider>
     </VStack>
   );
 }
