@@ -636,25 +636,13 @@ export const convertNanoSecondsToDays = (nanoSeconds: string) => {
   return Number(nanoSeconds) / NANO_SECONDS_IN_DAY;
 };
 
-export const mainnetEnding = ".mainnet";
-export const testnetEnding = ".testnet";
-
 export const formatNearAccountId = (address?: string) => {
   if (!address) {
     return "";
   }
 
-  if (address.length < 12) {
+  if (address.length <= 15) {
     return address;
-  }
-
-  const isMainnet = address.endsWith(mainnetEnding);
-  const isNamedAccount = isMainnet || address.endsWith(testnetEnding);
-
-  if (isNamedAccount) {
-    const ending = isMainnet ? mainnetEnding : testnetEnding;
-
-    return `${address.slice(0, 6)}...${ending}`;
   }
 
   return `${address.slice(0, 6)}...${address.slice(-6)}`;
