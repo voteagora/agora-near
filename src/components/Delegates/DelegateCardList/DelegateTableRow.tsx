@@ -1,15 +1,15 @@
 "use client";
 
-import { DelegateChunk } from "@/app/api/common/delegates/delegate";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { formatNumber } from "@/lib/tokenUtils";
+import { DelegateProfile } from "@/lib/api/delegates/types";
 import { useRouter } from "next/navigation";
-import { DelegateProfileImage } from "../DelegateCard/DelegateProfileImage";
+import { DelegateAddress } from "../DelegateCard/DelegateAddress";
 
 export default function DelegateTableRow({
   delegate,
 }: {
-  delegate: DelegateChunk & { numOfDelegators: bigint };
+  delegate: DelegateProfile;
 }) {
   const router = useRouter();
 
@@ -21,16 +21,27 @@ export default function DelegateTableRow({
       }}
     >
       <TableCell>
-        <DelegateProfileImage
-          endorsed={delegate.statement?.endorsed}
-          address={delegate.address}
-        />
+        <DelegateAddress address={delegate.address} />
       </TableCell>
-      <TableCell>{formatNumber(delegate.votingPower.total)}</TableCell>
-      <TableCell>{`80%`}</TableCell>
-      {/* @ts-ignore */}
       <TableCell>
-        {delegate.numOfDelegators?.toString() || 0} addresses
+        {delegate.votingPower ? (
+          <NearTokenAmount
+            amount={delegate.votingPower ?? "0"}
+            currency="veNEAR"
+          />
+        ) : (
+          "-"
+        )}
+      </TableCell>
+      <TableCell>
+        {delegate.participationRate
+          ? `${Number(delegate.participationRate) * 100}%`
+          : "-"}
+      </TableCell>
+      <TableCell>
+        {delegate.numOfDelegators
+          ? `${delegate.numOfDelegators} addresses`
+          : "-"}
       </TableCell>
     </TableRow>
   );

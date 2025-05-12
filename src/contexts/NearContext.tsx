@@ -80,6 +80,7 @@ interface NearContextType {
     nonce?: Buffer;
   }) => Promise<SignedMessage | void>;
   networkId: NetworkId;
+  isInitialized: boolean;
 }
 
 export const NearContext = createContext<NearContextType>({
@@ -95,6 +96,7 @@ export const NearContext = createContext<NearContextType>({
   callContracts: async () => null,
   signMessage: async () => {},
   networkId: "mainnet" as NetworkId,
+  isInitialized: false,
 });
 
 export const useNear = () => useContext(NearContext);
@@ -118,6 +120,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
   const [selector, setSelector] = useState<WalletSelector | undefined>();
   const [signedAccountId, setSignedAccountId] = useState<string | undefined>();
   const unsubscribeRef = useRef<() => void>();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   /**
    * To be called when the website loads
@@ -153,6 +156,8 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       ).unsubscribe;
     } catch (error) {
       console.error("Error initializing wallet selector:", error);
+    } finally {
+      setIsInitialized(true);
     }
   }, [networkId]);
 
@@ -444,6 +449,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         callContracts,
         signMessage,
         networkId,
+        isInitialized,
       }}
     >
       {children}

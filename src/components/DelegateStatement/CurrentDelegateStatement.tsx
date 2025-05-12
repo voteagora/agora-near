@@ -1,18 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import DelegateStatementForm from "@/components/DelegateStatement/DelegateStatementForm";
-import AgoraLoader, {
-  LogoLoader,
-} from "@/components/shared/AgoraLoader/AgoraLoader";
+import AgoraLoader from "@/components/shared/AgoraLoader/AgoraLoader";
 import { useNear } from "@/contexts/NearContext";
-import { DelegateStatement } from "@/lib/api/delegates/types";
+import { useDelegateProfile } from "@/hooks/useDelegateProfile";
 import Tenant from "@/lib/tenant/tenant";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import ResourceNotFound from "../shared/ResourceNotFound/ResourceNotFound";
+import { DelegateProfile } from "@/lib/api/delegates/types";
 
 export type DelegateStatementFormValues = z.infer<typeof formSchema>;
 
@@ -35,12 +34,13 @@ const formSchema = z.object({
 
 export default function CurrentDelegateStatement() {
   const { ui } = Tenant.current();
-  const shouldHideAgoraBranding = ui.hideAgoraBranding;
-  const { signedAccountId } = useNear();
+
+  const { signedAccountId, isInitialized } = useNear();
   const isConnected = !!signedAccountId;
-  const [loading, setLoading] = useState<boolean>(true);
-  const [delegateStatement, setDelegateStatement] =
-    useState<DelegateStatement | null>(null);
+
+  const { data: delegate, isLoading } = useDelegateProfile({
+    accountId: signedAccountId,
+  });
 
   const topIssues = ui.governanceIssues;
   const defaultIssues = useMemo(
@@ -58,17 +58,17 @@ export default function CurrentDelegateStatement() {
     ?.enabled;
 
   const getDefaultValues = useCallback(
-    (delegateStatement: DelegateStatement | null) => {
+    (delegateProfile: DelegateProfile | undefined) => {
       return {
         agreeCodeConduct: !requireCodeOfConduct,
-        discord: delegateStatement?.discord || "",
-        delegateStatement: delegateStatement?.payload?.delegateStatement || "",
-        email: delegateStatement?.email || "",
-        twitter: delegateStatement?.twitter || "",
-        warpcast: delegateStatement?.warpcast || "",
+        discord: delegateProfile?.discord || "",
+        delegateStatement: delegateProfile?.statement || "",
+        email: delegateProfile?.email || "",
+        twitter: delegateProfile?.twitter || "",
+        warpcast: delegateProfile?.warpcast || "",
         topIssues:
-          (delegateStatement?.payload?.topIssues ?? []).length > 0
-            ? delegateStatement?.payload?.topIssues
+          (delegateProfile?.topIssues ?? []).length > 0
+            ? delegateProfile?.topIssues
             : defaultIssues,
       };
     },
@@ -77,29 +77,21 @@ export default function CurrentDelegateStatement() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: getDefaultValues(delegateStatement),
+    defaultValues: getDefaultValues(delegate),
     mode: "onChange",
   });
 
   useEffect(() => {
-    // TODO: Fetch delegate statement from API
-    const fetchedDelegateStatement = null;
-    setDelegateStatement(fetchedDelegateStatement);
-    form.reset(getDefaultValues(fetchedDelegateStatement));
-    setLoading(false);
-  }, [form, getDefaultValues]);
+    form.reset(getDefaultValues(delegate));
+  }, [form, getDefaultValues, delegate]);
+
+  if (isLoading || !isInitialized) {
+    return <AgoraLoader />;
+  }
 
   if (!isConnected) {
     return <ResourceNotFound message="Oops! Nothing's here" />;
   }
 
-  return loading ? (
-    shouldHideAgoraBranding ? (
-      <LogoLoader />
-    ) : (
-      <AgoraLoader />
-    )
-  ) : (
-    <DelegateStatementForm form={form} />
-  );
+  return <DelegateStatementForm form={form} delegate={delegate} />;
 }

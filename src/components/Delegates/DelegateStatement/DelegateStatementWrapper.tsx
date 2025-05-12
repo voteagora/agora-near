@@ -1,20 +1,24 @@
+"use client";
+
 import DelegateStatementContainer from "./DelegateStatementContainer";
-import TopStakeholders from "./TopStakeholders";
 import TopIssues from "./TopIssues";
-import { Delegate } from "@/app/api/common/delegates/delegate";
 
 interface Props {
-  delegate: Delegate;
+  statement: string;
+  topIssues: {
+    value: string;
+    type: string;
+  }[];
+  address: string;
 }
 
-const DelegateStatementWrapper = async ({ delegate }: Props) => {
+const DelegateStatementWrapper = ({ statement, topIssues, address }: Props) => {
   return (
     <>
-      <DelegateStatementContainer delegate={delegate} />
-      {delegate.statement && (
+      <DelegateStatementContainer statement={statement} address={address} />
+      {statement && (
         <>
-          <TopIssues statement={delegate.statement} />
-          <TopStakeholders statement={delegate.statement} />
+          <TopIssues topIssues={topIssues} />
         </>
       )}
     </>

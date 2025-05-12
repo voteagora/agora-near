@@ -14,9 +14,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import DelegateTableRow from "./DelegateTableRow";
+import { DelegateProfile } from "@/lib/api/delegates/types";
 
 interface Props {
-  initialDelegates: PaginatedResult<DelegateChunk[]>;
+  initialDelegates: PaginatedResult<DelegateProfile[]>;
 }
 
 export default function DelegateTable({ initialDelegates }: Props) {
@@ -77,12 +78,7 @@ export default function DelegateTable({ initialDelegates }: Props) {
               </td>
             ) : (
               delegates.map((delegate) => (
-                <DelegateTableRow
-                  key={delegate.address}
-                  delegate={
-                    delegate as DelegateChunk & { numOfDelegators: bigint }
-                  }
-                />
+                <DelegateTableRow key={delegate.address} delegate={delegate} />
               ))
             )}
           </InfiniteScroll>

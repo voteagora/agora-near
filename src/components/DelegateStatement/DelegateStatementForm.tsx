@@ -1,10 +1,10 @@
 "use client";
 
-import TopStakeholdersFormSection from "@/components/DelegateStatement/TopStakeholdersFormSection";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { useNear } from "@/contexts/NearContext";
-import { createDelegateStatement } from "@/lib/api/delegateStatement";
+import { createDelegateStatement } from "@/lib/api/delegates/requests";
+
 import Tenant from "@/lib/tenant/tenant";
 import { useDelegateStatementStore } from "@/stores/delegateStatement";
 import { useRouter } from "next/navigation";
@@ -14,11 +14,15 @@ import { type DelegateStatementFormValues } from "./CurrentDelegateStatement";
 import DelegateStatementFormSection from "./DelegateStatementFormSection";
 import OtherInfoFormSection from "./OtherInfoFormSection";
 import TopIssuesFormSection from "./TopIssuesFormSection";
+import DelegateProfile from "../Delegates/DelegateProfile/DelegateProfile";
+import { DelegateProfile as DelegateProfileType } from "@/lib/api/delegates/types";
 
 export default function DelegateStatementForm({
   form,
+  delegate,
 }: {
   form: UseFormReturn<DelegateStatementFormValues>;
+  delegate?: DelegateProfileType;
 }) {
   const router = useRouter();
   const { ui } = Tenant.current();
@@ -27,9 +31,6 @@ export default function DelegateStatementForm({
 
   const hasTopIssues = Boolean(
     ui.governanceIssues && ui.governanceIssues.length > 0
-  );
-  const hasStakeholders = Boolean(
-    ui.governanceStakeholders && ui.governanceStakeholders.length > 0
   );
 
   const agreeCodeConduct = useWatch({
@@ -107,18 +108,27 @@ export default function DelegateStatementForm({
 
   return (
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-16 justify-between mt-12 w-full max-w-full">
-      {/* {delegate && (
+      {delegate && (
         <div className="flex flex-col static sm:sticky top-16 shrink-0 w-full sm:max-w-[350px]">
-          <DelegateCard delegate={delegate} isEditMode />
+          <DelegateProfile
+            isEditMode
+            profile={{
+              address: delegate.address ?? "",
+              statement: delegate.statement ?? "",
+              twitter: delegate.twitter,
+              discord: delegate.discord,
+              warpcast: delegate.warpcast,
+            }}
+          />
         </div>
-      )} */}
+      )}
       <div className="flex flex-col w-full">
         <div className="flex flex-col bg-neutral border rounded-xl border-line shadow-newDefault">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <DelegateStatementFormSection form={form} />
               {hasTopIssues && <TopIssuesFormSection form={form} />}
-              {hasStakeholders && <TopStakeholdersFormSection form={form} />}
+
               <OtherInfoFormSection form={form} />
 
               <div className="flex flex-col sm:flex-row justify-end sm:justify-between items-stretch sm:items-center gap-4 py-8 px-6 flex-wrap">

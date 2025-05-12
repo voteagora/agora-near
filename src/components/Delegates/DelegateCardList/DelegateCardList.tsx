@@ -1,17 +1,15 @@
 "use client";
 
-import { DelegateChunk } from "@/app/api/common/delegates/delegate";
-import { Delegation } from "@/app/api/common/delegations/delegation";
-import { PaginatedResult, PaginationParams } from "@/app/lib/pagination";
+import { PaginatedResult } from "@/app/lib/pagination";
 import { DialogProvider } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import { useAgoraContext } from "@/contexts/AgoraContext";
-import { stripMarkdown } from "@/lib/sanitizationUtils";
+import { DelegateProfile } from "@/lib/api/delegates/types";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import DelegateCard from "./DelegateCard";
 
 interface Props {
-  initialDelegates: PaginatedResult<DelegateChunk[]>;
+  initialDelegates: PaginatedResult<DelegateProfile[]>;
 }
 
 export default function DelegateCardList({ initialDelegates }: Props) {
@@ -27,7 +25,6 @@ export default function DelegateCardList({ initialDelegates }: Props) {
 
   return (
     <DialogProvider>
-      {/* @ts-ignore */}
       <InfiniteScroll
         className="grid grid-flow-row grid-cols-1 sm:grid-cols-3 justify-around sm:justify-between py-4 gap-4 sm:gap-8"
         hasMore={false}
@@ -44,22 +41,11 @@ export default function DelegateCardList({ initialDelegates }: Props) {
         element="div"
       >
         {delegates?.map((delegate, idx) => {
-          let truncatedStatement = "";
-
-          if (delegate?.statement?.payload) {
-            const delegateStatement = (
-              delegate?.statement?.payload as { delegateStatement: string }
-            ).delegateStatement;
-
-            const plainTextStatement = stripMarkdown(delegateStatement);
-            truncatedStatement = plainTextStatement.slice(0, 120);
-          }
-
           return (
             <DelegateCard
               key={idx}
               delegate={delegate}
-              truncatedStatement={truncatedStatement}
+              votingPower={delegate.votingPower ?? "0"}
               isDelegatesFiltering={isDelegatesFiltering}
             />
           );
