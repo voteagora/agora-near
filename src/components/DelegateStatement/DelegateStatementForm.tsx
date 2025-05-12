@@ -67,7 +67,7 @@ export default function DelegateStatementForm({
 
     const serializedBody = JSON.stringify(body, undefined, "\t");
 
-    const signature = await signMessage(serializedBody);
+    const signature = await signMessage({ message: serializedBody });
 
     if (!signature) {
       setSubmissionError("Signature failed, please try again");

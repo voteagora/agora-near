@@ -9,7 +9,10 @@ import {
   WalletModuleFactory,
   WalletSelector,
 } from "@near-wallet-selector/core";
-import { VerifiedOwner } from "@near-wallet-selector/core/src/lib/wallet";
+import {
+  SignedMessage,
+  VerifiedOwner,
+} from "@near-wallet-selector/core/src/lib/wallet";
 import { setupLedger } from "@near-wallet-selector/ledger";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupModal } from "@near-wallet-selector/modal-ui";
@@ -71,7 +74,11 @@ interface NearContextType {
   signAndSendTransactions: (options: TransactionsProps) => Promise<any>;
   getAccessKeys: (accountId: string) => Promise<any[]>;
   callContracts: (props: CallContractsProps) => Promise<any>;
-  signMessage: (message: string) => Promise<VerifiedOwner | void>;
+  signMessage: (options: {
+    message: string;
+    recipient?: string;
+    nonce?: Buffer;
+  }) => Promise<SignedMessage | void>;
   networkId: NetworkId;
 }
 
@@ -394,13 +401,21 @@ export const NearProvider: React.FC<NearProviderProps> = ({
   );
 
   const signMessage = useCallback(
-    async (message: string) => {
+    async ({
+      message,
+      recipient = "agora-near-be",
+      nonce = Buffer.from(Array.from(Array(32).keys())),
+    }: {
+      message: string;
+      recipient?: string;
+      nonce?: Buffer;
+    }) => {
       if (!selector) return;
       const selectedWallet = await selector.wallet();
       return selectedWallet.signMessage({
         message,
-        recipient: "agora-near-be",
-        nonce: Buffer.from(Array.from(Array(32).keys())),
+        recipient,
+        nonce,
       });
     },
     [selector]
