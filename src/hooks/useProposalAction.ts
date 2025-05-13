@@ -4,7 +4,12 @@ import { useCallback } from "react";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { useWriteHOSContract } from "./useWriteHOSContract";
 
-export const useApproveProposal = () => {
+export enum ProposalAction {
+  Approve = "approve",
+  Reject = "reject",
+}
+
+export const useProposalAction = ({ action }: { action: ProposalAction }) => {
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
@@ -28,7 +33,10 @@ export const useApproveProposal = () => {
         contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
         methodCalls: [
           {
-            methodName: "approve_proposal",
+            methodName:
+              action === ProposalAction.Approve
+                ? "approve_proposal"
+                : "reject_proposal",
             args: {
               proposal_id: proposalId,
               voting_start_time_sec: votingStartTimeSec || null,
@@ -39,12 +47,12 @@ export const useApproveProposal = () => {
         ],
       });
     },
-    [mutateApproveProposal]
+    [mutateApproveProposal, action]
   );
 
   return {
-    approveProposal,
-    isApprovingProposal,
-    approveProposalError,
+    mutateProposal: approveProposal,
+    isMutating: isApprovingProposal,
+    proposalError: approveProposalError,
   };
 };

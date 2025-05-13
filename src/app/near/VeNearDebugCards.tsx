@@ -22,7 +22,7 @@ import { useRegisterLockup } from "@/hooks/useRegisterLockup";
 import { useStakeNear } from "@/hooks/useStakeNear";
 import { useVenearAccountStats } from "@/hooks/useVenearAccountStats";
 import { useVenearStats } from "@/hooks/useVenearStats";
-import { useApproveProposal } from "@/hooks/useApproveProposal";
+import { useProposalAction, ProposalAction } from "@/hooks/useProposalAction";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
 import { utils } from "near-api-js";
@@ -81,8 +81,13 @@ export default function VeNearDebugCards() {
     pageSize: 50,
   });
   const { config, isLoading: isLoadingConfig } = useProposalConfig();
-  const { approveProposal, isApprovingProposal, approveProposalError } =
-    useApproveProposal();
+  const {
+    mutateProposal: approveProposal,
+    isMutating: isApprovingProposal,
+    proposalError: approveProposalError,
+  } = useProposalAction({
+    action: ProposalAction.Approve,
+  });
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
