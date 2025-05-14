@@ -1,29 +1,28 @@
 "use client";
 
-import { useAgoraContext } from "@/contexts/AgoraContext";
-import { useAccount } from "wagmi";
-import DelegateStatement from "./DelegateStatement";
-import { Delegate } from "@/app/api/common/delegates/delegate";
+import { useNear } from "@/contexts/NearContext";
 import { useDelegateStatementStore } from "@/stores/delegateStatement";
 import { useEffect } from "react";
+import DelegateStatement from "./DelegateStatement";
 
 interface Props {
-  delegate: Delegate;
+  statement: string;
+  address: string;
 }
 
-export default function DelegateStatementContainer({ delegate }: Props) {
-  const { isConnected } = useAgoraContext();
-  const { address } = useAccount();
+export default function DelegateStatementContainer({
+  statement,
+  address,
+}: Props) {
+  const { signedAccountId } = useNear();
+  const isConnected = !!signedAccountId;
+
   const showSuccessMessage = useDelegateStatementStore(
     (state) => state.showSaveSuccess
   );
   const setSaveSuccess = useDelegateStatementStore(
     (state) => state.setSaveSuccess
   );
-
-  const delegateStatement = (
-    delegate?.statement?.payload as { delegateStatement: string }
-  )?.delegateStatement;
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -46,12 +45,10 @@ export default function DelegateStatementContainer({ delegate }: Props) {
           <p>Nice! Thank you for telling the community what you believe in.</p>
         </div>
       )}
-      {!delegateStatement && (
+      {!statement && (
         <div className="p-8 text-center text-secondary align-middle bg-wash rounded-xl">
-          <p className="break-words">
-            No delegate statement for {delegate.address}
-          </p>
-          {isConnected && address === delegate.address && (
+          <p className="break-words">No delegate statement for {address}</p>
+          {isConnected && signedAccountId === address && (
             <p className="my-3">
               <a
                 rel="noopener"
@@ -66,7 +63,7 @@ export default function DelegateStatementContainer({ delegate }: Props) {
         </div>
       )}
 
-      {delegateStatement && <DelegateStatement statement={delegateStatement} />}
+      {statement && <DelegateStatement statement={statement} />}
     </>
   );
 }

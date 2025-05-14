@@ -1,21 +1,25 @@
-import { DelegateChunk } from "@/app/api/common/delegates/delegate";
-import { sanitizeContent } from "@/lib/sanitizationUtils";
-import Tenant from "@/lib/tenant/tenant";
-import { formatNumber } from "@/lib/tokenUtils";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import { DelegateProfile } from "@/lib/api/delegates/types";
+import { sanitizeContent, stripMarkdown } from "@/lib/sanitizationUtils";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { NearDelegateActions } from "../DelegateCard/NearDelegateActions";
 
+type DelegateCardProps = {
+  delegate: DelegateProfile;
+  isDelegatesFiltering: boolean;
+  votingPower: string;
+};
+
 const DelegateCard = ({
   delegate,
   isDelegatesFiltering,
-  truncatedStatement,
-}: {
-  delegate: DelegateChunk;
-  isDelegatesFiltering: boolean;
-  truncatedStatement: string;
-}) => {
-  const { token } = Tenant.current();
+  votingPower,
+}: DelegateCardProps) => {
+  const truncatedStatement = stripMarkdown(delegate.statement ?? "").slice(
+    0,
+    120
+  );
 
   const sanitizedTruncatedStatement = sanitizeContent(truncatedStatement);
 
@@ -35,9 +39,13 @@ const DelegateCard = ({
             </div>
             <div className="px-4 flex flex-row gap-4">
               <span className="text-primary font-bold">
-                {formatNumber(delegate.votingPower.total)} {token.symbol}
+                <NearTokenAmount amount={votingPower} currency="veNEAR" />
               </span>
-              <span className="text-primary font-bold">80% Participation</span>
+              {delegate.participationRate && (
+                <span className="text-primary font-bold">
+                  {Number(delegate.participationRate) * 100}% Participation
+                </span>
+              )}
             </div>
             <p className="text-base leading-normal min-h-[48px] break-words text-secondary overflow-hidden line-clamp-2 px-4">
               {sanitizedTruncatedStatement}

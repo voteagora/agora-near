@@ -1,6 +1,6 @@
 "use client";
 
-import { useAccount } from "wagmi";
+import { useNear } from "@/contexts/NearContext";
 import Link from "next/link";
 
 export function DelegateCardEditProfile({
@@ -8,9 +8,11 @@ export function DelegateCardEditProfile({
 }: {
   delegateAddress: string;
 }) {
-  const { address } = useAccount();
+  const { signedAccountId } = useNear();
 
-  if (address?.toLowerCase() !== delegateAddress.toLowerCase()) return null;
+  if (signedAccountId?.toLowerCase() !== delegateAddress.toLowerCase())
+    return null;
+
   return (
     <Link className="px-4 py-6 border-t border-line" href={`/delegates/create`}>
       <span className="p-2 text-primary font-semibold">Edit my profile</span>

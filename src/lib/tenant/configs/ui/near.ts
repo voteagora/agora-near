@@ -11,6 +11,34 @@ export const nearTenantUIConfig = new TenantUI({
     delegate: nearLogo,
   },
 
+  governanceIssues: [
+    {
+      icon: "stack",
+      title: "Cross chain ecosystem",
+      key: "crossChain",
+    },
+    {
+      icon: "piggyBank",
+      title: "Funding and grants",
+      key: "fundingAndGrants",
+    },
+    {
+      icon: "piggyBank",
+      title: "Incentivized participation",
+      key: "incentivizedParticipation",
+    },
+    {
+      icon: "lockClosed",
+      title: "Security",
+      key: "security",
+    },
+    {
+      icon: "community",
+      title: "House of Stake",
+      key: "houseOfStake",
+    },
+  ],
+
   customization: {
     primary: "0 0 0",
     secondary: "64 64 64",
@@ -116,7 +144,7 @@ export const nearTenantUIConfig = new TenantUI({
     },
     {
       name: "delegates/edit",
-      enabled: false,
+      enabled: true,
     },
     {
       name: "info",

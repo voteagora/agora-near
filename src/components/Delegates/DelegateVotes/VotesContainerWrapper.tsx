@@ -1,32 +1,43 @@
-import VotesContainer from "./VotesContainer";
-import { fetchVotesForDelegate } from "@/app/delegates/actions";
-import { fetchSnapshotVotesForDelegate } from "@/app/api/common/votes/getVotes";
+"use client";
+
 import { PaginationParams } from "@/app/lib/pagination";
 import DelegateVotes from "./DelegateVotes";
 import SnapshotVotes from "./SnapshotVotes";
-import { Delegate } from "@/app/api/common/delegates/delegate";
+import VotesContainer from "./VotesContainer";
 
 interface Props {
-  delegate: Delegate;
+  address: string;
 }
 
-const VotesContainerWrapper = async ({ delegate }: Props) => {
-  const [delegateVotes, snapshotVotes] = await Promise.all([
-    fetchVotesForDelegate(delegate.address),
-    fetchSnapshotVotesForDelegate({ addressOrENSName: delegate.address }),
-  ]);
+const VotesContainerWrapper = ({ address }: Props) => {
+  // TODO: Fetch from API
+  const delegateVotes = [] as const;
+  const snapshotVotes = [] as const;
 
   return (
     <VotesContainer
       onchainVotes={
         <>
-          {delegateVotes && delegateVotes.data.length > 0 ? (
+          {delegateVotes && delegateVotes.length > 0 ? (
             <div className="flex flex-col gap-4">
               <DelegateVotes
-                initialVotes={delegateVotes}
+                initialVotes={{
+                  meta: {
+                    has_next: false,
+                    total_returned: 0,
+                    next_offset: 0,
+                  },
+                  data: [],
+                }}
                 fetchDelegateVotes={async (pagination: PaginationParams) => {
-                  "use server";
-                  return fetchVotesForDelegate(delegate.address, pagination);
+                  return {
+                    meta: {
+                      has_next: false,
+                      total_returned: 0,
+                      next_offset: 0,
+                    },
+                    data: [],
+                  };
                 }}
               />
             </div>
@@ -39,15 +50,25 @@ const VotesContainerWrapper = async ({ delegate }: Props) => {
       }
       snapshotVotes={
         <>
-          {snapshotVotes && snapshotVotes.data.length > 0 ? (
+          {snapshotVotes && snapshotVotes.length > 0 ? (
             <SnapshotVotes
-              initialVotes={snapshotVotes}
+              initialVotes={{
+                meta: {
+                  has_next: false,
+                  total_returned: 0,
+                  next_offset: 0,
+                },
+                data: [],
+              }}
               fetchSnapshotVotes={async (pagination: PaginationParams) => {
-                "use server";
-                return await fetchSnapshotVotesForDelegate({
-                  addressOrENSName: delegate.address,
-                  pagination,
-                });
+                return {
+                  meta: {
+                    has_next: false,
+                    total_returned: 0,
+                    next_offset: 0,
+                  },
+                  data: [],
+                };
               }}
             />
           ) : (

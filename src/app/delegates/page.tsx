@@ -5,14 +5,14 @@ import DelegateCardWrapper, {
 } from "@/components/Delegates/DelegateCardList/DelegateCardWrapper";
 import Hero from "@/components/Hero/Hero";
 
-export async function generateMetadata({}, parent) {
+export async function generateMetadata() {
   const { ui } = Tenant.current();
   const page = ui.page("delegates");
-  const { title, description, imageTitle, imageDescription } = page.meta;
+  const { title, description, imageTitle, imageDescription } = page?.meta ?? {};
 
   const preview = `/api/images/og/delegates?title=${encodeURIComponent(
-    imageTitle
-  )}&description=${encodeURIComponent(imageDescription)}`;
+    imageTitle ?? ""
+  )}&description=${encodeURIComponent(imageDescription ?? "")}`;
 
   return {
     title: title,
@@ -34,12 +34,12 @@ export async function generateMetadata({}, parent) {
   };
 }
 
-export default async function Page({ searchParams }) {
+export default async function Page() {
   return (
     <section>
       <Hero page="delegates" />
       <Suspense fallback={<DelegateCardLoadingState />}>
-        <DelegateCardWrapper searchParams={searchParams} />
+        <DelegateCardWrapper />
       </Suspense>
     </section>
   );

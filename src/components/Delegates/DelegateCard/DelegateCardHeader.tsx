@@ -1,17 +1,15 @@
 "use client";
 
-import { Delegate } from "@/app/api/common/delegates/delegate";
-import { useVoterStats } from "@/hooks/useVoterStats";
-
 interface Props {
-  delegate: Delegate;
+  address?: string;
 }
 
-export const DelegateCardHeader = ({ delegate }: Props) => {
-  const { data: voterStats } = useVoterStats({ address: delegate.address });
-  if (!voterStats) {
-    return null;
-  }
+export const DelegateCardHeader = ({ address }: Props) => {
+  // TODO: Fetch voter stats from API
+  const voterStats = {
+    total_proposals: 0,
+    last_10_props: 0,
+  };
 
   const percentParticipation = Number(
     Math.round(

@@ -1,11 +1,6 @@
 import axios from "axios";
 import { Endpoint } from "../constants";
-
-interface ProposalVotingHistoryRecord {
-  accountId: string;
-  votingPower: string;
-  voteOption: string;
-}
+import { ProposalVotingHistoryRecord } from "./types";
 
 export const fetchProposalVotes = async (
   proposalId: string,

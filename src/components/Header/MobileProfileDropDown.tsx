@@ -12,7 +12,7 @@ import Image from "next/image";
 import { ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
 import { AccountActionsButton } from "../AccountActions/AccountActionsButton";
-import { PanelRow } from "../Delegates/DelegateCard/DelegateCard";
+import { PanelRow } from "../Delegates/DelegateProfile/DelegateProfile";
 import NearTokenAmount from "../shared/NearTokenAmount";
 
 type Props = {

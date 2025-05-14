@@ -1,20 +1,19 @@
 "use client";
 
-import { DelegateChunk } from "@/app/api/common/delegates/delegate";
 import { UpdatedButton } from "@/components/Button";
 import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
+import { DelegateProfile } from "@/lib/api/delegates/types";
 import Tenant from "@/lib/tenant/tenant";
 import { type SyntheticEvent } from "react";
 import { DelegateSocialLinks } from "./DelegateSocialLinks";
 
-export function NearDelegateActions({
-  delegate,
-}: {
-  delegate: DelegateChunk;
-  className?: string;
-}) {
+type DelegateActionsProps = {
+  delegate: DelegateProfile;
+};
+
+export function NearDelegateActions({ delegate }: DelegateActionsProps) {
   const { signedAccountId, signIn } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
 
@@ -23,10 +22,6 @@ export function NearDelegateActions({
   const isDelegated = accountInfo?.delegation?.delegatee === delegate.address;
 
   const isOwnAccount = delegate.address === signedAccountId;
-
-  const twitter = delegate?.statement?.twitter;
-  const discord = delegate?.statement?.discord;
-  const warpcast = delegate?.statement?.warpcast;
 
   const { ui } = Tenant.current();
 
@@ -61,9 +56,9 @@ export function NearDelegateActions({
   return (
     <div className="flex flex-row items-stretch justify-between">
       <DelegateSocialLinks
-        discord={discord}
-        twitter={twitter}
-        warpcast={warpcast}
+        discord={delegate.discord}
+        twitter={delegate.twitter}
+        warpcast={delegate.warpcast}
       />
       {!isOwnAccount && (
         <UpdatedButton type="secondary" onClick={handleDelegate}>
