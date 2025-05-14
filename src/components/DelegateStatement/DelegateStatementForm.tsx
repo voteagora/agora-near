@@ -1,43 +1,36 @@
 "use client";
 
-import DelegateCard from "@/components/Delegates/DelegateCard/DelegateCard";
-import DelegateStatementFormSection from "./DelegateStatementFormSection";
-import TopIssuesFormSection from "./TopIssuesFormSection";
-import OtherInfoFormSection from "./OtherInfoFormSection";
 import { Button } from "@/components/ui/button";
-import { type UseFormReturn, useWatch } from "react-hook-form";
 import { Form } from "@/components/ui/form";
-import { useAccount, useSignMessage, useWalletClient } from "wagmi";
-import { submitDelegateStatement } from "@/app/delegates/actions";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { type DelegateStatementFormValues } from "./CurrentDelegateStatement";
+import { useNear } from "@/contexts/NearContext";
+import { createDelegateStatement } from "@/lib/api/delegates/requests";
+
 import Tenant from "@/lib/tenant/tenant";
-import TopStakeholdersFormSection from "@/components/DelegateStatement/TopStakeholdersFormSection";
-import { useSmartAccountAddress } from "@/hooks/useSmartAccountAddress";
-import { useDelegate } from "@/hooks/useDelegate";
 import { useDelegateStatementStore } from "@/stores/delegateStatement";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { type UseFormReturn, useWatch } from "react-hook-form";
+import { type DelegateStatementFormValues } from "./CurrentDelegateStatement";
+import DelegateStatementFormSection from "./DelegateStatementFormSection";
+import OtherInfoFormSection from "./OtherInfoFormSection";
+import TopIssuesFormSection from "./TopIssuesFormSection";
+import DelegateProfile from "../Delegates/DelegateProfile/DelegateProfile";
+import { DelegateProfile as DelegateProfileType } from "@/lib/api/delegates/types";
 
 export default function DelegateStatementForm({
   form,
+  delegate,
 }: {
   form: UseFormReturn<DelegateStatementFormValues>;
+  delegate?: DelegateProfileType;
 }) {
   const router = useRouter();
   const { ui } = Tenant.current();
-  const { address } = useAccount();
-  const walletClient = useWalletClient();
-  const messageSigner = useSignMessage();
+  const { signMessage, signedAccountId } = useNear();
   const [submissionError, setSubmissionError] = useState<string | null>(null);
-
-  const { data: scwAddress } = useSmartAccountAddress({ owner: address });
-  const { data: delegate } = useDelegate({ address });
 
   const hasTopIssues = Boolean(
     ui.governanceIssues && ui.governanceIssues.length > 0
-  );
-  const hasStakeholders = Boolean(
-    ui.governanceStakeholders && ui.governanceStakeholders.length > 0
   );
 
   const agreeCodeConduct = useWatch({
@@ -45,74 +38,56 @@ export default function DelegateStatementForm({
     name: "agreeCodeConduct",
   });
 
-  const agreeDaoPrinciples = useWatch({
-    control: form.control,
-    name: "agreeDaoPrinciples",
-  });
-
   const setSaveSuccess = useDelegateStatementStore(
     (state) => state.setSaveSuccess
   );
 
   async function onSubmit(values: DelegateStatementFormValues) {
-    /* agreeCodeConduct and agreeDaoPrinciples default values are !enabled so if it's not enabled for a tenant, it will be true, skipping the check below.
-    If enabled, it will be false by default and the user will need to check the box. */
-    if (!agreeCodeConduct && !agreeDaoPrinciples) {
+    if (!agreeCodeConduct) {
       return;
     }
-    if (!walletClient) {
+    if (!signedAccountId) {
       throw new Error("signer not available");
     }
 
     values.topIssues = values.topIssues.filter((issue) => issue.value !== "");
 
-    const {
-      daoSlug,
-      discord,
-      delegateStatement,
-      email,
-      twitter,
-      warpcast,
-      topIssues,
-      topStakeholders,
-      notificationPreferences,
-    } = values;
+    const { discord, delegateStatement, email, twitter, warpcast, topIssues } =
+      values;
 
     // User will only sign what they are seeing on the frontend
     const body = {
       agreeCodeConduct: values.agreeCodeConduct,
-      agreeDaoPrinciples: values.agreeDaoPrinciples,
-      daoSlug,
       discord,
       delegateStatement,
       email,
       twitter,
       warpcast,
       topIssues,
-      topStakeholders,
-      scwAddress,
-      notificationPreferences,
     };
 
     const serializedBody = JSON.stringify(body, undefined, "\t");
-    const signature = await messageSigner
-      .signMessageAsync({
-        message: serializedBody,
-      })
-      .catch((error) => console.error(error));
+
+    const signature = await signMessage({ message: serializedBody });
 
     if (!signature) {
       setSubmissionError("Signature failed, please try again");
       return;
     }
 
-    const response = await submitDelegateStatement({
-      address: address as `0x${string}`,
-      delegateStatement: values,
-      signature,
+    const response = await createDelegateStatement({
+      address: signedAccountId,
       message: serializedBody,
-      scwAddress,
-    }).catch((error) => console.error(error));
+      signature: signature.signature,
+      publicKey: signature.publicKey,
+      twitter,
+      discord,
+      email,
+      warpcast,
+      topIssues,
+      agreeCodeConduct: agreeCodeConduct,
+      statement: delegateStatement,
+    });
 
     if (!response) {
       setSubmissionError(
@@ -122,21 +97,29 @@ export default function DelegateStatementForm({
     }
 
     setSaveSuccess(true);
-    router.push(`/delegates/${address}`);
+    router.push(`/delegates/${signedAccountId}`);
   }
 
   const canSubmit =
-    !!walletClient &&
+    !!signedAccountId &&
     !form.formState.isSubmitting &&
     !!form.formState.isValid &&
-    !!agreeCodeConduct &&
-    !!agreeDaoPrinciples;
+    !!agreeCodeConduct;
 
   return (
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-16 justify-between mt-12 w-full max-w-full">
       {delegate && (
         <div className="flex flex-col static sm:sticky top-16 shrink-0 w-full sm:max-w-[350px]">
-          <DelegateCard delegate={delegate} isEditMode />
+          <DelegateProfile
+            isEditMode
+            profile={{
+              address: delegate.address ?? "",
+              statement: delegate.statement ?? "",
+              twitter: delegate.twitter,
+              discord: delegate.discord,
+              warpcast: delegate.warpcast,
+            }}
+          />
         </div>
       )}
       <div className="flex flex-col w-full">
@@ -145,7 +128,7 @@ export default function DelegateStatementForm({
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <DelegateStatementFormSection form={form} />
               {hasTopIssues && <TopIssuesFormSection form={form} />}
-              {hasStakeholders && <TopStakeholdersFormSection form={form} />}
+
               <OtherInfoFormSection form={form} />
 
               <div className="flex flex-col sm:flex-row justify-end sm:justify-between items-stretch sm:items-center gap-4 py-8 px-6 flex-wrap">
@@ -165,11 +148,6 @@ export default function DelegateStatementForm({
                 {form.formState.isSubmitted && !agreeCodeConduct && (
                   <span className="text-red-700 text-sm">
                     You must agree with the code of conduct to continue
-                  </span>
-                )}
-                {form.formState.isSubmitted && !agreeDaoPrinciples && (
-                  <span className="text-red-700 text-sm">
-                    You must agree with the DAO principles to continue
                   </span>
                 )}
                 {submissionError && (

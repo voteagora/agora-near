@@ -9,7 +9,7 @@ import { Popover, Transition } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ReactNode, useState } from "react";
 import { AccountActionsButton } from "../AccountActions/AccountActionsButton";
-import { PanelRow } from "../Delegates/DelegateCard/DelegateCard";
+import { PanelRow } from "../Delegates/DelegateProfile/DelegateProfile";
 import NearTokenAmount from "../shared/NearTokenAmount";
 import { formatNearAccountId } from "@/lib/utils";
 

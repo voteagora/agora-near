@@ -1,13 +1,13 @@
 "use client";
 
-import { DelegateChunk } from "@/app/api/common/delegates/delegate";
 import { PaginatedResult } from "@/app/lib/pagination";
+import { DelegateProfile } from "@/lib/api/delegates/types";
 import { useQueryState } from "nuqs";
 import DelegateCardList from "./DelegateCardList";
 import DelegateTable from "./DelegateTable";
 
 interface Props {
-  initialDelegates: PaginatedResult<DelegateChunk[]>;
+  initialDelegates: PaginatedResult<DelegateProfile[]>;
 }
 
 export default function DelegateContent({ initialDelegates }: Props) {

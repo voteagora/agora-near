@@ -1,98 +1,46 @@
-import { delegatesFilterOptions } from "@/lib/constants";
-import Tenant from "@/lib/tenant/tenant";
-import { UIEndorsedConfig } from "@/lib/tenant/tenantUI";
-import DelegateContent from "./DelegateContent";
+import { memo, useMemo } from "react";
 import DelegateTabs from "../DelegatesTabs/DelegatesTabs";
+import DelegateContent from "./DelegateContent";
 
-const DelegateCardWrapper = async ({ searchParams }: { searchParams: any }) => {
-  const { ui } = Tenant.current();
-
-  const sort =
-    Object.entries(delegatesFilterOptions).find(
-      ([, value]) => value.sort === searchParams.orderBy
-    )?.[1]?.sort || delegatesFilterOptions.weightedRandom.sort;
-
-  const filters = {
-    ...(searchParams.delegatorFilter && {
-      delegator: searchParams.delegatorFilter,
+const DelegateCardWrapper = memo(() => {
+  const delegates = useMemo(
+    () => ({
+      meta: {
+        has_next: false,
+        total_returned: 0,
+        next_offset: 0,
+      },
+      data: [
+        {
+          address: "lighttea2007.testnet",
+          votingPower: "100000000000000000000000",
+          statement:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor velit vitae felis faucibus, vel dignissim.",
+          participationRate: "0.5",
+          numOfDelegators: "100",
+          twitter: "NEAR",
+          warpcast: "NEAR",
+          discord: "NEAR",
+        },
+        {
+          address: "looseyam4271.testnet",
+          votingPower: "100000000000000000000000",
+        },
+        {
+          address: "fararena9024.testnet",
+          votingPower: "100000000000000000000000",
+        },
+      ],
     }),
-    ...(searchParams.issueFilter && { issues: searchParams.issueFilter }),
-    ...(searchParams.stakeholderFilter && {
-      stakeholders: searchParams.stakeholderFilter,
-    }),
-  };
-
-  const endorsedToggle = ui.toggle("delegates/endorsed-filter");
-  if (endorsedToggle?.enabled) {
-    const defaultFilter = (endorsedToggle.config as UIEndorsedConfig)
-      .defaultFilter;
-    filters.endorsed =
-      searchParams?.endorsedFilter === undefined
-        ? defaultFilter
-        : searchParams.endorsedFilter === "true";
-  }
-
-  const delegates = {
-    meta: {
-      has_next: false,
-      total_returned: 0,
-      next_offset: 0,
-    },
-    data: [
-      {
-        address: "acc-1745564703-user1.testnet",
-        votingPower: {
-          total: "100000000000000000000000",
-          direct: "100",
-          advanced: "100",
-        },
-        statement: {
-          endorsed: true,
-          discord: "discord",
-          payload: { delegateStatement: "A trustworthy delegate" },
-          twitter: "agora",
-        },
-        citizen: false,
-      },
-      {
-        address: "lighttea2007.testnet",
-        votingPower: {
-          total: "100000000000000000000000",
-          direct: "100",
-          advanced: "100",
-        },
-        statement: {
-          endorsed: true,
-          discord: "discord",
-          payload: { delegateStatement: "A trustworthy delegate" },
-          twitter: "agora",
-        },
-        citizen: false,
-      },
-      {
-        address: "fararena9024.testnet",
-        votingPower: {
-          total: "100000000000000000000000",
-          direct: "100",
-          advanced: "100",
-        },
-        statement: {
-          endorsed: true,
-          discord: "discord",
-          payload: { delegateStatement: "A trustworthy delegate" },
-          twitter: "agora",
-        },
-        citizen: false,
-      },
-    ],
-  };
+    []
+  );
 
   return (
     <DelegateTabs>
       <DelegateContent initialDelegates={delegates} />
     </DelegateTabs>
   );
-};
+});
 
 export const DelegateCardLoadingState = () => {
   return (

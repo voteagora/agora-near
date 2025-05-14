@@ -1,7 +1,11 @@
 import Markdown from "@/components/shared/Markdown/Markdown";
 import { sanitizeContent } from "@/lib/sanitizationUtils";
 
-export default function DelegateStatement({ statement }) {
+export default function DelegateStatement({
+  statement,
+}: {
+  statement: string;
+}) {
   const sanitizedStatement = sanitizeContent(statement);
 
   return (

@@ -632,6 +632,14 @@ export function getFunctionSignature(decodedData: any): string | null {
   }
 }
 
+export const getRpcUrl = (
+  networkId: string,
+  params: { useArchivalNode: boolean }
+) => {
+  const url = `https://${params.useArchivalNode ? "archival-" : ""}rpc.${networkId}.near.org`;
+  return url;
+};
+
 export const convertNanoSecondsToDays = (nanoSeconds: string) => {
   return Number(nanoSeconds) / NANO_SECONDS_IN_DAY;
 };

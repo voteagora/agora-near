@@ -4,19 +4,14 @@ import Image from "next/image";
 import Tenant from "@/lib/tenant/tenant";
 
 interface Props {
-  statement: DelegateStatementType;
+  topIssues?: {
+    value: string;
+    type: string;
+  }[];
 }
 
-export default function TopIssues({ statement }: Props) {
+export default function TopIssues({ topIssues }: Props) {
   const { ui } = Tenant.current();
-  const topIssues = (
-    statement.payload as {
-      topIssues: {
-        value: string;
-        type: string;
-      }[];
-    }
-  ).topIssues;
 
   if (!topIssues || topIssues.length === 0 || !ui.governanceIssues) {
     return null;

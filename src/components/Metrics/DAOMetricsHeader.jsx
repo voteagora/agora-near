@@ -2,7 +2,6 @@
 
 import discord from "@/icons/discord.svg";
 import Tenant from "@/lib/tenant/tenant";
-import { formatNumber } from "@/lib/tokenUtils";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,12 +12,19 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { useDAOMetrics } from "@/hooks/useDAOMetrics";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
+
+import { useTotalSupply } from "@/hooks/useTotalNearSupply";
 
 export default function DAOMetricsHeader() {
-  const { token, ui, contracts } = Tenant.current();
+  const { ui, contracts } = Tenant.current();
   const [isClient, setIsClient] = useState(false);
-  const { votableSupply, totalSupply, isLoading } = useDAOMetrics();
+
+  const {
+    totalSupply: totalSupplyFromNear,
+    votableSupply: votableSupplyFromNear,
+    isLoading: isLoadingSupply,
+  } = useTotalSupply();
 
   const governanceForumLink = ui.link("governance-forum");
   const bugsLink = ui.link("bugs");
@@ -35,11 +41,6 @@ export default function DAOMetricsHeader() {
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  const formattedMetrics = {
-    votableSupply: formatNumber(votableSupply),
-    totalSupply: formatNumber(totalSupply),
-  };
 
   if (!isClient) {
     return null;
@@ -61,9 +62,12 @@ export default function DAOMetricsHeader() {
                   <HoverCard openDelay={100} closeDelay={100}>
                     <HoverCardTrigger>
                       <span className="cursor-default">
-                        {isLoading ? "-" : formattedMetrics.totalSupply}{" "}
-                        {token.symbol} total
-                        <span className="hidden sm:inline">&nbsp;supply</span>
+                        {isLoadingSupply || !totalSupplyFromNear ? (
+                          "-"
+                        ) : (
+                          <NearTokenAmount amount={totalSupplyFromNear} />
+                        )}
+                        <span className="hidden sm:inline">supply</span>
                       </span>
                     </HoverCardTrigger>
                     <HoverCardContent
@@ -71,16 +75,22 @@ export default function DAOMetricsHeader() {
                       side="bottom"
                       sideOffset={3}
                     >
-                      <span>Total amount of {token.symbol} in existence</span>
+                      <span>Total amount of NEAR in existence</span>
                     </HoverCardContent>
                   </HoverCard>
                   {contracts.token.isERC20() && (
                     <HoverCard openDelay={100} closeDelay={100}>
                       <HoverCardTrigger>
                         <span className="cursor-default">
-                          {isLoading ? "-" : formattedMetrics.votableSupply}{" "}
-                          {token.symbol} votable
-                          <span className="hidden sm:inline">&nbsp;supply</span>
+                          {isLoadingSupply || !votableSupplyFromNear ? (
+                            "-"
+                          ) : (
+                            <NearTokenAmount
+                              amount={votableSupplyFromNear}
+                              currency="veNEAR"
+                            />
+                          )}
+                          <span className="hidden sm:inline">supply</span>
                         </span>
                       </HoverCardTrigger>
                       <HoverCardContent
@@ -88,9 +98,7 @@ export default function DAOMetricsHeader() {
                         side="bottom"
                         sideOffset={3}
                       >
-                        <span>
-                          {token.symbol} currently delegated to a voter
-                        </span>
+                        <span>Total amount of veNEAR in existence</span>
                       </HoverCardContent>
                     </HoverCard>
                   )}

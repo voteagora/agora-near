@@ -20,8 +20,7 @@ export async function createDelegateStatement({
   message: string;
   scwAddress?: string;
 }) {
-  const { twitter, warpcast, discord, email, notificationPreferences } =
-    delegateStatement;
+  const { twitter, warpcast, discord, email } = delegateStatement;
   const { slug } = Tenant.current();
 
   const valid = await verifyMessage({
@@ -51,7 +50,6 @@ export async function createDelegateStatement({
     email,
     scw_address: scwAddress?.toLowerCase(),
     notification_preferences: {
-      ...notificationPreferences,
       last_updated: new Date().toISOString(),
     },
   };

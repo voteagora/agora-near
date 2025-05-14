@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { getRpcUrl } from "@/lib/utils";
 import { convertUnit } from "@fastnear/utils";
 import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 import {
@@ -8,6 +9,10 @@ import {
   WalletModuleFactory,
   WalletSelector,
 } from "@near-wallet-selector/core";
+import {
+  SignedMessage,
+  VerifiedOwner,
+} from "@near-wallet-selector/core/src/lib/wallet";
 import { setupLedger } from "@near-wallet-selector/ledger";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupModal } from "@near-wallet-selector/modal-ui";
@@ -69,6 +74,13 @@ interface NearContextType {
   signAndSendTransactions: (options: TransactionsProps) => Promise<any>;
   getAccessKeys: (accountId: string) => Promise<any[]>;
   callContracts: (props: CallContractsProps) => Promise<any>;
+  signMessage: (options: {
+    message: string;
+    recipient?: string;
+    nonce?: Buffer;
+  }) => Promise<SignedMessage | void>;
+  networkId: NetworkId;
+  isInitialized: boolean;
 }
 
 export const NearContext = createContext<NearContextType>({
@@ -82,6 +94,9 @@ export const NearContext = createContext<NearContextType>({
   signAndSendTransactions: async () => null,
   getAccessKeys: async () => [],
   callContracts: async () => null,
+  signMessage: async () => {},
+  networkId: "mainnet" as NetworkId,
+  isInitialized: false,
 });
 
 export const useNear = () => useContext(NearContext);
@@ -105,6 +120,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
   const [selector, setSelector] = useState<WalletSelector | undefined>();
   const [signedAccountId, setSignedAccountId] = useState<string | undefined>();
   const unsubscribeRef = useRef<() => void>();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   /**
    * To be called when the website loads
@@ -140,6 +156,8 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       ).unsubscribe;
     } catch (error) {
       console.error("Error initializing wallet selector:", error);
+    } finally {
+      setIsInitialized(true);
     }
   }, [networkId]);
 
@@ -179,7 +197,10 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       blockId,
       useArchivalNode = false,
     }: ViewMethodProps) => {
-      const url = `https://${useArchivalNode ? "archival-" : ""}rpc.${networkId}.near.org`;
+      const url = getRpcUrl(networkId, {
+        useArchivalNode,
+      });
+
       const provider = new providers.JsonRpcProvider({ url });
 
       debugLog(
@@ -384,6 +405,27 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     [selector]
   );
 
+  const signMessage = useCallback(
+    async ({
+      message,
+      recipient = "agora-near-be",
+      nonce = Buffer.from(Array.from(Array(32).keys())),
+    }: {
+      message: string;
+      recipient?: string;
+      nonce?: Buffer;
+    }) => {
+      if (!selector) return;
+      const selectedWallet = await selector.wallet();
+      return selectedWallet.signMessage({
+        message,
+        recipient,
+        nonce,
+      });
+    },
+    [selector]
+  );
+
   useEffect(() => {
     init();
   }, [init]);
@@ -405,6 +447,9 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         signAndSendTransactions,
         getAccessKeys,
         callContracts,
+        signMessage,
+        networkId,
+        isInitialized,
       }}
     >
       {children}
