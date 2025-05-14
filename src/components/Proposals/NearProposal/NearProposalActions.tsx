@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { useNear } from "@/contexts/NearContext";
-import { ProposalAction, useProposalAction } from "@/hooks/useProposalAction";
+import { useProposalActions } from "@/hooks/useProposalActions";
 import { ProposalInfo, ProposalStatus } from "@/lib/contracts/types/voting";
 
 export const NearProposalActions = ({
@@ -10,19 +10,14 @@ export const NearProposalActions = ({
   proposal: ProposalInfo;
 }) => {
   const {
-    mutateProposal: approveProposal,
-    isMutating: isApprovingProposal,
-    proposalError: approveProposalError,
-  } = useProposalAction({
-    action: ProposalAction.Approve,
-  });
-  const {
-    mutateProposal: rejectProposal,
-    isMutating: isRejectingProposal,
-    proposalError: rejectProposalError,
-  } = useProposalAction({
-    action: ProposalAction.Reject,
-  });
+    approveProposal,
+    isApprovingProposal,
+    approveProposalError,
+    rejectProposal,
+    isRejectingProposal,
+    rejectProposalError,
+  } = useProposalActions();
+
   const { config } = useProposalConfig();
   const { signedAccountId } = useNear();
 

@@ -4,12 +4,7 @@ import { useCallback } from "react";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { useWriteHOSContract } from "./useWriteHOSContract";
 
-export enum ProposalAction {
-  Approve = "approve",
-  Reject = "reject",
-}
-
-export const useProposalAction = ({ action }: { action: ProposalAction }) => {
+export const useProposalActions = () => {
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
@@ -27,16 +22,22 @@ export const useProposalAction = ({ action }: { action: ProposalAction }) => {
     onSuccess,
   });
 
+  const {
+    mutate: mutateRejectProposal,
+    isPending: isRejectingProposal,
+    error: rejectProposalError,
+  } = useWriteHOSContract({
+    contractType: "VOTING",
+    onSuccess,
+  });
+
   const approveProposal = useCallback(
     (proposalId: number, votingStartTimeSec?: number) => {
       return mutateApproveProposal({
         contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
         methodCalls: [
           {
-            methodName:
-              action === ProposalAction.Approve
-                ? "approve_proposal"
-                : "reject_proposal",
+            methodName: "approve_proposal",
             args: {
               proposal_id: proposalId,
               voting_start_time_sec: votingStartTimeSec || null,
@@ -47,12 +48,34 @@ export const useProposalAction = ({ action }: { action: ProposalAction }) => {
         ],
       });
     },
-    [mutateApproveProposal, action]
+    [mutateApproveProposal]
+  );
+
+  const rejectProposal = useCallback(
+    (proposalId: number) => {
+      return mutateRejectProposal({
+        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        methodCalls: [
+          {
+            methodName: "reject_proposal",
+            args: {
+              proposal_id: proposalId,
+            },
+            deposit: "1",
+            gas: "300 TGas",
+          },
+        ],
+      });
+    },
+    [mutateRejectProposal]
   );
 
   return {
-    mutateProposal: approveProposal,
-    isMutating: isApprovingProposal,
-    proposalError: approveProposalError,
+    approveProposal,
+    isApprovingProposal,
+    approveProposalError,
+    rejectProposal,
+    isRejectingProposal,
+    rejectProposalError,
   };
 };
