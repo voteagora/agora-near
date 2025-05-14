@@ -15,7 +15,7 @@ export default function NearProposalDescription({
     >
       <div className="flex-col items-start">
         <div className="text-xs font-semibold text-secondary flex items-center">
-          Proposal by {formatNearAccountId(proposal.proposer_id)}
+          Proposal by {proposal.proposer_id}
           {proposal.link && (
             <a
               href={

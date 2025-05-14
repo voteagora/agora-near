@@ -23,7 +23,7 @@ export const NearProposal = memo(({ proposal }: { proposal: ProposalInfo }) => {
         >
           <div className="flex flex-row text-xs text-secondary gap-1">
             <div className="hidden sm:inline">
-              Proposal by {formatNearAccountId(proposal.proposer_id)}
+              Proposal by {proposal.proposer_id}
             </div>
             <div className="block sm:hidden">
               <NearProposalStatusText proposal={proposal} />
