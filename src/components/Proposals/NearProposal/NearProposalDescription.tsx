@@ -2,6 +2,7 @@ import Markdown from "@/components/shared/Markdown/Markdown";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import styles from "./NearProposalDescription.module.scss";
+import { formatNearAccountId } from "@/lib/utils";
 
 export default function NearProposalDescription({
   proposal,

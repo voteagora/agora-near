@@ -5,6 +5,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { DelegateProfile } from "@/lib/api/delegates/types";
 import { useRouter } from "next/navigation";
 import { DelegateAddress } from "../DelegateCard/DelegateAddress";
+import { formatNearAccountId } from "@/lib/utils";
 
 export default function DelegateTableRow({
   delegate,
@@ -21,7 +22,7 @@ export default function DelegateTableRow({
       }}
     >
       <TableCell>
-        <DelegateAddress address={delegate.address} />
+        <DelegateAddress address={formatNearAccountId(delegate.address)} />
       </TableCell>
       <TableCell>
         {delegate.votingPower ? (

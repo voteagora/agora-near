@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn, formatNearAccountId } from "@/lib/utils";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { Copy } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -39,7 +39,7 @@ function CopyableHumanAddress({
         setIsInCopiedState(true);
       }}
     >
-      {address}
+      {formatNearAccountId(address)}
       <div className="flex flex-shrink">
         {isInCopiedState ? (
           <CheckCircleIcon className="text-green-600 w-3 h-3" />

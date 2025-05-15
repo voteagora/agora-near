@@ -14,6 +14,7 @@ import { createPortal } from "react-dom";
 import { AccountActionsButton } from "../AccountActions/AccountActionsButton";
 import { PanelRow } from "../Delegates/DelegateProfile/DelegateProfile";
 import NearTokenAmount from "../shared/NearTokenAmount";
+import { formatNearAccountId } from "@/lib/utils";
 
 type Props = {
   accountId: string | undefined;
@@ -86,7 +87,9 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
                     >
                       <div className="flex flex-col gap-3 min-h-[280px] justify-center">
                         <div className="mb-1">
-                          <span className="text-primary">{accountId}</span>
+                          <span className="text-primary">
+                            {formatNearAccountId(accountId)}
+                          </span>
                         </div>
                         <div className="self-stretch py-8 flex flex-col gap-6">
                           <PanelRow

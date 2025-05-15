@@ -643,3 +643,15 @@ export const getRpcUrl = (
 export const convertNanoSecondsToDays = (nanoSeconds: string) => {
   return Number(nanoSeconds) / NANO_SECONDS_IN_DAY;
 };
+
+export const formatNearAccountId = (address?: string) => {
+  if (!address) {
+    return "";
+  }
+
+  if (address.length <= 15) {
+    return address;
+  }
+
+  return `${address.slice(0, 6)}...${address.slice(-6)}`;
+};

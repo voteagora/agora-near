@@ -1,7 +1,7 @@
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { DelegateProfile } from "@/lib/api/delegates/types";
 import { sanitizeContent, stripMarkdown } from "@/lib/sanitizationUtils";
-import { cn } from "@/lib/utils";
+import { cn, formatNearAccountId } from "@/lib/utils";
 import Link from "next/link";
 import { NearDelegateActions } from "../DelegateCard/NearDelegateActions";
 
@@ -35,7 +35,7 @@ const DelegateCard = ({
         <div className="flex flex-col gap-4 h-full rounded-xl bg-wash border border-line shadow-newDefault">
           <div className="flex flex-col gap-4 justify-center pt-4">
             <div className="border-b border-line px-4 pb-4">
-              {delegate.address}
+              {formatNearAccountId(delegate.address)}
             </div>
             <div className="px-4 flex flex-row gap-4">
               <span className="text-primary font-bold">

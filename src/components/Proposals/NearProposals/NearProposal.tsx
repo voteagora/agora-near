@@ -3,7 +3,7 @@ import Link from "next/link";
 import { VStack } from "@/components/Layout/Stack";
 import NearProposalTimeStatus from "./NearProposalTimeStatus";
 import NearProposalStatus from "./NearProposalStatus";
-import { cn } from "@/lib/utils";
+import { cn, formatNearAccountId } from "@/lib/utils";
 import { memo } from "react";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { NearProposalStatusText } from "./NearProposalStatusText";
