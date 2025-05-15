@@ -24,7 +24,10 @@ export default function NearProposalVotingActions({
   const openDialog = useOpenDialog();
   const { signIn } = useNear();
   const [selectedVote, setSelectedVote] = useState<number>();
-  const { votingPower } = useProposalVotingPower({ proposal, accountId: signedAccountId ?? "" });
+  const { votingPower } = useProposalVotingPower({
+    proposal,
+    accountId: signedAccountId ?? "",
+  });
 
   const { isRegisteredToVote } = useCheckVoterStatus({
     enabled: !!signedAccountId,

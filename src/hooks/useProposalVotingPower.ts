@@ -13,12 +13,12 @@ export const useProposalVotingPower = ({
   accountId: string;
   proposal: ProposalInfo;
 }) => {
-  const blockHeight = proposal.snapshot_and_state?.snapshot.block_height
+  const blockHeight = proposal.snapshot_and_state?.snapshot.block_height;
 
   const { viewMethod } = useNear();
 
-  const [votingPower, setVotingPower] = useState('0')
-  const [isLoading, setIsLoading] = useState(true)
+  const [votingPower, setVotingPower] = useState("0");
+  const [isLoading, setIsLoading] = useState(true);
 
   const getVotingPower = useCallback(async () => {
     if (!blockHeight) return null;
@@ -29,23 +29,25 @@ export const useProposalVotingPower = ({
       args: { account_id: accountId },
       blockId: blockHeight,
       useArchivalNode: true,
-    })
+    });
 
-    let power = '0'
-    const proofData = proof[1]['V0']
+    let power = "0";
+    const proofData = proof[1]["V0"];
 
     if (proofData?.delegation?.account_id) {
-      const nearBalance = new Big(proofData.delegated_balance.near_balance)
-      const extraBalance = new Big(proofData.delegated_balance.extra_venear_balance)
-      power = nearBalance.plus(extraBalance).toString()
+      const nearBalance = new Big(proofData.delegated_balance.near_balance);
+      const extraBalance = new Big(
+        proofData.delegated_balance.extra_venear_balance
+      );
+      power = nearBalance.plus(extraBalance).toString();
     } else {
-      const nearBalance = new Big(proofData.balance.near_balance)
-      const extraBalance = new Big(proofData.balance.extra_venear_balance)
-      power = nearBalance.plus(extraBalance).toString()
+      const nearBalance = new Big(proofData.balance.near_balance);
+      const extraBalance = new Big(proofData.balance.extra_venear_balance);
+      power = nearBalance.plus(extraBalance).toString();
     }
 
-    setVotingPower(power)
-    setIsLoading(false)
+    setVotingPower(power);
+    setIsLoading(false);
   }, [accountId, blockHeight, viewMethod]);
 
   useEffect(() => {
@@ -54,6 +56,6 @@ export const useProposalVotingPower = ({
 
   return {
     votingPower,
-    isLoading
-  }
+    isLoading,
+  };
 };
