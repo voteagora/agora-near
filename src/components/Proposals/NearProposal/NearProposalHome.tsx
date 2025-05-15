@@ -5,6 +5,7 @@ import { useProposalConfig } from "@/hooks/useProposalConfig";
 import NearProposalDescription from "./NearProposalDescription";
 import NearProposalOptionsResult from "./NearProposalOptionsResult";
 import NearProposalVoteResult from "./NearProposalVoteResult";
+import { NearProposalActions } from "./NearProposalActions";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -34,6 +35,8 @@ export default function NearProposalHome({
 
   return (
     <div className="flex flex-col items-center mt-12">
+      <NearProposalActions proposal={proposal} />
+
       <div className="flex gap-16 justify-between items-start max-w-[76rem] w-full flex-col sm:flex-row">
         <div className="flex flex-col gap-4 w-full sm:w-[calc(100%-24rem)]">
           <NearProposalDescription proposal={proposal} />

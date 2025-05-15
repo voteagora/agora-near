@@ -4,7 +4,15 @@ import { useCallback } from "react";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { useWriteHOSContract } from "./useWriteHOSContract";
 
-export const useApproveProposal = () => {
+type Props = {
+  onApproveSuccess?: () => void;
+  onRejectSuccess?: () => void;
+};
+
+export const useProposalActions = ({
+  onApproveSuccess,
+  onRejectSuccess,
+}: Props) => {
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
@@ -19,7 +27,22 @@ export const useApproveProposal = () => {
     error: approveProposalError,
   } = useWriteHOSContract({
     contractType: "VOTING",
-    onSuccess,
+    onSuccess: () => {
+      onSuccess();
+      onApproveSuccess?.();
+    },
+  });
+
+  const {
+    mutate: mutateRejectProposal,
+    isPending: isRejectingProposal,
+    error: rejectProposalError,
+  } = useWriteHOSContract({
+    contractType: "VOTING",
+    onSuccess: () => {
+      onSuccess();
+      onRejectSuccess?.();
+    },
   });
 
   const approveProposal = useCallback(
@@ -42,9 +65,31 @@ export const useApproveProposal = () => {
     [mutateApproveProposal]
   );
 
+  const rejectProposal = useCallback(
+    (proposalId: number) => {
+      return mutateRejectProposal({
+        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        methodCalls: [
+          {
+            methodName: "reject_proposal",
+            args: {
+              proposal_id: proposalId,
+            },
+            deposit: "1",
+            gas: "300 TGas",
+          },
+        ],
+      });
+    },
+    [mutateRejectProposal]
+  );
+
   return {
     approveProposal,
     isApprovingProposal,
     approveProposalError,
+    rejectProposal,
+    isRejectingProposal,
+    rejectProposalError,
   };
 };
