@@ -4,7 +4,15 @@ import { useCallback } from "react";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { useWriteHOSContract } from "./useWriteHOSContract";
 
-export const useProposalActions = () => {
+type Props = {
+  onApproveSuccess?: () => void;
+  onRejectSuccess?: () => void;
+};
+
+export const useProposalActions = ({
+  onApproveSuccess,
+  onRejectSuccess,
+}: Props) => {
   const queryClient = useQueryClient();
 
   const onSuccess = useCallback(() => {
@@ -19,7 +27,10 @@ export const useProposalActions = () => {
     error: approveProposalError,
   } = useWriteHOSContract({
     contractType: "VOTING",
-    onSuccess,
+    onSuccess: () => {
+      onSuccess();
+      onApproveSuccess?.();
+    },
   });
 
   const {
@@ -28,7 +39,10 @@ export const useProposalActions = () => {
     error: rejectProposalError,
   } = useWriteHOSContract({
     contractType: "VOTING",
-    onSuccess,
+    onSuccess: () => {
+      onSuccess();
+      onRejectSuccess?.();
+    },
   });
 
   const approveProposal = useCallback(

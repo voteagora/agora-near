@@ -4,6 +4,7 @@ import { useProposalActions } from "@/hooks/useProposalActions";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { ProposalInfo, ProposalStatus } from "@/lib/contracts/types/voting";
 import { InfoIcon } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 export const NearProposalActions = ({
   proposal,
@@ -17,10 +18,16 @@ export const NearProposalActions = ({
     isRejectingProposal,
     approveProposalError,
     rejectProposalError,
-  } = useProposalActions();
+  } = useProposalActions({
+    onApproveSuccess: () => {
+      toast.success("Proposal approved");
+    },
+    onRejectSuccess: () => {
+      toast.success("Proposal rejected");
+    },
+  });
   const { config } = useProposalConfig();
   const { signedAccountId } = useNear();
-
   const isLoading = isApprovingProposal || isRejectingProposal;
 
   const isReviewer =
