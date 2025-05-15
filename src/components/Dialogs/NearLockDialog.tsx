@@ -2,13 +2,8 @@ import { UpdatedButton } from "@/components/Button";
 import { Input } from "@/components/ui/input";
 import { useLockNear } from "@/hooks/useLockNear";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
-import { useVenearConfig } from "@/hooks/useVenearConfig";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
-import {
-  getAPYFromGrowthRate,
-  getEstimatedVeNearBalance,
-  getFormattedUnlockDuration,
-} from "@/lib/lockUtils";
+import { getAPYFromGrowthRate } from "@/lib/lockUtils";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import { utils } from "near-api-js";
 import { useCallback, useMemo, useState } from "react";
@@ -18,9 +13,7 @@ import NearTokenAmount from "../shared/NearTokenAmount";
 export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
   const { lockupAccountId, availableToLock, isLoading } = useLockupAccount();
   const { growthRateNs } = useVenearSnapshot();
-  const { unlockDuration } = useVenearConfig({ enabled: true });
   const [lockAmount, setLockAmount] = useState("");
-  const [lockPeriod, setLockPeriod] = useState(0); // in months
   const [isLockingMax, setIsLockingMax] = useState(false);
 
   const { lockNear, isLockingNear, lockingNearError } = useLockNear({
@@ -44,13 +37,6 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
     () => getAPYFromGrowthRate(growthRateNs),
     [growthRateNs]
   );
-
-  // Calculate new veNEAR balance
-  const estimatedVeNearBalance = useMemo(() => {
-    if (!lockAmount) return "0";
-
-    return getEstimatedVeNearBalance(lockAmount, lockPeriod, growthRateNs);
-  }, [lockAmount, lockPeriod, growthRateNs]);
 
   const handleLockNear = useCallback(() => {
     try {
@@ -82,22 +68,16 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
     }
   }, [availableToLock]);
 
-  // Format unlock duration for display
-  const formattedUnlockDuration = useMemo(
-    () => getFormattedUnlockDuration(unlockDuration),
-    [unlockDuration]
-  );
-
-  const formattedEstVenearBalance = useMemo(
+  const formattedVeNearBalance = useMemo(
     () => (
       <NearTokenAmount
-        amount={utils.format.parseNearAmount(estimatedVeNearBalance) ?? "0"}
+        amount={utils.format.parseNearAmount(lockAmount ?? "0") ?? "0"}
         hideCurrency
         minimumFractionDigits={2}
         className="tabular-nums"
       />
     ),
-    [estimatedVeNearBalance]
+    [lockAmount]
   );
 
   return (
@@ -140,11 +120,9 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
               <div className="flex-1 flex">
                 <div className="flex flex-row w-full items-center justify-between p-4">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">
-                      veNEAR{lockPeriod === 0 ? "" : " (est.)"}
-                    </span>
+                    <span className="font-medium">veNEAR</span>
                   </div>
-                  <span className="text-lg">{formattedEstVenearBalance}</span>
+                  <span className="text-lg">{formattedVeNearBalance}</span>
                 </div>
               </div>
             </div>
@@ -155,30 +133,13 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
                 Available to lock
               </span>
               <span className="text-secondary font-medium">APY</span>
-              <label className="text-secondary font-medium">
-                Lock duration
-              </label>
             </div>
             <div className="flex flex-1 flex-col gap-2 px-2">
               <span className="text-primary font-medium">
                 <NearTokenAmount amount={availableNearAmount} />
               </span>
               <span className="text-primary font-medium">{annualAPY}%</span>
-              <span className="text-primary font-medium">
-                <span className="tabular-nums">{lockPeriod}</span>{" "}
-                {lockPeriod > 1 || lockPeriod === 0 ? "months" : "month"}
-              </span>
             </div>
-          </div>
-          <div>
-            <input
-              type="range"
-              min="0"
-              max="72"
-              value={lockPeriod}
-              onChange={(e) => setLockPeriod(parseInt(e.target.value))}
-              className="w-full accent-primary"
-            />
           </div>
           <UpdatedButton
             type="primary"
@@ -197,10 +158,6 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
                 ? "Error locking NEAR - try again"
                 : "Lock NEAR"}
           </UpdatedButton>
-          <p className="text-sm text-secondary text-center">
-            Unlock at any time. Unlocked NEAR is available after{" "}
-            {formattedUnlockDuration}.
-          </p>
         </div>
       </div>
     </div>
