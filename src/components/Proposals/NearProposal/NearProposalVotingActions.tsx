@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
 import { RegisterToVoteButton } from "@/components/AccountActions/RegisterToVoteButton";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { useProposalVotingPower } from "@/hooks/useProposalVotingPower";
 
 export default function NearProposalVotingActions({
   proposal,
@@ -23,7 +24,7 @@ export default function NearProposalVotingActions({
   const openDialog = useOpenDialog();
   const { signIn } = useNear();
   const [selectedVote, setSelectedVote] = useState<number>();
-  const { data: votingPower } = useVotingPower(signedAccountId);
+  const { votingPower } = useProposalVotingPower({ proposal, accountId: signedAccountId ?? "" });
 
   const { isRegisteredToVote } = useCheckVoterStatus({
     enabled: !!signedAccountId,
