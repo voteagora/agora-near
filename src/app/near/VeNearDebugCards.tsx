@@ -81,11 +81,8 @@ export default function VeNearDebugCards() {
     pageSize: 50,
   });
   const { config, isLoading: isLoadingConfig } = useProposalConfig();
-  const {
-    approveProposal,
-    isApprovingProposal,
-    approveProposalError,
-  } = useProposalActions();
+  const { approveProposal, isApprovingProposal, approveProposalError } =
+    useProposalActions({});
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
