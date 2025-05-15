@@ -3,6 +3,7 @@ import { useNear } from "@/contexts/NearContext";
 import { useProposalActions } from "@/hooks/useProposalActions";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { ProposalInfo, ProposalStatus } from "@/lib/contracts/types/voting";
+import { InfoIcon } from "lucide-react";
 
 export const NearProposalActions = ({
   proposal,
@@ -30,8 +31,11 @@ export const NearProposalActions = ({
   }
 
   return (
-    <div className="w-full flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-center align-middle border border-line p-2 mb-6 rounded-md bg-neutral text-sm text-primary">
-      <div className="ml-4">
+    <div
+      className={`w-full flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between items-center align-middle border border-line p-4 mb-6 rounded-md bg-neutral text-sm text-primary`}
+    >
+      <div className="ml-4 flex items-center gap-2">
+        <InfoIcon className="h-4 w-4 text-muted-foreground hidden sm:block" />
         This proposal is awaiting approval from a House of Stake reviewer
       </div>
       {isReviewer && (
