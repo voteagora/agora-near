@@ -213,7 +213,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
           account_id: contractId,
           method_name: method,
           args_base64: Buffer.from(JSON.stringify(args)).toString("base64"),
-          finality: "optimistic",
+          finality: useArchivalNode ? undefined : "optimistic",
           block_id: blockId,
         });
 

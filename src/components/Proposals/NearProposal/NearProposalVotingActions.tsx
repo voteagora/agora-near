@@ -1,17 +1,16 @@
 "use client";
 
-import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
-import { Button } from "@/components/ui/button";
-import { useNear } from "@/contexts/NearContext";
-import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
-import { useState } from "react";
-import { useVotingPower } from "@/hooks/useVotingPower";
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
 import { RegisterToVoteButton } from "@/components/AccountActions/RegisterToVoteButton";
-import { capitalizeFirstLetter } from "@/lib/utils";
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useNear } from "@/contexts/NearContext";
+import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
 import { useProposalVotingPower } from "@/hooks/useProposalVotingPower";
+import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
+import { capitalizeFirstLetter } from "@/lib/utils";
+import { useState } from "react";
 
 export default function NearProposalVotingActions({
   proposal,
@@ -133,7 +132,10 @@ export default function NearProposalVotingActions({
             with
             {"\u00A0"}
             {votingPower ? (
-              <NearTokenAmount amount={votingPower} currency="veNEAR" />
+              <NearTokenAmount
+                amount={votingPower.toFixed()}
+                currency="veNEAR"
+              />
             ) : (
               <Skeleton className="w-4 h-4 inline-block" />
             )}
