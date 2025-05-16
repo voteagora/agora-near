@@ -47,9 +47,11 @@ const DelegateCard = ({
                 </span>
               )}
             </div>
-            <p className="text-base leading-normal min-h-[48px] break-words text-secondary overflow-hidden line-clamp-2 px-4">
-              {sanitizedTruncatedStatement}
-            </p>
+            {sanitizedTruncatedStatement && (
+              <p className="text-base leading-normal min-h-[48px] break-words text-secondary overflow-hidden line-clamp-2 px-4">
+                {sanitizedTruncatedStatement}
+              </p>
+            )}
           </div>
           <div className="min-h-[24px] px-4 pb-4">
             <NearDelegateActions delegate={delegate} />

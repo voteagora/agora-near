@@ -57,3 +57,15 @@ export type DelegateProfile = {
 export type GetDelegateResponse = {
   delegate?: DelegateProfile;
 };
+
+export type DelegateBasicInfo = {
+  address: string;
+  votingPower: string;
+  participationRate: string;
+  initialVotingPower: string;
+};
+
+export type GetDelegatesResponse = {
+  count: number;
+  delegates: DelegateBasicInfo[];
+};

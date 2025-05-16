@@ -1,11 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { DialogProvider } from "@/components/Dialogs/DialogProvider/DialogProvider";
-import { DelegateChunk } from "@/app/api/common/delegates/delegate";
-import { useAgoraContext } from "@/contexts/AgoraContext";
-import { PaginatedResult, PaginationParams } from "@/app/lib/pagination";
 import {
   Table,
   TableCell,
@@ -14,24 +10,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import DelegateTableRow from "./DelegateTableRow";
-import { DelegateProfile } from "@/lib/api/delegates/types";
+import { DelegateBasicInfo } from "@/lib/api/delegates/types";
 
 interface Props {
-  initialDelegates: PaginatedResult<DelegateProfile[]>;
+  delegates?: DelegateBasicInfo[];
+  hasMore: boolean;
+  onLoadMore: () => void;
 }
 
-export default function DelegateTable({ initialDelegates }: Props) {
-  const [delegates, setDelegates] = useState(initialDelegates.data);
-
-  const { setIsDelegatesFiltering } = useAgoraContext();
-
-  useEffect(() => {
-    setIsDelegatesFiltering(false);
-    setDelegates(initialDelegates.data);
-  }, [initialDelegates, setIsDelegatesFiltering]);
-
-  const loadMore = async () => {};
-
+export default function DelegateTable({
+  delegates,
+  hasMore,
+  onLoadMore,
+}: Props) {
   return (
     <DialogProvider>
       <div className="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg mt-6">
@@ -45,15 +36,12 @@ export default function DelegateTable({ initialDelegates }: Props) {
               <TableHead className="h-10 text-secondary">
                 Participation
               </TableHead>
-              <TableHead className="h-10 text-secondary">
-                Delegated from
-              </TableHead>
             </TableRow>
           </TableHeader>
           <InfiniteScroll
-            hasMore={false}
+            hasMore={hasMore}
             pageStart={1}
-            loadMore={loadMore}
+            loadMore={onLoadMore}
             loader={
               <TableRow key={0}>
                 <TableCell
@@ -69,7 +57,7 @@ export default function DelegateTable({ initialDelegates }: Props) {
             element="tbody"
             useWindow={false}
           >
-            {delegates.length === 0 ? (
+            {delegates?.length === 0 ? (
               <td
                 className="w-full p-4 bg-neutral text-center text-secondary text-sm"
                 colSpan={6}
@@ -77,7 +65,7 @@ export default function DelegateTable({ initialDelegates }: Props) {
                 None found
               </td>
             ) : (
-              delegates.map((delegate) => (
+              delegates?.map((delegate) => (
                 <DelegateTableRow key={delegate.address} delegate={delegate} />
               ))
             )}

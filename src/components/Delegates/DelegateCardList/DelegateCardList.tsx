@@ -1,35 +1,28 @@
 "use client";
 
-import { PaginatedResult } from "@/app/lib/pagination";
 import { DialogProvider } from "@/components/Dialogs/DialogProvider/DialogProvider";
-import { useAgoraContext } from "@/contexts/AgoraContext";
-import { DelegateProfile } from "@/lib/api/delegates/types";
-import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import DelegateCard from "./DelegateCard";
+import { DelegateBasicInfo } from "@/lib/api/delegates/types";
 
 interface Props {
-  initialDelegates: PaginatedResult<DelegateProfile[]>;
+  delegates?: DelegateBasicInfo[];
+  hasMore: boolean;
+  onLoadMore: () => void;
 }
 
-export default function DelegateCardList({ initialDelegates }: Props) {
-  const [delegates, setDelegates] = useState(initialDelegates.data);
-  const { isDelegatesFiltering, setIsDelegatesFiltering } = useAgoraContext();
-
-  useEffect(() => {
-    setIsDelegatesFiltering(false);
-    setDelegates(initialDelegates.data);
-  }, [initialDelegates, setIsDelegatesFiltering]);
-
-  const loadMore = async () => {};
-
+export default function DelegateCardList({
+  delegates,
+  hasMore,
+  onLoadMore,
+}: Props) {
   return (
     <DialogProvider>
       <InfiniteScroll
         className="grid grid-flow-row grid-cols-1 sm:grid-cols-3 justify-around sm:justify-between py-4 gap-4 sm:gap-8"
-        hasMore={false}
+        hasMore={hasMore}
         pageStart={1}
-        loadMore={loadMore}
+        loadMore={onLoadMore}
         loader={
           <div
             className="w-full h-full min-h-[140px] bg-wash rounded-xl text-tertiary flex items-center justify-center"
@@ -46,7 +39,7 @@ export default function DelegateCardList({ initialDelegates }: Props) {
               key={idx}
               delegate={delegate}
               votingPower={delegate.votingPower ?? "0"}
-              isDelegatesFiltering={isDelegatesFiltering}
+              isDelegatesFiltering={false}
             />
           );
         })}

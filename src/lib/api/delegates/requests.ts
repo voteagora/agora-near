@@ -1,7 +1,11 @@
 import axios from "axios";
 import { Endpoint } from "../constants";
-import { CreateDelegateStatementInput, GetDelegateResponse } from "./types";
-import { CreateDelegateStatementResponse } from "./types";
+import {
+  CreateDelegateStatementInput,
+  GetDelegateResponse,
+  GetDelegatesResponse,
+  CreateDelegateStatementResponse,
+} from "./types";
 
 export const createDelegateStatement = async (
   input: CreateDelegateStatementInput
@@ -20,4 +24,12 @@ export const getDelegate = async (address: string) => {
   );
 
   return data.delegate;
+};
+
+export const fetchDelegates = async (pageSize: number, page: number) => {
+  const { data } = await axios.get<GetDelegatesResponse>(
+    `${Endpoint.Delegates}?page_size=${pageSize}&page=${page}`
+  );
+
+  return data;
 };

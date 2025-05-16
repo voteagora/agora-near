@@ -1,46 +1,15 @@
-import { memo, useMemo } from "react";
+"use client";
+
 import DelegateTabs from "../DelegatesTabs/DelegatesTabs";
 import DelegateContent from "./DelegateContent";
 
-const DelegateCardWrapper = memo(() => {
-  const delegates = useMemo(
-    () => ({
-      meta: {
-        has_next: false,
-        total_returned: 0,
-        next_offset: 0,
-      },
-      data: [
-        {
-          address: "lighttea2007.testnet",
-          votingPower: "100000000000000000000000",
-          statement:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor velit vitae felis faucibus, vel dignissim.",
-          participationRate: "0.5",
-          numOfDelegators: "100",
-          twitter: "NEAR",
-          warpcast: "NEAR",
-          discord: "NEAR",
-        },
-        {
-          address: "looseyam4271.testnet",
-          votingPower: "100000000000000000000000",
-        },
-        {
-          address: "fararena9024.testnet",
-          votingPower: "100000000000000000000000",
-        },
-      ],
-    }),
-    []
-  );
-
+const DelegateCardWrapper = () => {
   return (
     <DelegateTabs>
-      <DelegateContent initialDelegates={delegates} />
+      <DelegateContent />
     </DelegateTabs>
   );
-});
+};
 
 export const DelegateCardLoadingState = () => {
   return (

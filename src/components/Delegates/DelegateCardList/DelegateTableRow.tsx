@@ -39,11 +39,6 @@ export default function DelegateTableRow({
           ? `${Number(delegate.participationRate) * 100}%`
           : "-"}
       </TableCell>
-      <TableCell>
-        {delegate.numOfDelegators
-          ? `${delegate.numOfDelegators} addresses`
-          : "-"}
-      </TableCell>
     </TableRow>
   );
 }
