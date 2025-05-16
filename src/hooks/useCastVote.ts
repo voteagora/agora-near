@@ -1,9 +1,8 @@
 import { useNear } from "@/contexts/NearContext";
-import { MerkleProof } from "@/lib/contracts/types/common";
-import { VAccount } from "@/lib/contracts/types/venear";
 import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
+import { useFetchProof } from "./useFetchProof";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { useWriteHOSContract } from "./useWriteHOSContract";
 
@@ -17,7 +16,7 @@ interface CastVoteArgs {
 export function useCastVote() {
   const { signedAccountId } = useNear();
   const queryClient = useQueryClient();
-  const { viewMethod } = useNear();
+  const fetchProof = useFetchProof();
 
   const onVoteSuccess = useCallback(() => {
     Promise.all([
@@ -46,13 +45,11 @@ export function useCastVote() {
       voteStorageFee,
       blockId,
     }: CastVoteArgs) => {
-      const proof = (await viewMethod({
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
-        method: "get_proof",
-        args: { account_id: signedAccountId },
-        blockId,
-        useArchivalNode: true,
-      })) as [MerkleProof, VAccount] | null;
+      if (!signedAccountId) {
+        throw new Error("No account connected");
+      }
+
+      const proof = await fetchProof(signedAccountId, blockId);
 
       if (!proof) {
         throw new Error("Account merkle proof not found");
@@ -76,7 +73,7 @@ export function useCastVote() {
         ],
       });
     },
-    [viewMethod, signedAccountId, mutateVote]
+    [signedAccountId, fetchProof, mutateVote]
   );
 
   return useMemo(

@@ -1,10 +1,7 @@
-import { useNear } from "@/contexts/NearContext";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
-import { VAccount } from "@/lib/contracts/types/venear";
-import { MerkleProof } from "@/lib/contracts/types/common";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
 import { useCallback, useEffect, useState } from "react";
+import { useFetchProof } from "./useFetchProof";
 
 export const useProposalVotingPower = ({
   accountId,
@@ -14,9 +11,10 @@ export const useProposalVotingPower = ({
   proposal: ProposalInfo;
 }) => {
   const blockHeight = proposal.snapshot_and_state?.snapshot.block_height;
-  const { viewMethod } = useNear();
+
   const [votingPower, setVotingPower] = useState<Big>(new Big(0));
   const [isLoading, setIsLoading] = useState(true);
+  const fetchProof = useFetchProof();
 
   const getVotingPower = useCallback(async () => {
     if (!blockHeight || !accountId) {
@@ -24,13 +22,11 @@ export const useProposalVotingPower = ({
     }
 
     try {
-      const proof = (await viewMethod({
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
-        method: "get_proof",
-        args: { account_id: accountId },
-        blockId: blockHeight,
-        useArchivalNode: true,
-      })) as [MerkleProof, VAccount] | null;
+      const proof = await fetchProof(accountId, blockHeight);
+
+      if (!proof) {
+        throw new Error("Account merkle proof not found");
+      }
 
       let totalVotingPower = new Big(0);
       const proofData = proof?.[1]?.V0;
@@ -55,7 +51,7 @@ export const useProposalVotingPower = ({
     } finally {
       setIsLoading(false);
     }
-  }, [accountId, blockHeight, viewMethod]);
+  }, [accountId, blockHeight, fetchProof]);
 
   useEffect(() => {
     getVotingPower();
