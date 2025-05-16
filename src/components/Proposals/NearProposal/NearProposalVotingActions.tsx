@@ -1,16 +1,16 @@
 "use client";
 
-import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
-import { Button } from "@/components/ui/button";
-import { useNear } from "@/contexts/NearContext";
-import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
-import { useState } from "react";
-import { useVotingPower } from "@/hooks/useVotingPower";
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
 import { RegisterToVoteButton } from "@/components/AccountActions/RegisterToVoteButton";
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useNear } from "@/contexts/NearContext";
+import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
+import { useProposalVotingPower } from "@/hooks/useProposalVotingPower";
+import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { useState } from "react";
 
 export default function NearProposalVotingActions({
   proposal,
@@ -23,7 +23,11 @@ export default function NearProposalVotingActions({
   const openDialog = useOpenDialog();
   const { signIn } = useNear();
   const [selectedVote, setSelectedVote] = useState<number>();
-  const { data: votingPower } = useVotingPower(signedAccountId);
+  const { votingPower, isLoading: isLoadingVotingPower } =
+    useProposalVotingPower({
+      proposal,
+      accountId: signedAccountId,
+    });
 
   const { isRegisteredToVote } = useCheckVoterStatus({
     enabled: !!signedAccountId,
@@ -128,10 +132,13 @@ export default function NearProposalVotingActions({
             )}{" "}
             with
             {"\u00A0"}
-            {votingPower ? (
-              <NearTokenAmount amount={votingPower} currency="veNEAR" />
+            {!isLoadingVotingPower ? (
+              <NearTokenAmount
+                amount={votingPower.toFixed()}
+                currency="veNEAR"
+              />
             ) : (
-              <Skeleton className="w-4 h-4 inline-block" />
+              <Skeleton className="w-8 h-4 inline-block" />
             )}
           </>
         ) : (
