@@ -23,10 +23,11 @@ export default function NearProposalVotingActions({
   const openDialog = useOpenDialog();
   const { signIn } = useNear();
   const [selectedVote, setSelectedVote] = useState<number>();
-  const { votingPower } = useProposalVotingPower({
-    proposal,
-    accountId: signedAccountId ?? "",
-  });
+  const { votingPower, isLoading: isLoadingVotingPower } =
+    useProposalVotingPower({
+      proposal,
+      accountId: signedAccountId,
+    });
 
   const { isRegisteredToVote } = useCheckVoterStatus({
     enabled: !!signedAccountId,
@@ -131,13 +132,13 @@ export default function NearProposalVotingActions({
             )}{" "}
             with
             {"\u00A0"}
-            {votingPower ? (
+            {!isLoadingVotingPower ? (
               <NearTokenAmount
                 amount={votingPower.toFixed()}
                 currency="veNEAR"
               />
             ) : (
-              <Skeleton className="w-4 h-4 inline-block" />
+              <Skeleton className="w-8 h-4 inline-block" />
             )}
           </>
         ) : (

@@ -10,7 +10,7 @@ export const useProposalVotingPower = ({
   accountId,
   proposal,
 }: {
-  accountId: string;
+  accountId?: string;
   proposal: ProposalInfo;
 }) => {
   const blockHeight = proposal.snapshot_and_state?.snapshot.block_height;
@@ -19,33 +19,42 @@ export const useProposalVotingPower = ({
   const [isLoading, setIsLoading] = useState(true);
 
   const getVotingPower = useCallback(async () => {
-    if (!blockHeight) return null;
-
-    const proof = (await viewMethod({
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
-      method: "get_proof",
-      args: { account_id: accountId },
-      blockId: blockHeight,
-      useArchivalNode: true,
-    })) as [MerkleProof, VAccount] | null;
-
-    let totalVotingPower = Big(0);
-    const proofData = proof?.[1]?.V0;
-
-    if (!proofData?.delegation?.account_id) {
-      totalVotingPower = totalVotingPower
-        .plus(new Big(proofData?.balance?.near_balance || 0))
-        .plus(new Big(proofData?.balance?.extra_venear_balance || 0));
+    if (!blockHeight || !accountId) {
+      return;
     }
 
-    if (proofData?.delegated_balance) {
-      totalVotingPower = totalVotingPower
-        .plus(new Big(proofData?.delegated_balance?.near_balance || 0))
-        .plus(new Big(proofData?.delegated_balance?.extra_venear_balance || 0));
-    }
+    try {
+      const proof = (await viewMethod({
+        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        method: "get_proof",
+        args: { account_id: accountId },
+        blockId: blockHeight,
+        useArchivalNode: true,
+      })) as [MerkleProof, VAccount] | null;
 
-    setVotingPower(totalVotingPower);
-    setIsLoading(false);
+      let totalVotingPower = new Big(0);
+      const proofData = proof?.[1]?.V0;
+
+      if (!proofData?.delegation?.account_id) {
+        totalVotingPower = totalVotingPower
+          .plus(new Big(proofData?.balance?.near_balance || 0))
+          .plus(new Big(proofData?.balance?.extra_venear_balance || 0));
+      }
+
+      if (proofData?.delegated_balance) {
+        totalVotingPower = totalVotingPower
+          .plus(new Big(proofData?.delegated_balance?.near_balance || 0))
+          .plus(
+            new Big(proofData?.delegated_balance?.extra_venear_balance || 0)
+          );
+      }
+
+      setVotingPower(totalVotingPower);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+    }
   }, [accountId, blockHeight, viewMethod]);
 
   useEffect(() => {
