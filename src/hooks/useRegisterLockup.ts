@@ -22,7 +22,8 @@ export const useRegisterLockup = ({ onSuccess }: Props) => {
   }, [queryClient, onSuccess]);
 
   const {
-    mutate: callMethod,
+    mutate: registerMutation,
+    mutateAsync: registerMutationAsync,
     isPending,
     error,
   } = useWriteHOSContract({
@@ -32,7 +33,7 @@ export const useRegisterLockup = ({ onSuccess }: Props) => {
 
   const registerAndDeployLockup = useCallback(
     (storageDepositAmount: string, lockupDeploymentCost: string) => {
-      callMethod({
+      registerMutation({
         contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
         methodCalls: [
           {
@@ -48,14 +49,36 @@ export const useRegisterLockup = ({ onSuccess }: Props) => {
         ],
       });
     },
-    [callMethod, signedAccountId]
+    [registerMutation, signedAccountId]
+  );
+
+  const registerAndDeployLockupAsync = useCallback(
+    (storageDepositAmount: string, lockupDeploymentCost: string) => {
+      return registerMutationAsync({
+        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        methodCalls: [
+          {
+            methodName: "storage_deposit",
+            args: { account_id: signedAccountId },
+            deposit: storageDepositAmount,
+          },
+          {
+            methodName: "deploy_lockup",
+            args: {},
+            deposit: lockupDeploymentCost,
+          },
+        ],
+      });
+    },
+    [registerMutationAsync, signedAccountId]
   );
 
   return useMemo(() => {
     return {
       registerAndDeployLockup,
+      registerAndDeployLockupAsync,
       isPending,
       error,
     };
-  }, [registerAndDeployLockup, isPending, error]);
+  }, [registerAndDeployLockup, registerAndDeployLockupAsync, isPending, error]);
 };

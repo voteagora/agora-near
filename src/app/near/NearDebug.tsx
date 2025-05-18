@@ -7,11 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import VeNearDebugCards from "./VeNearDebugCards";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import { useFungibleTokens } from "@/hooks/useFungibleTokens";
+import { FungibleToken } from "@/lib/api/fungibleTokens";
 
 export default function NearDebug() {
   const { signedAccountId, signIn, signOut, getBalance } = useNear();
   const [balance, setBalance] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { data: fungibleTokens, isLoading: isLoadingFungibleTokens } =
+    useFungibleTokens(signedAccountId);
 
   useEffect(() => {
     async function fetchBalance() {
@@ -49,6 +53,14 @@ export default function NearDebug() {
     }
   };
 
+  // Filter for specific liquid staking tokens
+  const liquidStakingTokens =
+    fungibleTokens?.tokens?.filter(
+      (token: FungibleToken) =>
+        token.contract_id === "linear-protocol.testnet" ||
+        token.contract_id === "meta-v2.pool.testnet"
+    ) || [];
+
   return (
     <div className="w-full py-4">
       <div className="grid grid-cols-2 w-full gap-2">
@@ -78,6 +90,46 @@ export default function NearDebug() {
                         amount={balance ?? "0"}
                         maximumSignificantDigits={24}
                       />
+                    )}
+                  </div>
+                  <Separator />
+                  <div className="flex flex-col gap-2">
+                    <p className="text-sm text-muted-foreground">
+                      Liquid Staking Tokens
+                    </p>
+                    {isLoadingFungibleTokens ? (
+                      <p className="text-lg">Loading...</p>
+                    ) : liquidStakingTokens.length > 0 ? (
+                      <div className="space-y-2">
+                        {liquidStakingTokens.map(
+                          (token: FungibleToken, index: number) => (
+                            <div
+                              key={index}
+                              className="flex justify-between items-center"
+                            >
+                              <span className="font-medium">
+                                {token.contract_id === "linear-protocol.testnet"
+                                  ? "liNEAR"
+                                  : "stNEAR"}
+                              </span>
+                              <NearTokenAmount
+                                amount={token.balance}
+                                currency={
+                                  token.contract_id ===
+                                  "linear-protocol.testnet"
+                                    ? "liNEAR"
+                                    : "stNEAR"
+                                }
+                                maximumSignificantDigits={24}
+                              />
+                            </div>
+                          )
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground">
+                        No liquid staking tokens found
+                      </p>
                     )}
                   </div>
                   <Button

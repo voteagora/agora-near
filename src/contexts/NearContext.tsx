@@ -8,6 +8,7 @@ import {
   setupWalletSelector,
   WalletModuleFactory,
   WalletSelector,
+  Transaction,
 } from "@near-wallet-selector/core";
 import {
   SignedMessage,
@@ -81,6 +82,16 @@ interface NearContextType {
   }) => Promise<SignedMessage | void>;
   networkId: NetworkId;
   isInitialized: boolean;
+  transferNear: (options: {
+    receiverId: string;
+    amount: string;
+  }) => Promise<any>;
+  transferFungibleToken: (options: {
+    tokenContractId: string;
+    receiverId: string;
+    amount: string;
+    memo?: string;
+  }) => Promise<any>;
 }
 
 export const NearContext = createContext<NearContextType>({
@@ -97,6 +108,8 @@ export const NearContext = createContext<NearContextType>({
   signMessage: async () => {},
   networkId: "mainnet" as NetworkId,
   isInitialized: false,
+  transferNear: async () => null,
+  transferFungibleToken: async () => null,
 });
 
 export const useNear = () => useContext(NearContext);
@@ -426,6 +439,108 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     [selector]
   );
 
+  /**
+   * Transfer NEAR tokens to a recipient
+   * @param {Object} options - the options for the transfer
+   * @param {string} options.receiverId - the recipient's account id
+   * @param {string} options.amount - the amount to transfer in yoctoNEAR
+   * @returns {Promise<any>} - the transaction result
+   */
+  const transferNear = useCallback(
+    async ({ receiverId, amount }: { receiverId: string; amount: string }) => {
+      if (!selector) return null;
+      const selectedWallet = await selector.wallet();
+
+      return selectedWallet.signAndSendTransaction({
+        receiverId,
+        actions: [
+          {
+            type: "Transfer",
+            params: {
+              deposit: amount,
+            },
+          },
+        ],
+      });
+    },
+    [selector]
+  );
+
+  /**
+   * Transfer fungible tokens to a recipient
+   * @param {Object} options - the options for the transfer
+   * @param {string} options.tokenContractId - the fungible token contract id
+   * @param {string} options.receiverId - the recipient's account id
+   * @param {string} options.amount - the amount to transfer
+   * @param {string} options.memo - optional memo for the transfer
+   * @returns {Promise<any>} - the transaction result
+   */
+  const transferFungibleToken = useCallback(
+    async ({
+      tokenContractId,
+      receiverId,
+      amount,
+      memo = "",
+    }: {
+      tokenContractId: string;
+      receiverId: string;
+      amount: string;
+      memo?: string;
+    }) => {
+      if (!selector) return null;
+      const selectedWallet = await selector.wallet();
+
+      // Get the current account ID
+      const accountId = selector.store.getState().accounts[0]?.accountId;
+      if (!accountId) {
+        throw new Error("No account selected");
+      }
+
+      const transactions: Transaction[] = [
+        {
+          signerId: accountId,
+          receiverId: tokenContractId,
+          actions: [
+            {
+              type: "FunctionCall",
+              params: {
+                methodName: "storage_deposit",
+                args: {
+                  account_id: receiverId,
+                  registration_only: true,
+                },
+                gas: convertUnit("30 Tgas"),
+                deposit: convertUnit("0.00125 NEAR"),
+              },
+            },
+          ],
+        },
+        {
+          signerId: accountId,
+          receiverId: tokenContractId,
+          actions: [
+            {
+              type: "FunctionCall",
+              params: {
+                methodName: "ft_transfer",
+                args: {
+                  receiver_id: receiverId,
+                  amount,
+                  memo,
+                },
+                gas: convertUnit("30 Tgas"),
+                deposit: convertUnit("1 yoctoNEAR"),
+              },
+            },
+          ],
+        },
+      ];
+
+      return selectedWallet.signAndSendTransactions({ transactions });
+    },
+    [selector]
+  );
+
   useEffect(() => {
     init();
   }, [init]);
@@ -450,6 +565,8 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         signMessage,
         networkId,
         isInitialized,
+        transferNear,
+        transferFungibleToken,
       }}
     >
       {children}

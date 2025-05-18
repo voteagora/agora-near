@@ -30,6 +30,7 @@ import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { useDelegateAll } from "@/hooks/useDelegateAll";
 import { useUndelegate } from "@/hooks/useUndelegate";
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 
 export default function VeNearDebugCards() {
   const { signedAccountId } = useNear();
@@ -37,6 +38,8 @@ export default function VeNearDebugCards() {
     useVenearStats();
   const { data: accountInfo, isLoading: isLoadingAccount } =
     useVenearAccountStats(signedAccountId);
+
+  const openDialog = useOpenDialog();
 
   const {
     registerAndDeployLockup,
@@ -336,6 +339,18 @@ export default function VeNearDebugCards() {
         <CardTitle>Your veNEAR Account</CardTitle>
       </CardHeader>
       <CardContent>
+        <div className="my-2">
+          <Button
+            onClick={() =>
+              openDialog({
+                type: "VENEAR_ONBOARDING",
+                params: {},
+              })
+            }
+          >
+            Launch onboarding
+          </Button>
+        </div>
         {isLoadingAccount ? (
           <LoadingState />
         ) : accountInfo ? (
@@ -432,6 +447,7 @@ export default function VeNearDebugCards() {
             <Button loading={isLoadingRegistration} onClick={onRegisterToVote}>
               Register to vote
             </Button>
+
             {venearContractError && (
               <p className="text-red-500">{`Registration error: ${venearContractError.message}`}</p>
             )}
