@@ -346,6 +346,18 @@ export default function VeNearDebugCards() {
         <CardTitle>Your veNEAR Account</CardTitle>
       </CardHeader>
       <CardContent>
+        <div className="my-2">
+          <Button
+            onClick={() =>
+              openDialog({
+                type: "VENEAR_ONBOARDING",
+                params: {},
+              })
+            }
+          >
+            Launch onboarding
+          </Button>
+        </div>
         {isLoadingAccount ? (
           <LoadingState />
         ) : accountInfo ? (
@@ -436,20 +448,7 @@ export default function VeNearDebugCards() {
             </div>
             <Separator />
           </div>
-        ) : (
-          <div className="my-2">
-            <Button
-              onClick={() =>
-                openDialog({
-                  type: "VENEAR_ONBOARDING",
-                  params: {},
-                })
-              }
-            >
-              Begin onboarding
-            </Button>
-          </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );

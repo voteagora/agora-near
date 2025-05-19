@@ -66,6 +66,7 @@ export const VeNearOnboardingModalContent = ({
     stNearPrice,
     liNearPrice,
     preferredStakingPoolId: selectedStakingPoolId,
+    lockApy,
   } = useHouseOfStakeOnboardingContext();
 
   const { step: executionStep, executeOnboarding } =
@@ -240,7 +241,7 @@ export const VeNearOnboardingModalContent = ({
         <div className="mb-4">
           <div className="flex justify-between mb-1">
             <span>Lockup APY</span>
-            <span className="text-green-500 font-medium">5.99%</span>
+            <span className="text-green-500 font-medium">{`${lockApy}%`}</span>
           </div>
         </div>
         <button

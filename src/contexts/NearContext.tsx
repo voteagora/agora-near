@@ -6,14 +6,11 @@ import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 import {
   NetworkId,
   setupWalletSelector,
+  Transaction,
   WalletModuleFactory,
   WalletSelector,
-  Transaction,
 } from "@near-wallet-selector/core";
-import {
-  SignedMessage,
-  VerifiedOwner,
-} from "@near-wallet-selector/core/src/lib/wallet";
+import { SignedMessage } from "@near-wallet-selector/core/src/lib/wallet";
 import { setupLedger } from "@near-wallet-selector/ledger";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupModal } from "@near-wallet-selector/modal-ui";
@@ -496,6 +493,19 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         throw new Error("No account selected");
       }
 
+      // Check the minimum storage deposit that's required
+      const minStorageDeposit = (await viewMethod({
+        contractId: tokenContractId,
+        method: "storage_balance_bounds",
+        args: {},
+      })) as
+        | {
+            min?: string;
+            max?: string;
+          }
+        | null
+        | undefined;
+
       const transactions: Transaction[] = [
         {
           signerId: accountId,
@@ -510,7 +520,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
                   registration_only: true,
                 },
                 gas: convertUnit("30 Tgas"),
-                deposit: convertUnit("0.00125 NEAR"),
+                deposit: minStorageDeposit?.min ?? convertUnit("0.01 NEAR"),
               },
             },
           ],
@@ -538,7 +548,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
 
       return selectedWallet.signAndSendTransactions({ transactions });
     },
-    [selector]
+    [selector, viewMethod]
   );
 
   useEffect(() => {
