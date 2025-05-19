@@ -1,10 +1,7 @@
-import { useCallback } from "react";
-import {
-  READ_NEAR_CONTRACT_QK,
-  useReadHOSContract,
-} from "./useReadHOSContract";
-import { useWriteHOSContract } from "./useWriteHOSContract";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
+import { useWriteHOSContract } from "./useWriteHOSContract";
 
 export const useSelectStakingPool = ({
   lockupAccountId,
@@ -43,27 +40,7 @@ export const useSelectStakingPool = ({
     [mutateLockupAsync, lockupAccountId]
   );
 
-  const [
-    {
-      data: stakingPoolId,
-      isLoading: isLoadingStakingPoolId,
-      error: stakingPoolError,
-    },
-  ] = useReadHOSContract([
-    {
-      contractId: lockupAccountId ?? "",
-      methodName: "get_staking_pool_account_id" as const,
-      config: {
-        args: {},
-        enabled: !!lockupAccountId,
-      },
-    },
-  ]);
-
   return {
-    stakingPoolId,
-    isLoadingStakingPoolId,
-    stakingPoolError,
     selectStakingPoolAsync,
   };
 };

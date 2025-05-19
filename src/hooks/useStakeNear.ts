@@ -30,15 +30,6 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
 
   // Query for getting the known deposited balance in the staking pool
   // TODO: Eventually we'll want to read the staking balance info directly from the staking pool contract
-  const [{ data: knownDepositedBalance }] = useReadHOSContract([
-    {
-      contractId: lockupAccountId,
-      methodName: "get_known_deposited_balance",
-      config: {
-        args: {},
-      },
-    },
-  ]);
 
   const stakeNear = useCallback(
     async (amount: string, stakingPoolId?: string | null) => {
@@ -152,7 +143,6 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
     stakeNear,
     unstakeNear,
     withdrawNear,
-    knownDepositedBalance,
     isStakingNear,
     isUnstakingNear,
     isWithdrawingNear,

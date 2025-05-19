@@ -14,6 +14,7 @@ import { utils } from "near-api-js";
 import { useEffect, useState, useRef, useMemo } from "react";
 import { toast } from "react-hot-toast";
 import Big from "big.js";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 type VeNearOnboardingModalProps = {
   closeDialog: () => void;
 };
@@ -118,26 +119,6 @@ export const VeNearOnboardingModalContent = ({
     }
   };
 
-  // Dropdown close on outside click
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        tokenDropdownRef.current &&
-        !tokenDropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowTokenDropdown(false);
-      }
-    }
-    if (showTokenDropdown) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showTokenDropdown]);
-
   const estimatedVeNear = useMemo(() => {
     if (!enteredAmount || !selectedToken) return "0";
 
@@ -191,31 +172,28 @@ export const VeNearOnboardingModalContent = ({
                 min="0"
                 step="0.01"
               />
-              <button
-                className="ml-2 px-3 py-1 bg-gray-200 rounded-full text-sm font-medium"
-                onClick={() => setEnteredAmount(selectedToken?.balance || "")}
-                disabled={!selectedToken}
-              >
-                Max
-              </button>
             </div>
             {/* Lock with row */}
             <div
-              className="flex items-center justify-between py-3 border-t border-b border-gray-200 cursor-pointer"
+              className="flex items-center justify-between py-3 border-t border-gray-200 cursor-pointer"
               onClick={() => setShowTokenDropdown((v) => !v)}
             >
               <div className="flex items-center">
-                <span className="font-medium">Lock with</span>
+                <span className="font-medium">Selected token</span>
               </div>
-              <span className="text-gray-500">
+              <div className="flex flex-row items-center">
                 {selectedToken ? (
                   <NearTokenAmount
                     amount={selectedToken.balance}
                     currency={selectedToken.symbol}
-                    maximumSignificantDigits={6}
                   />
                 ) : null}
-              </span>
+                {showTokenDropdown ? (
+                  <ChevronUpIcon className="w-4 h-4" />
+                ) : (
+                  <ChevronDownIcon className="w-4 h-4" />
+                )}
+              </div>
             </div>
             {/* Dropdown for token selection */}
             {showTokenDropdown && (
@@ -233,11 +211,10 @@ export const VeNearOnboardingModalContent = ({
                     }}
                   >
                     <span className="font-medium">{token.symbol}</span>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm">
                       <NearTokenAmount
                         amount={token.balance}
                         currency={token.symbol}
-                        maximumSignificantDigits={6}
                       />
                     </span>
                   </div>
@@ -262,7 +239,7 @@ export const VeNearOnboardingModalContent = ({
         </div>
         <div className="mb-4">
           <div className="flex justify-between mb-1">
-            <span className="text-gray-600">Lockup APY</span>
+            <span>Lockup APY</span>
             <span className="text-green-500 font-medium">5.99%</span>
           </div>
         </div>

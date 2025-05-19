@@ -9,9 +9,14 @@ import { utils } from "near-api-js";
 import { useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import NearTokenAmount from "../shared/NearTokenAmount";
+import { useAvailableToLock } from "@/hooks/useAvailableToLock";
 
 export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
-  const { lockupAccountId, availableToLock, isLoading } = useLockupAccount();
+  const { lockupAccountId, isLoading: isLoadingLockupAccountId } =
+    useLockupAccount();
+  const { availableToLock, isLoadingAvailableToLock } = useAvailableToLock({
+    lockupAccountId: lockupAccountId,
+  });
   const { growthRateNs } = useVenearSnapshot();
   const [lockAmount, setLockAmount] = useState("");
   const [isLockingMax, setIsLockingMax] = useState(false);
@@ -149,7 +154,8 @@ export function NearLockDialog({ closeDialog }: { closeDialog: () => void }) {
               !lockAmount ||
               lockAmount === "0" ||
               !lockupAccountId ||
-              isLoading
+              isLoadingAvailableToLock ||
+              isLoadingLockupAccountId
             }
           >
             {isLockingNear

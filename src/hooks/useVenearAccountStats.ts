@@ -43,7 +43,7 @@ export function useVenearAccountStats(accountId: string | undefined | null) {
       methodName: "get_staking_pool_account_id" as const,
       config: {
         args: {},
-        enabled: !!lockupAccountId,
+        enabled: !!accountData,
       },
     },
     {
@@ -51,7 +51,7 @@ export function useVenearAccountStats(accountId: string | undefined | null) {
       methodName: "get_liquid_owners_balance" as const,
       config: {
         args: {},
-        enabled: !!lockupAccountId,
+        enabled: !!accountData,
       },
     },
     {
@@ -59,7 +59,7 @@ export function useVenearAccountStats(accountId: string | undefined | null) {
       methodName: "get_venear_liquid_balance" as const,
       config: {
         args: {},
-        enabled: !!lockupAccountId,
+        enabled: !!accountData,
       },
     },
     {
@@ -67,7 +67,7 @@ export function useVenearAccountStats(accountId: string | undefined | null) {
       methodName: "get_venear_pending_balance" as const,
       config: {
         args: {},
-        enabled: !!lockupAccountId,
+        enabled: !!accountData,
       },
     },
     {
@@ -75,7 +75,7 @@ export function useVenearAccountStats(accountId: string | undefined | null) {
       methodName: "get_venear_unlock_timestamp" as const,
       config: {
         args: {},
-        enabled: !!lockupAccountId,
+        enabled: !!accountData,
       },
     },
     {
@@ -83,7 +83,7 @@ export function useVenearAccountStats(accountId: string | undefined | null) {
       methodName: "get_venear_locked_balance" as const,
       config: {
         args: {},
-        enabled: !!lockupAccountId,
+        enabled: !!accountData,
       },
     },
     {
@@ -91,7 +91,7 @@ export function useVenearAccountStats(accountId: string | undefined | null) {
       methodName: "get_owners_balance" as const,
       config: {
         args: {},
-        enabled: !!lockupAccountId,
+        enabled: !!accountData,
       },
     },
   ]);
