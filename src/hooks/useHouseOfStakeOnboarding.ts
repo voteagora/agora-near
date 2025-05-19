@@ -2,7 +2,7 @@ import { useHouseOfStakeOnboardingContext } from "@/components/Onboarding/HouseO
 import { useNear } from "@/contexts/NearContext";
 import { useLockNear } from "./useLockNear";
 import { useRegisterLockup } from "./useRegisterLockup";
-import { useLockupStakingPool } from "./useSelectedStakingPool";
+import { useSelectStakingPool } from "./useSelectStakingPool";
 import { useStakeNear } from "./useStakeNear";
 import { useCallback, useState } from "react";
 import { utils } from "near-api-js";
@@ -33,8 +33,9 @@ export const useHouseOfStakeOnboarding = () => {
     storageDepositAmount,
     lockupDeploymentCost,
     selectedToken,
-    selectedStakingPoolId,
+    preferredStakingPoolId,
     venearAccountInfo,
+    currentStakingPoolId,
   } = useHouseOfStakeOnboardingContext();
 
   const { registerAndDeployLockupAsync } = useRegisterLockup({});
@@ -43,7 +44,7 @@ export const useHouseOfStakeOnboarding = () => {
     lockupAccountId: lockupAccountId ?? "",
   });
 
-  const { selectStakingPoolAsync } = useLockupStakingPool({
+  const { selectStakingPoolAsync } = useSelectStakingPool({
     lockupAccountId: lockupAccountId ?? "",
   });
 
@@ -79,10 +80,11 @@ export const useHouseOfStakeOnboarding = () => {
       );
     }
 
-    // Step 2: Select staking pool
-    if (selectedStakingPoolId) {
+    // Step 2: Select staking pool if one hasn't already been selected
+    // TODO: Handle switching pools
+    if (preferredStakingPoolId && !currentStakingPoolId) {
       setStep(Step.SELECT_STAKING_POOL);
-      await selectStakingPoolAsync({ stakingPoolId: selectedStakingPoolId });
+      await selectStakingPoolAsync({ stakingPoolId: preferredStakingPoolId });
     }
 
     const accountNearBalance = await getBalance(signedAccountId);
@@ -143,19 +145,25 @@ export const useHouseOfStakeOnboarding = () => {
 
       if (availableToStake) {
         setStep(Step.STAKE_NEAR);
-        await stakeNear(availableToStake, selectedStakingPoolId);
+        await stakeNear(
+          availableToStake,
+          currentStakingPoolId ?? preferredStakingPoolId
+        );
       }
     }
 
     setStep(Step.COMPLETED);
   }, [
+    currentStakingPoolId,
+    getBalance,
     lockNearAsync,
     lockupAccountId,
     lockupDeploymentCost,
+    preferredStakingPoolId,
     registerAndDeployLockupAsync,
     selectStakingPoolAsync,
-    selectedStakingPoolId,
     selectedToken,
+    signedAccountId,
     stakeNear,
     storageDepositAmount,
     transferFungibleToken,

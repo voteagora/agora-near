@@ -11,6 +11,7 @@ import {
 import { useLockupAccount } from "../../hooks/useLockupAccount";
 import { useVenearAccountInfo } from "../../hooks/useVenearAccountInfo";
 import { useVenearConfig } from "../../hooks/useVenearConfig";
+import { useStakingPool } from "@/hooks/useStakingPool";
 
 type TokenType = "near" | "lst";
 
@@ -32,8 +33,8 @@ const ONBOARDING_POOLS: string[] = [
 type OnboardingContextType = {
   isLoading: boolean;
   error: Error | null;
-  selectedStakingPoolId?: string;
-  setSelectedStakingPoolId: (poolId: string) => void;
+  preferredStakingPoolId?: string;
+  setPreferredStakingPoolId: (poolId: string) => void;
   lockupAccountId: string | null;
   storageDepositAmount: string | null;
   lockupDeploymentCost: string | null;
@@ -42,13 +43,14 @@ type OnboardingContextType = {
   setSelectedToken: (token: TokenBalance) => void;
   availableTokens: TokenBalance[];
   venearAccountInfo?: ReturnType<typeof useVenearAccountInfo>["data"];
+  currentStakingPoolId?: string | null;
 };
 
 export const OnboardingContext = createContext<OnboardingContextType>({
   isLoading: false,
   error: null,
-  selectedStakingPoolId: undefined,
-  setSelectedStakingPoolId: () => {},
+  preferredStakingPoolId: undefined,
+  setPreferredStakingPoolId: () => {},
   lockupAccountId: null,
   storageDepositAmount: null,
   lockupDeploymentCost: null,
@@ -57,6 +59,7 @@ export const OnboardingContext = createContext<OnboardingContextType>({
   stakingPools: ONBOARDING_POOLS,
   availableTokens: [],
   venearAccountInfo: undefined,
+  currentStakingPoolId: undefined,
 });
 
 export const useHouseOfStakeOnboardingContext = () => {
@@ -106,6 +109,11 @@ export const HouseOfStakeOnboardingProvider = ({
     error: lockupAccountError,
   } = useLockupAccount();
 
+  const { stakingPoolId, isLoadingStakingPoolId } = useStakingPool({
+    lockupAccountId: lockupAccountId ?? "",
+    enabled: !!venearAccountInfo,
+  });
+
   const onTokenSelected = useCallback((token: TokenBalance) => {
     setSelectedToken(token);
 
@@ -123,7 +131,8 @@ export const HouseOfStakeOnboardingProvider = ({
     isLoadingVeNearAccount ||
     isLoadingLockupAccount ||
     isLoadingFungibleTokens ||
-    isLoadingNearBalance;
+    isLoadingNearBalance ||
+    isLoadingStakingPoolId;
 
   const availableTokens = useMemo(() => {
     const tokens: TokenBalance[] = [];
@@ -171,12 +180,13 @@ export const HouseOfStakeOnboardingProvider = ({
     <OnboardingContext.Provider
       value={{
         venearAccountInfo,
-        setSelectedStakingPoolId: onStakingPoolSelected,
+        setPreferredStakingPoolId: onStakingPoolSelected,
+        currentStakingPoolId: stakingPoolId,
         selectedToken,
         setSelectedToken: onTokenSelected,
         availableTokens,
         stakingPools: ONBOARDING_POOLS,
-        selectedStakingPoolId,
+        preferredStakingPoolId: selectedStakingPoolId,
         lockupAccountId: lockupAccountId ?? null,
         storageDepositAmount: venearStorageCost.toString(),
         lockupDeploymentCost: lockupStorageCost.toString(),

@@ -55,9 +55,10 @@ export const VeNearOnboardingModalContent = ({
     availableTokens,
     stakingPools: stakingPoolIds,
     selectedToken,
-    selectedStakingPoolId,
+    preferredStakingPoolId: selectedStakingPoolId,
+    currentStakingPoolId,
     setSelectedToken,
-    setSelectedStakingPoolId,
+    setPreferredStakingPoolId: setSelectedStakingPoolId,
   } = useHouseOfStakeOnboardingContext();
 
   const { step: executionStep, executeOnboarding } =
@@ -77,12 +78,15 @@ export const VeNearOnboardingModalContent = ({
 
   // Update UI step when selections change
   useEffect(() => {
-    if (selectedToken && !selectedStakingPoolId) {
+    if (selectedToken && !selectedStakingPoolId && !currentStakingPoolId) {
       setUiStep(UIStep.SELECT_STAKING_POOL);
-    } else if (selectedToken && selectedStakingPoolId) {
+    } else if (
+      selectedToken &&
+      (selectedStakingPoolId || currentStakingPoolId)
+    ) {
       setUiStep(UIStep.CONFIRM);
     }
-  }, [selectedToken, selectedStakingPoolId]);
+  }, [selectedToken, selectedStakingPoolId, currentStakingPoolId]);
 
   // Handle onboarding execution
   const handleExecuteOnboarding = async () => {

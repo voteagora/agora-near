@@ -6,7 +6,7 @@ import {
 import { useWriteHOSContract } from "./useWriteHOSContract";
 import { useQueryClient } from "@tanstack/react-query";
 
-export const useLockupStakingPool = ({
+export const useSelectStakingPool = ({
   lockupAccountId,
 }: {
   lockupAccountId: string;
