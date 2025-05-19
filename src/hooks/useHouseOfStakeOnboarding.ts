@@ -36,6 +36,7 @@ export const useHouseOfStakeOnboarding = () => {
     preferredStakingPoolId,
     venearAccountInfo,
     currentStakingPoolId,
+    enteredAmount,
   } = useHouseOfStakeOnboardingContext();
 
   const { registerAndDeployLockupAsync } = useRegisterLockup({});
@@ -57,8 +58,6 @@ export const useHouseOfStakeOnboarding = () => {
   });
 
   const executeOnboarding = useCallback(async () => {
-    // TODO: Check what state the account is in and skip steps as needed
-
     // Lockup account ID is deterministic and should be available even before lockup is deployed
     if (!lockupAccountId) {
       throw new Error("Lockup account ID not defined");
@@ -70,6 +69,10 @@ export const useHouseOfStakeOnboarding = () => {
 
     if (!signedAccountId) {
       throw new Error("Wallet not connected");
+    }
+
+    if (!enteredAmount || Big(enteredAmount).lte(0)) {
+      throw new Error("Invalid amount entered");
     }
 
     // Step 1: Deploy lockup
@@ -87,36 +90,38 @@ export const useHouseOfStakeOnboarding = () => {
       await selectStakingPoolAsync({ stakingPoolId: preferredStakingPoolId });
     }
 
+    // Convert entered amount to yoctoNEAR for NEAR transfers
+    const amountToTransfer = utils.format.parseNearAmount(enteredAmount) || "0";
+
+    if (amountToTransfer === "0") {
+      throw new Error("Invalid amount to transfer");
+    }
+
+    // Check if user has enough balance for gas fees
     const accountNearBalance = await getBalance(signedAccountId);
-    const paddingForGas = utils.format.parseNearAmount("0.20");
+    const paddingForGas = utils.format.parseNearAmount("0.20") || "0";
 
-    if (!paddingForGas) {
-      throw new Error("Failed to parse gas buffer amount");
-    }
-
-    const balanceToTransfer =
+    const totalRequired =
       selectedToken.type === "near"
-        ? new Big(accountNearBalance).minus(paddingForGas)
-        : new Big(selectedToken.balance);
+        ? new Big(amountToTransfer).plus(paddingForGas)
+        : new Big(paddingForGas);
 
-    if (balanceToTransfer.lte(0)) {
-      throw new Error("Insufficient balance for transfer");
+    if (totalRequired.gt(accountNearBalance)) {
+      throw new Error("Insufficient balance for transfer including gas fees");
     }
-
-    const transferAmount = balanceToTransfer.toFixed();
 
     // Step 3: Transfer funds
     setStep(Step.TRANSFER_FUNDS);
     if (selectedToken.type === "near") {
       await transferNear({
         receiverId: lockupAccountId,
-        amount: transferAmount,
+        amount: amountToTransfer,
       });
     } else {
       await transferFungibleToken({
         tokenContractId: selectedToken.contractId ?? "",
         receiverId: lockupAccountId,
-        amount: transferAmount,
+        amount: amountToTransfer,
       });
 
       // Refresh the balance
@@ -131,11 +136,11 @@ export const useHouseOfStakeOnboarding = () => {
       });
     }
 
-    // Step 4: Lock max amount
+    // Step 4: Lock the transferred amount
     setStep(Step.LOCK_NEAR);
     await lockNearAsync({});
 
-    // Step 5: Stake the max amount if it's not a LST
+    // Step 5: Stake the amount if it's not a LST
     if (selectedToken.type === "near") {
       const availableToStake = (await viewMethod({
         contractId: lockupAccountId,
@@ -155,6 +160,7 @@ export const useHouseOfStakeOnboarding = () => {
     setStep(Step.COMPLETED);
   }, [
     currentStakingPoolId,
+    enteredAmount,
     getBalance,
     lockNearAsync,
     lockupAccountId,

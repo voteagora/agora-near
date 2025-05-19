@@ -2,22 +2,25 @@
 
 import {
   HouseOfStakeOnboardingProvider,
+  LINEAR_TOKEN_CONTRACT_ID,
+  STNEAR_TOKEN_CONTRACT_ID,
   useHouseOfStakeOnboardingContext,
 } from "@/components/Onboarding/HouseOfStakeOnboardingProvider";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { RadioButton } from "@/components/ui/radio-button";
 import { useHouseOfStakeOnboarding } from "@/hooks/useHouseOfStakeOnboarding";
-import { useEffect, useState } from "react";
+import { utils } from "near-api-js";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { toast } from "react-hot-toast";
-
+import Big from "big.js";
 type VeNearOnboardingModalProps = {
   closeDialog: () => void;
 };
 
 // Define UI steps that map to the onboarding flow
 enum UIStep {
-  SELECT_ACCOUNT,
+  ENTER_AMOUNT,
   SELECT_STAKING_POOL,
   CONFIRM,
   EXECUTING,
@@ -55,17 +58,27 @@ export const VeNearOnboardingModalContent = ({
     availableTokens,
     stakingPools: stakingPoolIds,
     selectedToken,
-    preferredStakingPoolId: selectedStakingPoolId,
-    currentStakingPoolId,
     setSelectedToken,
     setPreferredStakingPoolId: setSelectedStakingPoolId,
+    enteredAmount,
+    setEnteredAmount,
+    stNearPrice,
+    liNearPrice,
+    preferredStakingPoolId: selectedStakingPoolId,
   } = useHouseOfStakeOnboardingContext();
 
   const { step: executionStep, executeOnboarding } =
     useHouseOfStakeOnboarding();
+  const [uiStep, setUiStep] = useState<UIStep>(UIStep.ENTER_AMOUNT);
+  const [showTokenDropdown, setShowTokenDropdown] = useState(false);
+  const tokenDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Determine which UI step to display
-  const [uiStep, setUiStep] = useState<UIStep>(UIStep.SELECT_ACCOUNT);
+  // Select the first token by default
+  useEffect(() => {
+    if (!selectedToken && availableTokens.length > 0) {
+      setSelectedToken(availableTokens[0]);
+    }
+  }, [selectedToken, availableTokens, setSelectedToken]);
 
   // Convert staking pool IDs to StakingPool objects with additional info
   const stakingPools: StakingPool[] = stakingPoolIds.map(
@@ -75,18 +88,6 @@ export const VeNearOnboardingModalContent = ({
         name: id.split(".")[0],
       }
   );
-
-  // Update UI step when selections change
-  useEffect(() => {
-    if (selectedToken && !selectedStakingPoolId && !currentStakingPoolId) {
-      setUiStep(UIStep.SELECT_STAKING_POOL);
-    } else if (
-      selectedToken &&
-      (selectedStakingPoolId || currentStakingPoolId)
-    ) {
-      setUiStep(UIStep.CONFIRM);
-    }
-  }, [selectedToken, selectedStakingPoolId, currentStakingPoolId]);
 
   // Handle onboarding execution
   const handleExecuteOnboarding = async () => {
@@ -103,6 +104,68 @@ export const VeNearOnboardingModalContent = ({
     }
   };
 
+  // Handle amount and token selection
+  const handleContinueFromAmountStep = () => {
+    if (!selectedToken || !enteredAmount || parseFloat(enteredAmount) <= 0) {
+      toast.error("Please enter a valid amount and select a token");
+      return;
+    }
+    if (selectedToken.type === "lst") {
+      setSelectedStakingPoolId(selectedToken.contractId ?? "");
+      setUiStep(UIStep.CONFIRM);
+    } else {
+      setUiStep(UIStep.SELECT_STAKING_POOL);
+    }
+  };
+
+  // Dropdown close on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        tokenDropdownRef.current &&
+        !tokenDropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowTokenDropdown(false);
+      }
+    }
+    if (showTokenDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showTokenDropdown]);
+
+  const estimatedVeNear = useMemo(() => {
+    if (!enteredAmount || !selectedToken) return "0";
+
+    try {
+      if (selectedToken.type === "near") {
+        return utils.format.parseNearAmount(enteredAmount) || "0";
+      } else if (
+        selectedToken.contractId === STNEAR_TOKEN_CONTRACT_ID &&
+        stNearPrice
+      ) {
+        // Convert stNEAR to NEAR using the rate
+        const valueInNear = new Big(enteredAmount).times(stNearPrice);
+        return valueInNear.toFixed(0);
+      } else if (
+        selectedToken.contractId === LINEAR_TOKEN_CONTRACT_ID &&
+        liNearPrice
+      ) {
+        // Convert liNEAR to NEAR using the rate
+        const valueInNear = new Big(enteredAmount).times(liNearPrice);
+        return valueInNear.toFixed(0);
+      }
+    } catch (e) {
+      console.error("Error calculating estimated veNEAR:", e);
+    }
+
+    return "0";
+  }, [enteredAmount, liNearPrice, selectedToken, stNearPrice]);
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center w-full h-[400px]">
@@ -112,48 +175,106 @@ export const VeNearOnboardingModalContent = ({
   }
 
   // Render content based on the current UI step
-  if (uiStep === UIStep.SELECT_ACCOUNT) {
+  if (uiStep === UIStep.ENTER_AMOUNT) {
     return (
       <div className="w-full p-6">
-        <h2 className="text-xl font-bold mb-4">Select Token</h2>
-        <div className="grid gap-4 mt-6">
-          {availableTokens?.map((token) => (
-            <div
-              key={token.contractId || token.symbol}
-              className={`p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 ${
-                selectedToken?.contractId === token.contractId
-                  ? "border-primary bg-gray-50"
-                  : "border-gray-200"
-              }`}
-              onClick={() => setSelectedToken(token)}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col">
-                  <span className="font-medium text-lg">{token.symbol}</span>
-                  <span className="text-sm text-gray-500">
-                    Balance:{" "}
-                    <NearTokenAmount
-                      amount={token.balance}
-                      currency={token.symbol}
-                      maximumSignificantDigits={6}
-                    />
-                  </span>
-                </div>
-                <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    selectedToken?.contractId === token.contractId
-                      ? "border-primary"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {selectedToken?.contractId === token.contractId && (
-                    <div className="w-3 h-3 rounded-full bg-primary" />
-                  )}
-                </div>
-              </div>
+        <h2 className="text-xl font-bold mb-4">Enter lock amount</h2>
+        <div className="mb-8">
+          <div className="p-5 bg-gray-50 rounded-lg">
+            <div className="flex justify-between items-center mb-4">
+              <input
+                type="number"
+                value={enteredAmount}
+                onChange={(e) => setEnteredAmount(e.target.value)}
+                placeholder="0"
+                className="w-full text-4xl bg-transparent border-none focus:outline-none focus:ring-0"
+                min="0"
+                step="0.01"
+              />
+              <button
+                className="ml-2 px-3 py-1 bg-gray-200 rounded-full text-sm font-medium"
+                onClick={() => setEnteredAmount(selectedToken?.balance || "")}
+                disabled={!selectedToken}
+              >
+                Max
+              </button>
             </div>
-          ))}
+            {/* Lock with row */}
+            <div
+              className="flex items-center justify-between py-3 border-t border-b border-gray-200 cursor-pointer"
+              onClick={() => setShowTokenDropdown((v) => !v)}
+            >
+              <div className="flex items-center">
+                <span className="font-medium">Lock with</span>
+              </div>
+              <span className="text-gray-500">
+                {selectedToken ? (
+                  <NearTokenAmount
+                    amount={selectedToken.balance}
+                    currency={selectedToken.symbol}
+                    maximumSignificantDigits={6}
+                  />
+                ) : null}
+              </span>
+            </div>
+            {/* Dropdown for token selection */}
+            {showTokenDropdown && (
+              <div
+                ref={tokenDropdownRef}
+                className="absolute z-10 bg-white border rounded-lg shadow-lg mt-2 w-72"
+              >
+                {availableTokens.map((token) => (
+                  <div
+                    key={token.contractId || token.symbol}
+                    className={`flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-100 ${selectedToken?.contractId === token.contractId && selectedToken?.symbol === token.symbol ? "bg-gray-50" : ""}`}
+                    onClick={() => {
+                      setSelectedToken(token);
+                      setShowTokenDropdown(false);
+                    }}
+                  >
+                    <span className="font-medium">{token.symbol}</span>
+                    <span className="text-sm text-gray-500">
+                      <NearTokenAmount
+                        amount={token.balance}
+                        currency={token.symbol}
+                        maximumSignificantDigits={6}
+                      />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {/* Receive veNEAR row */}
+            <div className="flex items-center justify-between py-3 border-t border-gray-200 mt-2">
+              <div className="flex items-center">
+                <span className="font-medium">Receive</span>
+              </div>
+              <span className="text-lg">
+                <NearTokenAmount
+                  amount={estimatedVeNear}
+                  currency="veNEAR"
+                  maximumSignificantDigits={2}
+                />
+                {selectedToken?.type === "lst" && <span>{` (est.)`}</span>}
+              </span>
+            </div>
+          </div>
         </div>
+        <div className="mb-4">
+          <div className="flex justify-between mb-1">
+            <span className="text-gray-600">Lockup APY</span>
+            <span className="text-green-500 font-medium">5.99%</span>
+          </div>
+        </div>
+        <button
+          className="w-full py-3 bg-black text-white rounded-lg hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={
+            !selectedToken || !enteredAmount || parseFloat(enteredAmount) <= 0
+          }
+          onClick={handleContinueFromAmountStep}
+        >
+          Continue
+        </button>
       </div>
     );
   }
@@ -165,7 +286,6 @@ export const VeNearOnboardingModalContent = ({
         <p className="text-gray-500 mb-6">
           Choose a staking pool provider for your NEAR tokens
         </p>
-
         <div className="space-y-4 mt-6">
           {stakingPools.map((pool: StakingPool) => (
             <div
@@ -189,11 +309,10 @@ export const VeNearOnboardingModalContent = ({
             </div>
           ))}
         </div>
-
         <div className="flex justify-end mt-8">
           <button
             className="px-4 py-2 border border-gray-300 rounded-lg mr-3"
-            onClick={() => setUiStep(UIStep.SELECT_ACCOUNT)}
+            onClick={() => setUiStep(UIStep.ENTER_AMOUNT)}
           >
             Back
           </button>
@@ -213,7 +332,6 @@ export const VeNearOnboardingModalContent = ({
     const selectedPool = stakingPools.find(
       (p) => p.stakingPoolId === selectedStakingPoolId
     );
-
     return (
       <div className="w-full p-6">
         <h2 className="text-xl font-bold mb-4">Confirm Your Selections</h2>
@@ -222,10 +340,16 @@ export const VeNearOnboardingModalContent = ({
             <span className="text-sm text-primary">You are about to lock</span>
             <div className="font-medium text-lg">
               <NearTokenAmount
-                amount={selectedToken?.balance || "0"}
+                amount={utils.format.parseNearAmount(enteredAmount) || "0"}
                 currency={selectedToken?.symbol || ""}
                 maximumSignificantDigits={6}
               />
+            </div>
+          </div>
+          <div className="mb-4">
+            <span className="text-sm text-primary">You will receive</span>
+            <div className="font-medium text-lg">
+              <NearTokenAmount amount={estimatedVeNear} currency="veNEAR" />
             </div>
           </div>
           <div>
@@ -238,7 +362,11 @@ export const VeNearOnboardingModalContent = ({
         <div className="flex justify-end space-x-3">
           <button
             className="px-4 py-2 border border-gray-300 rounded-lg"
-            onClick={() => setUiStep(UIStep.SELECT_STAKING_POOL)}
+            onClick={() =>
+              selectedToken?.type === "lst"
+                ? setUiStep(UIStep.ENTER_AMOUNT)
+                : setUiStep(UIStep.SELECT_STAKING_POOL)
+            }
           >
             Back
           </button>

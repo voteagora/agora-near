@@ -1,6 +1,10 @@
 import { useNear } from "@/contexts/NearContext";
 import { useFungibleTokens } from "@/hooks/useFungibleTokens";
 import { useNearBalance } from "@/hooks/useNearBalance";
+import { useStakingPool } from "@/hooks/useStakingPool";
+import { useStakingPoolConversionRates } from "@/hooks/useStakingPoolConversionRates";
+import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
+import { getAPYFromGrowthRate } from "@/lib/lockUtils";
 import {
   createContext,
   useCallback,
@@ -11,7 +15,6 @@ import {
 import { useLockupAccount } from "../../hooks/useLockupAccount";
 import { useVenearAccountInfo } from "../../hooks/useVenearAccountInfo";
 import { useVenearConfig } from "../../hooks/useVenearConfig";
-import { useStakingPool } from "@/hooks/useStakingPool";
 
 type TokenType = "near" | "lst";
 
@@ -22,8 +25,8 @@ type TokenBalance = {
   balance: string;
 };
 
-const LINEAR_TOKEN_CONTRACT_ID = "linear-protocol.testnet";
-const STNEAR_TOKEN_CONTRACT_ID = "meta-v2.pool.testnet";
+export const LINEAR_TOKEN_CONTRACT_ID = "linear-protocol.testnet";
+export const STNEAR_TOKEN_CONTRACT_ID = "meta-v2.pool.testnet";
 
 const ONBOARDING_POOLS: string[] = [
   LINEAR_TOKEN_CONTRACT_ID,
@@ -44,6 +47,12 @@ type OnboardingContextType = {
   availableTokens: TokenBalance[];
   venearAccountInfo?: ReturnType<typeof useVenearAccountInfo>["data"];
   currentStakingPoolId?: string | null;
+  enteredAmount: string;
+  setEnteredAmount: (amount: string) => void;
+  stNearPrice: string | null;
+  liNearPrice: string | null;
+  lockApy: string;
+  stakeApy: string;
 };
 
 export const OnboardingContext = createContext<OnboardingContextType>({
@@ -60,6 +69,12 @@ export const OnboardingContext = createContext<OnboardingContextType>({
   availableTokens: [],
   venearAccountInfo: undefined,
   currentStakingPoolId: undefined,
+  enteredAmount: "",
+  setEnteredAmount: () => {},
+  stNearPrice: null,
+  liNearPrice: null,
+  lockApy: "5.99%",
+  stakeApy: "5.99%",
 });
 
 export const useHouseOfStakeOnboardingContext = () => {
@@ -80,6 +95,8 @@ export const HouseOfStakeOnboardingProvider = ({
   const [selectedToken, setSelectedToken] = useState<
     TokenBalance | undefined
   >();
+
+  const [enteredAmount, setEnteredAmount] = useState<string>("");
 
   const {
     data: fungibleTokensResponse,
@@ -109,10 +126,20 @@ export const HouseOfStakeOnboardingProvider = ({
     error: lockupAccountError,
   } = useLockupAccount();
 
+  const { growthRateNs } = useVenearSnapshot();
+
+  const lockupAPY = useMemo(
+    () => getAPYFromGrowthRate(growthRateNs),
+    [growthRateNs]
+  );
+
   const { stakingPoolId, isLoadingStakingPoolId } = useStakingPool({
     lockupAccountId: lockupAccountId ?? "",
     enabled: !!venearAccountInfo,
   });
+
+  const { conversionRates, isLoading: isLoadingConversionRates } =
+    useStakingPoolConversionRates();
 
   const onTokenSelected = useCallback((token: TokenBalance) => {
     setSelectedToken(token);
@@ -132,7 +159,8 @@ export const HouseOfStakeOnboardingProvider = ({
     isLoadingLockupAccount ||
     isLoadingFungibleTokens ||
     isLoadingNearBalance ||
-    isLoadingStakingPoolId;
+    isLoadingStakingPoolId ||
+    isLoadingConversionRates;
 
   const availableTokens = useMemo(() => {
     const tokens: TokenBalance[] = [];
@@ -197,6 +225,12 @@ export const HouseOfStakeOnboardingProvider = ({
           lockupAccountError ||
           fungibleTokensError ||
           nearBalanceError,
+        enteredAmount,
+        setEnteredAmount,
+        stNearPrice: conversionRates.stNearPrice ?? null,
+        liNearPrice: conversionRates.liNearPrice ?? null,
+        lockApy: lockupAPY,
+        stakeApy: "5.99%",
       }}
     >
       {children}
