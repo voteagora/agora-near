@@ -30,6 +30,8 @@ import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { useDelegateAll } from "@/hooks/useDelegateAll";
 import { useUndelegate } from "@/hooks/useUndelegate";
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
+import { useReadHOSContract } from "@/hooks/useReadHOSContract";
 
 export default function VeNearDebugCards() {
   const { signedAccountId } = useNear();
@@ -38,11 +40,9 @@ export default function VeNearDebugCards() {
   const { data: accountInfo, isLoading: isLoadingAccount } =
     useVenearAccountStats(signedAccountId);
 
-  const {
-    registerAndDeployLockup,
-    isPending: isLoadingRegistration,
-    error: venearContractError,
-  } = useRegisterLockup({});
+  const openDialog = useOpenDialog();
+
+  const { registerAndDeployLockup } = useRegisterLockup({});
 
   const {
     lockNear,
@@ -59,7 +59,6 @@ export default function VeNearDebugCards() {
     stakeNear,
     unstakeNear,
     withdrawNear,
-    knownDepositedBalance,
     isStakingNear,
     isUnstakingNear,
     isWithdrawingNear,
@@ -69,6 +68,17 @@ export default function VeNearDebugCards() {
   } = useStakeNear({
     lockupAccountId: accountInfo?.lockupAccountId || "",
   });
+
+  const [{ data: knownDepositedBalance }] = useReadHOSContract([
+    {
+      contractId: accountInfo?.lockupAccountId || "",
+      methodName: "get_known_deposited_balance",
+      config: {
+        args: {},
+        enabled: !!accountInfo,
+      },
+    },
+  ]);
 
   const [stakeAmount, setStakeAmount] = useState("");
   const [lockAmount, setLockAmount] = useState("");
@@ -336,6 +346,18 @@ export default function VeNearDebugCards() {
         <CardTitle>Your veNEAR Account</CardTitle>
       </CardHeader>
       <CardContent>
+        <div className="my-2">
+          <Button
+            onClick={() =>
+              openDialog({
+                type: "VENEAR_ONBOARDING",
+                params: {},
+              })
+            }
+          >
+            Launch onboarding
+          </Button>
+        </div>
         {isLoadingAccount ? (
           <LoadingState />
         ) : accountInfo ? (
@@ -426,17 +448,7 @@ export default function VeNearDebugCards() {
             </div>
             <Separator />
           </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            <p>Please register your account to vote</p>
-            <Button loading={isLoadingRegistration} onClick={onRegisterToVote}>
-              Register to vote
-            </Button>
-            {venearContractError && (
-              <p className="text-red-500">{`Registration error: ${venearContractError.message}`}</p>
-            )}
-          </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );

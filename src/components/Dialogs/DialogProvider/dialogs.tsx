@@ -40,6 +40,7 @@ import { NearVoteOptionsDialog } from "../NearVoteOptionsDialog";
 import { UndelegateDialog } from "../UndelegateDialog/UndelegateDialog";
 import { NearProposalModal } from "@/components/Proposals/NearProposals/NearProposalModal";
 import { NearLockDialog } from "../NearLockDialog";
+import { VeNearOnboardingModal } from "@/app/near/VeNearOnboardingModal";
 
 export type DialogType =
   | AdvancedDelegateDialogType
@@ -66,7 +67,8 @@ export type DialogType =
   | SimulationReportDialogType
   | NearVoteDialogType
   | NearVoteOptionsDialogType
-  | NearLockDialogType;
+  | NearLockDialogType
+  | VeNearOnboardingDialogType;
 // | FaqDialogType
 
 export type NearDelegateDialogType = {
@@ -85,7 +87,7 @@ export type NearUndelegateDialogType = {
 
 export type NearProposalDialogType = {
   type: "NEAR_PROPOSAL";
-  params: {};
+  params: Record<string, never>;
 };
 
 export type NearLockDialogType = {
@@ -305,6 +307,11 @@ export type NearVoteOptionsDialogType = {
     proposal: ProposalInfo;
     config: VotingConfig;
   };
+};
+
+export type VeNearOnboardingDialogType = {
+  type: "VENEAR_ONBOARDING";
+  params: Record<never, never>;
 };
 
 export const dialogs: DialogDefinitions<DialogType> = {
@@ -550,6 +557,9 @@ export const dialogs: DialogDefinitions<DialogType> = {
       closeDialog={closeDialog}
     />
   ),
+  VENEAR_ONBOARDING: (_, closeDialog) => {
+    return <VeNearOnboardingModal closeDialog={closeDialog} />;
+  },
   // FAQ: () => {
   //   return <FaqDialog />;
   // },

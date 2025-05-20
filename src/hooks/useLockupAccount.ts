@@ -22,44 +22,9 @@ export const useLockupAccount = () => {
     },
   ]);
 
-  const [
-    {
-      data: venearLiquidBalance,
-      isLoading: isLoadingVenearLiquidBalance,
-      error: venearLiquidBalanceError,
-    },
-    {
-      data: votingPower,
-      isLoading: isLoadingVotingPower,
-      error: votingPowerError,
-    },
-  ] = useReadHOSContract([
-    {
-      contractId: lockupAccountId ?? "",
-      methodName: "get_venear_liquid_balance" as const,
-      config: {
-        args: {},
-        enabled: !!lockupAccountId,
-      },
-    },
-    {
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
-      methodName: "ft_balance_of" as const,
-      config: {
-        args: { account_id: lockupAccountId ?? "" },
-        enabled: !!lockupAccountId,
-      },
-    },
-  ]);
-
   return {
     lockupAccountId,
-    votingPower,
-    availableToLock: venearLiquidBalance,
-    isLoading:
-      isLoadingLockupAccountId ||
-      isLoadingVenearLiquidBalance ||
-      isLoadingVotingPower,
-    error: lockupAccountIdError || venearLiquidBalanceError || votingPowerError,
+    isLoading: isLoadingLockupAccountId,
+    error: lockupAccountIdError,
   };
 };

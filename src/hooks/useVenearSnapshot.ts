@@ -54,5 +54,5 @@ export const useVenearSnapshot = ({
       isLoading,
       error,
     };
-  }, [data, isLoading, error]);
+  }, [data, growthRateNs, isLoading, error]);
 };
