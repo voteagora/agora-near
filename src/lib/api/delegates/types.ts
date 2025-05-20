@@ -40,32 +40,27 @@ export type CreateDelegateStatementResponse = {
 
 export type DelegateProfile = {
   address: string;
-  twitter?: string;
-  discord?: string;
-  email?: string;
-  warpcast?: string;
-  topIssues?: {
-    type: string;
-    value: string;
-  }[];
-  statement?: string;
-  votingPower?: string;
-  participationRate?: string;
-  numOfDelegators?: string;
+  twitter?: string | null;
+  discord?: string | null;
+  email?: string | null;
+  warpcast?: string | null;
+  topIssues?:
+    | {
+        type: string;
+        value: string;
+      }[]
+    | null;
+  statement?: string | null;
+  votingPower?: string | null;
+  participationRate?: string | null;
+  numOfDelegators?: string | null;
 };
 
 export type GetDelegateResponse = {
   delegate?: DelegateProfile;
 };
 
-export type DelegateBasicInfo = {
-  address: string;
-  votingPower: string;
-  participationRate: string;
-  initialVotingPower: string;
-};
-
 export type GetDelegatesResponse = {
   count: number;
-  delegates: DelegateBasicInfo[];
+  delegates: DelegateProfile[];
 };

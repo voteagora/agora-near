@@ -12,9 +12,9 @@ export function DelegateSocialLinks({
   twitter,
   warpcast,
 }: {
-  discord?: string;
-  twitter?: string;
-  warpcast?: string;
+  discord?: string | null;
+  twitter?: string | null;
+  warpcast?: string | null;
 }) {
   const warpcastUsername = warpcast?.replace(/@/g, "");
   return (

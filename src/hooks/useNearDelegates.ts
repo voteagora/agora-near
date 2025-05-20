@@ -1,6 +1,5 @@
 import { Endpoint } from "@/lib/api/constants";
 import { fetchDelegates } from "@/lib/api/delegates/requests";
-import { fetchProposalVotes } from "@/lib/api/proposal/requests";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 

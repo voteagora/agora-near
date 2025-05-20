@@ -1,32 +1,34 @@
 import { DelegateCardHeader } from "@/components/Delegates/DelegateCard/DelegateCardHeader";
-import { formatNumber } from "@/lib/tokenUtils";
-import { DelegateCardEditProfile } from "../DelegateCard/DelegateCardEditProfile";
-import { DelegateAddress } from "../DelegateCard/DelegateAddress";
-import { DelegateActions } from "../DelegateCard/DelegateActions";
-import React from "react";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import React from "react";
+import { DelegateActions } from "../DelegateCard/DelegateActions";
+import { DelegateAddress } from "../DelegateCard/DelegateAddress";
+import { DelegateCardEditProfile } from "../DelegateCard/DelegateCardEditProfile";
 
 type DelegateProfileProps = {
   profile: {
     address: string;
-    twitter?: string;
-    discord?: string;
-    email?: string;
-    warpcast?: string;
-    topIssues?: {
-      type: string;
-      value: string;
-    }[];
-    statement?: string;
+    twitter?: string | null;
+    discord?: string | null;
+    email?: string | null;
+    warpcast?: string | null;
+    topIssues?:
+      | {
+          type: string;
+          value: string;
+        }[]
+      | null;
+    statement?: string | null;
   };
   isEditMode?: boolean;
   stats?: {
-    votingPower?: string;
-    numOfDelegators?: string;
-    proposalsCreated?: string;
-    votedFor?: string;
-    votedAgainst?: string;
-    votedAbstain?: string;
+    votingPower?: string | null;
+    numOfDelegators?: string | null;
+    proposalsCreated?: string | null;
+    votedFor?: string | null;
+    votedAgainst?: string | null;
+    votedAbstain?: string | null;
+    participationRate?: string | null;
   };
 };
 
@@ -37,7 +39,9 @@ export default function DelegateProfile({
 }: DelegateProfileProps) {
   return (
     <div className="flex flex-col static sm:sticky top-16 flex-shrink-0 width-[20rem]">
-      <DelegateCardHeader address={profile.address} />
+      {stats?.participationRate && (
+        <DelegateCardHeader participationRate={stats?.participationRate} />
+      )}
       <div className="flex flex-col bg-wash border border-line shadow-newDefault rounded-xl">
         <div className="flex flex-col items-stretch p-7">
           <DelegateAddress address={profile.address} />
@@ -50,7 +54,7 @@ export default function DelegateProfile({
                 detail={
                   <NearTokenAmount
                     amount={stats?.votingPower ?? "0"}
-                    hideCurrency
+                    currency="veNEAR"
                   />
                 }
               />

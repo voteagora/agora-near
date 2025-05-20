@@ -1,12 +1,12 @@
 "use client";
 
 import { DialogProvider } from "@/components/Dialogs/DialogProvider/DialogProvider";
+import { DelegateProfile } from "@/lib/api/delegates/types";
 import InfiniteScroll from "react-infinite-scroller";
 import DelegateCard from "./DelegateCard";
-import { DelegateBasicInfo } from "@/lib/api/delegates/types";
 
 interface Props {
-  delegates?: DelegateBasicInfo[];
+  delegates?: DelegateProfile[];
   hasMore: boolean;
   onLoadMore: () => void;
 }
@@ -38,7 +38,6 @@ export default function DelegateCardList({
             <DelegateCard
               key={idx}
               delegate={delegate}
-              votingPower={delegate.votingPower ?? "0"}
               isDelegatesFiltering={false}
             />
           );

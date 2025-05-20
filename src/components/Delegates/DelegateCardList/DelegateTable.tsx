@@ -10,10 +10,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import DelegateTableRow from "./DelegateTableRow";
-import { DelegateBasicInfo } from "@/lib/api/delegates/types";
+import { DelegateProfile } from "@/lib/api/delegates/types";
 
 interface Props {
-  delegates?: DelegateBasicInfo[];
+  delegates?: DelegateProfile[];
   hasMore: boolean;
   onLoadMore: () => void;
 }
