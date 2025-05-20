@@ -68,7 +68,7 @@ export default function CurrentDelegateStatement() {
         warpcast: delegateProfile?.warpcast || "",
         topIssues:
           (delegateProfile?.topIssues ?? []).length > 0
-            ? delegateProfile?.topIssues
+            ? (delegateProfile?.topIssues ?? defaultIssues)
             : defaultIssues,
       };
     },
