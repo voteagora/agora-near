@@ -44,7 +44,7 @@ export default function DelegateProfile({
       )}
       <div className="flex flex-col bg-wash border border-line shadow-newDefault rounded-xl">
         <div className="flex flex-col items-stretch p-7">
-          <DelegateAddress address={profile.address} />
+          <DelegateAddress address={profile.address} shouldTruncate={false} />
         </div>
         {!isEditMode && (
           <div className="flex flex-col p-7 border-t border-line">

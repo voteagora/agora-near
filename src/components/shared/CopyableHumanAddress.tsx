@@ -8,9 +8,11 @@ import { useEffect, useState } from "react";
 function CopyableHumanAddress({
   address,
   className = "",
+  shouldTruncate = true,
 }: {
   address: string;
   className?: string;
+  shouldTruncate?: boolean;
 }) {
   const [isInCopiedState, setIsInCopiedState] = useState<boolean>(false);
 
@@ -39,7 +41,7 @@ function CopyableHumanAddress({
         setIsInCopiedState(true);
       }}
     >
-      {formatNearAccountId(address)}
+      {shouldTruncate ? formatNearAccountId(address) : address}
       <div className="flex flex-shrink">
         {isInCopiedState ? (
           <CheckCircleIcon className="text-green-600 w-3 h-3" />

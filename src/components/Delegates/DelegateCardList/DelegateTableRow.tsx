@@ -21,8 +21,11 @@ export default function DelegateTableRow({
         router.push(`/delegates/${delegate.address}`);
       }}
     >
-      <TableCell>
-        <DelegateAddress address={formatNearAccountId(delegate.address)} />
+      <TableCell className="hidden sm:flex">
+        <DelegateAddress address={delegate.address} shouldTruncate={false} />
+      </TableCell>
+      <TableCell className="flex sm:hidden">
+        <DelegateAddress address={delegate.address} />
       </TableCell>
       <TableCell>
         {delegate.votingPower ? (

@@ -11,7 +11,7 @@ export const useNearDelegates = ({ pageSize }: { pageSize: number }) => {
     error,
     fetchNextPage,
     hasNextPage,
-    isFetching,
+    isLoading,
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
@@ -35,7 +35,7 @@ export const useNearDelegates = ({ pageSize }: { pageSize: number }) => {
   return {
     data: flatData,
     error,
-    isFetching,
+    isLoading,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
