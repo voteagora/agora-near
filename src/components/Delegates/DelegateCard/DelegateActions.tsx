@@ -15,9 +15,9 @@ export function DelegateActions({
   warpcast,
 }: {
   address: string;
-  twitter?: string;
-  discord?: string;
-  warpcast?: string;
+  twitter?: string | null;
+  discord?: string | null;
+  warpcast?: string | null;
 }) {
   const { signedAccountId, signIn } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);

@@ -50,6 +50,7 @@ export const DelegateProfileContent = ({ address }: { address: string }) => {
           stats={{
             votingPower: delegate.votingPower,
             numOfDelegators: delegate.numOfDelegators,
+            participationRate: delegate.participationRate,
           }}
         />
       </div>

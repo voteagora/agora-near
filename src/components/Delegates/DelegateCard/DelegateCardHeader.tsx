@@ -1,33 +1,23 @@
 "use client";
 
 interface Props {
-  address?: string;
+  participationRate?: string | null;
 }
 
-export const DelegateCardHeader = ({ address }: Props) => {
-  // TODO: Fetch voter stats from API
-  const voterStats = {
-    total_proposals: 0,
-    last_10_props: 0,
-  };
+export const DelegateCardHeader = ({ participationRate }: Props) => {
+  const percentParticipation = Number(participationRate) * 100;
+  const numProposalsOutOfTen = Number(participationRate) * 10;
 
-  const percentParticipation = Number(
-    Math.round(
-      ((voterStats.last_10_props / Math.min(10, voterStats.total_proposals)) *
-        100 || 0) * 100
-    ) / 100
-  );
-
-  return percentParticipation > 50 ? (
+  return Number(participationRate) > 0.5 ? (
     <ActiveHeader
-      outOfTen={voterStats.last_10_props.toString()}
-      totalProposals={voterStats.total_proposals}
+      outOfTen={numProposalsOutOfTen}
+      totalProposals={10}
       percentParticipation={percentParticipation}
     />
   ) : (
     <InactiveHeader
-      outOfTen={voterStats.last_10_props.toString()}
-      totalProposals={voterStats.total_proposals}
+      outOfTen={numProposalsOutOfTen}
+      totalProposals={10}
       percentParticipation={percentParticipation}
     />
   );
@@ -38,7 +28,7 @@ const ActiveHeader = ({
   totalProposals,
   percentParticipation,
 }: {
-  outOfTen: string;
+  outOfTen: number;
   totalProposals: number;
   percentParticipation: number;
 }) => {
@@ -56,7 +46,7 @@ const InactiveHeader = ({
   totalProposals,
   percentParticipation,
 }: {
-  outOfTen: string;
+  outOfTen: number;
   totalProposals: number;
   percentParticipation: number;
 }) => {

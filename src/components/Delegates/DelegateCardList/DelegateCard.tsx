@@ -8,13 +8,11 @@ import { NearDelegateActions } from "../DelegateCard/NearDelegateActions";
 type DelegateCardProps = {
   delegate: DelegateProfile;
   isDelegatesFiltering: boolean;
-  votingPower: string;
 };
 
 const DelegateCard = ({
   delegate,
   isDelegatesFiltering,
-  votingPower,
 }: DelegateCardProps) => {
   const truncatedStatement = stripMarkdown(delegate.statement ?? "").slice(
     0,
@@ -37,19 +35,26 @@ const DelegateCard = ({
             <div className="border-b border-line px-4 pb-4">
               {formatNearAccountId(delegate.address)}
             </div>
-            <div className="px-4 flex flex-row gap-4">
+            <div className="px-4 flex flex-row gap-4 min-h-[24px]">
               <span className="text-primary font-bold">
-                <NearTokenAmount amount={votingPower} currency="veNEAR" />
+                <NearTokenAmount
+                  amount={delegate.votingPower ?? "0"}
+                  currency="veNEAR"
+                />
               </span>
-              {delegate.participationRate && (
-                <span className="text-primary font-bold">
-                  {Number(delegate.participationRate) * 100}% Participation
-                </span>
+              <span className="text-primary font-bold">
+                {Number(delegate.participationRate ?? 0) * 100}% Participation
+              </span>
+            </div>
+            <div className="min-h-[48px] px-4">
+              {sanitizedTruncatedStatement ? (
+                <p className="text-base leading-normal break-words text-secondary overflow-hidden line-clamp-2">
+                  {sanitizedTruncatedStatement}
+                </p>
+              ) : (
+                <p className="hidden"></p>
               )}
             </div>
-            <p className="text-base leading-normal min-h-[48px] break-words text-secondary overflow-hidden line-clamp-2 px-4">
-              {sanitizedTruncatedStatement}
-            </p>
           </div>
           <div className="min-h-[24px] px-4 pb-4">
             <NearDelegateActions delegate={delegate} />
