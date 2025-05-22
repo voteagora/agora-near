@@ -162,3 +162,6 @@ export const CACHE_TTL = {
 
 export const NANO_SECONDS_IN_DAY = 1000000000 * 60 * 60 * 24;
 export const NANO_SECONDS_IN_YEAR = 365 * NANO_SECONDS_IN_DAY;
+
+export const LINEAR_TOKEN_CONTRACT_ID = "linear-protocol.testnet";
+export const STNEAR_TOKEN_CONTRACT_ID = "meta-v2.pool.testnet";

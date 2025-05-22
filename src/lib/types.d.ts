@@ -179,3 +179,12 @@ export type AnalyticsEvent =
         type: "X" | "COPY_LINK" | "DOWNLOAD_IMAGE" | "WARPCAST";
       };
     };
+
+export type TokenType = "near" | "lst" | "lockup";
+
+export type TokenBalance = {
+  type: TokenType;
+  contractId?: string;
+  symbol: string;
+  balance: string;
+};
