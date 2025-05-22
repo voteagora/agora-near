@@ -344,7 +344,12 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     async (txhash: string) => {
       if (!selector) return null;
       const { network } = selector.options;
-      const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+
+      const provider = new providers.JsonRpcProvider({
+        url: getRpcUrl(network.networkId, {
+          useArchivalNode: true,
+        }),
+      });
 
       // Retrieve transaction result from the network
       const transaction = await provider.txStatus(txhash, "unnused");
@@ -363,7 +368,11 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     async (accountId: string) => {
       if (!selector) return "";
       const { network } = selector.options;
-      const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+      const provider = new providers.JsonRpcProvider({
+        url: getRpcUrl(network.networkId, {
+          useArchivalNode: true,
+        }),
+      });
 
       // Retrieve account state from the network
       const account = await provider.query({
@@ -402,7 +411,11 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     async (accountId: string) => {
       if (!selector) return [];
       const { network } = selector.options;
-      const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+      const provider = new providers.JsonRpcProvider({
+        url: getRpcUrl(network.networkId, {
+          useArchivalNode: true,
+        }),
+      });
 
       // Retrieve account state from the network
       const keys = await provider.query({

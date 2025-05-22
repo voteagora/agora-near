@@ -636,7 +636,7 @@ export const getRpcUrl = (
   networkId: string,
   params: { useArchivalNode: boolean }
 ) => {
-  const url = `https://${params.useArchivalNode ? "archival-" : ""}rpc.${networkId}.near.org`;
+  const url = `${process.env.NEXT_PUBLIC_NEAR_API_ENDPOINT}/${params.useArchivalNode ? "archival-rpc" : "rpc"}/${networkId}`;
   return url;
 };
 
