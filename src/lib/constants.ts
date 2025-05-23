@@ -1,6 +1,6 @@
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
-import { TenantToken } from "./types";
-import { C } from "vitest/dist/chunks/reporters.6vxQttCV.js";
+import { TenantToken, TokenMetadata } from "./types";
+import nearAssetIcon from "@/assets/icons/near_icon.jpg";
 
 export const INDEXER_DELAY = 3000;
 
@@ -163,5 +163,19 @@ export const CACHE_TTL = {
 export const NANO_SECONDS_IN_DAY = 1000000000 * 60 * 60 * 24;
 export const NANO_SECONDS_IN_YEAR = 365 * NANO_SECONDS_IN_DAY;
 
-export const LINEAR_TOKEN_CONTRACT_ID = "linear-protocol.testnet";
-export const STNEAR_TOKEN_CONTRACT_ID = "meta-v2.pool.testnet";
+export const LINEAR_TOKEN_CONTRACTS = {
+  testnet: "linear-protocol.testnet",
+  mainnet: "linear-protocol.near",
+};
+
+export const STNEAR_TOKEN_CONTRACTS = {
+  testnet: "meta-v2.pool.testnet",
+  mainnet: "meta-pool.near",
+};
+
+export const NEAR_TOKEN_METADATA: TokenMetadata = {
+  name: "NEAR",
+  symbol: "NEAR",
+  decimals: NEAR_NOMINATION_EXP,
+  icon: nearAssetIcon,
+};

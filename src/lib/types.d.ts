@@ -8,6 +8,7 @@ import { TENANT_NAMESPACES } from "./constants";
 import { TenantContract } from "@/lib/tenant/tenantContract";
 import { DelegateChunk } from "@/app/staking/components/delegates/DelegateCardList";
 import { Chain } from "viem/chains";
+import { StaticImageData } from "next/image";
 export type MetricTimeSeriesValue = {
   day: string;
   date: string;
@@ -182,9 +183,16 @@ export type AnalyticsEvent =
 
 export type TokenType = "near" | "lst" | "lockup";
 
-export type TokenBalance = {
-  type: TokenType;
-  contractId?: string;
+export type TokenMetadata = {
+  name: string;
   symbol: string;
+  decimals: number;
+  icon: string | StaticImageData;
+};
+
+export type TokenWithBalance = {
+  type: TokenType;
+  accountId?: string;
+  metadata?: TokenMetadata | null;
   balance: string;
 };
