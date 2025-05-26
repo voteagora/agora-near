@@ -1,6 +1,7 @@
 import { UpdatedButton } from "@/components/Button";
 import { Input } from "@/components/ui/input";
 import { useNear } from "@/contexts/NearContext";
+import { useAvailableToLock } from "@/hooks/useAvailableToLock";
 import { useRefreshStakingPoolBalance } from "@/hooks/useRefreshStakingPoolBalance";
 import { useRegisterLockup } from "@/hooks/useRegisterLockup";
 import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
@@ -13,18 +14,18 @@ import {
   InformationCircleIcon,
   LockClosedIcon,
 } from "@heroicons/react/24/outline";
+import Big from "big.js";
 import { utils } from "near-api-js";
 import Image from "next/image";
 import { useCallback, useMemo, useState } from "react";
 import { AssetIcon } from "../common/AssetIcon";
+import LoadingSpinner from "../shared/LoadingSpinner";
 import NearTokenAmount from "../shared/NearTokenAmount";
 import {
   LockProvider,
   LockTransaction,
   useLockProviderContext,
 } from "./LockProvider";
-import Big from "big.js";
-import { useAvailableToLock } from "@/hooks/useAvailableToLock";
 
 type AssetSelectorProps = {
   handleTokenSelect: (token: TokenWithBalance) => void;
@@ -102,7 +103,6 @@ const EnterAmountStep = ({
   const {
     enteredAmount,
     onLockMax,
-    availableToLock,
     selectedToken,
     venearAmount,
     lockApy: annualAPY,
@@ -144,8 +144,9 @@ const EnterAmountStep = ({
           </div>
           <span className="text-3xl font-bold text-primary tabular-nums">
             <NearTokenAmount
-              amount={availableToLock}
+              amount={selectedToken?.balance ?? "0"}
               minimumFractionDigits={4}
+              currency={selectedToken?.metadata?.symbol}
             />
           </span>
         </div>
@@ -573,7 +574,7 @@ type NearLockDialogProps = {
 };
 
 function NearLockDialogContent() {
-  const { setSelectedToken } = useLockProviderContext();
+  const { setSelectedToken, isLoading } = useLockProviderContext();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isAssetSelectorOpen, setIsAssetSelectorOpen] = useState(false);
@@ -600,12 +601,20 @@ function NearLockDialogContent() {
     [setSelectedToken, closeAssetSelector]
   );
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-[400px]">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   if (isAssetSelectorOpen) {
     return <AssetSelector handleTokenSelect={handleTokenSelect} />;
   }
 
   return (
-    <div className="flex flex-col items-center w-full bg-neutral max-w-[28rem] p-6">
+    <div className="flex flex-col items-center w-full bg-neutral p-6">
       {currentStep === 1 && (
         <EnterAmountStep
           openAssetSelector={openAssetSelector}

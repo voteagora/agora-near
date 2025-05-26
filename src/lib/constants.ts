@@ -1,6 +1,8 @@
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 import { TenantToken, TokenMetadata } from "./types";
 import nearAssetIcon from "@/assets/icons/near_icon.jpg";
+import linearAssetIcon from "@/assets/icons/linear.svg";
+import stnearAssetIcon from "@/assets/icons/stnear.svg";
 
 export const INDEXER_DELAY = 3000;
 
@@ -178,4 +180,18 @@ export const NEAR_TOKEN_METADATA: TokenMetadata = {
   symbol: "NEAR",
   decimals: NEAR_NOMINATION_EXP,
   icon: nearAssetIcon,
+};
+
+export const LINEAR_TOKEN_METADATA: TokenMetadata = {
+  name: "LiNEAR",
+  symbol: "LINEAR",
+  decimals: NEAR_NOMINATION_EXP,
+  icon: linearAssetIcon,
+};
+
+export const STNEAR_TOKEN_METADATA: TokenMetadata = {
+  name: "Staked NEAR",
+  symbol: "STNEAR",
+  decimals: NEAR_NOMINATION_EXP,
+  icon: stnearAssetIcon,
 };

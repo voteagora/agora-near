@@ -1,17 +1,23 @@
 import { useNear } from "@/contexts/NearContext";
+import { useAvailableToLock } from "@/hooks/useAvailableToLock";
+import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useFungibleTokens } from "@/hooks/useFungibleTokens";
 import { useLockNear } from "@/hooks/useLockNear";
 import { useNearBalance } from "@/hooks/useNearBalance";
 import { useStakingPool } from "@/hooks/useStakingPool";
-import { useTokenMetadata } from "@/hooks/useTokenMetadata";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
 import {
   LINEAR_TOKEN_CONTRACTS,
+  LINEAR_TOKEN_METADATA,
   NEAR_TOKEN_METADATA,
   STNEAR_TOKEN_CONTRACTS,
+  STNEAR_TOKEN_METADATA,
 } from "@/lib/constants";
+import { lockupMethodConfig } from "@/lib/contracts/config/methods/lockup";
+import { venearMethodConfig } from "@/lib/contracts/config/methods/venear";
 import { getAPYFromGrowthRate } from "@/lib/lockUtils";
 import { TokenWithBalance } from "@/lib/types";
+import { convertUnit } from "@fastnear/utils";
 import Big from "big.js";
 import { utils } from "near-api-js";
 import {
@@ -26,11 +32,6 @@ import toast from "react-hot-toast";
 import { useLockupAccount } from "../../hooks/useLockupAccount";
 import { useVenearAccountInfo } from "../../hooks/useVenearAccountInfo";
 import { useVenearConfig } from "../../hooks/useVenearConfig";
-import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
-import { venearMethodConfig } from "@/lib/contracts/config/methods/venear";
-import { convertUnit } from "@fastnear/utils";
-import { lockupMethodConfig } from "@/lib/contracts/config/methods/lockup";
-import { useAvailableToLock } from "@/hooks/useAvailableToLock";
 
 export type LockTransaction =
   | "deploy_lockup"
@@ -71,7 +72,6 @@ type LockProviderContextType = {
   setEnteredAmount: (amount: string) => void;
   isLockingMax: boolean;
   onLockMax: () => void;
-  availableToLock: string;
   lockNear: ({ amount }: { amount?: string }) => Promise<void>;
   isLockingNear: boolean;
   lockingNearError: Error | null;
@@ -98,7 +98,6 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   setEnteredAmount: () => {},
   isLockingMax: false,
   onLockMax: () => {},
-  availableToLock: "0",
   lockNear: () => Promise.resolve(),
   isLockingNear: false,
   lockingNearError: null,
@@ -135,14 +134,6 @@ export const LockProvider = ({
     () => STNEAR_TOKEN_CONTRACTS[networkId],
     [networkId]
   );
-
-  const { metadata: linearTokenMetadata } = useTokenMetadata({
-    contractId: linearTokenContractId,
-  });
-
-  const { metadata: stNearTokenMetadata } = useTokenMetadata({
-    contractId: stNearTokenContractId,
-  });
 
   const [selectedToken, setSelectedToken] = useState<
     TokenWithBalance | undefined
@@ -312,7 +303,7 @@ export const LockProvider = ({
               return {
                 type: "lst" as const,
                 accountId: linearTokenContractId,
-                metadata: linearTokenMetadata,
+                metadata: LINEAR_TOKEN_METADATA,
                 balance: token.balance,
               };
             }
@@ -321,7 +312,7 @@ export const LockProvider = ({
               return {
                 type: "lst" as const,
                 accountId: stNearTokenContractId,
-                metadata: stNearTokenMetadata,
+                metadata: STNEAR_TOKEN_METADATA,
                 balance: token.balance,
               };
             }
@@ -337,12 +328,10 @@ export const LockProvider = ({
     availableToLockInLockup,
     fungibleTokensResponse,
     linearTokenContractId,
-    linearTokenMetadata,
     lockupAccountId,
     nearBalance,
     signedAccountId,
     stNearTokenContractId,
-    stNearTokenMetadata,
   ]);
 
   const requiredTransactions = useMemo(() => {
@@ -419,14 +408,7 @@ export const LockProvider = ({
   // Select the first token by default
   useEffect(() => {
     if (!selectedToken && availableTokens.length > 0) {
-      // Find the first non-zero balance
-      const nonZeroBalanceToken = availableTokens.find(
-        (token) => token.balance && Number(token.balance) > 0
-      );
-
-      if (nonZeroBalanceToken) {
-        setSelectedToken(nonZeroBalanceToken);
-      }
+      setSelectedToken(availableTokens[0]);
     }
   }, [selectedToken, availableTokens, setSelectedToken]);
 
@@ -452,7 +434,6 @@ export const LockProvider = ({
         setEnteredAmount: onEnteredAmountUpdated,
         isLockingMax,
         onLockMax,
-        availableToLock: selectedToken?.balance ?? "0",
         lockNear: lockNearAsync,
         isLockingNear,
         lockingNearError,
