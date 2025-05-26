@@ -350,8 +350,10 @@ export default function VeNearDebugCards() {
           <Button
             onClick={() =>
               openDialog({
-                type: "VENEAR_ONBOARDING",
-                params: {},
+                type: "NEAR_LOCK",
+                params: {
+                  source: "onboarding",
+                },
               })
             }
           >

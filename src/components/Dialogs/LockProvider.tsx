@@ -144,7 +144,7 @@ export const LockProvider = ({
 
   const onLockMax = useCallback(() => {
     if (selectedToken?.balance) {
-      setEnteredAmount(selectedToken?.balance);
+      setEnteredAmount(utils.format.formatNearAmount(selectedToken.balance));
       setIsLockingMax(true);
     }
   }, [selectedToken?.balance]);
@@ -374,7 +374,13 @@ export const LockProvider = ({
   }, [requiredTransactions]);
 
   const depositTotal = useMemo(() => {
-    let totalDeposit = new Big(totalRegistrationCost.toString());
+    let totalDeposit = Big(0);
+
+    if (!venearAccountInfo) {
+      totalDeposit = totalDeposit.plus(
+        new Big(totalRegistrationCost.toString())
+      );
+    }
 
     if (
       selectedToken?.type === "lst" &&
@@ -403,6 +409,7 @@ export const LockProvider = ({
     stakingPools.liNear.deposit?.min,
     stakingPools.stNear.deposit?.min,
     totalRegistrationCost,
+    venearAccountInfo,
   ]);
 
   // Select the first token by default

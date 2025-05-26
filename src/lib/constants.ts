@@ -195,3 +195,5 @@ export const STNEAR_TOKEN_METADATA: TokenMetadata = {
   decimals: NEAR_NOMINATION_EXP,
   icon: stnearAssetIcon,
 };
+
+export const DEFAULT_GAS_RESERVE = "200000000000000000000000"; // 0.2 NEAR

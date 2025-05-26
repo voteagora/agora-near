@@ -39,7 +39,7 @@ import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { NearVoteOptionsDialog } from "../NearVoteOptionsDialog";
 import { UndelegateDialog } from "../UndelegateDialog/UndelegateDialog";
 import { NearProposalModal } from "@/components/Proposals/NearProposals/NearProposalModal";
-import { NearLockDialog } from "../NearLockDialog";
+import { LockDialogSource, NearLockDialog } from "../NearLockDialog";
 import { VeNearOnboardingModal } from "@/app/near/VeNearOnboardingModal";
 
 export type DialogType =
@@ -92,7 +92,9 @@ export type NearProposalDialogType = {
 
 export type NearLockDialogType = {
   type: "NEAR_LOCK";
-  params: Record<string, never>;
+  params: {
+    source: LockDialogSource;
+  };
 };
 
 export type DelegateDialogType = {
@@ -334,8 +336,8 @@ export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_PROPOSAL: () => {
     return <NearProposalModal />;
   },
-  NEAR_LOCK: (_params, closeDialog) => {
-    return <NearLockDialog closeDialog={closeDialog} />;
+  NEAR_LOCK: (params, closeDialog) => {
+    return <NearLockDialog closeDialog={closeDialog} {...params} />;
   },
   DELEGATE: (
     { delegate, fetchBalanceForDirectDelegation, fetchDirectDelegatee },
