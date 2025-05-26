@@ -1,20 +1,30 @@
 import { UpdatedButton } from "@/components/Button";
 import { Input } from "@/components/ui/input";
+import { useNear } from "@/contexts/NearContext";
+import { useRefreshStakingPoolBalance } from "@/hooks/useRefreshStakingPoolBalance";
+import { useRegisterLockup } from "@/hooks/useRegisterLockup";
+import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
+import { NEAR_TOKEN_METADATA } from "@/lib/constants";
 import { TokenWithBalance } from "@/lib/types";
+import { convertYoctoToTGas, formatNearAccountId } from "@/lib/utils";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import {
   ChevronDownIcon,
   InformationCircleIcon,
+  LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import { utils } from "near-api-js";
-import { useCallback, useMemo, useState } from "react";
-import toast from "react-hot-toast";
-import NearTokenAmount from "../shared/NearTokenAmount";
-import { LockProvider, useLockProviderContext } from "./LockProvider";
-import { formatNearAccountId } from "@/lib/utils";
 import Image from "next/image";
+import { useCallback, useMemo, useState } from "react";
 import { AssetIcon } from "../common/AssetIcon";
-import { NEAR_TOKEN_METADATA } from "@/lib/constants";
+import NearTokenAmount from "../shared/NearTokenAmount";
+import {
+  LockProvider,
+  LockTransaction,
+  useLockProviderContext,
+} from "./LockProvider";
+import Big from "big.js";
+import { useAvailableToLock } from "@/hooks/useAvailableToLock";
 
 type AssetSelectorProps = {
   handleTokenSelect: (token: TokenWithBalance) => void;
@@ -84,26 +94,30 @@ const AssetSelector = ({ handleTokenSelect }: AssetSelectorProps) => {
 
 const EnterAmountStep = ({
   openAssetSelector,
-  handleLockAmountChange,
   handleReview,
 }: {
   openAssetSelector: () => void;
-  handleLockAmountChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleReview: () => void;
 }) => {
   const {
-    lockAmount,
+    enteredAmount,
     onLockMax,
     availableToLock,
     selectedToken,
     venearAmount,
     lockApy: annualAPY,
     isLoading,
+    gasTotal,
+    depositTotal,
+    setEnteredAmount,
   } = useLockProviderContext();
 
-  // Hardcoded values for now
-  const depositFees = "2.1234";
-  const gasEst = "0.0021";
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+      setEnteredAmount(value);
+    }
+  };
 
   const formattedVeNearAmount = useMemo(
     () => (
@@ -156,8 +170,8 @@ const EnterAmountStep = ({
                 <Input
                   type="text"
                   placeholder="0"
-                  value={lockAmount}
-                  onChange={handleLockAmountChange}
+                  value={enteredAmount}
+                  onChange={handleAmountChange}
                   className="w-full bg-transparent border-none text-lg text-right p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
                 <button
@@ -203,7 +217,7 @@ const EnterAmountStep = ({
             </div>
             <span className="text-primary font-medium tabular-nums">
               <NearTokenAmount
-                amount={utils.format.parseNearAmount(depositFees) ?? "0"}
+                amount={depositTotal ?? "0"}
                 minimumFractionDigits={4}
               />
             </span>
@@ -211,17 +225,14 @@ const EnterAmountStep = ({
           <div className="flex flex-row justify-between">
             <span className="text-secondary">Gas est.</span>
             <span className="text-primary font-medium tabular-nums">
-              <NearTokenAmount
-                amount={utils.format.parseNearAmount(gasEst) ?? "0"}
-                minimumFractionDigits={4}
-              />
+              {`${convertYoctoToTGas(gasTotal)} Tgas`}
             </span>
           </div>
         </div>
         <UpdatedButton
           type="primary"
           onClick={handleReview}
-          disabled={!lockAmount || lockAmount === "0" || isLoading}
+          disabled={!enteredAmount || enteredAmount === "0" || isLoading}
           className="w-full"
         >
           Review
@@ -231,26 +242,192 @@ const EnterAmountStep = ({
   );
 };
 
-const ReviewStep = ({
-  handleEdit,
-  handleLockNear,
-}: {
-  handleEdit: () => void;
-  handleLockNear: () => void;
-}) => {
+const ReviewStep = ({ handleEdit }: { handleEdit: () => void }) => {
   const {
     lockupAccountId,
-    lockAmount,
+    enteredAmount,
     lockApy: annualAPY,
     isLoading,
-    isLockingNear,
-    lockingNearError,
     venearAmount,
+    gasTotal,
+    depositTotal,
+    requiredTransactions,
+    storageDepositAmount,
+    lockupDeploymentCost,
+    selectedToken,
+    lockNear,
+    venearAccountInfo,
   } = useLockProviderContext();
 
-  // Hardcoded values for now
-  const depositFees = "2.1234";
-  const gasEst = "0.0021";
+  const [transactionText, setTransactionText] = useState<string>("");
+
+  const [transactionStep, setTransactionStep] = useState<number>(0);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { transferNear, transferFungibleToken } = useNear();
+
+  const { registerAndDeployLockupAsync } = useRegisterLockup({});
+
+  const { selectStakingPoolAsync } = useSelectStakingPool({
+    lockupAccountId: lockupAccountId ?? "",
+  });
+
+  const refreshStakingPoolBalance = useRefreshStakingPoolBalance({
+    lockupAccountId: lockupAccountId ?? "",
+  });
+
+  const numTransactions = requiredTransactions.length;
+
+  const getTransactionText = useCallback((step: LockTransaction) => {
+    switch (step) {
+      case "deploy_lockup":
+        return "Deploying lockup contract...";
+      case "transfer_near":
+      case "transfer_ft":
+        return "Transferring tokens...";
+      case "select_staking_pool":
+        return "Selecting staking pool...";
+      case "refresh_balance":
+        return "Refreshing balance...";
+      case "lock_near":
+        return "Locking NEAR...";
+    }
+  }, []);
+
+  const enteredAmountYocto = useMemo(
+    () => utils.format.parseNearAmount(enteredAmount) || "0",
+    [enteredAmount]
+  );
+
+  const { refetchAvailableToLock } = useAvailableToLock({
+    lockupAccountId,
+    enabled: !!venearAccountInfo,
+  });
+
+  const getAmountToTransfer = useCallback(async () => {
+    const { data: liquidNearInLockup } = await refetchAvailableToLock();
+
+    if (selectedToken?.type === "near") {
+      // Factor in any liquid amount already in the lockup contract
+      return new Big(enteredAmountYocto)
+        .minus(new Big(liquidNearInLockup ?? "0"))
+        .toFixed(0);
+    }
+
+    // if (selectedToken?.type === "lst") {
+    //   const netNearAmount = new Big(venearAmount ?? "0").minus(
+    //     new Big(liquidNearInLockup ?? "0")
+    //   );
+    //   const netLstAmount = netNearAmount
+    //     .div(venearAmount ?? "0")
+    //     .mul(enteredAmount);
+    //   return netLstAmount.toFixed(0);
+    // }
+
+    return enteredAmountYocto;
+  }, [enteredAmountYocto, refetchAvailableToLock, selectedToken?.type]);
+
+  const getAmountToLock = useCallback(async () => {
+    const { data: liquidNearInLockup } = await refetchAvailableToLock();
+
+    // Case 1: Desired amount is less than your total balance, so only lock the desired amount
+    // Case 2: Desired amount is greater than your total balance -- should only happen when you have initially deployed your lockup contract
+    // and a marginal amount has already been locked automatically.
+    // In either case, locking the min(desired amount, total balance) achieves the desired result.
+
+    const targetLockAmount =
+      selectedToken?.type === "lst" ? venearAmount : enteredAmountYocto;
+
+    return new Big(targetLockAmount ?? "0").lt(
+      new Big(liquidNearInLockup ?? "0")
+    )
+      ? targetLockAmount
+      : liquidNearInLockup;
+  }, [
+    enteredAmountYocto,
+    refetchAvailableToLock,
+    selectedToken?.type,
+    venearAmount,
+  ]);
+
+  const executeTransaction = useCallback(
+    async (transaction: LockTransaction) => {
+      switch (transaction) {
+        case "deploy_lockup":
+          await registerAndDeployLockupAsync(
+            storageDepositAmount ?? "",
+            lockupDeploymentCost ?? ""
+          );
+          break;
+        case "transfer_ft": {
+          const amountToTransfer = await getAmountToTransfer();
+          await transferFungibleToken({
+            tokenContractId: selectedToken?.accountId ?? "",
+            receiverId: lockupAccountId ?? "",
+            amount: amountToTransfer,
+          });
+          break;
+        }
+        case "transfer_near": {
+          const amountToTransfer = await getAmountToTransfer();
+
+          await transferNear({
+            receiverId: lockupAccountId ?? "",
+            amount: amountToTransfer,
+          });
+          break;
+        }
+        case "select_staking_pool":
+          await selectStakingPoolAsync({
+            stakingPoolId: selectedToken?.accountId ?? "",
+          });
+          break;
+        case "refresh_balance":
+          await refreshStakingPoolBalance();
+          break;
+        case "lock_near": {
+          const amountToLock = await getAmountToLock();
+          await lockNear({
+            amount: amountToLock,
+          });
+          break;
+        }
+      }
+    },
+    [
+      getAmountToLock,
+      getAmountToTransfer,
+      lockNear,
+      lockupAccountId,
+      lockupDeploymentCost,
+      refreshStakingPoolBalance,
+      registerAndDeployLockupAsync,
+      selectStakingPoolAsync,
+      selectedToken?.accountId,
+      storageDepositAmount,
+      transferFungibleToken,
+      transferNear,
+    ]
+  );
+
+  const executeTransactions = useCallback(async () => {
+    try {
+      setIsSubmitting(true);
+      for (let i = 0; i < requiredTransactions.length; i++) {
+        const transaction = requiredTransactions[i];
+
+        setTransactionText(getTransactionText(transaction));
+        setTransactionStep(i);
+
+        await executeTransaction(transaction);
+      }
+    } catch (e) {
+      console.error("Transaction failed:", e);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [requiredTransactions, getTransactionText, executeTransaction]);
 
   const formattedVeNearAmount = useMemo(
     () => (
@@ -263,6 +440,44 @@ const ReviewStep = ({
     ),
     [venearAmount]
   );
+
+  if (isSubmitting) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full min-h-[318px] gap-6">
+        {/* Lock Icon */}
+        <div className="flex items-center justify-center w-16 h-16 bg-neutral border border-line rounded-full">
+          <LockClosedIcon className="w-8 h-8 text-primary" />
+        </div>
+
+        {/* Current Transaction Text */}
+        <p className="text-lg text-primary text-center font-medium">
+          {transactionText}
+        </p>
+
+        {/* Amount Being Locked */}
+        <div className="text-5xl font-bold text-primary tabular-nums">
+          <NearTokenAmount
+            amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
+            minimumFractionDigits={4}
+            hideCurrency={false}
+          />
+        </div>
+
+        {/* Progress Indicator */}
+        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+          <InformationCircleIcon className="w-5 h-5 text-blue-600" />
+          <span className="text-sm text-blue-800 font-medium">
+            Pending {transactionStep + 1} of {numTransactions} wallet signatures
+          </span>
+        </div>
+
+        {/* Loading Spinner */}
+        <div className="flex items-center justify-center w-full py-4">
+          <div className="w-8 h-8 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 justify-center w-full">
@@ -285,7 +500,7 @@ const ReviewStep = ({
           <span className="text-secondary">Amount locking</span>
           <span className="text-primary font-medium tabular-nums text-base">
             <NearTokenAmount
-              amount={utils.format.parseNearAmount(lockAmount) ?? "0"}
+              amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
               minimumFractionDigits={4}
             />
           </span>
@@ -306,7 +521,7 @@ const ReviewStep = ({
           </div>
           <span className="text-primary font-medium tabular-nums text-base">
             <NearTokenAmount
-              amount={utils.format.parseNearAmount(depositFees) ?? "0"}
+              amount={depositTotal ?? "0"}
               minimumFractionDigits={4}
             />
           </span>
@@ -314,10 +529,7 @@ const ReviewStep = ({
         <div className="flex flex-row justify-between items-center">
           <span className="text-secondary">Gas est.</span>
           <span className="text-primary font-medium tabular-nums text-base">
-            <NearTokenAmount
-              amount={utils.format.parseNearAmount(gasEst) ?? "0"}
-              minimumFractionDigits={4}
-            />
+            {`${convertYoctoToTGas(gasTotal)} Tgas`}
           </span>
         </div>
       </div>
@@ -332,21 +544,18 @@ const ReviewStep = ({
       <div className="flex flex-col gap-2">
         <UpdatedButton
           type="primary"
-          onClick={handleLockNear}
+          onClick={async () => {
+            await executeTransactions();
+          }}
           disabled={
-            isLockingNear ||
-            !lockAmount ||
-            lockAmount === "0" ||
+            !enteredAmount ||
+            enteredAmount === "0" ||
             !lockupAccountId ||
             isLoading
           }
           className="w-full mt-4"
         >
-          {isLockingNear
-            ? "Locking Tokens..."
-            : lockingNearError
-              ? "Error locking - try again"
-              : "Lock Tokens"}
+          Lock tokens
         </UpdatedButton>
         <p className="text-xs text-secondary text-center text-[#9D9FA1]">
           You may unlock your tokens at any time.{" "}
@@ -364,39 +573,10 @@ type NearLockDialogProps = {
 };
 
 function NearLockDialogContent() {
-  const {
-    lockAmount,
-    setLockAmount,
-    isLockingMax,
-    lockNear,
-    setSelectedToken,
-  } = useLockProviderContext();
+  const { setSelectedToken } = useLockProviderContext();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isAssetSelectorOpen, setIsAssetSelectorOpen] = useState(false);
-
-  const handleLockAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === "" || /^\d*\.?\d*$/.test(value)) {
-      setLockAmount(value);
-    }
-  };
-
-  const handleLockNear = useCallback(() => {
-    try {
-      if (isLockingMax) {
-        lockNear({});
-        return;
-      }
-
-      const yoctoAmount = utils.format.parseNearAmount(lockAmount);
-      if (!yoctoAmount) throw new Error("Invalid amount");
-
-      lockNear({ amount: yoctoAmount });
-    } catch (error) {
-      toast.error("Failed to lock NEAR");
-    }
-  }, [lockAmount, lockNear, isLockingMax]);
 
   const handleReview = () => {
     setCurrentStep(2);
@@ -429,13 +609,10 @@ function NearLockDialogContent() {
       {currentStep === 1 && (
         <EnterAmountStep
           openAssetSelector={openAssetSelector}
-          handleLockAmountChange={handleLockAmountChange}
           handleReview={handleReview}
         />
       )}
-      {currentStep === 2 && (
-        <ReviewStep handleEdit={handleEdit} handleLockNear={handleLockNear} />
-      )}
+      {currentStep === 2 && <ReviewStep handleEdit={handleEdit} />}
     </div>
   );
 }

@@ -28,6 +28,7 @@ import {
   sepolia,
   scroll,
 } from "viem/chains";
+import Big from "big.js";
 
 const { token } = Tenant.current();
 
@@ -654,4 +655,8 @@ export const formatNearAccountId = (address?: string) => {
   }
 
   return `${address.slice(0, 6)}...${address.slice(-6)}`;
+};
+
+export const convertYoctoToTGas = (yocto: string) => {
+  return new Big(yocto).div(10 ** 12).toFixed();
 };

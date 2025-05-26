@@ -2,7 +2,7 @@ import { useNear } from "@/contexts/NearContext";
 import { useFungibleTokens } from "@/hooks/useFungibleTokens";
 import { useLockNear } from "@/hooks/useLockNear";
 import { useNearBalance } from "@/hooks/useNearBalance";
-import { useStakingPoolConversionRates } from "@/hooks/useStakingPoolConversionRates";
+import { useStakingPool } from "@/hooks/useStakingPool";
 import { useTokenMetadata } from "@/hooks/useTokenMetadata";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
 import {
@@ -26,6 +26,34 @@ import toast from "react-hot-toast";
 import { useLockupAccount } from "../../hooks/useLockupAccount";
 import { useVenearAccountInfo } from "../../hooks/useVenearAccountInfo";
 import { useVenearConfig } from "../../hooks/useVenearConfig";
+import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
+import { venearMethodConfig } from "@/lib/contracts/config/methods/venear";
+import { convertUnit } from "@fastnear/utils";
+import { lockupMethodConfig } from "@/lib/contracts/config/methods/lockup";
+import { useAvailableToLock } from "@/hooks/useAvailableToLock";
+
+export type LockTransaction =
+  | "deploy_lockup"
+  | "transfer_near"
+  | "transfer_ft"
+  | "select_staking_pool"
+  | "refresh_balance"
+  | "lock_near";
+
+const gasFees: Record<LockTransaction, string> = {
+  deploy_lockup: convertUnit(
+    venearMethodConfig["deploy_lockup"].gas ?? "30 Tgas"
+  ),
+  select_staking_pool: convertUnit(
+    lockupMethodConfig["select_staking_pool"].gas ?? "30 Tgas"
+  ),
+  refresh_balance: convertUnit(
+    lockupMethodConfig["refresh_staking_pool_balance"].gas ?? "30 Tgas"
+  ),
+  lock_near: convertUnit(lockupMethodConfig["lock_near"].gas ?? "30 Tgas"),
+  transfer_near: convertUnit("30 Tgas"),
+  transfer_ft: convertUnit("30 Tgas"),
+};
 
 type LockProviderContextType = {
   isLoading: boolean;
@@ -33,22 +61,25 @@ type LockProviderContextType = {
   lockupAccountId: string | null;
   storageDepositAmount: string | null;
   lockupDeploymentCost: string | null;
+  totalRegistrationCost: string | null;
   selectedToken?: TokenWithBalance;
   setSelectedToken: (token: TokenWithBalance) => void;
   availableTokens: TokenWithBalance[];
   venearAccountInfo?: ReturnType<typeof useVenearAccountInfo>["data"];
-  stNearPrice: string | null;
-  liNearPrice: string | null;
   lockApy: string;
-  lockAmount: string;
-  setLockAmount: (amount: string) => void;
+  enteredAmount: string;
+  setEnteredAmount: (amount: string) => void;
   isLockingMax: boolean;
   onLockMax: () => void;
   availableToLock: string;
-  lockNear: ({ amount }: { amount?: string }) => void;
+  lockNear: ({ amount }: { amount?: string }) => Promise<void>;
   isLockingNear: boolean;
   lockingNearError: Error | null;
   venearAmount?: string;
+  stakingPoolId?: string | null;
+  depositTotal: string;
+  gasTotal: string;
+  requiredTransactions: LockTransaction[];
 };
 
 export const LockProviderContext = createContext<LockProviderContextType>({
@@ -60,19 +91,22 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   selectedToken: undefined,
   setSelectedToken: () => {},
   availableTokens: [],
+  totalRegistrationCost: null,
   venearAccountInfo: undefined,
-  stNearPrice: null,
-  liNearPrice: null,
-  lockApy: "5.99%",
-  lockAmount: "",
-  setLockAmount: () => {},
+  lockApy: "",
+  enteredAmount: "",
+  setEnteredAmount: () => {},
   isLockingMax: false,
   onLockMax: () => {},
   availableToLock: "0",
-  lockNear: () => {},
+  lockNear: () => Promise.resolve(),
   isLockingNear: false,
   lockingNearError: null,
   venearAmount: undefined,
+  stakingPoolId: undefined,
+  depositTotal: "0",
+  gasTotal: "0",
+  requiredTransactions: [],
 });
 
 export const useLockProviderContext = () => {
@@ -114,22 +148,22 @@ export const LockProvider = ({
     TokenWithBalance | undefined
   >();
 
-  const [lockAmount, setLockAmount] = useState<string>("");
+  const [enteredAmount, setEnteredAmount] = useState<string>("");
   const [isLockingMax, setIsLockingMax] = useState<boolean>(false);
 
   const onLockMax = useCallback(() => {
     if (selectedToken?.balance) {
-      setLockAmount(selectedToken?.balance);
+      setEnteredAmount(selectedToken?.balance);
       setIsLockingMax(true);
     }
   }, [selectedToken?.balance]);
 
-  const updateLockAmount = useCallback(
+  const onEnteredAmountUpdated = useCallback(
     (amount: string) => {
-      setLockAmount(amount);
+      setEnteredAmount(amount);
       setIsLockingMax(false);
     },
-    [setLockAmount, setIsLockingMax]
+    [setIsLockingMax]
   );
 
   const {
@@ -144,6 +178,7 @@ export const LockProvider = ({
   const {
     venearStorageCost,
     lockupStorageCost,
+    totalRegistrationCost,
     isLoading: isLoadingVenearConfig,
     error: venearConfigError,
   } = useVenearConfig({ enabled: !!signedAccountId });
@@ -160,7 +195,7 @@ export const LockProvider = ({
     error: lockupAccountError,
   } = useLockupAccount();
 
-  const { lockNear, isLockingNear, lockingNearError } = useLockNear({
+  const { lockNearAsync, isLockingNear, lockingNearError } = useLockNear({
     lockupAccountId: lockupAccountId || "",
     onSuccess: () => {
       toast.success("Lock successful");
@@ -175,31 +210,38 @@ export const LockProvider = ({
     [growthRateNs]
   );
 
-  const { conversionRates, isLoading: isLoadingConversionRates } =
-    useStakingPoolConversionRates();
+  const { stakingPools, isLoading: isLoadingStakingPools } = useStakingPool();
+
+  const {
+    availableToLock: availableToLockInLockup,
+    isLoadingAvailableToLock: isLoadingAvailableToLockInLockup,
+  } = useAvailableToLock({
+    lockupAccountId,
+    enabled: !!venearAccountInfo,
+  });
 
   const venearAmount = useMemo(() => {
-    if (!lockAmount || !selectedToken) return "0";
+    if (!enteredAmount || !selectedToken) return "0";
 
     try {
       if (selectedToken.type === "near") {
-        return utils.format.parseNearAmount(lockAmount) || "0";
+        return utils.format.parseNearAmount(enteredAmount) || "0";
       } else if (
         selectedToken.accountId === stNearTokenContractId &&
-        conversionRates.stNearPrice
+        stakingPools.stNear.price
       ) {
         // Convert stNEAR to NEAR using the rate
-        const valueInNear = new Big(lockAmount).times(
-          conversionRates.stNearPrice
+        const valueInNear = new Big(enteredAmount).times(
+          stakingPools.stNear.price
         );
         return valueInNear.toFixed(0);
       } else if (
         selectedToken.accountId === linearTokenContractId &&
-        conversionRates.liNearPrice
+        stakingPools.liNear.price
       ) {
         // Convert liNEAR to NEAR using the rate
-        const valueInNear = new Big(lockAmount).times(
-          conversionRates.liNearPrice
+        const valueInNear = new Big(enteredAmount).times(
+          stakingPools.liNear.price
         );
         return valueInNear.toFixed(0);
       }
@@ -209,12 +251,12 @@ export const LockProvider = ({
 
     return "0";
   }, [
-    conversionRates.liNearPrice,
-    conversionRates.stNearPrice,
     linearTokenContractId,
-    lockAmount,
+    enteredAmount,
     selectedToken,
     stNearTokenContractId,
+    stakingPools.liNear.price,
+    stakingPools.stNear.price,
   ]);
 
   const onTokenSelectedCallback = useCallback(
@@ -225,16 +267,32 @@ export const LockProvider = ({
     [onTokenSelected]
   );
 
+  const { stakingPoolId, isLoadingStakingPoolId } = useCurrentStakingPoolId({
+    lockupAccountId: lockupAccountId ?? "",
+    enabled: !!venearAccountInfo,
+  });
+
   const isInitializing =
     isLoadingVenearConfig ||
     isLoadingVeNearAccount ||
     isLoadingLockupAccount ||
     isLoadingFungibleTokens ||
     isLoadingNearBalance ||
-    isLoadingConversionRates;
+    isLoadingStakingPools ||
+    isLoadingStakingPoolId ||
+    isLoadingAvailableToLockInLockup;
 
   const availableTokens = useMemo(() => {
     const tokens: TokenWithBalance[] = [];
+
+    if (availableToLockInLockup) {
+      tokens.push({
+        type: "lockup" as const,
+        metadata: NEAR_TOKEN_METADATA,
+        accountId: lockupAccountId,
+        balance: availableToLockInLockup,
+      });
+    }
 
     if (nearBalance) {
       tokens.push({
@@ -267,15 +325,6 @@ export const LockProvider = ({
               };
             }
 
-            if (token.contract_id === lockupAccountId) {
-              return {
-                type: "lockup" as const,
-                metadata: NEAR_TOKEN_METADATA,
-                accountId: lockupAccountId,
-                balance: token.balance,
-              };
-            }
-
             return null;
           })
           .filter((token) => token !== null)
@@ -284,6 +333,7 @@ export const LockProvider = ({
 
     return tokens;
   }, [
+    availableToLockInLockup,
     fungibleTokensResponse,
     linearTokenContractId,
     linearTokenMetadata,
@@ -292,6 +342,77 @@ export const LockProvider = ({
     signedAccountId,
     stNearTokenContractId,
     stNearTokenMetadata,
+  ]);
+
+  const requiredTransactions = useMemo(() => {
+    const transactions: LockTransaction[] = [];
+
+    if (!venearAccountInfo) {
+      // Requires deploying lockup
+      transactions.push("deploy_lockup");
+    }
+
+    if (selectedToken?.type === "lst" && !stakingPoolId) {
+      transactions.push("select_staking_pool");
+    }
+
+    if (selectedToken?.type !== "lockup") {
+      // Requires transferring tokens to lockup
+      transactions.push(
+        selectedToken?.type === "near" ? "transfer_near" : "transfer_ft"
+      );
+    }
+
+    if (selectedToken?.type === "lst") {
+      // LST requires refreshing balance
+      transactions.push("refresh_balance");
+    }
+
+    transactions.push("lock_near");
+
+    return transactions;
+  }, [selectedToken?.type, stakingPoolId, venearAccountInfo]);
+
+  const gasTotal = useMemo(() => {
+    let totalGas = new Big(0);
+
+    for (const transaction of requiredTransactions) {
+      totalGas = totalGas.plus(new Big(gasFees[transaction] ?? "0"));
+    }
+
+    return totalGas.toFixed();
+  }, [requiredTransactions]);
+
+  const depositTotal = useMemo(() => {
+    let totalDeposit = new Big(totalRegistrationCost.toString());
+
+    if (
+      selectedToken?.type === "lst" &&
+      selectedToken.accountId === stNearTokenContractId
+    ) {
+      totalDeposit = totalDeposit.plus(
+        new Big(stakingPools.stNear.deposit?.min ?? "0")
+      );
+    }
+
+    if (
+      selectedToken?.type === "lst" &&
+      selectedToken.accountId === linearTokenContractId
+    ) {
+      totalDeposit = totalDeposit.plus(
+        new Big(stakingPools.liNear.deposit?.min ?? "0")
+      );
+    }
+
+    return totalDeposit.toFixed();
+  }, [
+    linearTokenContractId,
+    selectedToken?.accountId,
+    selectedToken?.type,
+    stNearTokenContractId,
+    stakingPools.liNear.deposit?.min,
+    stakingPools.stNear.deposit?.min,
+    totalRegistrationCost,
   ]);
 
   // Select the first token by default
@@ -325,18 +446,21 @@ export const LockProvider = ({
           lockupAccountError ||
           fungibleTokensError ||
           nearBalanceError,
-        stNearPrice: conversionRates.stNearPrice ?? null,
-        liNearPrice: conversionRates.liNearPrice ?? null,
         lockApy,
-        lockAmount,
-        setLockAmount: updateLockAmount,
+        enteredAmount,
+        setEnteredAmount: onEnteredAmountUpdated,
         isLockingMax,
         onLockMax,
         availableToLock: selectedToken?.balance ?? "0",
-        lockNear,
+        lockNear: lockNearAsync,
         isLockingNear,
         lockingNearError,
         venearAmount,
+        stakingPoolId,
+        depositTotal,
+        gasTotal,
+        requiredTransactions,
+        totalRegistrationCost: totalRegistrationCost.toString(),
       }}
     >
       {children}
