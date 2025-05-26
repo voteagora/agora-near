@@ -459,7 +459,7 @@ const ReviewStep = ({
           <NearTokenAmount
             amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
             minimumFractionDigits={4}
-            hideCurrency={false}
+            currency={selectedToken?.metadata?.symbol}
           />
         </div>
 
@@ -502,6 +502,7 @@ const ReviewStep = ({
             <NearTokenAmount
               amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
               minimumFractionDigits={4}
+              currency={selectedToken?.metadata?.symbol}
             />
           </span>
         </div>
