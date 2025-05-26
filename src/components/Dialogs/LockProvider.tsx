@@ -285,7 +285,7 @@ export const LockProvider = ({
   const availableTokens = useMemo(() => {
     const tokens: TokenWithBalance[] = [];
 
-    if (availableToLockInLockup) {
+    if (availableToLockInLockup && Big(availableToLockInLockup).gt(0)) {
       tokens.push({
         type: "lockup" as const,
         metadata: NEAR_TOKEN_METADATA,
@@ -294,7 +294,7 @@ export const LockProvider = ({
       });
     }
 
-    if (nearBalance) {
+    if (nearBalance && Big(nearBalance).gt(0)) {
       tokens.push({
         type: "near",
         metadata: NEAR_TOKEN_METADATA,
@@ -306,6 +306,7 @@ export const LockProvider = ({
     if (fungibleTokensResponse) {
       tokens.push(
         ...fungibleTokensResponse.tokens
+          .filter((token) => token && Big(token.balance).gt(0))
           .map((token) => {
             if (token.contract_id === linearTokenContractId) {
               return {
@@ -331,7 +332,7 @@ export const LockProvider = ({
       );
     }
 
-    return tokens;
+    return tokens.sort((a, b) => (Big(b.balance).gt(a.balance) ? 1 : -1));
   }, [
     availableToLockInLockup,
     fungibleTokensResponse,
