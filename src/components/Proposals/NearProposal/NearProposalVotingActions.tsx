@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNear } from "@/contexts/NearContext";
 import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
+import { useNearAccountVote } from "@/hooks/useNearAccountVote";
 import { useProposalVotingPower } from "@/hooks/useProposalVotingPower";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { capitalizeFirstLetter } from "@/lib/utils";
@@ -28,6 +29,11 @@ export default function NearProposalVotingActions({
       proposal,
       accountId: signedAccountId,
     });
+
+  const { votedIndex } = useNearAccountVote({
+    accountId: signedAccountId ?? "",
+    proposalId: proposal.id,
+  });
 
   const { isRegisteredToVote } = useCheckVoterStatus({
     enabled: !!signedAccountId,
@@ -114,6 +120,7 @@ export default function NearProposalVotingActions({
               } ${selectedStyle} rounded-md border border-line text-sm font-medium cursor-pointer py-2 px-3 transition-all hover:bg-wash active:shadow-none disabled:bg-line disabled:text-secondary h-8 capitalize flex items-center justify-center flex-1`}
               onClick={() => setSelectedVote(index)}
             >
+              {index === votedIndex ? "Voted " : ""}
               {option.toLowerCase()}
             </button>
           );
