@@ -38,7 +38,7 @@ const AssetSelector = ({ handleTokenSelect }: AssetSelectorProps) => {
   const { availableTokens } = useLockProviderContext();
 
   return (
-    <div className="flex flex-col items-center w-full bg-neutral max-w-[28rem] min-h-[500px] p-6">
+    <div className="flex flex-col items-center w-full bg-neutral w-full h-full">
       <div className="flex justify-start w-full mb-6">
         <h2 className="text-2xl font-bold text-primary">Select Asset</h2>
       </div>
@@ -157,7 +157,7 @@ const EnterAmountStep = ({
 
   return (
     <>
-      <div className="flex flex-col gap-6 justify-center min-h-[318px] w-full">
+      <div className="flex flex-col gap-6 justify-center h-full w-full">
         <div className="flex flex-col gap-2">
           <p className="text-2xl font-bold text-left text-primary">
             Lock assets and gain voting power
@@ -421,7 +421,7 @@ const ReviewStep = ({ handleEdit }: { handleEdit: () => void }) => {
 
   if (isSubmitting) {
     return (
-      <div className="flex flex-col items-center justify-center w-full min-h-[318px] gap-6">
+      <div className="flex flex-col items-center justify-center w-full h-full gap-6">
         <div className="flex items-center justify-center w-16 h-16 bg-neutral border border-line rounded-full">
           <LockClosedIcon className="w-8 h-8 text-primary" />
         </div>
@@ -453,7 +453,7 @@ const ReviewStep = ({ handleEdit }: { handleEdit: () => void }) => {
   }
 
   return (
-    <div className="flex flex-col gap-6 justify-center w-full">
+    <div className="flex flex-col gap-6 justify-center w-full h-full">
       <div className="flex flex-col gap-2">
         <p className="text-2xl font-bold text-left text-primary">
           Lock assets and gain voting power
@@ -554,7 +554,8 @@ type NearLockDialogProps = {
 };
 
 function NearLockDialogContent() {
-  const { setSelectedToken, isLoading } = useLockProviderContext();
+  const { setSelectedToken, isLoading, setEnteredAmount } =
+    useLockProviderContext();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isAssetSelectorOpen, setIsAssetSelectorOpen] = useState(false);
@@ -567,7 +568,10 @@ function NearLockDialogContent() {
     setCurrentStep(1);
   };
 
-  const openAssetSelector = useCallback(() => setIsAssetSelectorOpen(true), []);
+  const openAssetSelector = useCallback(() => {
+    setIsAssetSelectorOpen(true);
+  }, []);
+
   const closeAssetSelector = useCallback(
     () => setIsAssetSelectorOpen(false),
     []
@@ -576,10 +580,32 @@ function NearLockDialogContent() {
   const handleTokenSelect = useCallback(
     (token: TokenWithBalance) => {
       setSelectedToken(token);
+      setEnteredAmount("");
       closeAssetSelector();
     },
-    [setSelectedToken, closeAssetSelector]
+    [setSelectedToken, setEnteredAmount, closeAssetSelector]
   );
+
+  const content = useMemo(() => {
+    if (isAssetSelectorOpen) {
+      return <AssetSelector handleTokenSelect={handleTokenSelect} />;
+    }
+
+    if (currentStep === 1) {
+      return (
+        <EnterAmountStep
+          openAssetSelector={openAssetSelector}
+          handleReview={handleReview}
+        />
+      );
+    }
+
+    if (currentStep === 2) {
+      return <ReviewStep handleEdit={handleEdit} />;
+    }
+
+    return null;
+  }, [currentStep, handleTokenSelect, isAssetSelectorOpen, openAssetSelector]);
 
   if (isLoading) {
     return (
@@ -589,19 +615,9 @@ function NearLockDialogContent() {
     );
   }
 
-  if (isAssetSelectorOpen) {
-    return <AssetSelector handleTokenSelect={handleTokenSelect} />;
-  }
-
   return (
-    <div className="flex flex-col items-center w-full bg-neutral p-6">
-      {currentStep === 1 && (
-        <EnterAmountStep
-          openAssetSelector={openAssetSelector}
-          handleReview={handleReview}
-        />
-      )}
-      {currentStep === 2 && <ReviewStep handleEdit={handleEdit} />}
+    <div className="flex flex-col items-center w-full bg-neutral p-6 h-[70vh]">
+      {content}
     </div>
   );
 }
