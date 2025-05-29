@@ -35,7 +35,7 @@ const AssetSelector = ({ handleTokenSelect }: AssetSelectorProps) => {
   const { availableTokens } = useLockProviderContext();
 
   return (
-    <div className="flex flex-col items-center w-full bg-neutral max-w-[28rem] p-6">
+    <div className="flex flex-col items-center w-full bg-neutral max-w-[28rem] min-h-[500px] p-6">
       <div className="flex justify-start w-full mb-6">
         <h2 className="text-2xl font-bold text-primary">Select Asset</h2>
       </div>
@@ -119,17 +119,16 @@ const EnterAmountStep = ({
     }
   };
 
-  const formattedVeNearAmount = useMemo(
-    () => (
+  const formattedVeNearAmount = useMemo(() => {
+    return (
       <NearTokenAmount
-        amount={venearAmount ?? "0"}
+        amount={!venearAmount || Big(venearAmount).lte(0) ? "0" : venearAmount}
         hideCurrency
         minimumFractionDigits={4}
         className="tabular-nums text-lg"
       />
-    ),
-    [venearAmount]
-  );
+    );
+  }, [venearAmount]);
 
   return (
     <>
@@ -272,6 +271,8 @@ const ReviewStep = ({
 
   const [transactionStep, setTransactionStep] = useState<number>(0);
 
+  const [numTransactions, setNumTransactions] = useState<number>(0);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { transferNear, transferFungibleToken } = useNear();
@@ -285,8 +286,6 @@ const ReviewStep = ({
   const refreshStakingPoolBalance = useRefreshStakingPoolBalance({
     lockupAccountId: lockupAccountId ?? "",
   });
-
-  const numTransactions = requiredTransactions.length;
 
   const getTransactionText = useCallback((step: LockTransaction) => {
     switch (step) {
@@ -328,7 +327,7 @@ const ReviewStep = ({
     }
 
     return amount.toFixed(0);
-  }, [enteredAmountYocto, gasTotal, refetchAvailableToLock]);
+  }, [depositTotal, enteredAmountYocto, source]);
 
   const getAmountToLock = useCallback(async () => {
     // Lock all when onboarding
@@ -349,6 +348,7 @@ const ReviewStep = ({
     enteredAmountYocto,
     refetchAvailableToLock,
     selectedToken?.type,
+    source,
     venearAmount,
   ]);
 
@@ -411,35 +411,38 @@ const ReviewStep = ({
     ]
   );
 
-  const executeTransactions = useCallback(async () => {
-    try {
-      setIsSubmitting(true);
-      for (let i = 0; i < requiredTransactions.length; i++) {
-        const transaction = requiredTransactions[i];
+  const executeTransactions = useCallback(
+    async ({ numTransactions }: { numTransactions: number }) => {
+      try {
+        setNumTransactions(numTransactions);
+        setIsSubmitting(true);
+        for (let i = 0; i < requiredTransactions.length; i++) {
+          const transaction = requiredTransactions[i];
 
-        setTransactionText(getTransactionText(transaction));
-        setTransactionStep(i);
+          setTransactionText(getTransactionText(transaction));
+          setTransactionStep(i);
 
-        await executeTransaction(transaction);
+          await executeTransaction(transaction);
+        }
+      } catch (e) {
+        console.error(`Error executing transaction: ${JSON.stringify(e)}`);
+      } finally {
+        setIsSubmitting(false);
       }
-    } catch (e) {
-      console.error("Transaction failed:", e);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [requiredTransactions, getTransactionText, executeTransaction]);
+    },
+    [requiredTransactions, getTransactionText, executeTransaction]
+  );
 
-  const formattedVeNearAmount = useMemo(
-    () => (
+  const formattedVeNearAmount = useMemo(() => {
+    return (
       <NearTokenAmount
         amount={venearAmount ?? "0"}
         hideCurrency
         minimumFractionDigits={4}
         className="tabular-nums text-lg"
       />
-    ),
-    [venearAmount]
-  );
+    );
+  }, [venearAmount]);
 
   if (isSubmitting) {
     return (
@@ -455,7 +458,7 @@ const ReviewStep = ({
         </p>
 
         {/* Amount Being Locked */}
-        <div className="text-5xl font-bold text-primary tabular-nums">
+        <div className="text-4xl font-bold text-primary tabular-nums">
           <NearTokenAmount
             amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
             minimumFractionDigits={4}
@@ -548,7 +551,9 @@ const ReviewStep = ({
         <UpdatedButton
           type="primary"
           onClick={async () => {
-            await executeTransactions();
+            await executeTransactions({
+              numTransactions: requiredTransactions.length,
+            });
           }}
           disabled={
             !enteredAmount ||

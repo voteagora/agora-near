@@ -203,10 +203,7 @@ export const LockProvider = ({
 
   const { stakingPools, isLoading: isLoadingStakingPools } = useStakingPool();
 
-  const {
-    availableToLock: availableToLockInLockup,
-    isLoadingAvailableToLock: isLoadingAvailableToLockInLockup,
-  } = useAvailableToLock({
+  const { availableToLock: availableToLockInLockup } = useAvailableToLock({
     lockupAccountId,
     enabled: !!venearAccountInfo,
   });
@@ -222,18 +219,30 @@ export const LockProvider = ({
         stakingPools.stNear.price
       ) {
         // Convert stNEAR to NEAR using the rate
-        const valueInNear = new Big(enteredAmount).times(
+        let valueInNear = new Big(enteredAmount).times(
           stakingPools.stNear.price
         );
+
+        // If the user is deploying the lockup, they will also the deposit as voting power
+        if (!venearAccountInfo) {
+          valueInNear = valueInNear.plus(Big(totalRegistrationCost.toString()));
+        }
+
         return valueInNear.toFixed(0);
       } else if (
         selectedToken.accountId === linearTokenContractId &&
         stakingPools.liNear.price
       ) {
         // Convert liNEAR to NEAR using the rate
-        const valueInNear = new Big(enteredAmount).times(
+        let valueInNear = new Big(enteredAmount).times(
           stakingPools.liNear.price
         );
+
+        // If the user is deploying the lockup, they will also the deposit as voting power
+        if (!venearAccountInfo) {
+          valueInNear = valueInNear.plus(Big(totalRegistrationCost.toString()));
+        }
+
         return valueInNear.toFixed(0);
       }
     } catch (e) {
@@ -242,12 +251,14 @@ export const LockProvider = ({
 
     return "0";
   }, [
-    linearTokenContractId,
     enteredAmount,
     selectedToken,
     stNearTokenContractId,
-    stakingPools.liNear.price,
     stakingPools.stNear.price,
+    stakingPools.liNear.price,
+    linearTokenContractId,
+    venearAccountInfo,
+    totalRegistrationCost,
   ]);
 
   const onTokenSelectedCallback = useCallback(
@@ -258,7 +269,7 @@ export const LockProvider = ({
     [onTokenSelected]
   );
 
-  const { stakingPoolId, isLoadingStakingPoolId } = useCurrentStakingPoolId({
+  const { stakingPoolId } = useCurrentStakingPoolId({
     lockupAccountId: lockupAccountId ?? "",
     enabled: !!venearAccountInfo,
   });
@@ -269,9 +280,7 @@ export const LockProvider = ({
     isLoadingLockupAccount ||
     isLoadingFungibleTokens ||
     isLoadingNearBalance ||
-    isLoadingStakingPools ||
-    isLoadingStakingPoolId ||
-    isLoadingAvailableToLockInLockup;
+    isLoadingStakingPools;
 
   const availableTokens = useMemo(() => {
     const tokens: TokenWithBalance[] = [];
