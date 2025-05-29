@@ -56,6 +56,7 @@ export type DelegateProfile = {
   numOfDelegators?: string | null;
   forCount?: number | null;
   againstCount?: number | null;
+  delegatedFromCount?: number | null;
 };
 
 export type GetDelegateResponse = {
@@ -79,4 +80,21 @@ export type VoteHistory = {
 export type GetVoteHistoryResponse = {
   count: number;
   votes: VoteHistory[];
+};
+
+
+export type GetDelegationEventsResponse = {
+  count: number;
+  events: DelegationEvent[];
+};
+
+export type DelegationEvent = {
+  id: string;
+  blockHash: string;
+  blockHeight: number;
+  delegateMethod: string;
+  delegateeId?: string;
+  delegatorId: string;
+  eventDate: string;
+  nearAmount?: string;
 };

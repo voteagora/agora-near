@@ -1,44 +1,32 @@
 "use client";
 
-import { Delegation } from "@/app/api/common/delegations/delegation";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { getBlockScanUrl, TokenAmountDisplay } from "@/lib/utils";
-import { format } from "date-fns";
+import { formatNearAccountId, formatNearBlockHash } from "@/lib/utils";
 import Link from "next/link";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
-import ENSName from "@/components/shared/ENSName";
+import { DelegationEvent } from "@/lib/api/delegates/types";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
 
 export default function DelegationFromRow({
   delegation,
 }: {
-  delegation: Delegation;
+  delegation: DelegationEvent;
 }) {
   return (
     <TableRow>
       <TableCell>
-        {TokenAmountDisplay({
-          amount: delegation.allowance,
-          maximumSignificantDigits: 3,
-        })}
+        <NearTokenAmount amount={delegation.nearAmount ?? "0"} />
       </TableCell>
-      <TableCell>{delegation.timestamp?.toString()}</TableCell>
+      <TableCell>{delegation.eventDate}</TableCell>
       <TableCell>
         <Link
-          href={`/delegates/${delegation.from}`}
-          title={`Address ${delegation.from}`}
+          href={`/delegates/${delegation.delegatorId}`}
+          title={`Address ${delegation.delegatorId}`}
         >
-          <ENSName address={delegation.from} />
+          {formatNearAccountId(delegation.delegatorId)}
         </Link>
       </TableCell>
       <TableCell>
-        <a
-          href={getBlockScanUrl(delegation.transaction_hash)}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          View
-          <ArrowTopRightOnSquareIcon className="w-4 h-4 ml-2 inline align-text-bottom" />
-        </a>
+        {formatNearBlockHash(delegation.blockHash)}
       </TableCell>
     </TableRow>
   );

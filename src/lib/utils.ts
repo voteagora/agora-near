@@ -655,3 +655,15 @@ export const formatNearAccountId = (address?: string) => {
 
   return `${address.slice(0, 6)}...${address.slice(-6)}`;
 };
+
+export const formatNearBlockHash = (blockHash?: string) => {
+  if (!blockHash) {
+    return "";
+  }
+
+  if (blockHash.length <= 15) {
+    return blockHash;
+  }
+
+  return `${blockHash.slice(0, 6)}...${blockHash.slice(-6)}`;
+};

@@ -1,6 +1,5 @@
 "use client";
 
-import { PaginationParams } from "@/app/lib/pagination";
 import DelegationsContainer from "./DelegationsContainer";
 
 interface Props {
@@ -8,29 +7,9 @@ interface Props {
 }
 
 const DelegationsContainerWrapper = ({ address }: Props) => {
-  // TODO: Fetch from API
-
   return (
     <DelegationsContainer
-      delegatees={[]}
-      initialDelegators={{
-        meta: {
-          has_next: false,
-          total_returned: 0,
-          next_offset: 0,
-        },
-        data: [],
-      }}
-      fetchDelegators={async (pagination: PaginationParams) => {
-        return {
-          meta: {
-            has_next: false,
-            total_returned: 0,
-            next_offset: 0,
-          },
-          data: [],
-        };
-      }}
+      address={address}
     />
   );
 };
