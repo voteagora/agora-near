@@ -29,6 +29,7 @@ import {
   scroll,
 } from "viem/chains";
 import Big from "big.js";
+import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 
 const { token } = Tenant.current();
 
@@ -659,4 +660,21 @@ export const formatNearAccountId = (address?: string) => {
 
 export const convertYoctoToTGas = (yocto: string) => {
   return new Big(yocto).div(10 ** 12).toFixed();
+};
+
+export const isValidNearAmount = (amount?: string) => {
+  if (!amount) {
+    return false;
+  }
+
+  if (isNaN(Number(amount))) {
+    return false;
+  }
+
+  const decimalParts = amount.split(".");
+  if (decimalParts.length > 1 && decimalParts[1].length > NEAR_NOMINATION_EXP) {
+    return false;
+  }
+
+  return true;
 };

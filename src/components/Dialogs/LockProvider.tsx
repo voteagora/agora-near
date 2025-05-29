@@ -7,6 +7,7 @@ import { useNearBalance } from "@/hooks/useNearBalance";
 import { useStakingPool } from "@/hooks/useStakingPool";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
 import {
+  DEFAULT_GAS_RESERVE,
   LINEAR_TOKEN_CONTRACTS,
   LINEAR_TOKEN_METADATA,
   NEAR_TOKEN_METADATA,
@@ -32,6 +33,8 @@ import toast from "react-hot-toast";
 import { useLockupAccount } from "../../hooks/useLockupAccount";
 import { useVenearAccountInfo } from "../../hooks/useVenearAccountInfo";
 import { useVenearConfig } from "../../hooks/useVenearConfig";
+import { LockDialogSource } from "./NearLockDialog";
+import { isValidNearAmount } from "@/lib/utils";
 
 export type LockTransaction =
   | "deploy_lockup"
@@ -80,6 +83,9 @@ type LockProviderContextType = {
   depositTotal: string;
   gasTotal: string;
   requiredTransactions: LockTransaction[];
+  transferAmountYocto?: string;
+  getAmountToLock: () => Promise<string | undefined>;
+  maxAmountToLock?: string;
 };
 
 export const LockProviderContext = createContext<LockProviderContextType>({
@@ -106,6 +112,8 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   depositTotal: "0",
   gasTotal: "0",
   requiredTransactions: [],
+  transferAmountYocto: "0",
+  getAmountToLock: () => Promise.resolve("0"),
 });
 
 export const useLockProviderContext = () => {
@@ -116,12 +124,14 @@ type LockProviderProps = {
   children: React.ReactNode;
   onTokenSelected?: (token: TokenWithBalance) => void;
   onLockSuccess?: () => void;
+  source: LockDialogSource;
 };
 
 export const LockProvider = ({
   children,
   onTokenSelected,
   onLockSuccess,
+  source,
 }: LockProviderProps) => {
   const { signedAccountId, networkId } = useNear();
 
@@ -141,13 +151,6 @@ export const LockProvider = ({
 
   const [enteredAmount, setEnteredAmount] = useState<string>("");
   const [isLockingMax, setIsLockingMax] = useState<boolean>(false);
-
-  const onLockMax = useCallback(() => {
-    if (selectedToken?.balance) {
-      setEnteredAmount(utils.format.formatNearAmount(selectedToken.balance));
-      setIsLockingMax(true);
-    }
-  }, [selectedToken?.balance]);
 
   const onEnteredAmountUpdated = useCallback(
     (amount: string) => {
@@ -203,13 +206,16 @@ export const LockProvider = ({
 
   const { stakingPools, isLoading: isLoadingStakingPools } = useStakingPool();
 
-  const { availableToLock: availableToLockInLockup } = useAvailableToLock({
-    lockupAccountId,
-    enabled: !!venearAccountInfo,
-  });
+  const { availableToLock: availableToLockInLockup, refetchAvailableToLock } =
+    useAvailableToLock({
+      lockupAccountId,
+      enabled: !!venearAccountInfo,
+    });
 
   const venearAmount = useMemo(() => {
-    if (!enteredAmount || !selectedToken) return "0";
+    if (!isValidNearAmount(enteredAmount) || !selectedToken) {
+      return "0";
+    }
 
     try {
       if (selectedToken.type === "near") {
@@ -223,7 +229,7 @@ export const LockProvider = ({
           stakingPools.stNear.price
         );
 
-        // If the user is deploying the lockup, they will also the deposit as voting power
+        // If the user is deploying the lockup, they will also get voting power from the deposit
         if (!venearAccountInfo) {
           valueInNear = valueInNear.plus(Big(totalRegistrationCost.toString()));
         }
@@ -238,7 +244,7 @@ export const LockProvider = ({
           stakingPools.liNear.price
         );
 
-        // If the user is deploying the lockup, they will also the deposit as voting power
+        // If the user is deploying the lockup, they will also get voting power from the deposit
         if (!venearAccountInfo) {
           valueInNear = valueInNear.plus(Big(totalRegistrationCost.toString()));
         }
@@ -343,6 +349,35 @@ export const LockProvider = ({
     stNearTokenContractId,
   ]);
 
+  const maxLiquidNearAvailable = useMemo(() => {
+    if (!nearBalance || Big(nearBalance).lte(DEFAULT_GAS_RESERVE)) {
+      return "0";
+    }
+
+    return Big(nearBalance).minus(Big(DEFAULT_GAS_RESERVE)).toFixed(0);
+  }, [nearBalance]);
+
+  const maxAmountToLock = useMemo(
+    () =>
+      selectedToken?.type === "near"
+        ? maxLiquidNearAvailable
+        : selectedToken?.balance,
+    [maxLiquidNearAvailable, selectedToken?.balance, selectedToken?.type]
+  );
+
+  const onLockMax = useCallback(() => {
+    setEnteredAmount(utils.format.formatNearAmount(maxAmountToLock ?? "0"));
+    setIsLockingMax(true);
+  }, [maxAmountToLock]);
+
+  const enteredAmountYocto = useMemo(() => {
+    if (!isValidNearAmount(enteredAmount)) {
+      return "0";
+    }
+
+    return utils.format.parseNearAmount(enteredAmount) || "0";
+  }, [enteredAmount]);
+
   const requiredTransactions = useMemo(() => {
     const transactions: LockTransaction[] = [];
 
@@ -421,6 +456,57 @@ export const LockProvider = ({
     venearAccountInfo,
   ]);
 
+  const transferAmountYocto = useMemo(() => {
+    if (Big(enteredAmountYocto).gt(Big(maxAmountToLock ?? "0"))) {
+      return maxAmountToLock;
+    }
+
+    if (selectedToken?.type === "lst") {
+      return enteredAmountYocto;
+    }
+
+    if (selectedToken?.type === "near") {
+      // Subtract a reserve amount for gas
+      let amount = Big(enteredAmountYocto).minus(Big(DEFAULT_GAS_RESERVE));
+
+      // If coming from onboarding, we factor in the deposit that we've already made
+      if (source === "onboarding") {
+        amount = amount.minus(Big(depositTotal));
+      }
+
+      return amount.lte(0) ? "0" : amount.toFixed(0);
+    }
+  }, [
+    depositTotal,
+    enteredAmountYocto,
+    maxAmountToLock,
+    selectedToken?.type,
+    source,
+  ]);
+
+  const getAmountToLock = useCallback(async () => {
+    // Lock all when onboarding
+    if (source === "onboarding") {
+      return undefined;
+    }
+
+    const { data: liquidNearInLockup } = await refetchAvailableToLock();
+
+    const targetLockAmount =
+      selectedToken?.type === "lst" ? venearAmount : enteredAmountYocto;
+
+    // For sanity, return min of available to lock and desired amount
+    return Big(targetLockAmount ?? "0").lt(Big(liquidNearInLockup ?? "0"))
+      ? targetLockAmount
+      : liquidNearInLockup;
+  }, [
+    enteredAmountYocto,
+    refetchAvailableToLock,
+    selectedToken?.type,
+    source,
+    venearAmount,
+  ]);
+
   // Select the first token by default
   useEffect(() => {
     if (!selectedToken && availableTokens.length > 0) {
@@ -459,6 +545,9 @@ export const LockProvider = ({
         gasTotal,
         requiredTransactions,
         totalRegistrationCost: totalRegistrationCost.toString(),
+        transferAmountYocto,
+        getAmountToLock,
+        maxAmountToLock,
       }}
     >
       {children}
