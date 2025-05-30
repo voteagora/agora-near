@@ -34,8 +34,6 @@ const VotesContainerWrapper = ({ address }: Props) => {
     fetchNextPage();
   }, [hasNextPage, isLoading, isFetchingNextPage, fetchNextPage]);
 
-  console.log(voteHistory);
-
   return (
     <VotesContainer
       onchainVotes={

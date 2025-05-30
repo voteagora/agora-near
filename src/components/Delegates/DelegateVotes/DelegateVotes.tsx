@@ -48,9 +48,9 @@ export default function DelegateVotes({
                   <HStack justifyContent="justify-between" gap={2}>
                     <VStack>
                       <span className="text-tertiary text-xs font-medium">
-                        Voted for this proposal{" "}
+                        Voted {vote.voteOption === "0" ? "for" : "against"} this proposal{" "}
                         {formatDistanceToNow(new Date(vote.votedAt ?? 0))} ago
-                        with <NearTokenAmount amount={vote.votingPower} />
+                        with <NearTokenAmount amount={vote.votingPower} currency="NEAR" />
                       </span>
                       <h2 className="px-0 pt-1 overflow-hidden text-base text-primary text-ellipsis">
                         {vote.proposalName ?? `Proposal #${vote.proposalId}`}
@@ -61,11 +61,6 @@ export default function DelegateVotes({
                       support={vote.voteOption === "0" ? "FOR" : "AGAINST"}
                     />
                   </HStack>
-                  <VStack className="space-y-1 mt-2">
-                    <div className="text-xs text-tertiary font-medium">
-                      Voted {vote.voteOption === "0" ? "For" : "Against"}
-                    </div>
-                  </VStack>
                 </VStack>
               </div>
             </VoteDetailsContainer>
