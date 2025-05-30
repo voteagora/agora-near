@@ -16,6 +16,7 @@ import {
   ChevronDownIcon,
   InformationCircleIcon,
   LockClosedIcon,
+  LockOpenIcon,
 } from "@heroicons/react/24/outline";
 import Big from "big.js";
 import { utils } from "near-api-js";
@@ -275,7 +276,15 @@ const EnterAmountStep = ({
   );
 };
 
-const ReviewStep = ({ handleEdit }: { handleEdit: () => void }) => {
+const ReviewStep = ({
+  handleEdit,
+  handleLockMore,
+  handleNext,
+}: {
+  handleEdit: () => void;
+  handleLockMore: () => void;
+  handleNext?: () => void;
+}) => {
   const {
     lockupAccountId,
     enteredAmount,
@@ -300,6 +309,8 @@ const ReviewStep = ({ handleEdit }: { handleEdit: () => void }) => {
   const [numTransactions, setNumTransactions] = useState<number>(0);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const { transferNear, transferFungibleToken } = useNear();
 
@@ -399,6 +410,9 @@ const ReviewStep = ({ handleEdit }: { handleEdit: () => void }) => {
 
           await executeTransaction(transaction);
         }
+
+        setIsCompleted(true);
+        setTransactionText("Locked");
       } catch (e) {
         console.error(`Error executing transaction: ${JSON.stringify(e)}`);
       } finally {
@@ -419,34 +433,82 @@ const ReviewStep = ({ handleEdit }: { handleEdit: () => void }) => {
     );
   }, [venearAmount]);
 
+  if (isCompleted) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full">
+        <div className="flex-1 flex flex-col justify-end items-center gap-6">
+          <LockClosedIcon className="w-16 h-16" />
+          <div className="flex flex-col">
+            <p className="text-md text-[#9D9FA1] text-center">
+              {transactionText}
+            </p>
+            <div className="text-4xl font-bold text-gray-900 tabular-nums text-center">
+              <NearTokenAmount
+                amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
+                minimumFractionDigits={4}
+                currency={selectedToken?.metadata?.symbol}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="flex-1 flex flex-col justify-end items-center gap-4 w-full">
+          <UpdatedButton
+            onClick={handleLockMore}
+            type="secondary"
+            className="w-full"
+          >
+            Lock More Funds
+          </UpdatedButton>
+          {handleNext && (
+            <UpdatedButton type="primary" className="w-full">
+              Next
+            </UpdatedButton>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (isSubmitting) {
     return (
-      <div className="flex flex-col items-center justify-center w-full h-full gap-6">
-        <div className="flex items-center justify-center w-16 h-16 bg-neutral border border-line rounded-full">
-          <LockClosedIcon className="w-8 h-8 text-primary" />
+      <div className="flex flex-col items-center justify-center w-full h-full">
+        <div className="flex-1 flex flex-col justify-end items-center gap-6">
+          <LockOpenIcon className="w-16 h-16" />
+          <div className="flex flex-col">
+            <p className="text-md text-[#9D9FA1] text-center">
+              {transactionText}
+            </p>
+            <div className="text-4xl font-bold text-gray-900 tabular-nums text-center">
+              <NearTokenAmount
+                amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
+                minimumFractionDigits={4}
+                currency={selectedToken?.metadata?.symbol}
+              />
+            </div>
+          </div>
         </div>
-
-        <p className="text-lg text-primary text-center font-medium">
-          {transactionText}
-        </p>
-
-        <div className="text-4xl font-bold text-primary tabular-nums">
-          <NearTokenAmount
-            amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
-            minimumFractionDigits={4}
-            currency={selectedToken?.metadata?.symbol}
-          />
-        </div>
-
-        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-          <InformationCircleIcon className="w-5 h-5 text-blue-600" />
-          <span className="text-sm text-blue-800 font-medium">
-            Pending {transactionStep + 1} of {numTransactions} wallet signatures
-          </span>
-        </div>
-
-        <div className="flex items-center justify-center w-full py-4">
-          <div className="w-8 h-8 border-2 border-gray-300 border-t-primary rounded-full animate-spin"></div>
+        <div className="flex-1 flex flex-col justify-end items-center gap-4">
+          <div className="flex items-center justify-between gap-2 bg-white border border-gray-200 rounded-lg w-full max-w-md">
+            <div className="flex flex-row items-center gap-2">
+              <div className="h-full flex grow bg-red-100">
+                <div className="flex items-center justify-center w-8 h-8 bg-purple-100">
+                  <InformationCircleIcon className="text-purple-600" />
+                </div>
+              </div>
+              <div className="flex text-sm py-2 text-gray-900 font-medium">
+                Pending {transactionStep + 1} of {numTransactions} wallet
+                signatures
+              </div>
+            </div>
+            <div className="px-2">
+              <InformationCircleIcon className="w-4 h-4 text-gray-400" />
+            </div>
+          </div>
+          <UpdatedButton type="secondary" className="w-full">
+            <div className="flex items-center justify-center w-full">
+              <div className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin"></div>
+            </div>
+          </UpdatedButton>
         </div>
       </div>
     );
@@ -568,6 +630,10 @@ function NearLockDialogContent() {
     setCurrentStep(1);
   };
 
+  const handleLockMore = () => {
+    setCurrentStep(1);
+  };
+
   const openAssetSelector = useCallback(() => {
     setIsAssetSelectorOpen(true);
   }, []);
@@ -601,7 +667,9 @@ function NearLockDialogContent() {
     }
 
     if (currentStep === 2) {
-      return <ReviewStep handleEdit={handleEdit} />;
+      return (
+        <ReviewStep handleEdit={handleEdit} handleLockMore={handleLockMore} />
+      );
     }
 
     return null;
@@ -624,7 +692,7 @@ function NearLockDialogContent() {
 
 export const NearLockDialog = (props: NearLockDialogProps) => {
   return (
-    <LockProvider source={props.source} onLockSuccess={props.closeDialog}>
+    <LockProvider source={props.source}>
       <NearLockDialogContent />
     </LockProvider>
   );

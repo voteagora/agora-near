@@ -312,7 +312,7 @@ export const LockProvider = ({
     if (fungibleTokensResponse) {
       tokens.push(
         ...fungibleTokensResponse.tokens
-          .filter((token) => token && Big(token.balance).gt(0))
+          .filter((token) => token && token.balance && Big(token.balance).gt(0))
           .map((token) => {
             if (token.contract_id === linearTokenContractId) {
               return {
