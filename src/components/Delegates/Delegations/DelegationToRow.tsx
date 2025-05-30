@@ -5,6 +5,7 @@ import { formatNearAccountId, formatNearBlockHash } from "@/lib/utils";
 import Link from "next/link";
 import { DelegationEvent } from "@/lib/api/delegates/types";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import { format } from "date-fns";
 
 export default function DelegationToRow({
   delegation,
@@ -16,7 +17,7 @@ export default function DelegationToRow({
       <TableCell>
         <NearTokenAmount amount={delegation.nearAmount ?? "0"} />
       </TableCell>
-      <TableCell>{delegation.eventDate}</TableCell>
+      <TableCell>{format(delegation.eventDate, "MM/dd/yyyy")}</TableCell>
       <TableCell>
         <Link
           href={`/delegates/${delegation.delegateeId}`}
