@@ -242,26 +242,6 @@ const EnterAmountStep = ({
               {annualAPY}%
             </span>
           </div>
-          {Big(depositTotal).gt(0) && (
-            <div className="flex flex-row justify-between">
-              <div className="flex items-center text-secondary">
-                Deposit fees
-                <InformationCircleIcon className="w-4 h-4 ml-1 text-secondary" />
-              </div>
-              <span className="text-primary font-medium tabular-nums">
-                <NearTokenAmount
-                  amount={depositTotal ?? "0"}
-                  minimumFractionDigits={4}
-                />
-              </span>
-            </div>
-          )}
-          <div className="flex flex-row justify-between">
-            <span className="text-secondary">Gas est.</span>
-            <span className="text-primary font-medium tabular-nums">
-              {`${convertYoctoToTGas(gasTotal)} Tgas`}
-            </span>
-          </div>
         </div>
         <UpdatedButton
           onClick={handleReview}
