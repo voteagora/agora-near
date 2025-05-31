@@ -54,6 +54,8 @@ export type DelegateProfile = {
   votingPower?: string | null;
   participationRate?: string | null;
   numOfDelegators?: string | null;
+  forCount?: number | null;
+  againstCount?: number | null;
 };
 
 export type GetDelegateResponse = {
@@ -63,4 +65,18 @@ export type GetDelegateResponse = {
 export type GetDelegatesResponse = {
   count: number;
   delegates: DelegateProfile[];
+};
+
+export type VoteHistory = {
+  voteOption: string;
+  votingPower: string;
+  address: string;
+  votedAt: Date;
+  proposalId: string;
+  proposalName: string | null;
+};
+
+export type GetVoteHistoryResponse = {
+  count: number;
+  votes: VoteHistory[];
 };

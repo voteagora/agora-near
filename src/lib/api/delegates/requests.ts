@@ -5,6 +5,7 @@ import {
   GetDelegateResponse,
   GetDelegatesResponse,
   CreateDelegateStatementResponse,
+  GetVoteHistoryResponse,
 } from "./types";
 
 export const createDelegateStatement = async (
@@ -29,6 +30,18 @@ export const getDelegate = async (address: string) => {
 export const fetchDelegates = async (pageSize: number, page: number) => {
   const { data } = await axios.get<GetDelegatesResponse>(
     `${Endpoint.Delegates}?page_size=${pageSize}&page=${page}`
+  );
+
+  return data;
+};
+
+export const fetchVoteHistory = async (
+  pageSize: number,
+  page: number,
+  address: string
+) => {
+  const { data } = await axios.get<GetVoteHistoryResponse>(
+    `${Endpoint.Delegates}/${address}/voting-history?page_size=${pageSize}&page=${page}`
   );
 
   return data;
