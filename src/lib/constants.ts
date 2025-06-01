@@ -3,6 +3,7 @@ import { TenantToken, TokenMetadata } from "./types";
 import nearAssetIcon from "@/assets/icons/near_icon.jpg";
 import linearAssetIcon from "@/assets/icons/linear.svg";
 import stnearAssetIcon from "@/assets/icons/stnear.svg";
+import veNearAssetIcon from "@/assets/icons/venear.svg";
 
 export const INDEXER_DELAY = 3000;
 
@@ -194,6 +195,13 @@ export const STNEAR_TOKEN_METADATA: TokenMetadata = {
   symbol: "STNEAR",
   decimals: NEAR_NOMINATION_EXP,
   icon: stnearAssetIcon,
+};
+
+export const VENEAR_TOKEN_METADATA: TokenMetadata = {
+  name: "veNEAR",
+  symbol: "VENEAR",
+  decimals: NEAR_NOMINATION_EXP,
+  icon: veNearAssetIcon,
 };
 
 export const DEFAULT_GAS_RESERVE = "200000000000000000000000"; // 0.2 NEAR

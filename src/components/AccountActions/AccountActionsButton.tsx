@@ -3,7 +3,6 @@ import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
 import { UpdatedButton } from "../Button";
-import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
 import { Skeleton } from "../ui/skeleton";
 import { RegisterToVoteButton } from "./RegisterToVoteButton";
 
@@ -13,16 +12,6 @@ export const AccountActionsButton = memo(() => {
     useCheckVoterStatus({
       enabled: !!signedAccountId,
     });
-  const openDialog = useOpenDialog();
-
-  const handleOpenLockDialog = () => {
-    openDialog({
-      type: "NEAR_LOCK",
-      params: {
-        source: "account_management",
-      },
-    });
-  };
 
   const route = useRouter();
 
@@ -48,13 +37,6 @@ export const AccountActionsButton = memo(() => {
         onClick={() => route.push(`/delegates/${signedAccountId}`)}
       >
         View my profile
-      </UpdatedButton>
-      <UpdatedButton
-        type="secondary"
-        className="w-full"
-        onClick={handleOpenLockDialog}
-      >
-        Lock NEAR
       </UpdatedButton>
     </div>
   );
