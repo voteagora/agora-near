@@ -119,6 +119,18 @@ export const nearTenantUIConfig = new TenantUI({
           "Delegate your voting power to a trusted representative",
       },
     },
+    {
+      route: "assets",
+      title: "Agora is the home of NEAR voters",
+      description:
+        "NEAR House of Stake governance empowers token holders to lock NEAR for voting rights, delegate votes to trusted representatives, and earn rewards for active participation.",
+      meta: {
+        title: "NEAR Agora",
+        description: "Home of the NEAR House of Stake governance",
+        imageTitle: "NEAR Agora",
+        imageDescription: "Home of the NEAR House of Stake governance",
+      },
+    },
   ],
 
   toggles: [
@@ -160,6 +172,10 @@ export const nearTenantUIConfig = new TenantUI({
     },
     {
       name: "proposal-lifecycle",
+      enabled: false,
+    },
+    {
+      name: "assets",
       enabled: false,
     },
   ],
