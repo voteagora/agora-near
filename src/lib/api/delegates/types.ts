@@ -82,7 +82,6 @@ export type GetVoteHistoryResponse = {
   votes: VoteHistory[];
 };
 
-
 export type GetDelegationEventsResponse = {
   count: number;
   events: DelegationEvent[];

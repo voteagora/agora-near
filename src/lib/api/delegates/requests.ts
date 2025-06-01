@@ -6,7 +6,7 @@ import {
   GetDelegatesResponse,
   CreateDelegateStatementResponse,
   GetVoteHistoryResponse,
-  GetDelegationEventsResponse
+  GetDelegationEventsResponse,
 } from "./types";
 
 export const createDelegateStatement = async (
