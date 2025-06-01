@@ -87,6 +87,7 @@ type LockProviderContextType = {
   getAmountToLock: () => Promise<string | undefined>;
   maxAmountToLock?: string;
   amountError: string | null;
+  resetForm: () => void;
 };
 
 export const LockProviderContext = createContext<LockProviderContextType>({
@@ -116,6 +117,7 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   transferAmountYocto: "0",
   getAmountToLock: () => Promise.resolve("0"),
   amountError: null,
+  resetForm: () => {},
 });
 
 export const useLockProviderContext = () => {
@@ -426,7 +428,7 @@ export const LockProvider = ({
           setAmountError("Not enough funds in this account");
         } else if (
           selectedToken?.type === "near" &&
-          Big(amount).lt(depositTotal)
+          Big(utils.format.parseNearAmount(amount) ?? "0").lt(depositTotal)
         ) {
           setAmountError(
             `You must lock at least ${utils.format.formatNearAmount(depositTotal)} NEAR`
@@ -440,6 +442,12 @@ export const LockProvider = ({
     },
     [depositTotal, maxAmountToLockNear, selectedToken?.type]
   );
+
+  const resetForm = useCallback(() => {
+    setEnteredAmount("");
+    setAmountError(null);
+    setIsLockingMax(false);
+  }, []);
 
   const onLockMax = useCallback(() => {
     setEnteredAmount(maxAmountToLockNear);
@@ -596,6 +604,7 @@ export const LockProvider = ({
         getAmountToLock,
         maxAmountToLock,
         amountError,
+        resetForm,
       }}
     >
       {children}

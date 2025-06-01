@@ -582,7 +582,7 @@ type NearLockDialogProps = {
 };
 
 function NearLockDialogContent() {
-  const { setSelectedToken, isLoading, setEnteredAmount } =
+  const { setSelectedToken, isLoading, setEnteredAmount, resetForm } =
     useLockProviderContext();
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -612,10 +612,10 @@ function NearLockDialogContent() {
   const handleTokenSelect = useCallback(
     (token: TokenWithBalance) => {
       setSelectedToken(token);
-      setEnteredAmount("");
+      resetForm();
       closeAssetSelector();
     },
-    [setSelectedToken, setEnteredAmount, closeAssetSelector]
+    [setSelectedToken, resetForm, closeAssetSelector]
   );
 
   const content = useMemo(() => {
