@@ -163,7 +163,7 @@ export function humanizeNumber(
   options = options || {};
   const d = options.delimiter || ",";
   const s = options.separator || ".";
-  let result = n.toString().split(".");
+  const result = n.toString().split(".");
   result[0] = result[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + d);
   return result.join(s);
 }

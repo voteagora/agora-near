@@ -512,10 +512,6 @@ export const LockProvider = ({
   }, [requiredTransactions]);
 
   const transferAmountYocto = useMemo(() => {
-    if (Big(enteredAmountYocto).gte(Big(maxAmountToLock ?? "0"))) {
-      return maxAmountToLock;
-    }
-
     if (selectedToken?.type === "lst") {
       return enteredAmountYocto;
     }
@@ -525,18 +521,12 @@ export const LockProvider = ({
 
       // If coming from onboarding, we factor in the deposit that we've already made
       if (source === "onboarding") {
-        amount = amount.minus(Big(depositTotal));
+        amount = amount.minus(Big(totalRegistrationCost.toString()));
       }
 
       return amount.lte(0) ? "0" : amount.toFixed(0);
     }
-  }, [
-    depositTotal,
-    enteredAmountYocto,
-    maxAmountToLock,
-    selectedToken?.type,
-    source,
-  ]);
+  }, [enteredAmountYocto, selectedToken?.type, source, totalRegistrationCost]);
 
   const getAmountToLock = useCallback(async () => {
     // Lock all when onboarding

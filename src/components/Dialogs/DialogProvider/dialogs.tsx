@@ -39,7 +39,7 @@ import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { NearVoteOptionsDialog } from "../NearVoteOptionsDialog";
 import { UndelegateDialog } from "../UndelegateDialog/UndelegateDialog";
 import { NearProposalModal } from "@/components/Proposals/NearProposals/NearProposalModal";
-import { LockDialogSource, NearLockDialog } from "../NearLockDialog";
+import { LockDialogSource, NearLockDialog } from "../NearLockDialog/index";
 import { VeNearOnboardingModal } from "@/app/near/VeNearOnboardingModal";
 
 export type DialogType =

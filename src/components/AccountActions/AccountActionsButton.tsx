@@ -18,7 +18,9 @@ export const AccountActionsButton = memo(() => {
   const handleOpenLockDialog = () => {
     openDialog({
       type: "NEAR_LOCK",
-      params: {},
+      params: {
+        source: "account_management",
+      },
     });
   };
 
