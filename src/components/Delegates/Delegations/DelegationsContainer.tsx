@@ -13,22 +13,26 @@ import {
 import { useNearDelegatedFrom } from "@/hooks/useNearDelegatedFrom";
 import { useNearDelegatedTo } from "@/hooks/useNearDelegatedTo";
 
-function DelegationsContainer({
-  address,
-}: {
-  address: string;
-}) {
-  const { data: delegatedFrom, hasNextPage, isFetchingNextPage, isLoading: isLoadingDelegatedFrom, fetchNextPage } = useNearDelegatedFrom({
+function DelegationsContainer({ address }: { address: string }) {
+  const {
+    data: delegatedFrom,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isLoadingDelegatedFrom,
+    fetchNextPage,
+  } = useNearDelegatedFrom({
     pageSize: 20,
     address,
   });
 
-  const { data: delegatedTo, isLoading: isLoadingDelegatedTo } = useNearDelegatedTo({
-    pageSize: 20,
-    address,
-  });
+  const { data: delegatedTo, isLoading: isLoadingDelegatedTo } =
+    useNearDelegatedTo({
+      pageSize: 20,
+      address,
+    });
 
-  const isLoading = isLoadingDelegatedFrom || isLoadingDelegatedTo || isFetchingNextPage;
+  const isLoading =
+    isLoadingDelegatedFrom || isLoadingDelegatedTo || isFetchingNextPage;
 
   const loadMore = async () => {
     fetchNextPage();
@@ -115,7 +119,7 @@ function DelegationsContainer({
               <TableHeader className="text-xs text-secondary sticky top-0 bg-white z-10">
                 <TableRow>
                   <TableHead className="h-10 text-secondary">
-                    Current Token Balance
+                    Voting Power
                   </TableHead>
                   <TableHead className="h-10 text-secondary">
                     Delegated on

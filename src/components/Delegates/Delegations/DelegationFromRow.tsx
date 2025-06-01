@@ -1,21 +1,28 @@
 "use client";
 
-import { TableCell, TableRow } from "@/components/ui/table";
-import { formatNearAccountId, formatNearBlockHash } from "@/lib/utils";
-import Link from "next/link";
-import { DelegationEvent } from "@/lib/api/delegates/types";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { useBlockExplorerUrl } from "@/hooks/useBlockExplorerUrl";
+import { DelegationEvent } from "@/lib/api/delegates/types";
+import { formatNearAccountId } from "@/lib/utils";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 import { format } from "date-fns";
+import Link from "next/link";
 
 export default function DelegationFromRow({
   delegation,
 }: {
   delegation: DelegationEvent;
 }) {
+  const getTransactionUrl = useBlockExplorerUrl();
+
   return (
     <TableRow>
       <TableCell>
-        <NearTokenAmount amount={delegation.nearAmount ?? "0"} />
+        <NearTokenAmount
+          amount={delegation.nearAmount ?? "0"}
+          currency="veNEAR"
+        />
       </TableCell>
       <TableCell>{format(delegation.eventDate, "MM/dd/yyyy")}</TableCell>
       <TableCell>
@@ -27,7 +34,14 @@ export default function DelegationFromRow({
         </Link>
       </TableCell>
       <TableCell>
-        {formatNearBlockHash(delegation.blockHash)}
+        <a
+          href={getTransactionUrl(delegation.blockHash)} // TODO: Pass in txn hash instead of block hash
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          View
+          <ArrowTopRightOnSquareIcon className="w-4 h-4 ml-2 inline align-text-bottom" />
+        </a>
       </TableCell>
     </TableRow>
   );
