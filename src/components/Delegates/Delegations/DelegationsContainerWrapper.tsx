@@ -7,11 +7,7 @@ interface Props {
 }
 
 const DelegationsContainerWrapper = ({ address }: Props) => {
-  return (
-    <DelegationsContainer
-      address={address}
-    />
-  );
+  return <DelegationsContainer address={address} />;
 };
 
 export const DelegationsContainerSkeleton = () => {
