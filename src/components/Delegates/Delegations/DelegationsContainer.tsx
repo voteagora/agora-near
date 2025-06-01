@@ -1,6 +1,5 @@
 "use client";
 
-import { Delegation } from "@/app/api/common/delegations/delegation";
 import DelegationToRow from "./DelegationToRow";
 import DelegationFromRow from "./DelegationFromRow";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,50 +10,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PaginatedResult } from "@/app/lib/pagination";
-import { useEffect, useRef, useState } from "react";
-import { useTokenBalance } from "@/hooks/useTokenBalance";
+import { useNearDelegatedFrom } from "@/hooks/useNearDelegatedFrom";
+import { useNearDelegatedTo } from "@/hooks/useNearDelegatedTo";
 
-function DelegationsContainer({
-  delegatees,
-  initialDelegators,
-  fetchDelegators,
-}: {
-  delegatees: Delegation[];
-  initialDelegators: PaginatedResult<Delegation[]>;
-  fetchDelegators: (params: {
-    offset: number;
-    limit: number;
-  }) => Promise<PaginatedResult<Delegation[]>>;
-}) {
-  const [meta, setMeta] = useState(initialDelegators.meta);
-  const [delegators, setDelegators] = useState(initialDelegators.data);
+function DelegationsContainer({ address }: { address: string }) {
+  const {
+    data: delegatedFrom,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isLoadingDelegatedFrom,
+    fetchNextPage,
+  } = useNearDelegatedFrom({
+    pageSize: 20,
+    address,
+  });
 
-  const { data: tokenBalance } = useTokenBalance(delegatees[0]?.from);
-  const isLoadingRef = useRef(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { data: delegatedTo, isLoading: isLoadingDelegatedTo } =
+    useNearDelegatedTo({
+      pageSize: 20,
+      address,
+    });
 
-  useEffect(() => {
-    setDelegators(initialDelegators.data);
-    setMeta(initialDelegators.meta);
-  }, [initialDelegators]);
+  const isLoading =
+    isLoadingDelegatedFrom || isLoadingDelegatedTo || isFetchingNextPage;
 
   const loadMore = async () => {
-    if (!isLoadingRef.current && meta.has_next) {
-      isLoadingRef.current = true;
-      setIsLoading(true);
-      const data = await fetchDelegators({
-        offset: meta.next_offset,
-        limit: 20,
-      });
-      isLoadingRef.current = false;
-      setIsLoading(false);
-      setMeta(data.meta);
-      setDelegators(delegators.concat(data.data));
-    }
+    fetchNextPage();
   };
 
-  if (delegatees.length === 0 && delegators.length === 0) {
+  if (delegatedTo?.length === 0 && delegatedFrom?.length === 0) {
     return (
       <div className="p-8 text-center text-secondary align-middle bg-wash rounded-xl">
         No delegations found.
@@ -97,7 +81,7 @@ function DelegationsContainer({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {delegators.length === 0 ? (
+                    {delegatedFrom?.length === 0 ? (
                       <td
                         className="w-full p-4 bg-neutral text-center text-secondary text-sm"
                         colSpan={6}
@@ -105,16 +89,16 @@ function DelegationsContainer({
                         None found
                       </td>
                     ) : (
-                      delegators.map((delegation) => (
+                      delegatedFrom?.map((delegation) => (
                         <DelegationFromRow
-                          key={delegation.from}
+                          key={delegation.id}
                           delegation={delegation}
                         />
                       ))
                     )}
                   </TableBody>
                 </Table>
-                {meta.has_next && (
+                {hasNextPage && (
                   <div className="text-center my-4">
                     <button
                       onClick={loadMore}
@@ -135,7 +119,7 @@ function DelegationsContainer({
               <TableHeader className="text-xs text-secondary sticky top-0 bg-white z-10">
                 <TableRow>
                   <TableHead className="h-10 text-secondary">
-                    Current Token Balance
+                    Voting Power
                   </TableHead>
                   <TableHead className="h-10 text-secondary">
                     Delegated on
@@ -147,7 +131,7 @@ function DelegationsContainer({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {delegatees.length === 0 ? (
+                {delegatedTo?.length === 0 ? (
                   <TableRow>
                     <td
                       className="w-full p-4 bg-neutral text-center text-secondary text-sm"
@@ -157,10 +141,9 @@ function DelegationsContainer({
                     </td>
                   </TableRow>
                 ) : (
-                  delegatees.map((delegation) => (
+                  delegatedTo?.map((delegation) => (
                     <DelegationToRow
-                      tokenBalance={tokenBalance}
-                      key={delegation.to}
+                      key={delegation.id}
                       delegation={delegation}
                     />
                   ))

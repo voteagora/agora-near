@@ -1,40 +1,41 @@
 "use client";
 
-import { Delegation } from "@/app/api/common/delegations/delegation";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { getBlockScanUrl, TokenAmountDisplay } from "@/lib/utils";
+import { useBlockExplorerUrl } from "@/hooks/useBlockExplorerUrl";
+import { DelegationEvent } from "@/lib/api/delegates/types";
+import { formatNearAccountId } from "@/lib/utils";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 import { format } from "date-fns";
 import Link from "next/link";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
-import ENSName from "@/components/shared/ENSName";
 
 export default function DelegationToRow({
   delegation,
-  tokenBalance,
 }: {
-  delegation: Delegation;
-  tokenBalance?: bigint;
+  delegation: DelegationEvent;
 }) {
+  const getTransactionUrl = useBlockExplorerUrl();
+
   return (
     <TableRow>
       <TableCell>
-        {TokenAmountDisplay({
-          amount: tokenBalance ? tokenBalance : "0",
-          maximumSignificantDigits: 3,
-        })}{" "}
+        <NearTokenAmount
+          amount={delegation.nearAmount ?? "0"}
+          currency="veNEAR"
+        />
       </TableCell>
-      <TableCell>{format(delegation.timestamp || 0, "MM/dd/yyyy")}</TableCell>
+      <TableCell>{format(delegation.eventDate, "MM/dd/yyyy")}</TableCell>
       <TableCell>
         <Link
-          href={`/delegates/${delegation.to}`}
-          title={`Address ${delegation.to}`}
+          href={`/delegates/${delegation.delegateeId}`}
+          title={`Address ${delegation.delegateeId}`}
         >
-          <ENSName address={delegation.to} />
+          {formatNearAccountId(delegation.delegateeId)}
         </Link>
       </TableCell>
       <TableCell>
         <a
-          href={getBlockScanUrl(delegation.transaction_hash)}
+          href={getTransactionUrl(delegation.blockHash)} // TODO: Pass in txn hash instead of block hash
           target="_blank"
           rel="noreferrer noopener"
         >
