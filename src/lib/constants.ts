@@ -1,6 +1,9 @@
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
-import { TenantToken } from "./types";
-import { C } from "vitest/dist/chunks/reporters.6vxQttCV.js";
+import { TenantToken, TokenMetadata } from "./types";
+import nearAssetIcon from "@/assets/icons/near_icon.jpg";
+import linearAssetIcon from "@/assets/icons/linear.svg";
+import stnearAssetIcon from "@/assets/icons/stnear.svg";
+import veNearAssetIcon from "@/assets/icons/venear.svg";
 
 export const INDEXER_DELAY = 3000;
 
@@ -162,3 +165,43 @@ export const CACHE_TTL = {
 
 export const NANO_SECONDS_IN_DAY = 1000000000 * 60 * 60 * 24;
 export const NANO_SECONDS_IN_YEAR = 365 * NANO_SECONDS_IN_DAY;
+
+export const LINEAR_TOKEN_CONTRACTS = {
+  testnet: "linear-protocol.testnet",
+  mainnet: "linear-protocol.near",
+};
+
+export const STNEAR_TOKEN_CONTRACTS = {
+  testnet: "meta-v2.pool.testnet",
+  mainnet: "meta-pool.near",
+};
+
+export const NEAR_TOKEN_METADATA: TokenMetadata = {
+  name: "NEAR",
+  symbol: "NEAR",
+  decimals: NEAR_NOMINATION_EXP,
+  icon: nearAssetIcon,
+};
+
+export const LINEAR_TOKEN_METADATA: TokenMetadata = {
+  name: "LiNEAR",
+  symbol: "LINEAR",
+  decimals: NEAR_NOMINATION_EXP,
+  icon: linearAssetIcon,
+};
+
+export const STNEAR_TOKEN_METADATA: TokenMetadata = {
+  name: "Staked NEAR",
+  symbol: "STNEAR",
+  decimals: NEAR_NOMINATION_EXP,
+  icon: stnearAssetIcon,
+};
+
+export const VENEAR_TOKEN_METADATA: TokenMetadata = {
+  name: "veNEAR",
+  symbol: "VENEAR",
+  decimals: NEAR_NOMINATION_EXP,
+  icon: veNearAssetIcon,
+};
+
+export const DEFAULT_GAS_RESERVE = "200000000000000000000000"; // 0.2 NEAR

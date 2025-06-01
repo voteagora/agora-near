@@ -28,6 +28,9 @@ import {
   sepolia,
   scroll,
 } from "viem/chains";
+import Big from "big.js";
+import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
+import { utils } from "near-api-js";
 
 const { token } = Tenant.current();
 
@@ -160,7 +163,7 @@ export function humanizeNumber(
   options = options || {};
   const d = options.delimiter || ",";
   const s = options.separator || ".";
-  let result = n.toString().split(".");
+  const result = n.toString().split(".");
   result[0] = result[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + d);
   return result.join(s);
 }
@@ -654,6 +657,45 @@ export const formatNearAccountId = (address?: string) => {
   }
 
   return `${address.slice(0, 6)}...${address.slice(-6)}`;
+};
+
+export const convertYoctoToTGas = (yocto: string) => {
+  return new Big(yocto).div(10 ** 12).toFixed();
+};
+
+export const isValidNearAmount = (amount?: string) => {
+  if (!amount) {
+    return false;
+  }
+
+  if (isNaN(Number(amount))) {
+    return false;
+  }
+
+  const decimalParts = amount.split(".");
+  if (decimalParts.length > 1 && decimalParts[1].length > NEAR_NOMINATION_EXP) {
+    return false;
+  }
+
+  return true;
+};
+
+export const yoctoNearToUsdFormatted = (
+  yoctoNearAmount: string,
+  nearPrice: string
+) => {
+  const nearInUsd = Big(utils.format.formatNearAmount(yoctoNearAmount)).mul(
+    nearPrice
+  );
+
+  const formattedUsdAmount = new Intl.NumberFormat("en", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(nearInUsd.toNumber());
+
+  return formattedUsdAmount;
 };
 
 export const formatNearBlockHash = (blockHash?: string) => {

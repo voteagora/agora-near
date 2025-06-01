@@ -36,21 +36,9 @@ export default function Navbar() {
         </HeaderLink>
       )}
 
-      {ui.toggle("staking") && ui.toggle("staking").enabled && (
-        <HeaderLink
-          href={isConnected && address ? `/staking/${address}` : "/staking"}
-          isActive={pathname.includes("staking")}
-        >
-          Staking
-        </HeaderLink>
-      )}
-
-      {ui.toggle("retropgf") && ui.toggle("retropgf").enabled && (
-        <HeaderLink
-          href="/retropgf/3/summary"
-          isActive={pathname.includes("retropgf/3/summary")}
-        >
-          RetroPGF
+      {ui.toggle("assets") && ui.toggle("assets").enabled && (
+        <HeaderLink href="/assets" isActive={pathname.includes("assets")}>
+          Assets
         </HeaderLink>
       )}
 

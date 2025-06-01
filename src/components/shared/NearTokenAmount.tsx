@@ -14,7 +14,7 @@ type Props = {
 
 export default function NearTokenAmount({
   amount,
-  maximumSignificantDigits = 2,
+  maximumSignificantDigits,
   hideCurrency = false,
   compact = true,
   currency = NEAR_TOKEN.symbol,

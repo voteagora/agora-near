@@ -2,14 +2,17 @@ import { useReadHOSContract } from "./useReadHOSContract";
 
 export const useAvailableToLock = ({
   lockupAccountId,
+  enabled = true,
 }: {
-  lockupAccountId?: string;
+  lockupAccountId?: string | null;
+  enabled?: boolean;
 }) => {
   const [
     {
       data: availableToLock,
       isLoading: isLoadingAvailableToLock,
       error: availableToLockError,
+      refetch: refetchAvailableToLock,
     },
   ] = useReadHOSContract([
     {
@@ -17,7 +20,7 @@ export const useAvailableToLock = ({
       methodName: "get_venear_liquid_balance" as const,
       config: {
         args: {},
-        enabled: !!lockupAccountId,
+        enabled,
       },
     },
   ]);
@@ -26,5 +29,6 @@ export const useAvailableToLock = ({
     availableToLock,
     isLoadingAvailableToLock,
     availableToLockError,
+    refetchAvailableToLock,
   };
 };

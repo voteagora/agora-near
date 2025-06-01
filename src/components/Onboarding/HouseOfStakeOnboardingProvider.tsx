@@ -1,8 +1,8 @@
 import { useNear } from "@/contexts/NearContext";
 import { useFungibleTokens } from "@/hooks/useFungibleTokens";
 import { useNearBalance } from "@/hooks/useNearBalance";
+import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useStakingPool } from "@/hooks/useStakingPool";
-import { useStakingPoolConversionRates } from "@/hooks/useStakingPoolConversionRates";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
 import { getAPYFromGrowthRate } from "@/lib/lockUtils";
 import {
@@ -133,13 +133,13 @@ export const HouseOfStakeOnboardingProvider = ({
     [growthRateNs]
   );
 
-  const { stakingPoolId, isLoadingStakingPoolId } = useStakingPool({
+  const { stakingPoolId, isLoadingStakingPoolId } = useCurrentStakingPoolId({
     lockupAccountId: lockupAccountId ?? "",
     enabled: !!venearAccountInfo,
   });
 
-  const { conversionRates, isLoading: isLoadingConversionRates } =
-    useStakingPoolConversionRates();
+  const { stakingPools, isLoading: isLoadingConversionRates } =
+    useStakingPool();
 
   const onTokenSelected = useCallback((token: TokenBalance) => {
     setSelectedToken(token);
@@ -227,8 +227,8 @@ export const HouseOfStakeOnboardingProvider = ({
           nearBalanceError,
         enteredAmount,
         setEnteredAmount,
-        stNearPrice: conversionRates.stNearPrice ?? null,
-        liNearPrice: conversionRates.liNearPrice ?? null,
+        stNearPrice: stakingPools.stNear.price ?? null,
+        liNearPrice: stakingPools.liNear.price ?? null,
         lockApy: lockupAPY,
         stakeApy: "5.99%",
       }}
