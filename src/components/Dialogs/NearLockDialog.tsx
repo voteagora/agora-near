@@ -5,13 +5,9 @@ import { useNearPrice } from "@/hooks/useNearPrice";
 import { useRefreshStakingPoolBalance } from "@/hooks/useRefreshStakingPoolBalance";
 import { useRegisterLockup } from "@/hooks/useRegisterLockup";
 import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
-import { NEAR_TOKEN_METADATA } from "@/lib/constants";
+import { DEFAULT_GAS_RESERVE, NEAR_TOKEN_METADATA } from "@/lib/constants";
 import { TokenWithBalance } from "@/lib/types";
-import {
-  convertYoctoToTGas,
-  formatNearAccountId,
-  yoctoNearToUsdFormatted,
-} from "@/lib/utils";
+import { formatNearAccountId, yoctoNearToUsdFormatted } from "@/lib/utils";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import {
   ChevronDownIcon,
@@ -261,7 +257,6 @@ const ReviewStep = ({
     lockApy: annualAPY,
     isLoading,
     venearAmount,
-    gasTotal,
     depositTotal,
     requiredTransactions,
     storageDepositAmount,
@@ -529,10 +524,11 @@ const ReviewStep = ({
           </div>
         )}
         <div className="flex flex-row justify-between items-center">
-          <span className="text-secondary">Gas est.</span>
-          <span className="text-primary font-medium tabular-nums text-base">
-            {`${convertYoctoToTGas(gasTotal)} Tgas`}
-          </span>
+          <span className="text-secondary">Gas reserve</span>
+          <NearTokenAmount
+            amount={DEFAULT_GAS_RESERVE}
+            className="text-primary font-medium tabular-nums text-base"
+          />
         </div>
       </div>
 
@@ -582,8 +578,7 @@ type NearLockDialogProps = {
 };
 
 function NearLockDialogContent() {
-  const { setSelectedToken, isLoading, setEnteredAmount, resetForm } =
-    useLockProviderContext();
+  const { setSelectedToken, isLoading, resetForm } = useLockProviderContext();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isAssetSelectorOpen, setIsAssetSelectorOpen] = useState(false);
