@@ -659,7 +659,7 @@ function NearLockDialogContent() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center w-full h-[400px]">
+      <div className="flex flex-col items-center justify-center w-full h-[600px]">
         <LoadingSpinner />
       </div>
     );

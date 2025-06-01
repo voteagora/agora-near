@@ -206,11 +206,14 @@ export const LockProvider = ({
 
   const { stakingPools, isLoading: isLoadingStakingPools } = useStakingPool();
 
-  const { availableToLock: availableToLockInLockup, refetchAvailableToLock } =
-    useAvailableToLock({
-      lockupAccountId,
-      enabled: !!venearAccountInfo,
-    });
+  const {
+    availableToLock: availableToLockInLockup,
+    refetchAvailableToLock,
+    isLoadingAvailableToLock,
+  } = useAvailableToLock({
+    lockupAccountId,
+    enabled: !!venearAccountInfo,
+  });
 
   const venearAmount = useMemo(() => {
     if (!isValidNearAmount(enteredAmount) || !selectedToken) {
@@ -289,6 +292,14 @@ export const LockProvider = ({
     isLoadingStakingPools;
 
   const availableTokens = useMemo(() => {
+    if (
+      isLoadingNearBalance ||
+      isLoadingAvailableToLock ||
+      isLoadingFungibleTokens
+    ) {
+      return [];
+    }
+
     const tokens: TokenWithBalance[] = [];
 
     if (availableToLockInLockup && Big(availableToLockInLockup).gt(0)) {
@@ -342,6 +353,9 @@ export const LockProvider = ({
   }, [
     availableToLockInLockup,
     fungibleTokensResponse,
+    isLoadingAvailableToLock,
+    isLoadingFungibleTokens,
+    isLoadingNearBalance,
     linearTokenContractId,
     lockupAccountId,
     nearBalance,
