@@ -33,7 +33,7 @@ import toast from "react-hot-toast";
 import { useLockupAccount } from "../../hooks/useLockupAccount";
 import { useVenearAccountInfo } from "../../hooks/useVenearAccountInfo";
 import { useVenearConfig } from "../../hooks/useVenearConfig";
-import { LockDialogSource } from "./NearLockDialog";
+import { LockDialogSource } from "./NearLockDialog/index";
 import { isValidNearAmount } from "@/lib/utils";
 
 export type LockTransaction =
@@ -512,7 +512,7 @@ export const LockProvider = ({
   }, [requiredTransactions]);
 
   const transferAmountYocto = useMemo(() => {
-    if (Big(enteredAmountYocto).gt(Big(maxAmountToLock ?? "0"))) {
+    if (Big(enteredAmountYocto).gte(Big(maxAmountToLock ?? "0"))) {
       return maxAmountToLock;
     }
 
@@ -521,8 +521,7 @@ export const LockProvider = ({
     }
 
     if (selectedToken?.type === "near") {
-      // Subtract a reserve amount for gas
-      let amount = Big(enteredAmountYocto).minus(Big(DEFAULT_GAS_RESERVE));
+      let amount = Big(enteredAmountYocto);
 
       // If coming from onboarding, we factor in the deposit that we've already made
       if (source === "onboarding") {
