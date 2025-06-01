@@ -10,6 +10,7 @@ import {
   convertYoctoToTGas,
   formatNearAccountId,
   isValidNearAmount,
+  yoctoNearToUsdFormatted,
 } from "@/lib/utils";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import {
@@ -30,6 +31,8 @@ import {
   LockTransaction,
   useLockProviderContext,
 } from "./LockProvider";
+import { useNearPrice } from "@/hooks/useNearPrice";
+import { Skeleton } from "../ui/skeleton";
 
 type AssetSelectorProps = {
   handleTokenSelect: (token: TokenWithBalance) => void;
@@ -37,6 +40,7 @@ type AssetSelectorProps = {
 
 const AssetSelector = ({ handleTokenSelect }: AssetSelectorProps) => {
   const { availableTokens } = useLockProviderContext();
+  const { price, isLoading: isLoadingPrice } = useNearPrice();
 
   return (
     <div className="flex flex-col items-center w-full bg-neutral w-full h-full">
@@ -49,7 +53,7 @@ const AssetSelector = ({ handleTokenSelect }: AssetSelectorProps) => {
             <button
               key={index}
               onClick={() => handleTokenSelect(token)}
-              className="flex flex-row items-center justify-between w-full p-3 hover:bg-neutral-muted rounded-lg text-left"
+              className="flex flex-row items-center justify-between w-full py-2 rounded-lg text-left"
             >
               <div className="flex flex-row items-center gap-3">
                 <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-sm shrink-0 relative">
@@ -85,9 +89,13 @@ const AssetSelector = ({ handleTokenSelect }: AssetSelectorProps) => {
                   minimumFractionDigits={4}
                   className="text-primary font-medium"
                 />
-                <p className="text-xs text-secondary tabular-nums text-[#676767]">
-                  $600,000.25
-                </p>
+                {isLoadingPrice ? (
+                  <Skeleton className="w-16 h-4" />
+                ) : (
+                  <p className="text-xs text-secondary tabular-nums text-[#676767]">
+                    {yoctoNearToUsdFormatted(token.balance, String(price))}
+                  </p>
+                )}
               </div>
             </button>
           );
@@ -111,8 +119,6 @@ const EnterAmountStep = ({
     venearAmount,
     lockApy: annualAPY,
     isLoading,
-    gasTotal,
-    depositTotal,
     setEnteredAmount,
     maxAmountToLock,
   } = useLockProviderContext();
@@ -158,27 +164,25 @@ const EnterAmountStep = ({
 
   return (
     <>
-      <div className="flex flex-col gap-6 justify-center h-full w-full">
-        <div className="flex flex-col gap-2">
-          <p className="text-2xl font-bold text-left text-primary">
-            Lock assets and gain voting power
-          </p>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center text-sm text-secondary">
-              <span>Available to lock</span>
-              <InformationCircleIcon className="w-4 h-4 ml-1 text-secondary" />
-            </div>
-            <div>
-              <span className="text-3xl font-bold text-primary tabular-nums">
-                <NearTokenAmount
-                  amount={maxAmountToLock ?? "0"}
-                  minimumFractionDigits={4}
-                  currency={selectedToken?.metadata?.symbol}
-                />
-              </span>
-              <div className="h-[16px]">
-                <p className="text-sm text-red-500">{error}</p>
-              </div>
+      <div className="flex flex-col gap-6 h-full w-full">
+        <p className="text-2xl font-bold text-left text-primary">
+          Lock assets and gain voting power
+        </p>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center text-sm text-secondary">
+            <span>Available to lock</span>
+            <InformationCircleIcon className="w-4 h-4 ml-1 text-secondary" />
+          </div>
+          <div>
+            <span className="text-3xl font-bold text-primary tabular-nums">
+              <NearTokenAmount
+                amount={maxAmountToLock ?? "0"}
+                minimumFractionDigits={4}
+                currency={selectedToken?.metadata?.symbol}
+              />
+            </span>
+            <div className="h-[16px]">
+              <p className="text-sm text-red-500">{error}</p>
             </div>
           </div>
         </div>
@@ -223,7 +227,7 @@ const EnterAmountStep = ({
           <div className="border-t border-line"></div>
           <div className="flex-1 flex">
             <div className="flex flex-row w-full items-center justify-between p-4">
-              <div className="flex items-center gap-2 bg-[#F2F1EA] px-3 py-1.5 rounded-md">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-md">
                 <AssetIcon
                   icon={NEAR_TOKEN_METADATA.icon}
                   name={NEAR_TOKEN_METADATA.name}
@@ -243,14 +247,16 @@ const EnterAmountStep = ({
             </span>
           </div>
         </div>
-        <UpdatedButton
-          onClick={handleReview}
-          type={shouldDisableButton ? "disabled" : undefined}
-          disabled={shouldDisableButton}
-          className="w-full"
-        >
-          Review
-        </UpdatedButton>
+        <div className="flex-1 flex flex-col justify-end pb-4">
+          <UpdatedButton
+            onClick={handleReview}
+            type={shouldDisableButton ? "disabled" : "secondary"}
+            disabled={shouldDisableButton}
+            className="w-full"
+          >
+            Review
+          </UpdatedButton>
+        </div>
       </div>
     </>
   );
@@ -467,10 +473,10 @@ const ReviewStep = ({
             </div>
           </div>
         </div>
-        <div className="flex-1 flex flex-col justify-end items-center gap-4">
-          <div className="flex items-center justify-between gap-2 bg-white border border-gray-200 rounded-lg w-full max-w-md">
+        <div className="flex-1 flex flex-col justify-end w-full items-center gap-4 pb-4">
+          <div className="flex items-center justify-between gap-2 bg-white border border-gray-200 rounded-lg w-full">
             <div className="flex flex-row items-center gap-2">
-              <div className="h-full flex grow bg-red-100">
+              <div className="h-full flex grow">
                 <div className="flex items-center justify-center w-8 h-8 bg-purple-100">
                   <InformationCircleIcon className="text-purple-600" />
                 </div>
@@ -495,13 +501,7 @@ const ReviewStep = ({
   }
 
   return (
-    <div className="flex flex-col gap-6 justify-center w-full h-full">
-      <div className="flex flex-col gap-2">
-        <p className="text-2xl font-bold text-left text-primary">
-          Lock assets and gain voting power
-        </p>
-      </div>
-
+    <div className="flex flex-col gap-6 w-full h-full">
       <div className="flex justify-start">
         <button
           onClick={handleEdit}
@@ -559,30 +559,32 @@ const ReviewStep = ({
         </span>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <UpdatedButton
-          type="primary"
-          onClick={async () => {
-            await executeTransactions({
-              numTransactions: requiredTransactions.length,
-            });
-          }}
-          disabled={
-            !enteredAmount ||
-            enteredAmount === "0" ||
-            !lockupAccountId ||
-            isLoading
-          }
-          className="w-full mt-4"
-        >
-          Lock tokens
-        </UpdatedButton>
-        <p className="text-xs text-secondary text-center text-[#9D9FA1]">
-          You may unlock your tokens at any time.{" "}
-          <button className="underline text-primary hover:text-primary/80">
-            Disclosures
-          </button>
-        </p>
+      <div className="flex-1 flex flex-col justify-end pb-4">
+        <div className="flex flex-col gap-2">
+          <UpdatedButton
+            type="primary"
+            onClick={async () => {
+              await executeTransactions({
+                numTransactions: requiredTransactions.length,
+              });
+            }}
+            disabled={
+              !enteredAmount ||
+              enteredAmount === "0" ||
+              !lockupAccountId ||
+              isLoading
+            }
+            className="w-full mt-4"
+          >
+            Lock tokens
+          </UpdatedButton>
+          <p className="text-xs text-secondary text-center text-[#9D9FA1]">
+            You may unlock your tokens at any time.{" "}
+            <button className="underline text-primary hover:text-primary/80">
+              Disclosures
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -664,7 +666,7 @@ function NearLockDialogContent() {
   }
 
   return (
-    <div className="flex flex-col items-center w-full bg-neutral p-6 h-[70vh]">
+    <div className="flex flex-col items-center w-full pt-4 px-4 h-[600px]">
       {content}
     </div>
   );

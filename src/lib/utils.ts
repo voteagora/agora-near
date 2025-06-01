@@ -30,6 +30,7 @@ import {
 } from "viem/chains";
 import Big from "big.js";
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
+import { utils } from "near-api-js";
 
 const { token } = Tenant.current();
 
@@ -677,4 +678,22 @@ export const isValidNearAmount = (amount?: string) => {
   }
 
   return true;
+};
+
+export const yoctoNearToUsdFormatted = (
+  yoctoNearAmount: string,
+  nearPrice: string
+) => {
+  const nearInUsd = Big(utils.format.formatNearAmount(yoctoNearAmount)).mul(
+    nearPrice
+  );
+
+  const formattedUsdAmount = new Intl.NumberFormat("en", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(nearInUsd.toNumber());
+
+  return formattedUsdAmount;
 };

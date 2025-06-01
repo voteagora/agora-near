@@ -4,4 +4,5 @@ export const Endpoint = Object.freeze({
   Proposals: `${baseApiUrl}/proposal`,
   DelegateStatement: `${baseApiUrl}/delegates/statement`,
   Delegates: `${baseApiUrl}/delegates`,
+  Near: `${baseApiUrl}/near`,
 });
