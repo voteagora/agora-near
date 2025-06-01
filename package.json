@@ -76,7 +76,7 @@
     "connectkit": "^1.8.2",
     "csstype": "^3.0.10",
     "d3": "^7.9.0",
-    "date-fns": "^2.30.0",
+    "date-fns": "^4.1.0",
     "encoding": "^0.1.13",
     "eslint": "^8.56.0",
     "eslint-config-next": "^14.1.0",

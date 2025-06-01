@@ -67,7 +67,7 @@ export default function DelegateProfile({
                 detail={stats?.proposalsCreated ?? "0"}
               />
               <PanelRow
-                title="For/Against/Abstain"
+                title="For/Against"
                 detail={
                   <div className="flex flex-row gap-2">
                     <span className="text-positive font-bold border border-line rounded-md px-2 py-1">
@@ -75,9 +75,6 @@ export default function DelegateProfile({
                     </span>
                     <span className="text-negative font-bold border border-line rounded-md px-2 py-1">
                       {stats?.votedAgainst ?? "0"}
-                    </span>
-                    <span className="text-tertiary font-bold border border-line rounded-md px-2 py-1">
-                      {stats?.votedAbstain ?? "0"}
                     </span>
                   </div>
                 }

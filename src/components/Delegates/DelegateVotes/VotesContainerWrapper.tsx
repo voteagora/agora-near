@@ -4,6 +4,8 @@ import { PaginationParams } from "@/app/lib/pagination";
 import DelegateVotes from "./DelegateVotes";
 import SnapshotVotes from "./SnapshotVotes";
 import VotesContainer from "./VotesContainer";
+import { useNearVoteHistory } from "@/hooks/useNearVoteHistory";
+import { useCallback } from "react";
 
 interface Props {
   address: string;
@@ -11,34 +13,37 @@ interface Props {
 
 const VotesContainerWrapper = ({ address }: Props) => {
   // TODO: Fetch from API
-  const delegateVotes = [] as const;
   const snapshotVotes = [] as const;
+
+  const {
+    data: voteHistory,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
+    isFetchingNextPage,
+  } = useNearVoteHistory({
+    pageSize: 10,
+    address,
+  });
+
+  const onLoadMore = useCallback(() => {
+    if (!hasNextPage || isLoading || isFetchingNextPage) {
+      return;
+    }
+
+    fetchNextPage();
+  }, [hasNextPage, isLoading, isFetchingNextPage, fetchNextPage]);
 
   return (
     <VotesContainer
       onchainVotes={
         <>
-          {delegateVotes && delegateVotes.length > 0 ? (
+          {voteHistory && voteHistory.length > 0 ? (
             <div className="flex flex-col gap-4">
               <DelegateVotes
-                initialVotes={{
-                  meta: {
-                    has_next: false,
-                    total_returned: 0,
-                    next_offset: 0,
-                  },
-                  data: [],
-                }}
-                fetchDelegateVotes={async (pagination: PaginationParams) => {
-                  return {
-                    meta: {
-                      has_next: false,
-                      total_returned: 0,
-                      next_offset: 0,
-                    },
-                    data: [],
-                  };
-                }}
+                votingHistory={voteHistory}
+                hasMore={hasNextPage}
+                onLoadMore={onLoadMore}
               />
             </div>
           ) : (
