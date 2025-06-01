@@ -1,6 +1,6 @@
 import { UpdatedButton } from "@/components/Button";
 import { Input } from "@/components/ui/input";
-import { NEAR_TOKEN_METADATA } from "@/lib/constants";
+import { VENEAR_TOKEN_METADATA } from "@/lib/constants";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import {
   ChevronDownIcon,
@@ -122,8 +122,8 @@ export const EnterAmountStep = ({
           <div className="flex flex-row w-full items-center justify-between p-4">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-md">
               <AssetIcon
-                icon={NEAR_TOKEN_METADATA.icon}
-                name={NEAR_TOKEN_METADATA.name}
+                icon={VENEAR_TOKEN_METADATA.icon}
+                name={VENEAR_TOKEN_METADATA.name}
               />
               <span className="font-medium text-sm">veNEAR</span>
             </div>
