@@ -86,6 +86,7 @@ type LockProviderContextType = {
   transferAmountYocto?: string;
   getAmountToLock: () => Promise<string | undefined>;
   maxAmountToLock?: string;
+  amountError: string | null;
 };
 
 export const LockProviderContext = createContext<LockProviderContextType>({
@@ -114,6 +115,7 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   requiredTransactions: [],
   transferAmountYocto: "0",
   getAmountToLock: () => Promise.resolve("0"),
+  amountError: null,
 });
 
 export const useLockProviderContext = () => {
@@ -151,14 +153,7 @@ export const LockProvider = ({
 
   const [enteredAmount, setEnteredAmount] = useState<string>("");
   const [isLockingMax, setIsLockingMax] = useState<boolean>(false);
-
-  const onEnteredAmountUpdated = useCallback(
-    (amount: string) => {
-      setEnteredAmount(amount);
-      setIsLockingMax(false);
-    },
-    [setIsLockingMax]
-  );
+  const [amountError, setAmountError] = useState<string | null>(null);
 
   const {
     data: fungibleTokensResponse,
@@ -379,10 +374,87 @@ export const LockProvider = ({
     [maxLiquidNearAvailable, selectedToken?.balance, selectedToken?.type]
   );
 
-  const onLockMax = useCallback(() => {
-    setEnteredAmount(utils.format.formatNearAmount(maxAmountToLock ?? "0"));
-    setIsLockingMax(true);
+  const depositTotal = useMemo(() => {
+    let totalDeposit = Big(0);
+
+    if (!venearAccountInfo) {
+      totalDeposit = totalDeposit.plus(
+        new Big(totalRegistrationCost.toString())
+      );
+    }
+
+    if (
+      selectedToken?.type === "lst" &&
+      selectedToken.accountId === stNearTokenContractId
+    ) {
+      totalDeposit = totalDeposit.plus(
+        new Big(stakingPools.stNear.deposit?.min ?? "0")
+      );
+    }
+
+    if (
+      selectedToken?.type === "lst" &&
+      selectedToken.accountId === linearTokenContractId
+    ) {
+      totalDeposit = totalDeposit.plus(
+        new Big(stakingPools.liNear.deposit?.min ?? "0")
+      );
+    }
+
+    return totalDeposit.toFixed();
+  }, [
+    linearTokenContractId,
+    selectedToken?.accountId,
+    selectedToken?.type,
+    stNearTokenContractId,
+    stakingPools.liNear.deposit?.min,
+    stakingPools.stNear.deposit?.min,
+    totalRegistrationCost,
+    venearAccountInfo,
+  ]);
+
+  const maxAmountToLockNear = useMemo(() => {
+    return utils.format.formatNearAmount(maxAmountToLock ?? "0");
   }, [maxAmountToLock]);
+
+  const validateAmount = useCallback(
+    (amount: string) => {
+      try {
+        if (!isValidNearAmount(amount)) {
+          setAmountError("Please enter a valid amount");
+        } else if (Big(amount).gt(Big(maxAmountToLockNear))) {
+          setAmountError("Not enough funds in this account");
+        } else if (
+          selectedToken?.type === "near" &&
+          Big(amount).lt(depositTotal)
+        ) {
+          setAmountError(
+            `You must lock at least ${utils.format.formatNearAmount(depositTotal)} NEAR`
+          );
+        } else {
+          setAmountError(null);
+        }
+      } catch (e) {
+        setAmountError("Invalid amount");
+      }
+    },
+    [depositTotal, maxAmountToLockNear, selectedToken?.type]
+  );
+
+  const onLockMax = useCallback(() => {
+    setEnteredAmount(maxAmountToLockNear);
+    setIsLockingMax(true);
+    validateAmount(maxAmountToLockNear);
+  }, [maxAmountToLockNear, validateAmount]);
+
+  const onEnteredAmountUpdated = useCallback(
+    (amount: string) => {
+      setEnteredAmount(amount);
+      setIsLockingMax(false);
+      validateAmount(amount);
+    },
+    [validateAmount]
+  );
 
   const enteredAmountYocto = useMemo(() => {
     if (!isValidNearAmount(enteredAmount)) {
@@ -430,45 +502,6 @@ export const LockProvider = ({
 
     return totalGas.toFixed();
   }, [requiredTransactions]);
-
-  const depositTotal = useMemo(() => {
-    let totalDeposit = Big(0);
-
-    if (!venearAccountInfo) {
-      totalDeposit = totalDeposit.plus(
-        new Big(totalRegistrationCost.toString())
-      );
-    }
-
-    if (
-      selectedToken?.type === "lst" &&
-      selectedToken.accountId === stNearTokenContractId
-    ) {
-      totalDeposit = totalDeposit.plus(
-        new Big(stakingPools.stNear.deposit?.min ?? "0")
-      );
-    }
-
-    if (
-      selectedToken?.type === "lst" &&
-      selectedToken.accountId === linearTokenContractId
-    ) {
-      totalDeposit = totalDeposit.plus(
-        new Big(stakingPools.liNear.deposit?.min ?? "0")
-      );
-    }
-
-    return totalDeposit.toFixed();
-  }, [
-    linearTokenContractId,
-    selectedToken?.accountId,
-    selectedToken?.type,
-    stNearTokenContractId,
-    stakingPools.liNear.deposit?.min,
-    stakingPools.stNear.deposit?.min,
-    totalRegistrationCost,
-    venearAccountInfo,
-  ]);
 
   const transferAmountYocto = useMemo(() => {
     if (Big(enteredAmountYocto).gt(Big(maxAmountToLock ?? "0"))) {
@@ -562,6 +595,7 @@ export const LockProvider = ({
         transferAmountYocto,
         getAmountToLock,
         maxAmountToLock,
+        amountError,
       }}
     >
       {children}

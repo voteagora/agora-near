@@ -1,6 +1,7 @@
 import { UpdatedButton } from "@/components/Button";
 import { Input } from "@/components/ui/input";
 import { useNear } from "@/contexts/NearContext";
+import { useNearPrice } from "@/hooks/useNearPrice";
 import { useRefreshStakingPoolBalance } from "@/hooks/useRefreshStakingPoolBalance";
 import { useRegisterLockup } from "@/hooks/useRegisterLockup";
 import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
@@ -9,7 +10,6 @@ import { TokenWithBalance } from "@/lib/types";
 import {
   convertYoctoToTGas,
   formatNearAccountId,
-  isValidNearAmount,
   yoctoNearToUsdFormatted,
 } from "@/lib/utils";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
@@ -26,13 +26,12 @@ import { useCallback, useMemo, useState } from "react";
 import { AssetIcon } from "../common/AssetIcon";
 import LoadingSpinner from "../shared/LoadingSpinner";
 import NearTokenAmount from "../shared/NearTokenAmount";
+import { Skeleton } from "../ui/skeleton";
 import {
   LockProvider,
   LockTransaction,
   useLockProviderContext,
 } from "./LockProvider";
-import { useNearPrice } from "@/hooks/useNearPrice";
-import { Skeleton } from "../ui/skeleton";
 
 type AssetSelectorProps = {
   handleTokenSelect: (token: TokenWithBalance) => void;
@@ -121,30 +120,15 @@ const EnterAmountStep = ({
     isLoading,
     setEnteredAmount,
     maxAmountToLock,
+    amountError,
   } = useLockProviderContext();
-
-  const [error, setError] = useState<string | null>(null);
-
-  const maxAmountToLockNear = useMemo(() => {
-    return utils.format.formatNearAmount(maxAmountToLock ?? "0");
-  }, [maxAmountToLock]);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
     setEnteredAmount(value);
-
-    if (!isValidNearAmount(value)) {
-      setError("Please enter a valid amount");
-    } else if (Big(value).gt(Big(maxAmountToLockNear))) {
-      setError("Not enough funds in this account");
-    } else {
-      setError(null);
-    }
   };
 
   const onMaxPressed = useCallback(() => {
-    setError(null);
     onLockMax();
   }, [onLockMax]);
 
@@ -160,7 +144,7 @@ const EnterAmountStep = ({
   }, [venearAmount]);
 
   const shouldDisableButton =
-    !enteredAmount || Number(enteredAmount) === 0 || isLoading || !!error;
+    !enteredAmount || Number(enteredAmount) === 0 || isLoading || !!amountError;
 
   return (
     <>
@@ -182,7 +166,7 @@ const EnterAmountStep = ({
               />
             </span>
             <div className="h-[16px]">
-              <p className="text-sm text-red-500">{error}</p>
+              <p className="text-sm text-red-500">{amountError}</p>
             </div>
           </div>
         </div>
