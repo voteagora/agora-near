@@ -41,6 +41,7 @@ import { UndelegateDialog } from "../UndelegateDialog/UndelegateDialog";
 import { NearProposalModal } from "@/components/Proposals/NearProposals/NearProposalModal";
 import { LockDialogSource, NearLockDialog } from "../NearLockDialog/index";
 import { VeNearOnboardingModal } from "@/app/near/VeNearOnboardingModal";
+import { NearStakingDialog } from "../NearStakingDialog/NearStakingDialog";
 
 export type DialogType =
   | AdvancedDelegateDialogType
@@ -68,7 +69,8 @@ export type DialogType =
   | NearVoteDialogType
   | NearVoteOptionsDialogType
   | NearLockDialogType
-  | VeNearOnboardingDialogType;
+  | VeNearOnboardingDialogType
+  | NearStakingDialogType;
 // | FaqDialogType
 
 export type NearDelegateDialogType = {
@@ -94,6 +96,13 @@ export type NearLockDialogType = {
   type: "NEAR_LOCK";
   params: {
     source: LockDialogSource;
+  };
+};
+
+export type NearStakingDialogType = {
+  type: "NEAR_STAKING";
+  params: {
+    prefilledAmount?: string;
   };
 };
 
@@ -561,6 +570,9 @@ export const dialogs: DialogDefinitions<DialogType> = {
   ),
   VENEAR_ONBOARDING: (_, closeDialog) => {
     return <VeNearOnboardingModal closeDialog={closeDialog} />;
+  },
+  NEAR_STAKING: (params, closeDialog) => {
+    return <NearStakingDialog closeDialog={closeDialog} {...params} />;
   },
   // FAQ: () => {
   //   return <FaqDialog />;

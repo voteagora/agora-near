@@ -584,6 +584,11 @@ export default function VeNearDebugCards() {
       <Card className="flex flex-col grow">
         <CardHeader>
           <CardTitle>Stake/unstake NEAR</CardTitle>
+          <Button
+            onClick={() => openDialog({ type: "NEAR_STAKING", params: {} })}
+          >
+            Launch staking onboarding
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
