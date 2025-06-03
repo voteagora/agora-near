@@ -13,12 +13,7 @@ export default function DelegatesSearch() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        if (
-          enteredName.match(/^(0x)?[0-9a-f]{40}$/i) ||
-          enteredName.endsWith(".eth")
-        ) {
-          router.push(`/delegates/${enteredName}`);
-        }
+        router.push(`/delegates/${enteredName}`);
       }}
     >
       <div className="w-full sm:w-auto flex flex-row items-center relative">
@@ -28,8 +23,8 @@ export default function DelegatesSearch() {
 
         <TextInputWithTooltip
           onChange={(value) => setEnteredName(value)}
-          placeholder="Exact ENS or address"
-          tooltipMessage="Please input exact ENS or address. Partial and fuzzy search is not supported yet."
+          placeholder="Exact address"
+          tooltipMessage="Please input exact address. Partial and fuzzy search is not supported yet."
           className="py-2 pr-2 pl-8 rounded-full bg-wash border border-line w-full sm:w-auto placeholder-tertiary/50 text-secondary"
         />
       </div>
