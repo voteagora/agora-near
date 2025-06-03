@@ -8,8 +8,7 @@ import DelegateTable from "./DelegateTable";
 import { DelegateCardLoadingState } from "./DelegateCardWrapper";
 
 export default function DelegateContent() {
-  const [orderByParam] = useQueryState("order_by")
-  console.log(orderByParam)
+  const [orderByParam] = useQueryState("order_by");
 
   const [layout] = useQueryState("layout", {
     defaultValue: "grid",

@@ -7,7 +7,13 @@ const DELEGATES_QK = `${Endpoint.Delegates}`;
 
 const orderSeed = Math.random() * 10;
 
-export const useNearDelegates = ({ pageSize, orderBy }: { pageSize: number, orderBy: string | null }) => {
+export const useNearDelegates = ({
+  pageSize,
+  orderBy,
+}: {
+  pageSize: number;
+  orderBy: string | null;
+}) => {
   const {
     data,
     error,
