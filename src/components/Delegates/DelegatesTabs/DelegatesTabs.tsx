@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { AlignJustify, LayoutGrid } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useTransition, type ReactNode } from "react";
+import DelegatesSortFilter from "@/components/Delegates/DelegatesFilter/DelegatesSortFilter";
 
 export default function DelegateTabs({ children }: { children: ReactNode }) {
   const [isPending, startTransition] = useTransition();
@@ -35,6 +36,7 @@ export default function DelegateTabs({ children }: { children: ReactNode }) {
           </TabsTrigger>
         </TabsList>
         <div className="flex flex-col sm:flex-row justify-between gap-3 w-full sm:w-fit overflow-x-auto">
+          <DelegatesSortFilter />
           <div className="flex items-center gap-2 bg-wash rounded-full px-4 py-2 shrink-0">
             <button
               onClick={() => {

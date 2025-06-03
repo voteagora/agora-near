@@ -8,6 +8,9 @@ import DelegateTable from "./DelegateTable";
 import { DelegateCardLoadingState } from "./DelegateCardWrapper";
 
 export default function DelegateContent() {
+  const [orderByParam] = useQueryState("order_by")
+  console.log(orderByParam)
+
   const [layout] = useQueryState("layout", {
     defaultValue: "grid",
   });
@@ -15,6 +18,7 @@ export default function DelegateContent() {
   const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
     useNearDelegates({
       pageSize: 10,
+      orderBy: orderByParam,
     });
 
   const onLoadMore = useCallback(() => {

@@ -116,10 +116,12 @@ const DropdownMenuCheckboxItem = React.forwardRef<
 DropdownMenuCheckboxItem.displayName =
   DropdownMenuPrimitive.CheckboxItem.displayName;
 
-const DropdownMenuRadioItem = React.forwardRef<
+  const DropdownMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.RadioItem> & {
+    checked?: boolean;
+  }
+>(({ className, children, checked, ...props }, ref) => (
   <DropdownMenuPrimitive.RadioItem
     ref={ref}
     className={cn(
@@ -128,9 +130,15 @@ const DropdownMenuRadioItem = React.forwardRef<
     )}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span className="flex h-[20px] w-[20px] items-center justify-center mr-[12px]">
+      <div
+        className={cn(
+          "w-[20px] h-[20px] rounded-full border transition-colors",
+          checked ? "border-brandPrimary" : "border-line"
+        )}
+      />
       <DropdownMenuPrimitive.ItemIndicator>
-        <Circle className="h-2 w-2 fill-current" />
+        <div className="w-2.5 h-2.5 absolute top-[19px] left-[17px] bg-brandPrimary rounded-full" />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
