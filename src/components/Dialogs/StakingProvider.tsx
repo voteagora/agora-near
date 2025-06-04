@@ -1,17 +1,17 @@
-import { useNear } from "@/contexts/NearContext";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useReadHOSContract } from "@/hooks/useReadHOSContract";
-import { useStakingPool } from "@/hooks/useStakingPool";
+import { useStakingPoolExchangeRates } from "@/hooks/useStakingPoolExchangeRates";
 import { useStakingPoolStats } from "@/hooks/useStakingPoolStats";
+import { LINEAR_POOL, STNEAR_POOL } from "@/lib/constants";
+import { StakingPool } from "@/lib/types";
 import {
-  LINEAR_TOKEN_CONTRACTS,
-  STNEAR_TOKEN_CONTRACTS,
-} from "@/lib/constants";
-import { isValidNearAmount } from "@/lib/utils";
+  convertNearToStakingToken,
+  convertStakingTokenToNear,
+  isValidNearAmount,
+} from "@/lib/utils";
 import Big from "big.js";
 import { utils } from "near-api-js";
-import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 import {
   createContext,
   useCallback,
@@ -20,11 +20,15 @@ import {
   useState,
 } from "react";
 
+const supportedPools: StakingPool[] = [LINEAR_POOL, STNEAR_POOL];
+
 type StakingProviderContextType = {
   isLoading: boolean;
   error?: Error | null;
   lockupAccountId?: string | null;
-  stakingPoolId?: string | null;
+  currentStakingPoolId?: string | null;
+  selectedPool: StakingPool;
+  setSelectedPool: (pool: StakingPool) => void;
   enteredAmount: string;
   setEnteredAmount: (amount: string) => void;
   isStakingMax: boolean;
@@ -32,21 +36,19 @@ type StakingProviderContextType = {
   maxStakingAmount?: string;
   amountError: string | null;
   resetForm: () => void;
-  liNearStats?: {
-    apy: number;
-    totalVolumeYocto: string;
-  };
-  stNearStats?: {
-    apy: number;
-    totalVolumeYocto: string;
-  };
+  amountInStakingToken: string;
+  enteredAmountYoctoNear: string;
+  pools: StakingPool[];
+  poolStats: Record<string, { apy: number; totalVolumeYocto: string }>;
 };
 
 const StakingContext = createContext<StakingProviderContextType>({
   isLoading: false,
   error: null,
   lockupAccountId: undefined,
-  stakingPoolId: undefined,
+  selectedPool: LINEAR_POOL,
+  currentStakingPoolId: undefined,
+  setSelectedPool: () => {},
   enteredAmount: "",
   setEnteredAmount: () => {},
   isStakingMax: false,
@@ -54,8 +56,10 @@ const StakingContext = createContext<StakingProviderContextType>({
   maxStakingAmount: undefined,
   amountError: null,
   resetForm: () => {},
-  liNearStats: undefined,
-  stNearStats: undefined,
+  amountInStakingToken: "0",
+  pools: [],
+  poolStats: {},
+  enteredAmountYoctoNear: "0",
 });
 
 export const useStakingProviderContext = () => {
@@ -71,9 +75,11 @@ export const StakingProvider = ({
   children,
   prefilledAmount,
 }: StakingProviderProps) => {
-  const { networkId } = useNear();
   const [enteredAmount, setEnteredAmount] = useState(prefilledAmount ?? "");
   const [isStakingMax, setIsStakingMax] = useState(false);
+  const [selectedPool, setSelectedPool] = useState<StakingPool>(
+    supportedPools[0]
+  );
 
   const {
     lockupAccountId,
@@ -81,7 +87,8 @@ export const StakingProvider = ({
     error: lockupAccountError,
   } = useLockupAccount();
 
-  const { stakingPools, isLoading: isLoadingStakingPools } = useStakingPool();
+  const { exchangeRateMap, isLoading: isLoadingStakingPools } =
+    useStakingPoolExchangeRates({ pools: supportedPools });
 
   const [
     {
@@ -103,68 +110,43 @@ export const StakingProvider = ({
     lockupAccountId: lockupAccountId ?? "",
   });
 
-  const {
-    stats,
-    isLoading: isLoadingStakingPoolStats,
-    error: stakingPoolStatsError,
-  } = useStakingPoolStats({
-    pools: [
-      STNEAR_TOKEN_CONTRACTS[networkId],
-      LINEAR_TOKEN_CONTRACTS[networkId],
-    ],
+  const { stats, error: stakingPoolStatsError } = useStakingPoolStats({
+    pools: supportedPools,
   });
 
-  // Calculate formatted stats with proper APY and total volume
   const formattedStats = useMemo(() => {
-    const liNearRawStats = stats[LINEAR_TOKEN_CONTRACTS[networkId]];
-    const stNearRawStats = stats[STNEAR_TOKEN_CONTRACTS[networkId]];
+    return supportedPools.reduce(
+      (acc, curr) => {
+        const rawStats = stats[curr.id];
 
-    const calculateTotalVolumeYocto = (
-      supply: string,
-      price: string | null | undefined
-    ) => {
-      if (!price || !supply) return "0";
+        acc[curr.id] = {
+          apy: rawStats?.apy * 100,
+          totalVolumeYocto: convertStakingTokenToNear(
+            rawStats?.supply,
+            exchangeRateMap[curr.id]
+          ),
+        };
 
-      try {
-        const totalVolumeYocto = new Big(supply)
-          .div(10 ** NEAR_NOMINATION_EXP)
-          .times(new Big(price));
+        return acc;
+      },
+      {} as Record<string, { apy: number; totalVolumeYocto: string }>
+    );
+  }, [stats, exchangeRateMap]);
 
-        return totalVolumeYocto.toFixed(0);
-      } catch {
-        return "0";
-      }
-    };
-
-    return {
-      liNear: liNearRawStats
-        ? {
-            apy: liNearRawStats.apy * 100, // Convert decimal to percentage
-            totalVolumeYocto: calculateTotalVolumeYocto(
-              liNearRawStats.supply,
-              stakingPools.liNear.price
-            ),
-          }
-        : undefined,
-      stNear: stNearRawStats
-        ? {
-            apy: stNearRawStats.apy * 100, // Convert decimal to percentage
-            totalVolumeYocto: calculateTotalVolumeYocto(
-              stNearRawStats.supply,
-              stakingPools.stNear.price
-            ),
-          }
-        : undefined,
-    };
-  }, [stats, stakingPools, networkId]);
-
-  const enteredAmountYocto = useMemo(() => {
+  const enteredAmountYoctoNear = useMemo(() => {
     if (!isValidNearAmount(enteredAmount)) {
       return "0";
     }
 
     return utils.format.parseNearAmount(enteredAmount) || "0";
   }, [enteredAmount]);
+
+  const amountInStakingToken = useMemo(() => {
+    return convertNearToStakingToken(
+      enteredAmountYoctoNear,
+      exchangeRateMap[selectedPool.id]
+    );
+  }, [enteredAmountYoctoNear, exchangeRateMap, selectedPool.id]);
 
   const amountError = useMemo(() => {
     if (!enteredAmount) {
@@ -177,12 +159,15 @@ export const StakingProvider = ({
     }
 
     // Check if amount exceeds maximum available
-    if (maxStakingAmount && Big(enteredAmountYocto).gt(Big(maxStakingAmount))) {
+    if (
+      maxStakingAmount &&
+      Big(enteredAmountYoctoNear).gt(Big(maxStakingAmount))
+    ) {
       return "Amount exceeds available balance";
     }
 
     return null;
-  }, [enteredAmount, enteredAmountYocto, maxStakingAmount]);
+  }, [enteredAmount, enteredAmountYoctoNear, maxStakingAmount]);
 
   const onStakeMax = useCallback(() => {
     if (maxStakingAmount) {
@@ -199,7 +184,6 @@ export const StakingProvider = ({
   const isLoading =
     isLoadingLockupAccount ||
     isLoadingStakingPoolId ||
-    isLoadingStakingPoolStats ||
     isLoadingMaxStakingAmount ||
     isLoadingStakingPools;
 
@@ -209,19 +193,23 @@ export const StakingProvider = ({
   return (
     <StakingContext.Provider
       value={{
-        stakingPoolId,
+        currentStakingPoolId: stakingPoolId,
+        selectedPool,
+        setSelectedPool,
         enteredAmount,
         setEnteredAmount,
         isStakingMax,
         lockupAccountId,
         isLoading,
-        liNearStats: formattedStats.liNear,
-        stNearStats: formattedStats.stNear,
         error,
         onStakeMax,
         amountError,
         resetForm,
         maxStakingAmount,
+        pools: supportedPools,
+        poolStats: formattedStats,
+        enteredAmountYoctoNear,
+        amountInStakingToken,
       }}
     >
       {children}

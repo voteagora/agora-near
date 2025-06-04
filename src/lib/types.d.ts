@@ -196,3 +196,13 @@ export type TokenWithBalance = {
   metadata?: TokenMetadata | null;
   balance: string;
 };
+
+export type StakingPool = {
+  id: string;
+  contracts: {
+    mainnet: string;
+    testnet: string;
+  };
+  priceMethod?: string;
+  metadata: TokenMetadata;
+};

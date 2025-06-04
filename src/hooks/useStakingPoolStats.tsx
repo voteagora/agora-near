@@ -1,10 +1,11 @@
 import { useNear } from "@/contexts/NearContext";
 import { getStakingPoolApy } from "@/lib/api/staking/requests";
+import { StakingPool } from "@/lib/types";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 type StakingPoolStatsProps = {
-  pools: string[];
+  pools: StakingPool[];
 };
 
 export const useStakingPoolStats = ({ pools }: StakingPoolStatsProps) => {
@@ -18,7 +19,7 @@ export const useStakingPoolStats = ({ pools }: StakingPoolStatsProps) => {
           queryFn: () =>
             getStakingPoolApy({
               networkId,
-              contractId: pool,
+              contractId: pool.contracts[networkId],
             }),
         },
       ]),
@@ -32,7 +33,7 @@ export const useStakingPoolStats = ({ pools }: StakingPoolStatsProps) => {
           queryKey: ["staking-supply", pool, networkId],
           queryFn: () =>
             viewMethod({
-              contractId: pool,
+              contractId: pool.contracts[networkId],
               method: "ft_total_supply",
               args: {},
             }) as Promise<string | undefined | null>,
@@ -45,7 +46,7 @@ export const useStakingPoolStats = ({ pools }: StakingPoolStatsProps) => {
     () =>
       stakingApyResults.reduce(
         (acc, current, index) => {
-          const poolId = pools[index];
+          const poolId = pools[index].id;
 
           if (poolId) {
             acc[poolId] = {
