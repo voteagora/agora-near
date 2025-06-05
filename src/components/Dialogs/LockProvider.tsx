@@ -88,6 +88,7 @@ type LockProviderContextType = {
   maxAmountToLock?: string;
   amountError: string | null;
   resetForm: () => void;
+  source: LockDialogSource;
 };
 
 export const LockProviderContext = createContext<LockProviderContextType>({
@@ -118,6 +119,7 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   getAmountToLock: () => Promise.resolve("0"),
   amountError: null,
   resetForm: () => {},
+  source: "onboarding",
 });
 
 export const useLockProviderContext = () => {
@@ -218,9 +220,11 @@ export const LockProvider = ({
     }
 
     try {
-      if (selectedToken.type === "near") {
+      if (selectedToken.type !== "lst") {
         return utils.format.parseNearAmount(enteredAmount) || "0";
-      } else if (
+      }
+
+      if (
         selectedToken.accountId === stNearTokenContractId &&
         stakingPools.stNear.price
       ) {
@@ -235,7 +239,9 @@ export const LockProvider = ({
         }
 
         return valueInNear.toFixed(0);
-      } else if (
+      }
+
+      if (
         selectedToken.accountId === linearTokenContractId &&
         stakingPools.liNear.price
       ) {
@@ -594,6 +600,7 @@ export const LockProvider = ({
         maxAmountToLock,
         amountError,
         resetForm,
+        source,
       }}
     >
       {children}

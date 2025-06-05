@@ -10,7 +10,7 @@ export const useSelectStakingPool = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const { mutateAsync: mutateLockupAsync } = useWriteHOSContract({
+  const { mutateAsync: mutateLockupAsync, error } = useWriteHOSContract({
     contractType: "LOCKUP",
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -42,5 +42,6 @@ export const useSelectStakingPool = ({
 
   return {
     selectStakingPoolAsync,
+    error,
   };
 };

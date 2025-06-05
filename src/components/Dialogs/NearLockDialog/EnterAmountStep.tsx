@@ -143,9 +143,10 @@ export const EnterAmountStep = ({
       <div className="flex-1 flex flex-col justify-end pb-4">
         <UpdatedButton
           onClick={handleReview}
-          type={shouldDisableButton ? "disabled" : "secondary"}
+          type={shouldDisableButton ? "disabled" : "primary"}
           disabled={shouldDisableButton}
           className="w-full"
+          variant="rounded"
         >
           Review
         </UpdatedButton>

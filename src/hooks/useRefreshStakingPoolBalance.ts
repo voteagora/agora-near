@@ -6,11 +6,11 @@ export const useRefreshStakingPoolBalance = ({
 }: {
   lockupAccountId: string;
 }) => {
-  const { mutateAsync: writeLockupContract } = useWriteHOSContract({
+  const { mutateAsync: writeLockupContract, error } = useWriteHOSContract({
     contractType: "LOCKUP",
   });
 
-  return useCallback(async () => {
+  const refreshStakingPoolBalanceAsync = useCallback(async () => {
     await writeLockupContract({
       contractId: lockupAccountId,
       methodCalls: [
@@ -21,4 +21,9 @@ export const useRefreshStakingPoolBalance = ({
       ],
     });
   }, [lockupAccountId, writeLockupContract]);
+
+  return {
+    refreshStakingPoolBalanceAsync,
+    error,
+  };
 };

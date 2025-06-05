@@ -4,6 +4,7 @@ import { StakingProvider, useStakingProviderContext } from "../StakingProvider";
 import { EnterStakingAmount } from "./EnterStakingAmount";
 import { StakingReview } from "./StakingReview";
 import { StakingPool } from "@/lib/types";
+import { StakingDialogHeader } from "./StakingDialogHeader";
 
 export type StakingSource = "onboarding" | "account_management";
 
@@ -40,7 +41,10 @@ const StakingDialogContent = ({ closeDialog }: { closeDialog: () => void }) => {
   }
 
   return (
-    <EnterStakingAmount onContinue={handleContinue} onSkip={closeDialog} />
+    <div className="flex flex-col gap-2">
+      <StakingDialogHeader />
+      <EnterStakingAmount onContinue={handleContinue} onSkip={closeDialog} />
+    </div>
   );
 };
 

@@ -363,7 +363,7 @@ export default function VeNearDebugCards() {
               openDialog({
                 type: "NEAR_LOCK",
                 params: {
-                  source: accountInfo ? "account_management" : "onboarding",
+                  source: "onboarding",
                 },
               })
             }

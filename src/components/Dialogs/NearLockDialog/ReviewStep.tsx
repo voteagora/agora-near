@@ -15,13 +15,13 @@ import { useTransactionExecution } from "@/hooks/useTransactionExecution";
 type ReviewStepProps = {
   handleEdit: () => void;
   handleLockMore: () => void;
-  handleNext?: () => void;
+  handleProceedToStaking: () => void;
 };
 
 export const ReviewStep = ({
   handleEdit,
   handleLockMore,
-  handleNext,
+  handleProceedToStaking,
 }: ReviewStepProps) => {
   const {
     enteredAmount,
@@ -32,6 +32,7 @@ export const ReviewStep = ({
     requiredTransactions,
     selectedToken,
     lockupAccountId,
+    source,
   } = useLockProviderContext();
 
   const {
@@ -41,6 +42,7 @@ export const ReviewStep = ({
     isSubmitting,
     isCompleted,
     executeTransactions,
+    error,
   } = useTransactionExecution();
 
   const formattedVeNearAmount = useMemo(() => {
@@ -77,11 +79,16 @@ export const ReviewStep = ({
             onClick={handleLockMore}
             type="secondary"
             className="w-full"
+            variant="rounded"
           >
             Lock More Funds
           </UpdatedButton>
-          {handleNext && (
-            <UpdatedButton type="primary" className="w-full">
+          {source === "onboarding" && selectedToken?.type !== "lst" && (
+            <UpdatedButton
+              type="primary"
+              className="w-full"
+              onClick={handleProceedToStaking}
+            >
               Next
             </UpdatedButton>
           )}
@@ -125,7 +132,7 @@ export const ReviewStep = ({
               <InformationCircleIcon className="w-4 h-4 text-gray-400" />
             </div>
           </div>
-          <UpdatedButton type="secondary" className="w-full">
+          <UpdatedButton type="secondary" className="w-full" variant="rounded">
             <div className="flex items-center justify-center w-full">
               <div className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full animate-spin"></div>
             </div>
@@ -211,8 +218,9 @@ export const ReviewStep = ({
               isLoading
             }
             className="w-full mt-4"
+            variant="rounded"
           >
-            Lock tokens
+            {error ? "Failed to lock - try again" : "Lock tokens"}
           </UpdatedButton>
           <p className="text-xs text-secondary text-center text-[#9D9FA1]">
             You may unlock your tokens at any time.{" "}
