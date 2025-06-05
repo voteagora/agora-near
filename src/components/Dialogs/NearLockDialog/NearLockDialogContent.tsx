@@ -7,6 +7,7 @@ import { EnterAmountStep } from "./EnterAmountStep";
 import { ReviewStep } from "./ReviewStep";
 import { useOpenDialog } from "../DialogProvider/DialogProvider";
 import { LockDialogHeader } from "./LockDialogHeader";
+import { useRouter } from "next/navigation";
 
 type DialogContentProps = {
   closeDialog: () => void;
@@ -15,6 +16,8 @@ type DialogContentProps = {
 export function NearLockDialogContent({ closeDialog }: DialogContentProps) {
   const { setSelectedToken, isLoading, resetForm, source } =
     useLockProviderContext();
+
+  const router = useRouter();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isAssetSelectorOpen, setIsAssetSelectorOpen] = useState(false);
@@ -61,6 +64,11 @@ export function NearLockDialogContent({ closeDialog }: DialogContentProps) {
     });
   }, [closeDialog, openDialog, source]);
 
+  const handleViewDashboard = useCallback(() => {
+    closeDialog();
+    router.push("/assets");
+  }, [closeDialog, router]);
+
   const content = useMemo(() => {
     if (isAssetSelectorOpen) {
       return <AssetSelector handleTokenSelect={handleTokenSelect} />;
@@ -84,6 +92,7 @@ export function NearLockDialogContent({ closeDialog }: DialogContentProps) {
           handleEdit={handleEdit}
           handleLockMore={handleLockMore}
           handleProceedToStaking={proceedToStaking}
+          handleViewDashboard={handleViewDashboard}
         />
       );
     }
@@ -92,6 +101,7 @@ export function NearLockDialogContent({ closeDialog }: DialogContentProps) {
   }, [
     currentStep,
     handleTokenSelect,
+    handleViewDashboard,
     isAssetSelectorOpen,
     openAssetSelector,
     proceedToStaking,

@@ -1,27 +1,28 @@
 import { UpdatedButton } from "@/components/Button";
 import { DEFAULT_GAS_RESERVE } from "@/lib/constants";
-import {
-  InformationCircleIcon,
-  LockClosedIcon,
-  LockOpenIcon,
-} from "@heroicons/react/24/outline";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Big from "big.js";
 import { utils } from "near-api-js";
 import { useMemo } from "react";
 import NearTokenAmount from "../../shared/NearTokenAmount";
 import { useLockProviderContext } from "../LockProvider";
 import { useTransactionExecution } from "@/hooks/useTransactionExecution";
+import LockClosedIcon from "@/assets/icons/lock_closed.svg";
+import LockOpenIcon from "@/assets/icons/lock_open.svg";
+import Image from "next/image";
 
 type ReviewStepProps = {
   handleEdit: () => void;
   handleLockMore: () => void;
   handleProceedToStaking: () => void;
+  handleViewDashboard: () => void;
 };
 
 export const ReviewStep = ({
   handleEdit,
   handleLockMore,
   handleProceedToStaking,
+  handleViewDashboard,
 }: ReviewStepProps) => {
   const {
     enteredAmount,
@@ -32,7 +33,6 @@ export const ReviewStep = ({
     requiredTransactions,
     selectedToken,
     lockupAccountId,
-    source,
   } = useLockProviderContext();
 
   const {
@@ -57,10 +57,109 @@ export const ReviewStep = ({
   }, [venearAmount]);
 
   if (isCompleted) {
+    // Special UI for LST tokens
+    if (selectedToken?.type === "lst") {
+      return (
+        <div className="flex flex-col items-center justify-center w-full h-full">
+          <div className="flex-1 flex flex-col justify-end items-center gap-6">
+            {/* Lock icon with sparkles */}
+            <div className="relative">
+              {/* Sparkles around the lock */}
+              <div className="absolute -top-2 -left-2">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  className="text-green-400"
+                >
+                  <path
+                    d="M8 0L9.5 6.5L16 8L9.5 9.5L8 16L6.5 9.5L0 8L6.5 6.5L8 0Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <div className="absolute -top-1 -right-3">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  className="text-green-400"
+                >
+                  <path
+                    d="M6 0L7.125 4.875L12 6L7.125 7.125L6 12L4.875 7.125L0 6L4.875 4.875L6 0Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <div className="absolute -bottom-2 -left-3">
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  className="text-green-400"
+                >
+                  <path
+                    d="M5 0L5.938 4.063L10 5L5.938 5.938L5 10L4.063 5.938L0 5L4.063 4.063L5 0Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <div className="absolute -bottom-1 -right-2">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  className="text-green-400"
+                >
+                  <path
+                    d="M7 0L8.313 5.688L14 7L8.313 8.313L7 14L5.688 8.313L0 7L5.688 5.688L7 0Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </div>
+              <Image src={LockClosedIcon} alt="lock" width={40} height={40} />
+            </div>
+
+            <div className="flex flex-col gap-2 text-center">
+              <h2 className="text-3xl font-bold text-gray-900">
+                Locked, and loaded.
+              </h2>
+              <p className="text-base text-gray-600 max-w-sm">
+                Your rewards are flowing and your vote just got stronger!
+              </p>
+            </div>
+          </div>
+
+          <div className="flex-1 flex flex-col justify-end items-center gap-4 w-full">
+            <UpdatedButton
+              onClick={handleLockMore}
+              type="secondary"
+              className="w-full"
+              variant="rounded"
+            >
+              Lock More Funds
+            </UpdatedButton>
+            <UpdatedButton
+              type="primary"
+              className="w-full"
+              onClick={handleViewDashboard}
+              variant="rounded"
+            >
+              View Dashboard
+            </UpdatedButton>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-col items-center justify-center w-full h-full">
         <div className="flex-1 flex flex-col justify-end items-center gap-6">
-          <LockClosedIcon className="w-16 h-16" />
+          <Image src={LockClosedIcon} alt="coin" width={40} height={40} />
           <div className="flex flex-col">
             <p className="text-md text-[#9D9FA1] text-center">
               {transactionText}
@@ -83,15 +182,14 @@ export const ReviewStep = ({
           >
             Lock More Funds
           </UpdatedButton>
-          {source === "onboarding" && selectedToken?.type !== "lst" && (
-            <UpdatedButton
-              type="primary"
-              className="w-full"
-              onClick={handleProceedToStaking}
-            >
-              Next
-            </UpdatedButton>
-          )}
+          <UpdatedButton
+            type="primary"
+            className="w-full"
+            onClick={handleProceedToStaking}
+            variant="rounded"
+          >
+            Next
+          </UpdatedButton>
         </div>
       </div>
     );
@@ -101,7 +199,7 @@ export const ReviewStep = ({
     return (
       <div className="flex flex-col items-center justify-center w-full h-full">
         <div className="flex-1 flex flex-col justify-end items-center gap-6">
-          <LockOpenIcon className="w-16 h-16" />
+          <Image src={LockOpenIcon} alt="coin" width={40} height={40} />
           <div className="flex flex-col">
             <p className="text-md text-[#9D9FA1] text-center">
               {transactionText}
