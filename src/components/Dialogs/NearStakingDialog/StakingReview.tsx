@@ -40,18 +40,17 @@ export const StakingReview = ({ onBack }: StakingReviewProps) => {
   }, [enteredAmountYoctoNear, stakeNear]);
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <button
-        onClick={onBack}
-        className="text-sm text-primary font-medium hover:underline"
-      >
-        Edit
-      </button>
-
-      {/* Amount Staking Section */}
-      <div className="mb-8">
-        <div className="flex justify-between items-start mb-4">
+    <div className="flex flex-col h-full gap-12">
+      <div>
+        <button
+          onClick={onBack}
+          className="text-sm text-primary font-medium hover:underline"
+        >
+          Edit
+        </button>
+      </div>
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between items-start">
           <div>
             <h2 className="text-md font-semibold text-gray-900 mb-1">
               Amount staking
@@ -64,7 +63,17 @@ export const StakingReview = ({ onBack }: StakingReviewProps) => {
             <div className="text-md font-bold text-gray-900 mb-1">
               <NearTokenAmount amount={enteredAmountYoctoNear} />
             </div>
-            <div className="text-sm text-gray-500">
+            {isLoadingNearPrice ? (
+              <Skeleton className="w-16 h-4" />
+            ) : (
+              <div className="text-sm text-gray-500">{totalUsd}</div>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-col items-end">
+          <div className="text-sm text-gray-500">Total</div>
+          <div className="flex flex-col">
+            <div className="text-2xl font-bold text-gray-900">
               <NearTokenAmount
                 amount={amountInStakingToken}
                 currency={selectedTokenMetadata.symbol}
@@ -73,24 +82,7 @@ export const StakingReview = ({ onBack }: StakingReviewProps) => {
           </div>
         </div>
       </div>
-      <div className="mb-12 flex flex-col items-end">
-        <div className="text-sm text-gray-500">Total</div>
-        <div className="flex flex-col">
-          <div className="text-2xl font-bold text-gray-900">
-            <NearTokenAmount
-              amount={enteredAmountYoctoNear}
-              hideCurrency={true}
-            />
-          </div>
-          {isLoadingNearPrice ? (
-            <Skeleton className="w-16 h-4" />
-          ) : (
-            <div className="text-lg text-gray-500">{totalUsd}</div>
-          )}
-        </div>
-      </div>
-
-      <div className="space-y-3">
+      <div className="flex-1 flex flex-col justify-end gap-2">
         <UpdatedButton isLoading={isStakingNear} onClick={onStake}>
           Stake Tokens
         </UpdatedButton>

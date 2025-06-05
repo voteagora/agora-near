@@ -26,7 +26,7 @@ const StakingDialogContent = ({ closeDialog }: { closeDialog: () => void }) => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col justify-center items-center h-[600px]">
+      <div className="flex flex-col justify-center items-center w-full h-full">
         <LoadingSpinner />
       </div>
     );
@@ -44,7 +44,9 @@ const StakingDialogContent = ({ closeDialog }: { closeDialog: () => void }) => {
 export const NearStakingDialog = ({ closeDialog }: NearStakingDialogProps) => {
   return (
     <StakingProvider>
-      <StakingDialogContent closeDialog={closeDialog} />
+      <div className="flex flex-col items-center h-[600px] p-4">
+        <StakingDialogContent closeDialog={closeDialog} />
+      </div>
     </StakingProvider>
   );
 };
