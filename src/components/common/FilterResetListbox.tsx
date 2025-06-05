@@ -3,10 +3,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { CloseIcon } from "@/components/shared/CloseIcon";
-import {
-  CountBadge,
-  MobileCountIndicator,
-} from "@/components/common/CountBadge";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { DropdownMenuContent } from "../ui/dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
@@ -81,14 +77,6 @@ const FilterResetListbox = ({
           >
             {triggerLabel}
           </span>
-          {hasActiveFilters && (
-            <>
-              <MobileCountIndicator
-                count={activeCount}
-                className="inline-block md:hidden"
-              />
-            </>
-          )}
         </button>
 
         {(isOpen !== undefined ? isOpen : open) && (
@@ -171,21 +159,6 @@ const FilterResetListbox = ({
           </span>
         </button>
       </DropdownMenu.Trigger>
-      {hasActiveFilters && (
-        <div className="h-10 bg-brandPrimary rounded-lg flex -ml-2.5 relative left-[-10px] mr-[-10px]">
-          <MobileCountIndicator
-            count={activeCount}
-            className="inline-block md:hidden"
-          />
-          <div className="hidden md:flex items-center gap-[6px]">
-            <CountBadge count={activeCount} border={false} />
-            <div className="h-[18px] w-[1px] bg-neutral" />
-            <div onClick={handleReset} className="cursor-pointer pr-[10px]">
-              <CloseIcon className="text-neutral w-3 h-3" />
-            </div>
-          </div>
-        </div>
-      )}
 
       <DropdownMenu.Portal>
         <DropdownMenuContent

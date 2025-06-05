@@ -5,8 +5,6 @@ import { useMemo } from "react";
 
 const DELEGATES_QK = `${Endpoint.Delegates}`;
 
-const orderSeed = Math.random() * 10;
-
 export const useNearDelegates = ({
   pageSize,
   orderBy,
@@ -25,7 +23,7 @@ export const useNearDelegates = ({
   } = useInfiniteQuery({
     queryKey: [`${DELEGATES_QK}-${orderBy}`],
     queryFn: ({ pageParam = 1 }) => {
-      return fetchDelegates(pageSize, pageParam, orderBy, orderSeed);
+      return fetchDelegates(pageSize, pageParam, orderBy);
     },
     getNextPageParam: (currentPage, _, pageParam) => {
       if (currentPage.count <= pageParam * pageSize) return undefined;
