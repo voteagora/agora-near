@@ -32,6 +32,8 @@ import { useDelegateAll } from "@/hooks/useDelegateAll";
 import { useUndelegate } from "@/hooks/useUndelegate";
 import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import { useReadHOSContract } from "@/hooks/useReadHOSContract";
+import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
+import { LINEAR_TOKEN_CONTRACTS } from "@/lib/constants";
 
 export default function VeNearDebugCards() {
   const { signedAccountId } = useNear();
@@ -177,6 +179,10 @@ export default function VeNearDebugCards() {
     registerAndDeployLockup,
   ]);
 
+  const { selectStakingPoolAsync } = useSelectStakingPool({
+    lockupAccountId: accountInfo?.lockupAccountId || "",
+  });
+
   const handleStakeAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // Only allow numbers and decimals
@@ -185,12 +191,17 @@ export default function VeNearDebugCards() {
     }
   };
 
-  const handleStake = () => {
+  const handleStake = async () => {
     if (!stakeAmount) return;
     try {
       const yoctoAmount = utils.format.parseNearAmount(stakeAmount);
       if (!yoctoAmount) throw new Error("Invalid amount");
-      stakeNear(yoctoAmount, accountInfo?.stakingPool);
+      if (!accountInfo?.stakingPool) {
+        await selectStakingPoolAsync({
+          stakingPoolId: LINEAR_TOKEN_CONTRACTS["testnet"],
+        });
+      }
+      stakeNear(yoctoAmount);
     } catch (error) {
       console.error("Error converting stake amount:", error);
     }
@@ -585,7 +596,14 @@ export default function VeNearDebugCards() {
         <CardHeader>
           <CardTitle>Stake/unstake NEAR</CardTitle>
           <Button
-            onClick={() => openDialog({ type: "NEAR_STAKING", params: {} })}
+            onClick={() =>
+              openDialog({
+                type: "NEAR_STAKING",
+                params: {
+                  source: "onboarding",
+                },
+              })
+            }
           >
             Launch staking onboarding
           </Button>

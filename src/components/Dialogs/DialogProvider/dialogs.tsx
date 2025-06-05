@@ -41,7 +41,10 @@ import { UndelegateDialog } from "../UndelegateDialog/UndelegateDialog";
 import { NearProposalModal } from "@/components/Proposals/NearProposals/NearProposalModal";
 import { LockDialogSource, NearLockDialog } from "../NearLockDialog/index";
 import { VeNearOnboardingModal } from "@/app/near/VeNearOnboardingModal";
-import { NearStakingDialog } from "../NearStakingDialog/NearStakingDialog";
+import {
+  NearStakingDialog,
+  StakingSource,
+} from "../NearStakingDialog/NearStakingDialog";
 
 export type DialogType =
   | AdvancedDelegateDialogType
@@ -103,6 +106,7 @@ export type NearStakingDialogType = {
   type: "NEAR_STAKING";
   params: {
     prefilledAmount?: string;
+    source: StakingSource;
   };
 };
 

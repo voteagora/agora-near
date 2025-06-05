@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingOptionCard } from "./StakingOptionCard";
 import { StakingPool } from "@/lib/types";
+import { UpdatedButton } from "@/components/Button";
+import { useCallback } from "react";
 
 type EnterStakingAmountProps = {
   onContinue: (selectedProvider: StakingPool) => void;
@@ -25,23 +27,22 @@ export const EnterStakingAmount = ({
     amountError,
     selectedPool,
     setSelectedPool,
+    source,
   } = useStakingProviderContext();
 
-  const handleContinue = () => {
+  const handleContinue = useCallback(() => {
     if (!enteredAmount || !!amountError) return;
     onContinue(selectedPool);
-  };
+  }, [enteredAmount, amountError, onContinue, selectedPool]);
 
   return (
     <div>
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           Stake assets and get liquid rewards
         </h1>
       </div>
 
-      {/* Staking Provider Cards */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {pools.map((pool) => (
           <StakingOptionCard
@@ -60,7 +61,6 @@ export const EnterStakingAmount = ({
           <NearTokenAmount amount={maxStakingAmount ?? "0"} hideCurrency />
         </div>
 
-        {/* Amount Input */}
         <div className="relative">
           <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
             <div className="flex items-center gap-2">
@@ -94,25 +94,18 @@ export const EnterStakingAmount = ({
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="space-y-3 mb-4">
-        <button
+      <div className="flex flex-col gap-2 mb-4">
+        <UpdatedButton
           onClick={handleContinue}
           disabled={!enteredAmount || !!amountError}
-          className="w-full bg-black text-white py-3 rounded-lg font-medium disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors duration-200"
+          variant="rounded"
         >
           Continue
-        </button>
+        </UpdatedButton>
 
-        <button
-          onClick={onSkip}
-          className="w-full text-gray-600 py-2 font-medium hover:text-gray-800 transition-colors duration-200"
-        >
-          Skip
-        </button>
+        {source === "onboarding" && <button onClick={onSkip}>Skip</button>}
       </div>
 
-      {/* Disclosure */}
       <div className="text-center text-xs text-gray-500">
         You may unstake your tokens at any time.{" "}
         <button className="underline text-black font-medium">

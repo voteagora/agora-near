@@ -1,26 +1,38 @@
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { useStakingProviderContext } from "../StakingProvider";
 import { useNearPrice } from "@/hooks/useNearPrice";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { yoctoNearToUsdFormatted } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStakeNear } from "@/hooks/useStakeNear";
 import { UpdatedButton } from "@/components/Button";
+import { StakingSubmitting } from "./StakingSubmitting";
+import { StakingSuccess } from "./StakingSuccess";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type StakingReviewProps = {
   onBack: () => void;
+  onCloseDialog: () => void;
 };
 
-export const StakingReview = ({ onBack }: StakingReviewProps) => {
+export const StakingReview = ({
+  onBack,
+  onCloseDialog,
+}: StakingReviewProps) => {
   const {
     poolStats,
     amountInStakingToken,
     selectedPool,
     enteredAmountYoctoNear,
     lockupAccountId,
+    resetForm,
   } = useStakingProviderContext();
 
+  const router = useRouter();
+
   const { price, isLoading: isLoadingNearPrice } = useNearPrice();
+  const [isStakeCompleted, setIsStakeCompleted] = useState(false);
 
   const selectedStats = poolStats[selectedPool.id];
   const selectedTokenMetadata = selectedPool.metadata;
@@ -31,13 +43,42 @@ export const StakingReview = ({ onBack }: StakingReviewProps) => {
     [enteredAmountYoctoNear, price]
   );
 
-  const { stakeNear, isStakingNear } = useStakeNear({
+  const { stakeNear, isStakingNear, stakingNearError } = useStakeNear({
     lockupAccountId: lockupAccountId ?? "",
   });
 
-  const onStake = useCallback(() => {
-    stakeNear(enteredAmountYoctoNear);
+  const onStake = useCallback(async () => {
+    try {
+      await stakeNear(enteredAmountYoctoNear);
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
+      setIsStakeCompleted(true);
+    }
   }, [enteredAmountYoctoNear, stakeNear]);
+
+  const handleStakeMoreFunds = useCallback(() => {
+    resetForm();
+    onBack();
+  }, [resetForm, onBack]);
+
+  const handleViewDashboard = useCallback(() => {
+    onCloseDialog();
+    router.push("/assets");
+  }, [onCloseDialog, router]);
+
+  if (isStakingNear) {
+    return <StakingSubmitting />;
+  }
+
+  if (isStakeCompleted && !stakingNearError) {
+    return (
+      <StakingSuccess
+        onStakeMore={handleStakeMoreFunds}
+        onViewDashboard={handleViewDashboard}
+      />
+    );
+  }
 
   return (
     <div className="flex flex-col h-full gap-12">
@@ -83,8 +124,12 @@ export const StakingReview = ({ onBack }: StakingReviewProps) => {
         </div>
       </div>
       <div className="flex-1 flex flex-col justify-end gap-2">
-        <UpdatedButton isLoading={isStakingNear} onClick={onStake}>
-          Stake Tokens
+        <UpdatedButton
+          isLoading={isStakingNear}
+          onClick={onStake}
+          variant="rounded"
+        >
+          {stakingNearError ? "Failed to stake - try again" : "Stake tokens"}
         </UpdatedButton>
         <div className="text-center text-sm text-gray-500">
           You may unlock your tokens at any time.{" "}

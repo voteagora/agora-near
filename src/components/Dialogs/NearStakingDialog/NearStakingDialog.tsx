@@ -5,8 +5,11 @@ import { EnterStakingAmount } from "./EnterStakingAmount";
 import { StakingReview } from "./StakingReview";
 import { StakingPool } from "@/lib/types";
 
+export type StakingSource = "onboarding" | "account_management";
+
 type NearStakingDialogProps = {
   closeDialog: () => void;
+  source: StakingSource;
 };
 
 type DialogStep = "form" | "review";
@@ -33,7 +36,7 @@ const StakingDialogContent = ({ closeDialog }: { closeDialog: () => void }) => {
   }
 
   if (currentStep === "review") {
-    return <StakingReview onBack={handleBack} />;
+    return <StakingReview onBack={handleBack} onCloseDialog={closeDialog} />;
   }
 
   return (
@@ -41,9 +44,12 @@ const StakingDialogContent = ({ closeDialog }: { closeDialog: () => void }) => {
   );
 };
 
-export const NearStakingDialog = ({ closeDialog }: NearStakingDialogProps) => {
+export const NearStakingDialog = ({
+  closeDialog,
+  source,
+}: NearStakingDialogProps) => {
   return (
-    <StakingProvider>
+    <StakingProvider source={source}>
       <div className="flex flex-col items-center h-[600px] p-4">
         <StakingDialogContent closeDialog={closeDialog} />
       </div>

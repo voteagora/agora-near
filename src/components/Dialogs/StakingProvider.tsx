@@ -19,6 +19,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { StakingSource } from "./NearStakingDialog/NearStakingDialog";
 
 const supportedPools: StakingPool[] = [LINEAR_POOL, STNEAR_POOL];
 
@@ -40,6 +41,7 @@ type StakingProviderContextType = {
   enteredAmountYoctoNear: string;
   pools: StakingPool[];
   poolStats: Record<string, { apy: number; totalVolumeYocto: string }>;
+  source: StakingSource;
 };
 
 const StakingContext = createContext<StakingProviderContextType>({
@@ -60,6 +62,7 @@ const StakingContext = createContext<StakingProviderContextType>({
   pools: [],
   poolStats: {},
   enteredAmountYoctoNear: "0",
+  source: "onboarding",
 });
 
 export const useStakingProviderContext = () => {
@@ -69,11 +72,13 @@ export const useStakingProviderContext = () => {
 type StakingProviderProps = {
   children: React.ReactNode;
   prefilledAmount?: string;
+  source: StakingSource;
 };
 
 export const StakingProvider = ({
   children,
   prefilledAmount,
+  source,
 }: StakingProviderProps) => {
   const [enteredAmount, setEnteredAmount] = useState(prefilledAmount ?? "");
   const [isStakingMax, setIsStakingMax] = useState(false);
@@ -210,6 +215,7 @@ export const StakingProvider = ({
         poolStats: formattedStats,
         enteredAmountYoctoNear,
         amountInStakingToken,
+        source,
       }}
     >
       {children}
