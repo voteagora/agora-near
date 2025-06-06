@@ -8,6 +8,7 @@ type StakingOptionCardProps = {
   tokenMetadata: typeof LINEAR_TOKEN_METADATA;
   apy: number | undefined;
   totalVolumeYocto: string;
+  isEnabled?: boolean;
 };
 
 export const StakingOptionCard = ({
@@ -16,10 +17,11 @@ export const StakingOptionCard = ({
   tokenMetadata,
   apy,
   totalVolumeYocto,
+  isEnabled = true,
 }: StakingOptionCardProps) => {
   return (
     <div
-      onClick={onSelect}
+      onClick={isEnabled ? onSelect : undefined}
       className={`rounded-lg p-4 cursor-pointer transition-all duration-200 ${
         isSelected
           ? "bg-[#00E391] text-black"

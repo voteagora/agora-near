@@ -28,12 +28,15 @@ export const EnterStakingAmount = ({
     selectedPool,
     setSelectedPool,
     source,
+    currentStakingPoolId,
   } = useStakingProviderContext();
 
   const handleContinue = useCallback(() => {
     if (!enteredAmount || !!amountError) return;
     onContinue(selectedPool);
   }, [enteredAmount, amountError, onContinue, selectedPool]);
+
+  const currentPool = currentStakingPoolId ?? selectedPool.id;
 
   return (
     <div>
@@ -47,7 +50,8 @@ export const EnterStakingAmount = ({
         {pools.map((pool) => (
           <StakingOptionCard
             key={pool.id}
-            isSelected={selectedPool.id === pool.id}
+            isEnabled={!currentStakingPoolId}
+            isSelected={currentPool === pool.id}
             onSelect={() => setSelectedPool(pool)}
             tokenMetadata={pool.metadata}
             apy={poolStats[pool.id]?.apy}

@@ -10,6 +10,10 @@ import { StakingSubmitting } from "./StakingSubmitting";
 import { StakingSuccess } from "./StakingSuccess";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
+import { useNear } from "@/contexts/NearContext";
+
+export type StakingStep = "select_pool" | "stake";
 
 type StakingReviewProps = {
   onBack: () => void;
@@ -27,9 +31,14 @@ export const StakingReview = ({
     enteredAmountYoctoNear,
     lockupAccountId,
     resetForm,
+    currentStakingPoolId,
   } = useStakingProviderContext();
 
+  const [stakingStep, setStakingStep] = useState<StakingStep>();
+
   const router = useRouter();
+
+  const { networkId } = useNear();
 
   const { price, isLoading: isLoadingNearPrice } = useNearPrice();
   const [isStakeCompleted, setIsStakeCompleted] = useState(false);
@@ -47,15 +56,33 @@ export const StakingReview = ({
     lockupAccountId: lockupAccountId ?? "",
   });
 
+  const { selectStakingPoolAsync } = useSelectStakingPool({
+    lockupAccountId: lockupAccountId ?? "",
+  });
+
   const onStake = useCallback(async () => {
     try {
+      if (!currentStakingPoolId) {
+        setStakingStep("select_pool");
+        await selectStakingPoolAsync({
+          stakingPoolId: selectedPool.contracts[networkId],
+        });
+      }
+      setStakingStep("stake");
       await stakeNear(enteredAmountYoctoNear);
     } catch {
       toast.error("Something went wrong");
     } finally {
       setIsStakeCompleted(true);
     }
-  }, [enteredAmountYoctoNear, stakeNear]);
+  }, [
+    currentStakingPoolId,
+    enteredAmountYoctoNear,
+    networkId,
+    selectStakingPoolAsync,
+    selectedPool.contracts,
+    stakeNear,
+  ]);
 
   const handleStakeMoreFunds = useCallback(() => {
     resetForm();
@@ -67,8 +94,8 @@ export const StakingReview = ({
     router.push("/assets");
   }, [onCloseDialog, router]);
 
-  if (isStakingNear) {
-    return <StakingSubmitting />;
+  if (isStakingNear && stakingStep) {
+    return <StakingSubmitting stakingStep={stakingStep} />;
   }
 
   if (isStakeCompleted && !stakingNearError) {
