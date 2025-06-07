@@ -65,15 +65,15 @@ export const proposalsFilterOptions = {
 export const delegatesFilterOptions = {
   weightedRandom: {
     sort: "weighted_random",
-    value: "Weighted random",
+    value: "Random (default)",
   },
   mostVotingPower: {
     sort: "most_voting_power",
     value: "Most voting power",
   },
   mostDelegators: {
-    sort: "most_delegators",
-    value: "Most delegators",
+    sort: "least_voting_power",
+    value: "Least voting power",
   },
 };
 

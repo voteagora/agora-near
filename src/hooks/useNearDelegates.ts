@@ -5,7 +5,13 @@ import { useMemo } from "react";
 
 const DELEGATES_QK = `${Endpoint.Delegates}`;
 
-export const useNearDelegates = ({ pageSize }: { pageSize: number }) => {
+export const useNearDelegates = ({
+  pageSize,
+  orderBy,
+}: {
+  pageSize: number;
+  orderBy: string | null;
+}) => {
   const {
     data,
     error,
@@ -15,9 +21,9 @@ export const useNearDelegates = ({ pageSize }: { pageSize: number }) => {
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: [DELEGATES_QK],
+    queryKey: [`${DELEGATES_QK}-${orderBy}`],
     queryFn: ({ pageParam = 1 }) => {
-      return fetchDelegates(pageSize, pageParam);
+      return fetchDelegates(pageSize, pageParam, orderBy);
     },
     getNextPageParam: (currentPage, _, pageParam) => {
       if (currentPage.count <= pageParam * pageSize) return undefined;
