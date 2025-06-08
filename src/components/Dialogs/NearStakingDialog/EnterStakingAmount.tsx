@@ -1,12 +1,12 @@
+import { UpdatedButton } from "@/components/Button";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { Input } from "@/components/ui/input";
 import { NEAR_TOKEN_METADATA } from "@/lib/constants";
+import { StakingPool } from "@/lib/types";
 import Image from "next/image";
+import { useCallback } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingOptionCard } from "./StakingOptionCard";
-import { StakingPool } from "@/lib/types";
-import { UpdatedButton } from "@/components/Button";
-import { useCallback } from "react";
 
 type EnterStakingAmountProps = {
   onContinue: (selectedProvider: StakingPool) => void;
@@ -28,15 +28,13 @@ export const EnterStakingAmount = ({
     selectedPool,
     setSelectedPool,
     source,
-    currentStakingPoolId,
+    hasAlreadySelectedStakingPool,
   } = useStakingProviderContext();
 
   const handleContinue = useCallback(() => {
     if (!enteredAmount || !!amountError) return;
     onContinue(selectedPool);
   }, [enteredAmount, amountError, onContinue, selectedPool]);
-
-  const currentPool = currentStakingPoolId ?? selectedPool.id;
 
   return (
     <div>
@@ -50,8 +48,8 @@ export const EnterStakingAmount = ({
         {pools.map((pool) => (
           <StakingOptionCard
             key={pool.id}
-            isEnabled={!currentStakingPoolId}
-            isSelected={currentPool === pool.id}
+            isEnabled={!hasAlreadySelectedStakingPool}
+            isSelected={selectedPool.id === pool.id}
             onSelect={() => setSelectedPool(pool)}
             tokenMetadata={pool.metadata}
             apy={poolStats[pool.id]?.apy}

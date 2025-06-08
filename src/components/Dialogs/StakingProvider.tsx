@@ -42,6 +42,7 @@ type StakingProviderContextType = {
   pools: StakingPool[];
   poolStats: Record<string, { apy: number; totalVolumeYocto: string }>;
   source: StakingSource;
+  hasAlreadySelectedStakingPool: boolean;
 };
 
 const StakingContext = createContext<StakingProviderContextType>({
@@ -63,6 +64,7 @@ const StakingContext = createContext<StakingProviderContextType>({
   poolStats: {},
   enteredAmountYoctoNear: "0",
   source: "onboarding",
+  hasAlreadySelectedStakingPool: false,
 });
 
 export const useStakingProviderContext = () => {
@@ -114,6 +116,14 @@ export const StakingProvider = ({
   const { stakingPoolId, isLoadingStakingPoolId } = useCurrentStakingPoolId({
     lockupAccountId: lockupAccountId ?? "",
   });
+
+  const preSelectedStakingPool = useMemo(() => {
+    return supportedPools.find((pool) =>
+      Object.values(pool.contracts).some(
+        (contractId) => contractId === stakingPoolId
+      )
+    );
+  }, [stakingPoolId]);
 
   const { stats, error: stakingPoolStatsError } = useStakingPoolStats({
     pools: supportedPools,
@@ -199,7 +209,8 @@ export const StakingProvider = ({
     <StakingContext.Provider
       value={{
         currentStakingPoolId: stakingPoolId,
-        selectedPool,
+        selectedPool: preSelectedStakingPool ?? selectedPool,
+        hasAlreadySelectedStakingPool: !!preSelectedStakingPool,
         setSelectedPool,
         enteredAmount,
         setEnteredAmount,

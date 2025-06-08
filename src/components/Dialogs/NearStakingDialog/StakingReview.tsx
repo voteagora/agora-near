@@ -35,6 +35,7 @@ export const StakingReview = ({
   } = useStakingProviderContext();
 
   const [stakingStep, setStakingStep] = useState<StakingStep>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
 
@@ -62,6 +63,7 @@ export const StakingReview = ({
 
   const onStake = useCallback(async () => {
     try {
+      setIsSubmitting(true);
       if (!currentStakingPoolId) {
         setStakingStep("select_pool");
         await selectStakingPoolAsync({
@@ -73,6 +75,7 @@ export const StakingReview = ({
     } catch {
       toast.error("Something went wrong");
     } finally {
+      setIsSubmitting(false);
       setIsStakeCompleted(true);
     }
   }, [
@@ -94,7 +97,7 @@ export const StakingReview = ({
     router.push("/assets");
   }, [onCloseDialog, router]);
 
-  if (isStakingNear && stakingStep) {
+  if (isSubmitting && stakingStep) {
     return <StakingSubmitting stakingStep={stakingStep} />;
   }
 

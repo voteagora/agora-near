@@ -1,5 +1,4 @@
 import { LockProvider } from "../LockProvider";
-import { LockDialogHeader } from "./LockDialogHeader";
 import { NearLockDialogContent } from "./NearLockDialogContent";
 
 export type LockDialogSource = "onboarding" | "account_management";
