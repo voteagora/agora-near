@@ -183,7 +183,7 @@ export const ReviewStep = memo(
               <p className="text-md text-[#9D9FA1] text-center">
                 {transactionText}
               </p>
-              <div className="text-4xl font-bold text-gray-900 tabular-nums text-center">
+              <div className="text-4xl font-bold text-gray-900 text-center">
                 <NearTokenAmount
                   amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
                   minimumFractionDigits={4}
@@ -223,7 +223,7 @@ export const ReviewStep = memo(
               <p className="text-md text-[#9D9FA1] text-center">
                 {transactionText}
               </p>
-              <div className="text-4xl font-bold text-gray-900 tabular-nums text-center">
+              <div className="text-4xl font-bold text-gray-900 text-center">
                 <NearTokenAmount
                   amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
                   minimumFractionDigits={4}

@@ -67,7 +67,7 @@ export const EnterAmountStep = ({
           <InformationCircleIcon className="w-4 h-4 ml-1 text-secondary" />
         </div>
         <div>
-          <span className="text-3xl font-bold text-primary tabular-nums">
+          <span className="text-3xl font-bold text-primary">
             <NearTokenAmount
               amount={maxAmountToLock ?? "0"}
               minimumFractionDigits={4}
@@ -105,9 +105,9 @@ export const EnterAmountStep = ({
               />
               <button
                 onClick={onMaxPressed}
-                className="ml-2 px-2 py-1 text-xs font-semibold text-primary hover:bg-primary/10 rounded"
+                className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200"
               >
-                MAX
+                Max
               </button>
             </div>
           </div>
@@ -135,9 +135,7 @@ export const EnterAmountStep = ({
       <div className="flex flex-col gap-1 text-sm">
         <div className="flex flex-row justify-between">
           <span className="text-secondary">APY</span>
-          <span className="text-primary font-medium tabular-nums">
-            {annualAPY}%
-          </span>
+          <span className="text-primary font-bold">{annualAPY}%</span>
         </div>
       </div>
       <div className="flex-1 flex flex-col justify-end pb-4">
