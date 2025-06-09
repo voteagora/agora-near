@@ -1,14 +1,21 @@
 "use client";
 
-import { useCallback, memo } from "react";
+import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
+import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
+import { getAPYFromGrowthRate } from "@/lib/lockUtils";
+import { memo, useCallback, useMemo } from "react";
 import { UpdatedButton } from "../Button";
 import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
-import { useNear } from "@/contexts/NearContext";
 import AgoraLoader from "../shared/AgoraLoader/AgoraLoader";
 import { ProjectionSlider } from "../shared/ProjectionSlider";
 import { LockTokensCard } from "./LockTokensCard";
 import { StakingRewardsCard } from "./StakingRewardsCard";
+import { useStakingPoolStats } from "@/hooks/useStakingPoolStats";
+import { LINEAR_POOL, STNEAR_POOL } from "@/lib/constants";
+import Big from "big.js";
+
+const DEFAULT_BALANCE_FOR_PROJECTION = 5000;
 
 export const AssetsHome = memo(() => {
   const openDialog = useOpenDialog();
@@ -16,9 +23,25 @@ export const AssetsHome = memo(() => {
   const { data: accountInfo, isLoading: isLoadingAccount } =
     useVenearAccountInfo(signedAccountId);
 
-  // Mock data for now
-  const mockAPY = 0.0599;
-  const mockStartingAmount = 5000;
+  const { growthRateNs, isLoading: isLoadingVenearSnapshot } =
+    useVenearSnapshot();
+
+  const lockApy = useMemo(
+    () => getAPYFromGrowthRate(growthRateNs),
+    [growthRateNs]
+  );
+
+  const { stats, isLoading: isLoadingStakingPoolStats } = useStakingPoolStats({
+    pools: [LINEAR_POOL, STNEAR_POOL],
+  });
+
+  const maxStakingApy = useMemo(() => {
+    const maxApy = Object.values(stats).reduce((max, current) => {
+      return Math.max(max, current.apy);
+    }, 0);
+
+    return Big(maxApy * 100).toFixed(2);
+  }, [stats]);
 
   const handleStakeAndLock = useCallback(() => {
     openDialog({
@@ -36,7 +59,11 @@ export const AssetsHome = memo(() => {
     []
   );
 
-  if (isLoadingAccount) {
+  if (
+    isLoadingAccount ||
+    isLoadingVenearSnapshot ||
+    isLoadingStakingPoolStats
+  ) {
     return (
       <div className="flex flex-col w-full h-full justify-center items-center">
         <AgoraLoader />
@@ -94,10 +121,10 @@ export const AssetsHome = memo(() => {
 
             <div className="flex flex-row gap-6 order-2">
               <div className="mb-4 w-[300px] h-[400px]">
-                <LockTokensCard apy="5.99%" />
+                <LockTokensCard apy={lockApy} />
               </div>
               <div className="mt-4 w-[300px] h-[400px] flex grow">
-                <StakingRewardsCard apy="5.99%" />
+                <StakingRewardsCard apy={maxStakingApy} />
               </div>
             </div>
           </div>
@@ -105,8 +132,8 @@ export const AssetsHome = memo(() => {
 
         <div className="mb-16">
           <ProjectionSlider
-            apy={mockAPY}
-            startingAmount={mockStartingAmount}
+            apy={Number(lockApy) / 100}
+            startingAmount={DEFAULT_BALANCE_FOR_PROJECTION}
             onProjectionChange={handleProjectionChange}
           />
         </div>

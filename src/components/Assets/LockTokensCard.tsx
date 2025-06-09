@@ -30,7 +30,7 @@ export const LockTokensCard = memo(
             <p className="text-lg mb-4">Get boosted voting power!</p>
 
             <div className="flex items-baseline gap-1 mb-4">
-              <span className="text-6xl font-bold">{apy}</span>
+              <span className="text-6xl font-bold">{apy}%</span>
               <span className="text-lg">APY</span>
             </div>
             <button className="flex items-center text-black font-medium hover:opacity-80 transition-opacity gap-2">

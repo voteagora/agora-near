@@ -10,7 +10,14 @@ interface ProjectionSliderProps {
   onProjectionChange?: (projection: { amount: number; years: number }) => void;
 }
 
-const timeLabels = ["Today", "1 year", "2 year", "3 year"];
+const timeLabels = [
+  "Today",
+  "1 year",
+  "2 years",
+  "3 years",
+  "4 years",
+  "5 years",
+];
 
 export const ProjectionSlider = memo(
   ({

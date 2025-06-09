@@ -27,7 +27,7 @@ export const StakingRewardsCard = memo(
               </p>
               <div className="flex flex-col">
                 <span className="text-sm text-white">up to</span>
-                <span className="text-6xl font-bold">{apy}</span>
+                <span className="text-6xl font-bold">{apy}%</span>
                 <span className="text-sm text-white">APY</span>
               </div>
             </div>
