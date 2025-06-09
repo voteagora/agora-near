@@ -89,6 +89,8 @@ type LockProviderContextType = {
   amountError: string | null;
   resetForm: () => void;
   source: LockDialogSource;
+  venearStorageCost: string;
+  lockupStorageCost: string;
 };
 
 export const LockProviderContext = createContext<LockProviderContextType>({
@@ -120,6 +122,8 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   amountError: null,
   resetForm: () => {},
   source: "onboarding",
+  venearStorageCost: "0",
+  lockupStorageCost: "0",
 });
 
 export const useLockProviderContext = () => {
@@ -601,6 +605,8 @@ export const LockProvider = ({
         amountError,
         resetForm,
         source,
+        venearStorageCost: venearStorageCost.toString(),
+        lockupStorageCost: lockupStorageCost.toString(),
       }}
     >
       {children}

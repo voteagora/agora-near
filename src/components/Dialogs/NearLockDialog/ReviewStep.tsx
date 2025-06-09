@@ -1,15 +1,16 @@
+import LockClosedIcon from "@/assets/icons/lock_closed.svg";
+import LockOpenIcon from "@/assets/icons/lock_open.svg";
 import { UpdatedButton } from "@/components/Button";
+import { useTransactionExecution } from "@/hooks/useTransactionExecution";
 import { DEFAULT_GAS_RESERVE } from "@/lib/constants";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Big from "big.js";
 import { utils } from "near-api-js";
-import { useMemo, useState, useCallback, memo } from "react";
+import Image from "next/image";
+import { memo, useCallback, useMemo, useState } from "react";
 import NearTokenAmount from "../../shared/NearTokenAmount";
 import { useLockProviderContext } from "../LockProvider";
-import { useTransactionExecution } from "@/hooks/useTransactionExecution";
-import LockClosedIcon from "@/assets/icons/lock_closed.svg";
-import LockOpenIcon from "@/assets/icons/lock_open.svg";
-import Image from "next/image";
+import { DepositTooltip } from "./DepositTooltip";
 import { DisclosuresContent } from "./DisclosuresContent";
 
 type ReviewStepProps = {
@@ -37,6 +38,8 @@ export const ReviewStep = memo(
       requiredTransactions,
       selectedToken,
       lockupAccountId,
+      venearStorageCost,
+      lockupStorageCost,
     } = useLockProviderContext();
 
     const {
@@ -282,19 +285,34 @@ export const ReviewStep = memo(
             </span>
           </div>
           <div className="flex flex-row justify-between items-center">
-            <div className="flex items-center text-secondary">
-              APY
-              <InformationCircleIcon className="w-4 h-4 ml-1 text-secondary" />
-            </div>
+            <span className="font-bold">APY</span>
             <span className="text-primary font-medium tabular-nums text-base">
               {annualAPY}%
             </span>
           </div>
           {Big(depositTotal).gt(0) && (
             <div className="flex flex-row justify-between items-center">
-              <div className="flex items-center text-secondary">
+              <div className="flex items-center text-secondary gap-1">
                 Deposit fees
-                <InformationCircleIcon className="w-4 h-4 ml-1 text-secondary" />
+                <DepositTooltip
+                  totalDeposit={depositTotal}
+                  title="Voting Requirements"
+                  subtitle="To participate in voting you'll need to make two deposits:"
+                  lineItems={[
+                    {
+                      amount: venearStorageCost,
+                      title: "Account Deposit",
+                      description:
+                        "This covers your account storage in the veNEAR contract. This amount is locked immediately and cannot be withdrawn.",
+                    },
+                    {
+                      amount: lockupStorageCost,
+                      title: "Lockup Deposit",
+                      description:
+                        "This covers your lockup contract's deployment and storage costs. This is refundable, and can be locked but cannot be staked.",
+                    },
+                  ]}
+                />
               </div>
               <span className="text-primary font-medium tabular-nums text-base">
                 <NearTokenAmount

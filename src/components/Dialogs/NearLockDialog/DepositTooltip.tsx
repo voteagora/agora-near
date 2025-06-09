@@ -24,17 +24,21 @@ export const DepositTooltip = ({
   return (
     <TooltipWithTap
       content={
-        <div className="max-w-[350px] text-left p-3">
-          <h4 className="font-semibold mb-2">{title}</h4>
-          <p className="mb-4">{subtitle}</p>
+        <div className="max-w-[350px] flex flex-col text-left p-3">
+          <div className="flex flex-col mb-4">
+            <h4 className="text-lg font-bold">{title}</h4>
+            <div className="border-b border-neutral-200 pb-4">
+              <p>{subtitle}</p>
+            </div>
+          </div>
           <div className="space-y-4">
             {lineItems.map((item) => (
               <div
-                className="border-b border-neutral-200 pb-2"
+                className="border-b border-neutral-200 pb-4"
                 key={item.title}
               >
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold">{item.title}:</span>
+                <div className="flex justify-between font-bold items-center">
+                  <span>{item.title}</span>
                   <NearTokenAmount amount={item.amount} />
                 </div>
                 <p className="text-sm mt-1 text-neutral-600">
@@ -42,7 +46,7 @@ export const DepositTooltip = ({
                 </p>
               </div>
             ))}
-            <div className="pt-2 font-bold">
+            <div className="font-bold">
               <div className="flex justify-between items-center">
                 <span>Total Required:</span>
                 <NearTokenAmount amount={totalDeposit} />
@@ -52,7 +56,7 @@ export const DepositTooltip = ({
         </div>
       }
     >
-      <InfoIcon size={14} className="opacity-60" />
+      <InfoIcon size={14} />
     </TooltipWithTap>
   );
 };
