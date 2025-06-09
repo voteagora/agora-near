@@ -66,7 +66,7 @@ export const ReviewStep = memo(
           amount={venearAmount ?? "0"}
           hideCurrency
           minimumFractionDigits={4}
-          className="tabular-nums text-lg"
+          className="font-bold text-lg"
         />
       );
     }, [venearAmount]);
@@ -273,69 +273,65 @@ export const ReviewStep = memo(
             Edit
           </button>
         </div>
-        <div className="flex flex-col gap-3 text-sm border-b border-line pb-4">
-          <div className="flex flex-row justify-between items-center">
-            <span className="text-secondary">Amount locking</span>
-            <span className="text-primary font-medium tabular-nums text-base">
-              <NearTokenAmount
-                amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
-                minimumFractionDigits={4}
-                currency={selectedToken?.metadata?.symbol}
-              />
-            </span>
-          </div>
-          <div className="flex flex-row justify-between items-center">
-            <span className="font-bold">APY</span>
-            <span className="text-primary font-medium tabular-nums text-base">
-              {annualAPY}%
-            </span>
+        <div className="flex flex-col text-sm border-b border-line">
+          <div className="flex flex-row justify-between items-start py-4">
+            <div className="flex flex-col">
+              <span className="font-bold text-primary">Amount locking</span>
+              <span className="text-secondary text-xs">{annualAPY}% APY</span>
+            </div>
+            <NearTokenAmount
+              amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
+              minimumFractionDigits={4}
+              currency={selectedToken?.metadata?.symbol}
+              className="font-bold"
+            />
           </div>
           {Big(depositTotal).gt(0) && (
-            <div className="flex flex-row justify-between items-center">
-              <div className="flex items-center text-secondary gap-1">
-                Deposit fees
-                <DepositTooltip
-                  totalDeposit={depositTotal}
-                  title="Voting Requirements"
-                  subtitle="To participate in voting you'll need to make two deposits:"
-                  lineItems={[
-                    {
-                      amount: venearStorageCost,
-                      title: "Account Deposit",
-                      description:
-                        "This covers your account storage in the veNEAR contract. This amount is locked immediately and cannot be withdrawn.",
-                    },
-                    {
-                      amount: lockupStorageCost,
-                      title: "Lockup Deposit",
-                      description:
-                        "This covers your lockup contract's deployment and storage costs. This is refundable, and can be locked but cannot be staked.",
-                    },
-                  ]}
-                />
-              </div>
-              <span className="text-primary font-medium tabular-nums text-base">
+            <>
+              <div className="border-t border-gray-200"></div>
+              <div className="flex flex-row justify-between items-center py-4">
+                <div className="flex items-center gap-1">
+                  <span className="font-bold text-primary">Deposit fees</span>
+                  <DepositTooltip
+                    totalDeposit={depositTotal}
+                    title="Voting Requirements"
+                    subtitle="To participate in voting you'll need to make two deposits:"
+                    lineItems={[
+                      {
+                        amount: venearStorageCost,
+                        title: "Account Deposit",
+                        description:
+                          "This covers your account storage in the veNEAR contract. This amount is locked immediately and cannot be withdrawn.",
+                      },
+                      {
+                        amount: lockupStorageCost,
+                        title: "Lockup Deposit",
+                        description:
+                          "This covers your lockup contract's deployment and storage costs. This is refundable, and can be locked but cannot be staked.",
+                      },
+                    ]}
+                  />
+                </div>
                 <NearTokenAmount
                   amount={depositTotal ?? "0"}
                   minimumFractionDigits={4}
+                  className="font-bold"
                 />
-              </span>
-            </div>
+              </div>
+            </>
           )}
-          <div className="flex flex-row justify-between items-center">
-            <span className="text-secondary">Gas reserve</span>
+          <div className="border-t border-gray-200"></div>
+          <div className="flex flex-row justify-between items-center py-4">
+            <span className="font-bold text-primary">Gas reserve</span>
             <NearTokenAmount
               amount={DEFAULT_GAS_RESERVE}
-              className="text-primary font-medium tabular-nums text-base"
+              className="font-bold"
             />
           </div>
         </div>
-
-        <div className="flex flex-row justify-between items-center">
-          <span className="text-secondary font-medium">Total veNEAR est.</span>
-          <span className="text-primary font-bold text-2xl tabular-nums">
-            {formattedVeNearAmount}
-          </span>
+        <div className="flex flex-col items-end">
+          <span>Total est. veNEAR</span>
+          {formattedVeNearAmount}
         </div>
 
         <div className="flex-1 flex flex-col justify-end pb-4">
