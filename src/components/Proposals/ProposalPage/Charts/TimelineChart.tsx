@@ -19,8 +19,7 @@ import {
   isScientificNotation,
 } from "@/lib/utils";
 import { rgbStringToHex } from "@/app/lib/utils/color";
-import { getHumanBlockTime } from "@/lib/blockTimes";
-import { Block } from "ethers";
+import { getNearBlockTime } from "@/lib/utils";
 import { useLatestBlock } from "@/hooks/useLatestBlock";
 import { useEffect, useState } from "react";
 import { ChartSkeleton } from "@/components/Proposals/ProposalPage/ProposalChart/ProposalChart";
@@ -209,7 +208,7 @@ const transformVotesToChartData = ({
       for: forCount,
       abstain: abstain,
       against: against,
-      timestamp: getHumanBlockTime(vote.blockHeight, blockTime, blockHeight),
+      timestamp: getNearBlockTime(vote.blockHeight, blockTime, blockHeight),
       total: forCount + abstain + against,
     };
   });

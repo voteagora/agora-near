@@ -57,12 +57,84 @@ export function getSecondsPerBlock(chainId: number | undefined): number {
  * @description Converts a block number to a human-readable date
  */
 export function getHumanBlockTime(
-  blockNumber: number,
-  referenceTime: number,
-  referenceBlock: number
+  blockNumber: number | string | bigint,
+  latestBlock: Block,
+  forceTokenChain: boolean = false
 ) {
-  const refDate = new Date(referenceTime / 1000000);
-  const blockDiff = blockNumber - referenceBlock;
-  const estimatedDate = new Date(refDate.getTime() + blockDiff * 1000);
-  return estimatedDate;
+  const chainIdToUse = forceTokenChain ? forceTokenChainId : chainId;
+  switch (chainIdToUse) {
+    // Optimism
+    case 10: {
+      const blockSeconds = getSecondsPerBlock(chainIdToUse);
+      const secondsPerBlockBeforeBedrock = 0.5;
+      const bedrockBlockNumber = 105235062;
+
+      const blocksBeforeBedrock = Math.max(
+        bedrockBlockNumber - Number(blockNumber),
+        0
+      );
+      const blocksAfterBedrock = Math.min(
+        Number(latestBlock.number) - bedrockBlockNumber,
+        Number(latestBlock.number) - Number(blockNumber)
+      );
+
+      const timeBeforeBedrock =
+        blocksBeforeBedrock * secondsPerBlockBeforeBedrock;
+      const timeAfterBedrock = blocksAfterBedrock * blockSeconds;
+
+      return new Date(
+        (latestBlock.timestamp - timeBeforeBedrock - timeAfterBedrock) * 1000
+      );
+    }
+
+    //   Scroll
+    case 534352:
+      const blockSeconds = getSecondsPerBlock(chainIdToUse);
+      const estScrollSecondsDiff =
+        (Number(latestBlock.number) - Number(blockNumber)) * blockSeconds;
+      return new Date((latestBlock.timestamp - estScrollSecondsDiff) * 1000);
+
+    // Derive Mainnet
+    // Derive Testnet
+    case 957: // Testnet
+    case 901: {
+      const blockSeconds = getSecondsPerBlock(chainIdToUse);
+      const estNewDaoSecondsDiff =
+        (Number(latestBlock.number) - Number(blockNumber)) * blockSeconds;
+      return new Date((latestBlock.timestamp - estNewDaoSecondsDiff) * 1000);
+    }
+
+    //   Cyber Mainnet
+    //   Cyber Testnet
+    case 7560:
+    case 111557560: {
+      const blockSeconds = getSecondsPerBlock(chainIdToUse);
+      const estCyberSecondsDiff =
+        (Number(latestBlock.number) - Number(blockNumber)) * blockSeconds;
+      return new Date((latestBlock.timestamp - estCyberSecondsDiff) * 1000);
+    }
+
+    // Arbitrum one
+    // Arbitrum sepolia
+    case 42161:
+    case 421614: {
+      const blockSeconds = getSecondsPerBlock(chainIdToUse);
+      const estArbitrumSecondsDiff =
+        (Number(latestBlock.number) - Number(blockNumber)) * blockSeconds;
+      return new Date((latestBlock.timestamp - estArbitrumSecondsDiff) * 1000);
+    }
+
+    //   Ethereum Mainnet
+    //   Ethereum Sepolia
+    case 1:
+    case 11155111: {
+      const blockSeconds = getSecondsPerBlock(chainIdToUse);
+      const estEthSecondsDiff =
+        (Number(latestBlock.number) - Number(blockNumber)) * blockSeconds;
+      return new Date((latestBlock.timestamp - estEthSecondsDiff) * 1000);
+    }
+
+    default:
+      return new Date();
+  }
 }

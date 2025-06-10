@@ -709,3 +709,14 @@ export const formatNearBlockHash = (blockHash?: string) => {
 
   return `${blockHash.slice(0, 6)}...${blockHash.slice(-6)}`;
 };
+
+export const getNearBlockTime = (
+  blockNumber: number,
+  referenceTime: number,
+  referenceBlock: number
+) => {
+  const refDate = new Date(referenceTime / 1000000);
+  const blockDiff = blockNumber - referenceBlock;
+  const estimatedDate = new Date(refDate.getTime() + blockDiff * 1000);
+  return estimatedDate;
+};
