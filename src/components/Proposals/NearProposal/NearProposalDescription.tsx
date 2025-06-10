@@ -2,7 +2,7 @@ import Markdown from "@/components/shared/Markdown/Markdown";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import styles from "./NearProposalDescription.module.scss";
-import { formatNearAccountId } from "@/lib/utils";
+import ProposalChart from "../ProposalPage/ProposalChart/ProposalChart";
 
 export default function NearProposalDescription({
   proposal,
@@ -33,6 +33,7 @@ export default function NearProposalDescription({
         </div>
         <h2 className="font-black text-2xl text-primary">{proposal.title}</h2>
       </div>
+      {proposal.voting_start_time_ns && <ProposalChart proposal={proposal} />}
       <div className="flex flex-col gap-2">
         <div className={styles.proposal_description_md}>
           <Markdown content={proposal.description ?? ""} />

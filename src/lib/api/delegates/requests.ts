@@ -31,7 +31,7 @@ export const getDelegate = async (address: string) => {
 export const fetchDelegates = async (
   pageSize: number,
   page: number,
-  orderBy: string | null,
+  orderBy: string | null
 ) => {
   const orderByParam = orderBy ? `&order_by=${orderBy}` : "";
   const { data } = await axios.get<GetDelegatesResponse>(

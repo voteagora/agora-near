@@ -16,3 +16,11 @@ export const fetchProposalVotes = async (
 
   return response.data;
 };
+
+export const fetchProposalChartData = async (proposalId: string) => {
+  const response = await axios.get<{
+    data: ProposalVotingHistoryRecord[];
+  }>(`${Endpoint.Proposals}/${proposalId}/charts`);
+
+  return response.data;
+};

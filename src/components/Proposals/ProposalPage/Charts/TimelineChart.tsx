@@ -11,7 +11,6 @@ import {
   YAxis,
 } from "recharts";
 import { format } from "date-fns";
-import { Proposal } from "@/app/api/common/proposals/proposal";
 import Tenant from "@/lib/tenant/tenant";
 import {
   formatFullDate,
@@ -19,20 +18,22 @@ import {
   formatNumberWithScientificNotation,
   isScientificNotation,
 } from "@/lib/utils";
-import { TENANT_NAMESPACES } from "@/lib/constants";
 import { rgbStringToHex } from "@/app/lib/utils/color";
-import { ChartVote } from "@/lib/types";
 import { getHumanBlockTime } from "@/lib/blockTimes";
 import { Block } from "ethers";
 import { useLatestBlock } from "@/hooks/useLatestBlock";
 import { useEffect, useState } from "react";
 import { ChartSkeleton } from "@/components/Proposals/ProposalPage/ProposalChart/ProposalChart";
-import { isProposalCreatedBeforeUpgradeCheck } from "@/lib/proposalUtils";
-const { token, namespace, ui } = Tenant.current();
+import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
+import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { formatNearTime, getNearQuorum } from "@/lib/nearProposalUtils";
+import { useNearCurrentBlock } from "@/hooks/useNearCurrentBlock";
+
+const { token, ui } = Tenant.current();
 
 interface Props {
-  proposal: Proposal;
-  votes: ChartVote[];
+  proposal: ProposalInfo;
+  votes: ProposalVotingHistoryRecord[];
 }
 
 type ChartData = {
@@ -47,40 +48,34 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
   const { data: block } = useLatestBlock({ enabled: true });
   const [chartData, setChartData] = useState<ChartData[] | null>(null);
 
-  const isProposalCreatedBeforeUpgrade =
-    isProposalCreatedBeforeUpgradeCheck(proposal);
+  const startTime = formatNearTime(proposal.voting_start_time_ns);
+  const endTime = formatNearTime(
+    (
+      Number(proposal.voting_start_time_ns) +
+      Number(proposal.voting_duration_ns)
+    ).toString()
+  );
+  const quorum = getNearQuorum(proposal);
 
-  let stackIds: { [key: string]: string } = {
-    for: "1",
-    abstain: "1",
+  const { blockTime, blockHeight } = useNearCurrentBlock();
+
+  const stackIds: { [key: string]: string } = {
+    for: "0",
+    abstain: "2",
     against: "1",
   };
 
-  /**
-   * This is a temporary fix for ENS and UNI.
-   * https://voteagora.atlassian.net/browse/ENG-903
-   * ENS does not count against votes in the quorum calculation.
-   * UNI does not count against or abstain votes in the quorum calculation.
-   * This is a temporary fix stack for + abstain, but not against.
-   * A future fix will read each tenant and stack depending on how the tenant counts quorum.
-   */
-  if (namespace === TENANT_NAMESPACES.ENS) {
-    stackIds.against = "2";
-  } else if (namespace === TENANT_NAMESPACES.UNISWAP) {
-    stackIds.against = "2";
-    stackIds.abstain = "3";
-  }
-
   useEffect(() => {
-    if (block && !chartData) {
+    if (block && !chartData && blockTime && blockHeight) {
       const transformedData = transformVotesToChartData({
         votes: votes,
-        block,
+        blockTime,
+        blockHeight,
       });
 
       setChartData([
         {
-          timestamp: proposal.startTime,
+          timestamp: startTime ? new Date(startTime) : null,
           for: 0,
           against: 0,
           abstain: 0,
@@ -88,7 +83,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
         },
         ...transformedData,
         {
-          timestamp: proposal.endTime,
+          timestamp: endTime ? new Date(endTime) : null,
           for: transformedData[transformedData.length - 1]?.for,
           abstain: transformedData[transformedData.length - 1]?.abstain,
           against: transformedData[transformedData.length - 1]?.against,
@@ -96,7 +91,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
         },
       ]);
     }
-  }, [block, chartData]);
+  }, [block, chartData, blockTime, blockHeight, votes]);
 
   if (!chartData || !block) return <ChartSkeleton />;
 
@@ -115,8 +110,8 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
             tickLine={false}
             interval="preserveStartEnd"
             ticks={[
-              (proposal.startTime as unknown as string) || "",
-              (proposal.endTime as unknown as string) || "",
+              (startTime as unknown as string) || "",
+              (endTime as unknown as string) || "",
             ]}
             tickFormatter={tickFormatter}
             tick={customizedXTick}
@@ -139,17 +134,14 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
             domain={[
               0,
               (dataMax: number) => {
-                const quorumValue = proposal.quorum
-                  ? +proposal.quorum.toString()
-                  : 0;
                 // Add 10% padding above the higher value between dataMax and quorum
-                return Math.max(dataMax, quorumValue) * 1.1;
+                return Math.max(dataMax, quorum) * 1.1;
               },
             ]}
           />
-          {!!proposal.quorum && !isProposalCreatedBeforeUpgrade && (
+          {!!quorum && (
             <ReferenceLine
-              y={+proposal.quorum.toString()}
+              y={quorum.toString()}
               strokeWidth={1}
               strokeDasharray="3 3"
               stroke="#4F4F4F"
@@ -163,11 +155,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
           )}
 
           <Tooltip
-            content={
-              <CustomTooltip
-                quorum={isProposalCreatedBeforeUpgrade ? null : proposal.quorum}
-              />
-            }
+            content={<CustomTooltip quorum={quorum} />}
             cursor={{ stroke: "#666", strokeWidth: 1, strokeDasharray: "4 4" }}
           />
           <Area
@@ -177,14 +165,6 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
             stroke={rgbStringToHex(ui.customization?.negative)}
             fill={rgbStringToHex(ui.customization?.negative)}
             name="Against"
-          />
-          <Area
-            type="step"
-            dataKey="abstain"
-            stackId={1}
-            stroke={rgbStringToHex(ui.customization?.tertiary)}
-            fill={rgbStringToHex(ui.customization?.tertiary)}
-            name="Abstain"
           />
           <Area
             type="step"
@@ -205,26 +185,31 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
  */
 const transformVotesToChartData = ({
   votes,
-  block,
+  blockTime,
+  blockHeight,
 }: {
-  votes: ChartVote[];
-  block: Block;
+  votes: ProposalVotingHistoryRecord[];
+  blockTime: number;
+  blockHeight: number;
 }) => {
   let forCount = 0;
   let abstain = 0;
   let against = 0;
 
   return votes.map((vote) => {
-    forCount = vote.support === "1" ? forCount + Number(vote.weight) : forCount;
-    abstain = vote.support === "2" ? abstain + Number(vote.weight) : abstain;
-    against = vote.support === "0" ? against + Number(vote.weight) : against;
+    forCount =
+      vote.voteOption === "0" ? forCount + Number(vote.votingPower) : forCount;
+    abstain =
+      vote.voteOption === "2" ? abstain + Number(vote.votingPower) : abstain;
+    against =
+      vote.voteOption === "1" ? against + Number(vote.votingPower) : against;
 
     return {
-      weight: Number(vote.weight),
+      weight: Number(vote.votingPower),
       for: forCount,
       abstain: abstain,
       against: against,
-      timestamp: getHumanBlockTime(vote.block_number, block),
+      timestamp: getHumanBlockTime(vote.blockHeight, blockTime, blockHeight),
       total: forCount + abstain + against,
     };
   });
@@ -267,7 +252,6 @@ const customizedXTick = (props: any) => {
 const CustomTooltip = ({ active, payload, label, quorum }: any) => {
   const forVotes = payload.find((p: any) => p.name === "For");
   const againstVotes = payload.find((p: any) => p.name === "Against");
-  const abstainVotes = payload.find((p: any) => p.name === "Abstain");
   const voteOrder = ["For", "Against", "Abstain"];
 
   if (active && payload && payload.length) {
@@ -275,30 +259,15 @@ const CustomTooltip = ({ active, payload, label, quorum }: any) => {
       (a, b) => voteOrder.indexOf(a.name) - voteOrder.indexOf(b.name)
     );
 
-    let quorumVotes =
-      BigInt(forVotes.value) +
-      BigInt(abstainVotes.value) +
-      BigInt(againstVotes.value);
-
-    /**
-     * ENS does not count against votes in the quorum calculation.
-     */
-    if (namespace === TENANT_NAMESPACES.ENS) {
-      quorumVotes = quorumVotes - BigInt(againstVotes.value);
-    }
-
-    /**
-     * Only FOR votes are counted towards quorum for Uniswap.
-     */
-    if (namespace === TENANT_NAMESPACES.UNISWAP) {
-      quorumVotes = BigInt(forVotes.value);
-    }
+    const quorumVotes = BigInt(forVotes.value) + BigInt(againstVotes.value);
 
     return (
       <div className="bg-neutral p-3 border border-line rounded-lg shadow-newDefault">
-        <p className="text-xs font-semibold mb-2 text-primary">
-          {formatFullDate(new Date(label))}
-        </p>
+        {label && (
+          <p className="text-xs font-semibold mb-2 text-primary">
+            {formatFullDate(new Date(label))}
+          </p>
+        )}
         {sortedPayload.map((entry: any) => (
           <div
             key={entry.name}

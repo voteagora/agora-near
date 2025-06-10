@@ -6,17 +6,22 @@ import TreeMapChart from "../TreeMapChart/TreeMapChart";
 import BubbleChart from "../BubbleChart/BubbleChart";
 import { icons } from "@/icons/icons";
 import Image from "next/image";
-import { Proposal } from "@/app/api/common/proposals/proposal";
-import { useProposalVotesChart } from "@/hooks/useProposalVotesChart";
+import { useProposalChartData } from "@/hooks/useNearProposalChartData";
+import { ProposalInfo } from "@/lib/contracts/types/voting";
 
-export default function ProposalChart({ proposal }: { proposal: Proposal }) {
+export default function ProposalChart({
+  proposal,
+}: {
+  proposal: ProposalInfo;
+}) {
   const [tabIndex, setTabIndex] = useState(0);
-  const [showChart, setShowChart] = useState(proposal.status === "ACTIVE");
+  const [showChart, setShowChart] = useState(true);
 
-  const { data: votes } = useProposalVotesChart({
-    enabled: showChart,
-    proposalId: proposal.id,
+  const { data: chartData } = useProposalChartData({
+    proposalId: String(proposal.id),
   });
+
+  const votes = chartData?.data ?? [];
 
   const tabs = [
     { name: "Timeline", index: 0 },
@@ -65,7 +70,7 @@ export default function ProposalChart({ proposal }: { proposal: Proposal }) {
       </div>
       {showChart && (
         <>
-          {votes ? (
+          {votes.length > 0 ? (
             <div className="tab-panels">
               {tabIndex === 0 && (
                 <div className="tab-panel">

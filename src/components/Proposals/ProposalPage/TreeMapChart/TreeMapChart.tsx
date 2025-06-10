@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState, useMemo, memo } from "react";
 import * as d3 from "d3";
 import { useRouter } from "next/navigation";
-import { Proposal } from "@/app/api/common/proposals/proposal";
-import { ChartVote } from "@/lib/types";
 import ENSName from "@/components/shared/ENSName";
 import Tenant from "@/lib/tenant/tenant";
 import { rgbStringToHex } from "@/app/lib/utils/color";
 import { Plus, Minus, RotateCcw } from "lucide-react";
+import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
+import { ProposalInfo } from "@/lib/contracts/types/voting";
 
 // TreeMap constants
 const CHART_DIMENSIONS = {
@@ -32,17 +32,17 @@ interface TreeNode
     children?: Array<{ address: string; support: string; value: number }>;
   }> {}
 
-const transformVotesToTreeData = (votes: ChartVote[]) => {
+const transformVotesToTreeData = (votes: ProposalVotingHistoryRecord[]) => {
   const sortedVotes = votes
-    .filter((vote) => Number(vote.weight) > 0)
-    .sort((a, b) => Number(b.weight) - Number(a.weight))
+    .filter((vote) => Number(vote.votingPower) > 0)
+    .sort((a, b) => Number(b.votingPower) - Number(a.votingPower))
     .slice(0, CHART_DIMENSIONS.maxVotes);
 
   return {
     children: sortedVotes.map((vote) => ({
-      address: vote.voter,
-      support: vote.support,
-      value: Math.max(Number(vote.weight), 0.000001),
+      address: vote.accountId,
+      support: vote.voteOption === "0" ? "1" : "0",
+      value: Math.max(Number(vote.votingPower), 0.000001),
     })),
   };
 };
@@ -151,8 +151,8 @@ export default function TreeMapChart({
   proposal,
   votes,
 }: {
-  proposal: Proposal;
-  votes: ChartVote[];
+  proposal: ProposalInfo;
+  votes: ProposalVotingHistoryRecord[];
 }) {
   const [nodes, setNodes] = useState<TreeNode[]>([]);
   const [transform, setTransform] = useState(() =>
