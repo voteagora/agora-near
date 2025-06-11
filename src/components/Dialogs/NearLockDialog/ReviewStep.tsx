@@ -1,5 +1,5 @@
-import LockClosedIcon from "@/assets/icons/lock_closed.svg";
-import LockOpenIcon from "@/assets/icons/lock_open.svg";
+import LockClosedIcon from "@/assets/icons/Locked.png";
+import LockOpenIcon from "@/assets/icons/Locking.png";
 import { UpdatedButton } from "@/components/Button";
 import { useTransactionExecution } from "@/hooks/useTransactionExecution";
 import { DEFAULT_GAS_RESERVE } from "@/lib/constants";
@@ -140,7 +140,12 @@ export const ReviewStep = memo(
                     />
                   </svg>
                 </div>
-                <Image src={LockClosedIcon} alt="lock" width={40} height={40} />
+                <Image
+                  src={LockClosedIcon}
+                  alt="lock"
+                  width={300}
+                  height={300}
+                />
               </div>
 
               <div className="flex flex-col gap-2 text-center">
@@ -178,7 +183,7 @@ export const ReviewStep = memo(
       return (
         <div className="flex flex-col items-center justify-center w-full h-full">
           <div className="flex-1 flex flex-col justify-end items-center gap-6">
-            <Image src={LockClosedIcon} alt="coin" width={40} height={40} />
+            <Image src={LockClosedIcon} alt="coin" width={300} />
             <div className="flex flex-col">
               <p className="text-md text-[#9D9FA1] text-center">
                 {transactionText}
@@ -218,7 +223,7 @@ export const ReviewStep = memo(
       return (
         <div className="flex flex-col items-center justify-center w-full h-full">
           <div className="flex-1 flex flex-col justify-end items-center gap-6">
-            <Image src={LockOpenIcon} alt="coin" width={40} height={40} />
+            <Image src={LockOpenIcon} alt="coin" width={300} height={300} />
             <div className="flex flex-col">
               <p className="text-md text-[#9D9FA1] text-center">
                 {transactionText}

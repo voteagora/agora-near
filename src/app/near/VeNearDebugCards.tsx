@@ -363,12 +363,12 @@ export default function VeNearDebugCards() {
               openDialog({
                 type: "NEAR_LOCK",
                 params: {
-                  source: "onboarding",
+                  source: accountInfo ? "account_management" : "onboarding",
                 },
               })
             }
           >
-            Launch onboarding
+            Open locking modal
           </Button>
         </div>
         {isLoadingAccount ? (
@@ -605,7 +605,7 @@ export default function VeNearDebugCards() {
               })
             }
           >
-            Launch staking onboarding
+            Open staking modal
           </Button>
         </CardHeader>
         <CardContent>

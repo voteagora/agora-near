@@ -1,4 +1,4 @@
-import coin from "@/assets/icons/coin.svg";
+import coin from "@/assets/icons/Staking.png";
 import { UpdatedButton } from "@/components/Button";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import Image from "next/image";
@@ -25,7 +25,7 @@ export const StakingSubmitting = ({
   return (
     <div className="flex flex-col h-full items-center w-full justify-center">
       <div className="flex-1 flex flex-col justify-end items-center gap-6">
-        <Image src={coin} alt="coin" width={60} height={60} />
+        <Image src={coin} alt="coin" width={300} height={300} />
         <div className="text-center">
           <p className="text-md text-gray-500 mb-2">{stepMessage}</p>
           <div className="text-4xl font-bold text-gray-900">

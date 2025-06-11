@@ -19,7 +19,7 @@ const DEFAULT_BALANCE_FOR_PROJECTION = 5000;
 
 export const AssetsLandingPage = memo(() => {
   const openDialog = useOpenDialog();
-  const { signedAccountId } = useNear();
+  const { signedAccountId, signIn } = useNear();
   const { data: accountInfo, isLoading: isLoadingAccount } =
     useVenearAccountInfo(signedAccountId);
 
@@ -44,13 +44,18 @@ export const AssetsLandingPage = memo(() => {
   }, [stats]);
 
   const handleStakeAndLock = useCallback(() => {
+    if (!signedAccountId) {
+      signIn();
+      return;
+    }
+
     openDialog({
       type: "NEAR_LOCK",
       params: {
         source: accountInfo ? "account_management" : "onboarding",
       },
     });
-  }, [openDialog, accountInfo]);
+  }, [signedAccountId, openDialog, accountInfo, signIn]);
 
   const handleProjectionChange = useCallback(
     (projection: { amount: number; years: number }) => {
