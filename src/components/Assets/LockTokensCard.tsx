@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import LockOpenIcon from "@/assets/icons/lock_open.svg";
+import LockClosedIcon from "@/assets/icons/lock_closed.svg";
 
 import Image from "next/image";
 import { ArrowRightIcon } from "lucide-react";
@@ -24,7 +24,7 @@ export const LockTokensCard = memo(
         style={{ backgroundColor: "#00E391" }}
       >
         <CardContent className="p-6 flex flex-col gap-8">
-          <Image src={LockOpenIcon} alt="coin" width={40} height={40} />
+          <Image src={LockClosedIcon} alt="coin" width={40} height={40} />
           <div className="text-black">
             <h3 className="text-2xl font-bold mb-2">Lock Tokens</h3>
             <p className="text-lg mb-4">Get boosted voting power!</p>
