@@ -11,7 +11,7 @@ type NearLockDialogProps = {
 export const NearLockDialog = (props: NearLockDialogProps) => {
   return (
     <LockProvider source={props.source}>
-      <NearLockDialogContent />
+      <NearLockDialogContent closeDialog={props.closeDialog} />
     </LockProvider>
   );
 };

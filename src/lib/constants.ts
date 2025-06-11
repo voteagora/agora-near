@@ -1,5 +1,5 @@
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
-import { TenantToken, TokenMetadata } from "./types";
+import { StakingPool, TenantToken, TokenMetadata } from "./types";
 import nearAssetIcon from "@/assets/icons/near_icon.jpg";
 import linearAssetIcon from "@/assets/icons/linear.svg";
 import stnearAssetIcon from "@/assets/icons/stnear.svg";
@@ -205,3 +205,22 @@ export const VENEAR_TOKEN_METADATA: TokenMetadata = {
 };
 
 export const DEFAULT_GAS_RESERVE = "200000000000000000000000"; // 0.2 NEAR
+
+export const LINEAR_POOL: StakingPool = {
+  id: "linear",
+  contracts: {
+    testnet: LINEAR_TOKEN_CONTRACTS.testnet,
+    mainnet: LINEAR_TOKEN_CONTRACTS.mainnet,
+  },
+  metadata: LINEAR_TOKEN_METADATA,
+};
+
+export const STNEAR_POOL: StakingPool = {
+  id: "stnear",
+  contracts: {
+    testnet: STNEAR_TOKEN_CONTRACTS.testnet,
+    mainnet: STNEAR_TOKEN_CONTRACTS.mainnet,
+  },
+  priceMethod: "get_st_near_price",
+  metadata: STNEAR_TOKEN_METADATA,
+};

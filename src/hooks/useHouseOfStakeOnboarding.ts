@@ -150,10 +150,7 @@ export const useHouseOfStakeOnboarding = () => {
 
       if (availableToStake) {
         setStep(Step.STAKE_NEAR);
-        await stakeNear(
-          availableToStake,
-          currentStakingPoolId ?? preferredStakingPoolId
-        );
+        await stakeNear(availableToStake);
       }
     }
 

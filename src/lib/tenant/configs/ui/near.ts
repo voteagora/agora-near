@@ -176,7 +176,7 @@ export const nearTenantUIConfig = new TenantUI({
     },
     {
       name: "assets",
-      enabled: false,
+      enabled: true,
     },
   ],
 });

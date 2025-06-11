@@ -709,3 +709,39 @@ export const formatNearBlockHash = (blockHash?: string) => {
 
   return `${blockHash.slice(0, 6)}...${blockHash.slice(-6)}`;
 };
+
+export const convertStakingTokenToNear = (
+  stakingTokenAmount?: string | null,
+  exchangeRate?: string | null
+) => {
+  if (!stakingTokenAmount || !exchangeRate) return "0";
+
+  try {
+    const nearAmount = new Big(stakingTokenAmount)
+      .div(10 ** NEAR_NOMINATION_EXP)
+      .times(new Big(exchangeRate));
+
+    return nearAmount.toFixed(0);
+  } catch (e) {
+    return "0";
+  }
+};
+
+export const convertNearToStakingToken = (
+  nearAmount?: string | null,
+  exchangeRate?: string | null
+) => {
+  if (!nearAmount || !exchangeRate) return "0";
+
+  try {
+    const stakingTokenPerNear = Big(10 ** NEAR_NOMINATION_EXP).div(
+      Big(exchangeRate)
+    );
+
+    const convertedAmount = stakingTokenPerNear.mul(Big(nearAmount));
+
+    return convertedAmount.toFixed(0);
+  } catch (e) {
+    return "0";
+  }
+};

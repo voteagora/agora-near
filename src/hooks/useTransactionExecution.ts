@@ -18,6 +18,7 @@ export const useTransactionExecution = () => {
     requiredTransactions,
     lockNear,
     getAmountToLock,
+    lockingNearError,
   } = useLockProviderContext();
 
   const [transactionText, setTransactionText] = useState<string>("");
@@ -25,16 +26,22 @@ export const useTransactionExecution = () => {
   const [numTransactions, setNumTransactions] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const { transferNear, transferFungibleToken } = useNear();
 
-  const { registerAndDeployLockupAsync } = useRegisterLockup({});
+  const { registerAndDeployLockupAsync, error: registerAndDeployLockupError } =
+    useRegisterLockup({});
 
-  const { selectStakingPoolAsync } = useSelectStakingPool({
-    lockupAccountId: lockupAccountId ?? "",
-  });
+  const { selectStakingPoolAsync, error: selectStakingPoolError } =
+    useSelectStakingPool({
+      lockupAccountId: lockupAccountId ?? "",
+    });
 
-  const refreshStakingPoolBalance = useRefreshStakingPoolBalance({
+  const {
+    refreshStakingPoolBalanceAsync,
+    error: refreshStakingPoolBalanceError,
+  } = useRefreshStakingPoolBalance({
     lockupAccountId: lockupAccountId ?? "",
   });
 
@@ -84,7 +91,7 @@ export const useTransactionExecution = () => {
           });
           break;
         case "refresh_balance":
-          await refreshStakingPoolBalance();
+          await refreshStakingPoolBalanceAsync();
           break;
         case "lock_near": {
           const amountToLock = await getAmountToLock();
@@ -100,7 +107,7 @@ export const useTransactionExecution = () => {
       lockNear,
       lockupAccountId,
       lockupDeploymentCost,
-      refreshStakingPoolBalance,
+      refreshStakingPoolBalanceAsync,
       registerAndDeployLockupAsync,
       selectStakingPoolAsync,
       selectedToken?.accountId,
@@ -128,7 +135,7 @@ export const useTransactionExecution = () => {
         setIsCompleted(true);
         setTransactionText("Locked");
       } catch (e) {
-        console.error(`Error executing transaction: ${JSON.stringify(e)}`);
+        setError(e instanceof Error ? e : new Error(String(e)));
       } finally {
         setIsSubmitting(false);
       }
@@ -143,5 +150,11 @@ export const useTransactionExecution = () => {
     isSubmitting,
     isCompleted,
     executeTransactions,
+    error:
+      registerAndDeployLockupError ||
+      selectStakingPoolError ||
+      refreshStakingPoolBalanceError ||
+      lockingNearError ||
+      error,
   };
 };

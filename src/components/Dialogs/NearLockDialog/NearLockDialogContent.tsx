@@ -5,12 +5,24 @@ import { useLockProviderContext } from "../LockProvider";
 import { AssetSelector } from "./AssetSelector";
 import { EnterAmountStep } from "./EnterAmountStep";
 import { ReviewStep } from "./ReviewStep";
+import { useOpenDialog } from "../DialogProvider/DialogProvider";
+import { LockDialogHeader } from "./LockDialogHeader";
+import { useRouter } from "next/navigation";
 
-export function NearLockDialogContent() {
-  const { setSelectedToken, isLoading, resetForm } = useLockProviderContext();
+type DialogContentProps = {
+  closeDialog: () => void;
+};
+
+export function NearLockDialogContent({ closeDialog }: DialogContentProps) {
+  const { setSelectedToken, isLoading, resetForm, source } =
+    useLockProviderContext();
+
+  const router = useRouter();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isAssetSelectorOpen, setIsAssetSelectorOpen] = useState(false);
+
+  const openDialog = useOpenDialog();
 
   const handleReview = () => {
     setCurrentStep(2);
@@ -42,6 +54,21 @@ export function NearLockDialogContent() {
     [setSelectedToken, resetForm, closeAssetSelector]
   );
 
+  const proceedToStaking = useCallback(() => {
+    closeDialog();
+    openDialog({
+      type: "NEAR_STAKING",
+      params: {
+        source,
+      },
+    });
+  }, [closeDialog, openDialog, source]);
+
+  const handleViewDashboard = useCallback(() => {
+    closeDialog();
+    router.push("/assets");
+  }, [closeDialog, router]);
+
   const content = useMemo(() => {
     if (isAssetSelectorOpen) {
       return <AssetSelector handleTokenSelect={handleTokenSelect} />;
@@ -49,21 +76,36 @@ export function NearLockDialogContent() {
 
     if (currentStep === 1) {
       return (
-        <EnterAmountStep
-          openAssetSelector={openAssetSelector}
-          handleReview={handleReview}
-        />
+        <div className="flex flex-col gap-2 h-full">
+          <LockDialogHeader />
+          <EnterAmountStep
+            openAssetSelector={openAssetSelector}
+            handleReview={handleReview}
+          />
+        </div>
       );
     }
 
     if (currentStep === 2) {
       return (
-        <ReviewStep handleEdit={handleEdit} handleLockMore={handleLockMore} />
+        <ReviewStep
+          handleEdit={handleEdit}
+          handleLockMore={handleLockMore}
+          handleProceedToStaking={proceedToStaking}
+          handleViewDashboard={handleViewDashboard}
+        />
       );
     }
 
     return null;
-  }, [currentStep, handleTokenSelect, isAssetSelectorOpen, openAssetSelector]);
+  }, [
+    currentStep,
+    handleTokenSelect,
+    handleViewDashboard,
+    isAssetSelectorOpen,
+    openAssetSelector,
+    proceedToStaking,
+  ]);
 
   if (isLoading) {
     return (
