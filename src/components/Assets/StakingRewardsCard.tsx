@@ -1,16 +1,17 @@
 "use client";
 
-import { memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 
 interface StakingRewardsCardProps {
   apy: string;
   className?: string;
+  isLoadingApy: boolean;
 }
 
 export const StakingRewardsCard = memo(
-  ({ apy, className }: StakingRewardsCardProps) => {
+  ({ apy, className, isLoadingApy }: StakingRewardsCardProps) => {
     return (
       <Card
         className={cn(
@@ -25,9 +26,13 @@ export const StakingRewardsCard = memo(
               <p className="text-sm mb-4 text-white">
                 Keep your tokens working!
               </p>
-              <div className="flex flex-col">
+              <div className="flex flex-col items-center gap-1">
                 <span className="text-sm text-white">up to</span>
-                <span className="text-6xl font-bold">{apy}%</span>
+                {isLoadingApy ? (
+                  "--"
+                ) : (
+                  <span className="text-6xl font-bold">{apy}%</span>
+                )}
                 <span className="text-sm text-white">APY</span>
               </div>
             </div>

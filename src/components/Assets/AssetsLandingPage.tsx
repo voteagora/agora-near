@@ -59,11 +59,7 @@ export const AssetsLandingPage = memo(() => {
     []
   );
 
-  if (
-    isLoadingAccount ||
-    isLoadingVenearSnapshot ||
-    isLoadingStakingPoolStats
-  ) {
+  if (isLoadingAccount || isLoadingVenearSnapshot) {
     return (
       <div className="flex flex-col w-full h-full justify-center items-center">
         <AgoraLoader />
@@ -124,7 +120,10 @@ export const AssetsLandingPage = memo(() => {
                 <LockTokensCard apy={lockApy} />
               </div>
               <div className="mt-4 w-[300px] h-[400px] flex grow">
-                <StakingRewardsCard apy={maxStakingApy} />
+                <StakingRewardsCard
+                  apy={maxStakingApy}
+                  isLoadingApy={isLoadingStakingPoolStats}
+                />
               </div>
             </div>
           </div>
