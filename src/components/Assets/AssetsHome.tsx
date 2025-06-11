@@ -6,7 +6,9 @@ import { memo } from "react";
 import AgoraLoader from "../shared/AgoraLoader/AgoraLoader";
 import { AssetsLandingPage } from "./AssetsLandingPage";
 import { useVotingPower } from "@/hooks/useVotingPower";
-import NearTokenAmount from "../shared/NearTokenAmount";
+import { VotingPowerCard } from "./VotingPowerCard";
+import { GovernanceRewardsCard } from "./GovernanceRewardsCard";
+import { HoldingsSection } from "./HoldingsSection";
 
 export const AssetsHome = memo(() => {
   const { signedAccountId } = useNear();
@@ -23,12 +25,25 @@ export const AssetsHome = memo(() => {
     );
   }
 
-  return accountInfo ? (
-    <div className="flex flex-col w-full min-h-screen justify-center items-center">
-      Your voting power: <NearTokenAmount amount={votingPower ?? "0"} />
+  if (!accountInfo) {
+    return <AssetsLandingPage />;
+  }
+
+  return (
+    <div className="flex flex-col w-full min-h-screen">
+      {/* Header Cards - Always horizontal */}
+      <div className="flex flex-row gap-6 p-6">
+        <div className="w-[70%] flex">
+          <VotingPowerCard votingPower={votingPower} />
+        </div>
+        <div className="w-[30%] flex">
+          <GovernanceRewardsCard />
+        </div>
+      </div>
+
+      {/* Holdings Section */}
+      <HoldingsSection />
     </div>
-  ) : (
-    <AssetsLandingPage />
   );
 });
 
