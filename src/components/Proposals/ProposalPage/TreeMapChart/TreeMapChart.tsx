@@ -35,7 +35,6 @@ interface TreeNode
 const transformVotesToTreeData = (votes: ProposalVotingHistoryRecord[]) => {
   const sortedVotes = votes
     .filter((vote) => Number(vote.votingPower) > 0)
-    .sort((a, b) => Number(b.votingPower) - Number(a.votingPower))
     .slice(0, CHART_DIMENSIONS.maxVotes);
 
   return {

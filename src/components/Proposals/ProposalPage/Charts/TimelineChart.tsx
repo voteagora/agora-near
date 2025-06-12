@@ -19,14 +19,12 @@ import {
   isScientificNotation,
 } from "@/lib/utils";
 import { rgbStringToHex } from "@/app/lib/utils/color";
-import { getNearBlockTime } from "@/lib/utils";
 import { useLatestBlock } from "@/hooks/useLatestBlock";
 import { useEffect, useState } from "react";
 import { ChartSkeleton } from "@/components/Proposals/ProposalPage/ProposalChart/ProposalChart";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { formatNearTime, getNearQuorum } from "@/lib/nearProposalUtils";
-import { useNearCurrentBlock } from "@/hooks/useNearCurrentBlock";
 
 const { token, ui } = Tenant.current();
 
@@ -56,20 +54,16 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
   );
   const quorum = getNearQuorum(proposal);
 
-  const { blockTime, blockHeight } = useNearCurrentBlock();
-
   const stackIds: { [key: string]: string } = {
-    for: "0",
-    abstain: "2",
+    for: "1",
+    abstain: "1",
     against: "1",
   };
 
   useEffect(() => {
-    if (block && !chartData && blockTime && blockHeight) {
+    if (block && !chartData) {
       const transformedData = transformVotesToChartData({
         votes: votes,
-        blockTime,
-        blockHeight,
       });
 
       setChartData([
@@ -90,7 +84,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
         },
       ]);
     }
-  }, [block, chartData, blockTime, blockHeight, votes]);
+  }, [block, chartData, votes]);
 
   if (!chartData || !block) return <ChartSkeleton />;
 
@@ -109,8 +103,8 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
             tickLine={false}
             interval="preserveStartEnd"
             ticks={[
-              (startTime as unknown as string) || "",
-              (endTime as unknown as string) || "",
+              startTime || "",
+              endTime || "",
             ]}
             tickFormatter={tickFormatter}
             tick={customizedXTick}
@@ -184,12 +178,8 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
  */
 const transformVotesToChartData = ({
   votes,
-  blockTime,
-  blockHeight,
 }: {
   votes: ProposalVotingHistoryRecord[];
-  blockTime: number;
-  blockHeight: number;
 }) => {
   let forCount = 0;
   let abstain = 0;
@@ -208,7 +198,7 @@ const transformVotesToChartData = ({
       for: forCount,
       abstain: abstain,
       against: against,
-      timestamp: getNearBlockTime(vote.blockHeight, blockTime, blockHeight),
+      timestamp: vote.votedAt,
       total: forCount + abstain + against,
     };
   });

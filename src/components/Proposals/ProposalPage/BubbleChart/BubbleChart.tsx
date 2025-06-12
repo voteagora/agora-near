@@ -37,7 +37,6 @@ const transformVotesToBubbleData = (
 ): BubbleNode[] => {
   const sortedVotes = votes
     .slice()
-    .sort((a, b) => Number(b.votingPower) - Number(a.votingPower))
     .slice(0, CHART_DIMENSIONS.maxVotes);
   const maxWeight = Math.max(...sortedVotes.map((v) => Number(v.votingPower)));
   return sortedVotes.map((vote) => ({
