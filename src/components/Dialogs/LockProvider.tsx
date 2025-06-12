@@ -135,6 +135,7 @@ type LockProviderProps = {
   onTokenSelected?: (token: TokenWithBalance) => void;
   onLockSuccess?: () => void;
   source: LockDialogSource;
+  preSelectedTokenId?: string;
 };
 
 export const LockProvider = ({
@@ -142,6 +143,7 @@ export const LockProvider = ({
   onTokenSelected,
   onLockSuccess,
   source,
+  preSelectedTokenId,
 }: LockProviderProps) => {
   const { signedAccountId, networkId } = useNear();
 
@@ -561,12 +563,20 @@ export const LockProvider = ({
     venearAmount,
   ]);
 
-  // Select the first token by default
+  // Select the first token by default or the pre-selected token if provided
   useEffect(() => {
     if (!selectedToken && availableTokens.length > 0) {
-      setSelectedToken(availableTokens[0]);
+      let token;
+
+      if (preSelectedTokenId) {
+        token = availableTokens.find(
+          (token) => token.accountId === preSelectedTokenId
+        );
+      }
+
+      setSelectedToken(token ?? availableTokens[0]);
     }
-  }, [selectedToken, availableTokens, setSelectedToken]);
+  }, [selectedToken, availableTokens, setSelectedToken, preSelectedTokenId]);
 
   return (
     <LockProviderContext.Provider

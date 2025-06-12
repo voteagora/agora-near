@@ -28,11 +28,12 @@ export const HoldingsSection = memo(() => {
   const openDialog = useOpenDialog();
 
   const openLockDialog = useCallback(
-    (lockAndStake: boolean) => {
+    (preSelectedTokenId?: string) => {
       openDialog({
         type: "NEAR_LOCK",
         params: {
-          source: lockAndStake ? "onboarding" : "account_management",
+          source: "account_management",
+          preSelectedTokenId,
         },
       });
     },
@@ -53,7 +54,6 @@ export const HoldingsSection = memo(() => {
   return (
     <div className="flex-1 px-6 pb-6">
       <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-        {/* Tabs */}
         <div className="flex border-b border-gray-200">
           <button
             onClick={() => handleTabClick("Holdings")}
@@ -77,7 +77,6 @@ export const HoldingsSection = memo(() => {
           </button>
         </div>
 
-        {/* Tab Content */}
         <div className="p-6">
           {activeTab === "Holdings" ? (
             <table className="w-full">
@@ -117,7 +116,7 @@ export const HoldingsSection = memo(() => {
                     showOverflowMenu
                     actionButton={{
                       title: token.type === "lst" ? "Lock" : "Lock & Stake",
-                      onClick: () => openLockDialog(token.type !== "lst"),
+                      onClick: () => openLockDialog(token.accountId),
                     }}
                   />
                 ))}

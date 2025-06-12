@@ -2,6 +2,7 @@ import { TokenMetadata } from "@/lib/types";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import React, { memo } from "react";
+import { UpdatedButton } from "../Button";
 
 type AssetRowProps = {
   metadata?: TokenMetadata | null;
@@ -19,7 +20,7 @@ type AssetRowProps = {
 export const AssetRow = memo(
   ({ metadata, columns, showOverflowMenu, actionButton }: AssetRowProps) => {
     return (
-      <tr className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50">
+      <tr className="border-b border-gray-100 last:border-b-0">
         <td className="py-4 pr-16 w-1 whitespace-nowrap">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
@@ -52,12 +53,13 @@ export const AssetRow = memo(
           <div className="flex items-center justify-end gap-2">
             <div className="w-32">
               {actionButton && (
-                <button
+                <UpdatedButton
+                  className="w-full"
+                  variant="rounded"
                   onClick={actionButton.onClick}
-                  className="w-full px-4 py-2 bg-black text-white text-sm font-medium rounded-full hover:bg-gray-800 transition-colors"
                 >
                   {actionButton.title}
-                </button>
+                </UpdatedButton>
               )}
             </div>
 
