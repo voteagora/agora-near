@@ -7,6 +7,11 @@ import {
   LockTransaction,
   useLockProviderContext,
 } from "@/components/Dialogs/LockProvider";
+import { useQueryClient } from "@tanstack/react-query";
+import { FUNGIBLE_TOKEN_QK } from "./useFungibleTokens";
+import { NEAR_BALANCE_QK } from "./useNearBalance";
+import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 
 export const useTransactionExecution = () => {
   const {
@@ -118,6 +123,34 @@ export const useTransactionExecution = () => {
     ]
   );
 
+  const queryClient = useQueryClient();
+
+  const refreshBalances = useCallback(() => {
+    queryClient.invalidateQueries({
+      queryKey: [FUNGIBLE_TOKEN_QK],
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: [NEAR_BALANCE_QK],
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: [
+        READ_NEAR_CONTRACT_QK,
+        lockupAccountId,
+        "get_venear_liquid_balance",
+      ],
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: [
+        READ_NEAR_CONTRACT_QK,
+        TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        "ft_balance_of",
+      ],
+    });
+  }, [queryClient, lockupAccountId]);
+
   const executeTransactions = useCallback(
     async ({ numTransactions }: { numTransactions: number }) => {
       try {
@@ -134,13 +167,19 @@ export const useTransactionExecution = () => {
 
         setIsCompleted(true);
         setTransactionText("Locked");
+        refreshBalances();
       } catch (e) {
         setError(e instanceof Error ? e : new Error(String(e)));
       } finally {
         setIsSubmitting(false);
       }
     },
-    [requiredTransactions, getTransactionText, executeTransaction]
+    [
+      refreshBalances,
+      requiredTransactions,
+      getTransactionText,
+      executeTransaction,
+    ]
   );
 
   return {
