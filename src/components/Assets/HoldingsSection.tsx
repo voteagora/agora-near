@@ -1,56 +1,54 @@
+import { useAvailableTokens } from "@/hooks/useAvailableTokens";
+import { useVotingPower } from "@/hooks/useVotingPower";
+import { VENEAR_TOKEN_METADATA } from "@/lib/constants";
 import { memo, useCallback, useState } from "react";
+import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
+import NearTokenAmount from "../shared/NearTokenAmount";
+import { Skeleton } from "../ui/skeleton";
 import { AssetRow } from "./AssetRow";
-import {
-  VENEAR_TOKEN_METADATA,
-  NEAR_TOKEN_METADATA,
-  LINEAR_TOKEN_METADATA,
-  STNEAR_TOKEN_METADATA,
-} from "@/lib/constants";
-
-// Mock data for holdings - replace with actual data later
-const mockHoldingsData = [
-  {
-    id: "venear",
-    metadata: VENEAR_TOKEN_METADATA,
-    status: "Locked" as const,
-    amount: "999999999",
-    showOverflowMenu: true,
-    buttonType: null,
-  },
-  {
-    id: "near",
-    metadata: NEAR_TOKEN_METADATA,
-    status: "Lockable" as const,
-    amount: "20000",
-    showOverflowMenu: false,
-    buttonType: "Lock & Stake" as const,
-  },
-  {
-    id: "linear",
-    metadata: LINEAR_TOKEN_METADATA,
-    status: "Lockable" as const,
-    amount: "200",
-    showOverflowMenu: true,
-    buttonType: "Lock" as const,
-  },
-  {
-    id: "stnear",
-    metadata: STNEAR_TOKEN_METADATA,
-    status: "Lockable" as const,
-    amount: "0",
-    showOverflowMenu: true,
-    buttonType: "Lock" as const,
-  },
-];
+import { useNear } from "@/contexts/NearContext";
 
 export const HoldingsSection = memo(() => {
   const [activeTab, setActiveTab] = useState<"Holdings" | "Activity">(
     "Holdings"
   );
 
+  const { signedAccountId } = useNear();
+
   const handleTabClick = useCallback((tab: "Holdings" | "Activity") => {
     setActiveTab(tab);
   }, []);
+
+  const { isLoading: isLoadingAvailableTokens, availableTokens } =
+    useAvailableTokens();
+
+  const { data: votingPower, isLoading: isLoadingVotingPower } =
+    useVotingPower(signedAccountId);
+
+  const openDialog = useOpenDialog();
+
+  const openLockDialog = useCallback(
+    (lockAndStake: boolean) => {
+      openDialog({
+        type: "NEAR_LOCK",
+        params: {
+          source: lockAndStake ? "onboarding" : "account_management",
+        },
+      });
+    },
+    [openDialog]
+  );
+
+  if (isLoadingAvailableTokens || isLoadingVotingPower) {
+    return (
+      <div className="flex flex-col gap-4">
+        <Skeleton className="h-14 w-full" />
+        <Skeleton className="h-14 w-full" />
+        <Skeleton className="h-14 w-full" />
+        <Skeleton className="h-14 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 px-6 pb-6">
@@ -84,15 +82,43 @@ export const HoldingsSection = memo(() => {
           {activeTab === "Holdings" ? (
             <table className="w-full">
               <tbody>
-                {mockHoldingsData.map((asset) => (
+                <AssetRow
+                  metadata={VENEAR_TOKEN_METADATA}
+                  columns={[
+                    {
+                      title: "Locked",
+                      subtitle: (
+                        <NearTokenAmount
+                          amount={votingPower ?? "0"}
+                          currency={VENEAR_TOKEN_METADATA.symbol}
+                          maximumSignificantDigits={6}
+                        />
+                      ),
+                    },
+                  ]}
+                  showOverflowMenu
+                />
+                {availableTokens.map((token) => (
                   <AssetRow
-                    key={asset.id}
-                    id={asset.id}
-                    metadata={asset.metadata}
-                    status={asset.status}
-                    amount={asset.amount}
-                    showOverflowMenu={asset.showOverflowMenu}
-                    buttonType={asset.buttonType}
+                    key={token.accountId}
+                    metadata={token.metadata}
+                    columns={[
+                      {
+                        title: "Lockable",
+                        subtitle: (
+                          <NearTokenAmount
+                            amount={token.balance}
+                            currency={token.metadata?.symbol}
+                            maximumSignificantDigits={6}
+                          />
+                        ),
+                      },
+                    ]}
+                    showOverflowMenu
+                    actionButton={{
+                      title: token.type === "lst" ? "Lock" : "Lock & Stake",
+                      onClick: () => openLockDialog(token.type !== "lst"),
+                    }}
                   />
                 ))}
               </tbody>

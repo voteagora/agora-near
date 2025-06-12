@@ -1,7 +1,6 @@
-import { memo } from "react";
-import { ChevronUpIcon } from "@heroicons/react/24/outline";
-import NearTokenAmount from "../shared/NearTokenAmount";
 import { TrendingUp } from "lucide-react";
+import { memo } from "react";
+import NearTokenAmount from "../shared/NearTokenAmount";
 
 type VotingPowerCardProps = {
   votingPower?: string;

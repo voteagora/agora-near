@@ -2,13 +2,13 @@
 
 import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
+import { useVotingPower } from "@/hooks/useVotingPower";
 import { memo } from "react";
 import AgoraLoader from "../shared/AgoraLoader/AgoraLoader";
 import { AssetsLandingPage } from "./AssetsLandingPage";
-import { useVotingPower } from "@/hooks/useVotingPower";
-import { VotingPowerCard } from "./VotingPowerCard";
 import { GovernanceRewardsCard } from "./GovernanceRewardsCard";
 import { HoldingsSection } from "./HoldingsSection";
+import { VotingPowerCard } from "./VotingPowerCard";
 
 export const AssetsHome = memo(() => {
   const { signedAccountId } = useNear();
@@ -31,7 +31,6 @@ export const AssetsHome = memo(() => {
 
   return (
     <div className="flex flex-col w-full min-h-screen">
-      {/* Header Cards - Always horizontal */}
       <div className="flex flex-row gap-6 p-6">
         <div className="w-[70%] flex">
           <VotingPowerCard votingPower={votingPower} />
@@ -41,7 +40,6 @@ export const AssetsHome = memo(() => {
         </div>
       </div>
 
-      {/* Holdings Section */}
       <HoldingsSection />
     </div>
   );

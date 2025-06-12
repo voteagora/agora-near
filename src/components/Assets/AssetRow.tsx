@@ -1,48 +1,31 @@
-import { memo, useCallback } from "react";
+import { TokenMetadata } from "@/lib/types";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import { TokenMetadata } from "@/lib/types";
-import NearTokenAmount from "../shared/NearTokenAmount";
-import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
+import React, { memo } from "react";
 
 type AssetRowProps = {
-  id: string;
-  metadata: TokenMetadata;
-  status: "Locked" | "Lockable";
-  amount: string;
+  metadata?: TokenMetadata | null;
+  columns: {
+    title: string;
+    subtitle: React.ReactNode;
+  }[];
   showOverflowMenu: boolean;
-  buttonType: "Lock & Stake" | "Lock" | null;
+  actionButton?: {
+    title: string;
+    onClick: () => void;
+  };
 };
 
 export const AssetRow = memo(
-  ({
-    id,
-    metadata,
-    status,
-    amount,
-    showOverflowMenu,
-    buttonType,
-  }: AssetRowProps) => {
-    const openDialog = useOpenDialog();
-
-    const handleLockAction = useCallback(() => {
-      openDialog({
-        type: "NEAR_LOCK",
-        params: {
-          source: "account_management",
-        },
-      });
-    }, [openDialog]);
-
+  ({ metadata, columns, showOverflowMenu, actionButton }: AssetRowProps) => {
     return (
       <tr className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50">
-        {/* Asset Info - Minimum width */}
         <td className="py-4 pr-16 w-1 whitespace-nowrap">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
               <Image
-                src={metadata.icon}
-                alt={metadata.name}
+                src={metadata?.icon ?? ""}
+                alt={metadata?.name ?? ""}
                 width={40}
                 height={40}
                 className="w-full h-full object-cover"
@@ -50,42 +33,34 @@ export const AssetRow = memo(
             </div>
             <div className="flex flex-col">
               <span className="font-medium text-gray-900">
-                {metadata.symbol}
+                {metadata?.symbol}
               </span>
             </div>
           </div>
         </td>
 
-        {/* Status Column - Expands to fill remaining space */}
-        <td className="py-4 pl-2 pr-4">
-          <div className="flex flex-col">
-            <span className="text-sm text-gray-600 mb-1">{status}</span>
-            <span className="font-medium text-gray-900">
-              <NearTokenAmount
-                amount={amount}
-                currency={metadata.symbol}
-                maximumSignificantDigits={6}
-              />
-            </span>
-          </div>
-        </td>
+        {columns.map((col) => (
+          <td key={col.title} className="py-4 pl-2 pr-4">
+            <div className="flex flex-col">
+              <span className="text-sm text-gray-600 mb-1">{col.title}</span>
+              <span className="font-medium text-gray-900">{col.subtitle}</span>
+            </div>
+          </td>
+        ))}
 
-        {/* Actions - Minimum width */}
         <td className="py-4 pl-4 w-1 whitespace-nowrap">
           <div className="flex items-center justify-end gap-2">
-            {/* Action Button - Fixed width for consistency */}
             <div className="w-32">
-              {buttonType && (
+              {actionButton && (
                 <button
-                  onClick={handleLockAction}
+                  onClick={actionButton.onClick}
                   className="w-full px-4 py-2 bg-black text-white text-sm font-medium rounded-full hover:bg-gray-800 transition-colors"
                 >
-                  {buttonType}
+                  {actionButton.title}
                 </button>
               )}
             </div>
 
-            {/* Overflow Menu - Always reserve space */}
             <div className="w-9 h-9 flex items-center justify-center">
               {showOverflowMenu && (
                 <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
