@@ -35,9 +35,7 @@ const SCALING_EXPONENT = 0.4;
 const transformVotesToBubbleData = (
   votes: ProposalVotingHistoryRecord[]
 ): BubbleNode[] => {
-  const sortedVotes = votes
-    .slice()
-    .slice(0, CHART_DIMENSIONS.maxVotes);
+  const sortedVotes = votes.slice().slice(0, CHART_DIMENSIONS.maxVotes);
   const maxWeight = Math.max(...sortedVotes.map((v) => Number(v.votingPower)));
   return sortedVotes.map((vote) => ({
     address: vote.accountId,

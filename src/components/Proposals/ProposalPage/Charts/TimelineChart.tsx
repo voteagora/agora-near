@@ -102,10 +102,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
             axisLine={false}
             tickLine={false}
             interval="preserveStartEnd"
-            ticks={[
-              startTime || "",
-              endTime || "",
-            ]}
+            ticks={[startTime || "", endTime || ""]}
             tickFormatter={tickFormatter}
             tick={customizedXTick}
             className="text-xs font-inter font-semibold text-primary/30"

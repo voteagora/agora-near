@@ -33,12 +33,10 @@ export default function NearProposalDescription({
         </div>
         <h2 className="font-black text-2xl text-primary">{proposal.title}</h2>
       </div>
-      {
-        proposal.status !== ProposalStatus.Created &&
+      {proposal.status !== ProposalStatus.Created &&
         proposal.status !== ProposalStatus.Rejected && (
           <ProposalChart proposal={proposal} />
-        )
-      }
+        )}
       <div className="flex flex-col gap-2">
         <div className={styles.proposal_description_md}>
           <Markdown content={proposal.description ?? ""} />
