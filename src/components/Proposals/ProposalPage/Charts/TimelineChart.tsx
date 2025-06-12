@@ -84,7 +84,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
         },
       ]);
     }
-  }, [block, chartData, votes]);
+  }, [block, chartData, votes, startTime, endTime]);
 
   if (!chartData || !block) return <ChartSkeleton />;
 
@@ -198,7 +198,7 @@ const transformVotesToChartData = ({
       for: forCount,
       abstain: abstain,
       against: against,
-      timestamp: vote.votedAt,
+      timestamp: new Date(vote.votedAt),
       total: forCount + abstain + against,
     };
   });
