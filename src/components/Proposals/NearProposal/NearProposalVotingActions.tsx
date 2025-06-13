@@ -7,10 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNear } from "@/contexts/NearContext";
 import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
+import { CHART_DATA_QK } from "@/hooks/useNearProposalChartData";
+import { VOTES_QK } from "@/hooks/useNearProposalVotes";
+
 import { useProposalVotingPower } from "@/hooks/useProposalVotingPower";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { capitalizeFirstLetter } from "@/lib/utils";
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback, useState } from "react";
 
 export default function NearProposalVotingActions({
   proposal,
@@ -32,6 +36,28 @@ export default function NearProposalVotingActions({
   const { isRegisteredToVote } = useCheckVoterStatus({
     enabled: !!signedAccountId,
   });
+
+  const queryClient = useQueryClient();
+
+  const handleOpenTwoOptionVoteDialog = useCallback(() => {
+    openDialog({
+      type: "NEAR_VOTE",
+      params: {
+        proposal,
+        config,
+        preSelectedVote: selectedVote,
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: [VOTES_QK, String(proposal.id)],
+          });
+
+          queryClient.invalidateQueries({
+            queryKey: [CHART_DATA_QK, String(proposal.id)],
+          });
+        },
+      },
+    });
+  }, [openDialog, proposal, config, selectedVote, queryClient]);
 
   if (!signedAccountId) {
     return (
@@ -60,17 +86,6 @@ export default function NearProposalVotingActions({
       </div>
     );
   }
-
-  const handleOpenTwoOptionVoteDialog = () => {
-    openDialog({
-      type: "NEAR_VOTE",
-      params: {
-        proposal,
-        config,
-        preSelectedVote: selectedVote,
-      },
-    });
-  };
 
   const handleOpenMultiOptionVoteDialog = () => {
     openDialog({
