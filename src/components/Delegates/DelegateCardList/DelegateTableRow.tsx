@@ -5,7 +5,6 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { DelegateProfile } from "@/lib/api/delegates/types";
 import { useRouter } from "next/navigation";
 import { DelegateAddress } from "../DelegateCard/DelegateAddress";
-import { formatNearAccountId } from "@/lib/utils";
 
 export default function DelegateTableRow({
   delegate,
@@ -31,17 +30,15 @@ export default function DelegateTableRow({
         {delegate.votingPower ? (
           <NearTokenAmount
             amount={delegate.votingPower ?? "0"}
+            minimumFractionDigits={1}
+            maximumSignificantDigits={1}
             currency="veNEAR"
           />
         ) : (
           "-"
         )}
       </TableCell>
-      <TableCell>
-        {delegate.participationRate
-          ? `${Number(delegate.participationRate) * 100}%`
-          : "-"}
-      </TableCell>
+      <TableCell>{`${Number(delegate.participationRate ?? 0) * 100}%`}</TableCell>
     </TableRow>
   );
 }
