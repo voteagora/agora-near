@@ -12,6 +12,9 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
 import { useNear } from "@/contexts/NearContext";
+import { useQueryClient } from "@tanstack/react-query";
+import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 
 export type StakingStep = "select_pool" | "stake";
 
@@ -36,6 +39,8 @@ export const StakingReview = ({
 
   const [stakingStep, setStakingStep] = useState<StakingStep>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const router = useRouter();
 
@@ -94,8 +99,11 @@ export const StakingReview = ({
 
   const handleViewDashboard = useCallback(() => {
     onCloseDialog();
+    queryClient.invalidateQueries({
+      queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
+    });
     router.push("/assets");
-  }, [onCloseDialog, router]);
+  }, [onCloseDialog, queryClient, router]);
 
   if (isSubmitting && stakingStep) {
     return <StakingSubmitting stakingStep={stakingStep} />;

@@ -52,7 +52,7 @@ export const AssetRow = memo(
 
         <td className="py-4 pl-4 w-1 whitespace-nowrap">
           <div className="flex items-center justify-end gap-2">
-            <div className="w-32">
+            <div className="w-40">
               {actionButton && (
                 <UpdatedButton
                   className="w-full"

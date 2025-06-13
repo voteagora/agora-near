@@ -12,6 +12,7 @@ import NearTokenAmount from "../../shared/NearTokenAmount";
 import { useLockProviderContext } from "../LockProvider";
 import { DepositTooltip } from "./DepositTooltip";
 import { DisclosuresContent } from "./DisclosuresContent";
+import LockedIcon from "@/assets/icons/Locked.png";
 
 type ReviewStepProps = {
   handleEdit: () => void;
@@ -81,73 +82,7 @@ export const ReviewStep = memo(
         return (
           <div className="flex flex-col items-center justify-center w-full h-full">
             <div className="flex-1 flex flex-col justify-end items-center gap-6">
-              {/* Lock icon with sparkles */}
-              <div className="relative">
-                {/* Sparkles around the lock */}
-                <div className="absolute -top-2 -left-2">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    className="text-green-400"
-                  >
-                    <path
-                      d="M8 0L9.5 6.5L16 8L9.5 9.5L8 16L6.5 9.5L0 8L6.5 6.5L8 0Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </div>
-                <div className="absolute -top-1 -right-3">
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    className="text-green-400"
-                  >
-                    <path
-                      d="M6 0L7.125 4.875L12 6L7.125 7.125L6 12L4.875 7.125L0 6L4.875 4.875L6 0Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </div>
-                <div className="absolute -bottom-2 -left-3">
-                  <svg
-                    width="10"
-                    height="10"
-                    viewBox="0 0 10 10"
-                    fill="none"
-                    className="text-green-400"
-                  >
-                    <path
-                      d="M5 0L5.938 4.063L10 5L5.938 5.938L5 10L4.063 5.938L0 5L4.063 4.063L5 0Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </div>
-                <div className="absolute -bottom-1 -right-2">
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    className="text-green-400"
-                  >
-                    <path
-                      d="M7 0L8.313 5.688L14 7L8.313 8.313L7 14L5.688 8.313L0 7L5.688 5.688L7 0Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </div>
-                <Image
-                  src={LockClosedIcon}
-                  alt="lock"
-                  width={300}
-                  height={300}
-                />
-              </div>
-
+              <Image src={LockedIcon} alt="locked" width={300} />
               <div className="flex flex-col gap-2 text-center">
                 <h2 className="text-3xl font-bold text-gray-900">
                   Locked, and loaded.

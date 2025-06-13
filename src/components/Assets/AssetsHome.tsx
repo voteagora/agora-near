@@ -2,7 +2,6 @@
 
 import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
-import { useVotingPower } from "@/hooks/useVotingPower";
 import { memo } from "react";
 import AgoraLoader from "../shared/AgoraLoader/AgoraLoader";
 import { AssetsLandingPage } from "./AssetsLandingPage";
@@ -14,8 +13,6 @@ export const AssetsHome = memo(() => {
   const { signedAccountId } = useNear();
   const { data: accountInfo, isLoading: isLoadingAccount } =
     useVenearAccountInfo(signedAccountId);
-
-  const { data: votingPower } = useVotingPower(signedAccountId);
 
   if (isLoadingAccount) {
     return (
@@ -33,13 +30,12 @@ export const AssetsHome = memo(() => {
     <div className="flex flex-col w-full min-h-screen">
       <div className="flex flex-row gap-6 p-6">
         <div className="w-[70%] flex">
-          <VotingPowerCard votingPower={votingPower} />
+          <VotingPowerCard />
         </div>
         <div className="w-[30%] flex">
           <GovernanceRewardsCard />
         </div>
       </div>
-
       <HoldingsSection />
     </div>
   );
