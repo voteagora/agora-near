@@ -23,7 +23,7 @@ export function NearVoteOptionsDialog({
   closeDialog: () => void;
 }) {
   const { signedAccountId } = useNear();
-  const { castVote, isVoting, error: votingError } = useCastVote();
+  const { castVote, isVoting, error: votingError } = useCastVote({});
   const [selectedOption, setSelectedOption] = useState<number>();
 
   const { data: votingPower } = useVotingPower(signedAccountId);

@@ -11,6 +11,7 @@ interface NearVoteDialogProps {
   config: VotingConfig;
   closeDialog: () => void;
   preSelectedVote?: number;
+  onSuccess?: () => void;
 }
 
 function NearVoteDialogComponent({
@@ -18,8 +19,9 @@ function NearVoteDialogComponent({
   config,
   closeDialog,
   preSelectedVote,
+  onSuccess,
 }: NearVoteDialogProps) {
-  const { castVote } = useCastVote();
+  const { castVote } = useCastVote({ onSuccess });
 
   useEffect(() => {
     const castVoteOnMount = async () => {

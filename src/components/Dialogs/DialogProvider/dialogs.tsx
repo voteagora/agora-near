@@ -313,6 +313,7 @@ export type NearVoteDialogType = {
     proposal: ProposalInfo;
     config: VotingConfig;
     preSelectedVote?: number;
+    onSuccess?: () => void;
   };
 };
 
@@ -557,12 +558,16 @@ export const dialogs: DialogDefinitions<DialogType> = {
   SIMULATION_REPORT: ({ report }, closeDialog) => (
     <SimulationReportDialog report={report} closeDialog={closeDialog} />
   ),
-  NEAR_VOTE: ({ proposal, config, preSelectedVote }, closeDialog) => (
+  NEAR_VOTE: (
+    { proposal, config, preSelectedVote, onSuccess },
+    closeDialog
+  ) => (
     <NearVoteDialog
       proposal={proposal}
       config={config}
       preSelectedVote={preSelectedVote}
       closeDialog={closeDialog}
+      onSuccess={onSuccess}
     />
   ),
   NEAR_VOTE_OPTIONS: ({ proposal, config }, closeDialog) => (

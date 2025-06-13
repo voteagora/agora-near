@@ -3,7 +3,7 @@ import { fetchProposalVotes } from "@/lib/api/proposal/requests";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-const VOTES_QK = `${Endpoint.Proposals}/votes`;
+export const VOTES_QK = `${Endpoint.Proposals}/votes`;
 
 export const useProposalVotes = ({
   proposalId,

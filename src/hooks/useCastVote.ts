@@ -13,7 +13,7 @@ interface CastVoteArgs {
   blockId: number;
 }
 
-export function useCastVote() {
+export function useCastVote({ onSuccess }: { onSuccess?: () => void }) {
   const { signedAccountId } = useNear();
   const queryClient = useQueryClient();
   const fetchProof = useFetchProof();
@@ -27,7 +27,9 @@ export function useCastVote() {
         queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
       }),
     ]);
-  }, [queryClient]);
+
+    onSuccess?.();
+  }, [queryClient, onSuccess]);
 
   const {
     mutateAsync: mutateVote,
