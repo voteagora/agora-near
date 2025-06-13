@@ -1,13 +1,27 @@
 import { TrendingUp } from "lucide-react";
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import NearTokenAmount from "../shared/NearTokenAmount";
 import { useVotingPower } from "@/hooks/useVotingPower";
 import { useNear } from "@/contexts/NearContext";
 import { Skeleton } from "../ui/skeleton";
+import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
 
 export const VotingPowerCard = memo(() => {
   const { signedAccountId } = useNear();
   const { data: votingPower, isLoading } = useVotingPower(signedAccountId);
+  const openDialog = useOpenDialog();
+
+  const handleViewProjections = useCallback(() => {
+    if (votingPower) {
+      openDialog({
+        type: "VOTING_POWER_PROJECTIONS",
+        className: "sm:w-[60%]",
+        params: {
+          votingPower,
+        },
+      });
+    }
+  }, [openDialog, votingPower]);
 
   return (
     <div className="flex-1 bg-white rounded-2xl border border-gray-200 p-6">
@@ -25,7 +39,11 @@ export const VotingPowerCard = memo(() => {
               />
             )}
           </span>
-          <button className="flex items-center gap-1 text-sm">
+          <button
+            className="flex items-center gap-1 text-sm hover:text-blue-600 transition-colors"
+            onClick={handleViewProjections}
+            disabled={!votingPower || isLoading}
+          >
             View Projections
             <TrendingUp />
           </button>

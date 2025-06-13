@@ -45,6 +45,7 @@ import {
   NearStakingDialog,
   StakingSource,
 } from "../NearStakingDialog/NearStakingDialog";
+import { VotingPowerProjectionsDialog } from "../VotingPowerProjectionsDialog";
 
 export type DialogType =
   | AdvancedDelegateDialogType
@@ -73,7 +74,8 @@ export type DialogType =
   | NearVoteOptionsDialogType
   | NearLockDialogType
   | VeNearOnboardingDialogType
-  | NearStakingDialogType;
+  | NearStakingDialogType
+  | VotingPowerProjectionsDialogType;
 // | FaqDialogType
 
 export type NearDelegateDialogType = {
@@ -330,6 +332,14 @@ export type VeNearOnboardingDialogType = {
   params: Record<never, never>;
 };
 
+export type VotingPowerProjectionsDialogType = {
+  type: "VOTING_POWER_PROJECTIONS";
+  className?: string;
+  params: {
+    votingPower: string;
+  };
+};
+
 export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_DELEGATE: ({ delegateAddress }, closeDialog) => {
     return (
@@ -578,6 +588,14 @@ export const dialogs: DialogDefinitions<DialogType> = {
   },
   NEAR_STAKING: (params, closeDialog) => {
     return <NearStakingDialog closeDialog={closeDialog} {...params} />;
+  },
+  VOTING_POWER_PROJECTIONS: ({ votingPower }, closeDialog) => {
+    return (
+      <VotingPowerProjectionsDialog
+        closeDialog={closeDialog}
+        votingPower={votingPower}
+      />
+    );
   },
   // FAQ: () => {
   //   return <FaqDialog />;
