@@ -4,7 +4,7 @@ export const useCurrentStakingPoolId = ({
   lockupAccountId,
   enabled = true,
 }: {
-  lockupAccountId: string;
+  lockupAccountId?: string;
   enabled?: boolean;
 }) => {
   const [
@@ -19,7 +19,7 @@ export const useCurrentStakingPoolId = ({
       methodName: "get_staking_pool_account_id" as const,
       config: {
         args: {},
-        enabled,
+        enabled: !!lockupAccountId && enabled,
       },
     },
   ]);

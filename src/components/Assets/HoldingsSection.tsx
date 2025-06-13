@@ -1,4 +1,7 @@
+import { useNear } from "@/contexts/NearContext";
 import { useAvailableTokens } from "@/hooks/useAvailableTokens";
+import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
+import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useVotingPower } from "@/hooks/useVotingPower";
 import { VENEAR_TOKEN_METADATA } from "@/lib/constants";
 import { memo, useCallback, useState } from "react";
@@ -6,7 +9,6 @@ import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
 import NearTokenAmount from "../shared/NearTokenAmount";
 import { Skeleton } from "../ui/skeleton";
 import { AssetRow } from "./AssetRow";
-import { useNear } from "@/contexts/NearContext";
 
 export const HoldingsSection = memo(() => {
   const [activeTab, setActiveTab] = useState<"Holdings" | "Activity">(
@@ -25,6 +27,13 @@ export const HoldingsSection = memo(() => {
   const { data: votingPower, isLoading: isLoadingVotingPower } =
     useVotingPower(signedAccountId);
 
+  const { lockupAccountId, isLoading: isLoadingLockupAccountId } =
+    useLockupAccount();
+
+  const { stakingPoolId, isLoadingStakingPoolId } = useCurrentStakingPoolId({
+    lockupAccountId,
+  });
+
   const openDialog = useOpenDialog();
 
   const openLockDialog = useCallback(
@@ -40,7 +49,13 @@ export const HoldingsSection = memo(() => {
     [openDialog]
   );
 
-  if (isLoadingAvailableTokens || isLoadingVotingPower) {
+  const isLoading =
+    isLoadingAvailableTokens ||
+    isLoadingVotingPower ||
+    isLoadingLockupAccountId ||
+    isLoadingStakingPoolId;
+
+  if (isLoading) {
     return (
       <div className="flex flex-col gap-4">
         <Skeleton className="h-14 w-full" />
@@ -117,6 +132,10 @@ export const HoldingsSection = memo(() => {
                     actionButton={{
                       title: token.type === "lst" ? "Lock" : "Lock & Stake",
                       onClick: () => openLockDialog(token.accountId),
+                      disabled:
+                        !!stakingPoolId &&
+                        token.type === "lst" &&
+                        stakingPoolId !== token.accountId,
                     }}
                   />
                 ))}

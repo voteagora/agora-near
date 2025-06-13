@@ -14,6 +14,7 @@ type AssetRowProps = {
   actionButton?: {
     title: string;
     onClick: () => void;
+    disabled?: boolean;
   };
 };
 
@@ -56,7 +57,10 @@ export const AssetRow = memo(
                 <UpdatedButton
                   className="w-full"
                   variant="rounded"
-                  onClick={actionButton.onClick}
+                  onClick={
+                    actionButton.disabled ? undefined : actionButton.onClick
+                  }
+                  type={actionButton.disabled ? "disabled" : undefined}
                 >
                   {actionButton.title}
                 </UpdatedButton>

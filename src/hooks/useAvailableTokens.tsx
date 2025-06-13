@@ -24,7 +24,7 @@ export const useAvailableTokens = () => {
     useLockupAccount();
 
   const { availableToLock: availableToLockInLockup, isLoadingAvailableToLock } =
-    useAvailableToLock({ lockupAccountId: signedAccountId });
+    useAvailableToLock({ lockupAccountId });
 
   const linearTokenContractId = useMemo(
     () => LINEAR_TOKEN_CONTRACTS[networkId],
