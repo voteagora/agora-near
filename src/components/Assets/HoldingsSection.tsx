@@ -2,7 +2,7 @@ import { useNear } from "@/contexts/NearContext";
 import { useAvailableTokens } from "@/hooks/useAvailableTokens";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
-import { useVotingPower } from "@/hooks/useVotingPower";
+import { useReadHOSContract } from "@/hooks/useReadHOSContract";
 import {
   LINEAR_TOKEN_CONTRACTS,
   STNEAR_TOKEN_CONTRACTS,
@@ -28,11 +28,20 @@ export const HoldingsSection = memo(() => {
   const { isLoading: isLoadingAvailableTokens, availableTokens } =
     useAvailableTokens();
 
-  const { data: votingPower, isLoading: isLoadingVotingPower } =
-    useVotingPower(signedAccountId);
-
   const { lockupAccountId, isLoading: isLoadingLockupAccountId } =
     useLockupAccount();
+
+  const [{ data: venearLockedBalance, isLoading: isLoadingLockedBalance }] =
+    useReadHOSContract([
+      {
+        contractId: lockupAccountId ?? "",
+        methodName: "get_venear_locked_balance" as const,
+        config: {
+          args: {},
+          enabled: !!signedAccountId && !!lockupAccountId,
+        },
+      },
+    ]);
 
   const { stakingPoolId, isLoadingStakingPoolId } = useCurrentStakingPoolId({
     lockupAccountId,
@@ -78,9 +87,9 @@ export const HoldingsSection = memo(() => {
 
   const isLoading =
     isLoadingAvailableTokens ||
-    isLoadingVotingPower ||
     isLoadingLockupAccountId ||
-    isLoadingStakingPoolId;
+    isLoadingStakingPoolId ||
+    isLoadingLockedBalance;
 
   if (isLoading) {
     return (
@@ -130,9 +139,10 @@ export const HoldingsSection = memo(() => {
                       title: "Locked",
                       subtitle: (
                         <NearTokenAmount
-                          amount={votingPower ?? "0"}
+                          amount={venearLockedBalance ?? "0"}
                           currency={VENEAR_TOKEN_METADATA.symbol}
-                          maximumSignificantDigits={6}
+                          maximumSignificantDigits={4}
+                          minimumFractionDigits={4}
                         />
                       ),
                     },
@@ -168,7 +178,8 @@ export const HoldingsSection = memo(() => {
                             <NearTokenAmount
                               amount={token.balance}
                               currency={token.metadata?.symbol}
-                              maximumSignificantDigits={6}
+                              maximumSignificantDigits={4}
+                              minimumFractionDigits={4}
                             />
                           ),
                         },
