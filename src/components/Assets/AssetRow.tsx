@@ -1,8 +1,23 @@
 import { TokenMetadata } from "@/lib/types";
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import {
+  EllipsisHorizontalIcon,
+  ArrowTopRightOnSquareIcon,
+} from "@heroicons/react/24/outline";
 import Image from "next/image";
 import React, { memo } from "react";
 import { UpdatedButton } from "../Button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+type OverflowButton = {
+  title: string;
+  onClick: () => void;
+  showExternalIcon?: boolean;
+};
 
 type AssetRowProps = {
   metadata?: TokenMetadata | null;
@@ -11,6 +26,7 @@ type AssetRowProps = {
     subtitle: React.ReactNode;
   }[];
   showOverflowMenu: boolean;
+  overflowButtons?: OverflowButton[];
   actionButton?: {
     title: string;
     onClick: () => void;
@@ -19,7 +35,13 @@ type AssetRowProps = {
 };
 
 export const AssetRow = memo(
-  ({ metadata, columns, showOverflowMenu, actionButton }: AssetRowProps) => {
+  ({
+    metadata,
+    columns,
+    showOverflowMenu,
+    overflowButtons,
+    actionButton,
+  }: AssetRowProps) => {
     return (
       <tr className="border-b border-gray-100 last:border-b-0">
         <td className="py-4 pr-16 w-1 whitespace-nowrap">
@@ -68,11 +90,29 @@ export const AssetRow = memo(
             </div>
 
             <div className="w-9 h-9 flex items-center justify-center">
-              {showOverflowMenu && (
-                <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                  <EllipsisHorizontalIcon className="w-5 h-5" />
-                </button>
-              )}
+              {showOverflowMenu &&
+                overflowButtons &&
+                overflowButtons.length > 0 && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="p-2 text-gray-400 hover:text-gray-600 transition-colors outline-none">
+                      <EllipsisHorizontalIcon className="w-5 h-5" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {overflowButtons.map((button, index) => (
+                        <DropdownMenuItem
+                          key={index}
+                          className="cursor-pointer flex items-center justify-between"
+                          onClick={button.onClick}
+                        >
+                          <span>{button.title}</span>
+                          {button.showExternalIcon && (
+                            <ArrowTopRightOnSquareIcon className="w-4 h-4 ml-2 text-gray-400" />
+                          )}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
             </div>
           </div>
         </td>
