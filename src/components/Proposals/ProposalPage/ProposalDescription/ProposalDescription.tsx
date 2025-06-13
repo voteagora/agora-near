@@ -4,7 +4,6 @@ import ProposalTitle from "../ProposalTitle/ProposalTitle";
 import styles from "./proposalDescription.module.scss";
 import ApprovedTransactions from "../ApprovedTransactions/ApprovedTransactions";
 import ProposalTransactionDisplay from "../ApprovedTransactions/ProposalTransactionDisplay";
-import ProposalChart from "../ProposalChart/ProposalChart";
 import { Proposal } from "@/app/api/common/proposals/proposal";
 import Markdown from "@/components/shared/Markdown/Markdown";
 import Tenant from "@/lib/tenant/tenant";
@@ -60,7 +59,6 @@ export default function ProposalDescription({
       className={`flex flex-col gap-4 sm:w-[48rem] w-full max-w-[calc(100vw-2rem)] sm:max-w-none`}
     >
       <ProposalTitle title={shortTitle} proposal={proposal} />
-      <ProposalChart proposal={proposal} />
 
       <div className="flex flex-col gap-2">
         {/* Right now I'm only sure this better decoded component works for standard proposals */}

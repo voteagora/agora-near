@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState, useMemo, memo } from "react";
 import * as d3 from "d3";
 import { useRouter } from "next/navigation";
-import { Proposal } from "@/app/api/common/proposals/proposal";
-import { ChartVote } from "@/lib/types";
 import Tenant from "@/lib/tenant/tenant";
 import { rgbStringToHex } from "@/app/lib/utils/color";
 import { Plus, Minus, RotateCcw } from "lucide-react";
 import ENSName from "@/components/shared/ENSName";
+import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
 
 //Bubble contransts
 const CHART_DIMENSIONS = {
@@ -32,17 +32,16 @@ interface BubbleNode extends d3.SimulationNodeDatum {
 }
 
 const SCALING_EXPONENT = 0.4;
-const transformVotesToBubbleData = (votes: ChartVote[]): BubbleNode[] => {
-  const sortedVotes = votes
-    .slice()
-    .sort((a, b) => Number(b.weight) - Number(a.weight))
-    .slice(0, CHART_DIMENSIONS.maxVotes);
-  const maxWeight = Math.max(...sortedVotes.map((v) => Number(v.weight)));
+const transformVotesToBubbleData = (
+  votes: ProposalVotingHistoryRecord[]
+): BubbleNode[] => {
+  const sortedVotes = votes.slice().slice(0, CHART_DIMENSIONS.maxVotes);
+  const maxWeight = Math.max(...sortedVotes.map((v) => Number(v.votingPower)));
   return sortedVotes.map((vote) => ({
-    address: vote.voter,
-    support: vote.support as "0" | "1" | "2",
-    value: Number(vote.weight),
-    r: Math.pow(Number(vote.weight) / maxWeight, SCALING_EXPONENT) * 40,
+    address: vote.accountId,
+    support: vote.voteOption === "0" ? "1" : "0",
+    value: Number(vote.votingPower),
+    r: Math.pow(Number(vote.votingPower) / maxWeight, SCALING_EXPONENT) * 40,
   }));
 };
 
@@ -133,8 +132,8 @@ export default function BubbleChart({
   proposal,
   votes,
 }: {
-  proposal: Proposal;
-  votes: ChartVote[];
+  proposal: ProposalInfo;
+  votes: ProposalVotingHistoryRecord[];
 }) {
   const [nodes, setNodes] = useState<BubbleNode[]>([]);
   const [transform, setTransform] = useState(() =>
