@@ -105,7 +105,7 @@ export default function VeNearDebugCards() {
       baseFee: config?.base_proposal_fee || "0",
       storageFee: config?.vote_storage_fee || "0",
     });
-  const { castVote, isVoting, error: votingError } = useCastVote();
+  const { castVote, isVoting, error: votingError } = useCastVote({});
   const [selectedVotes, setSelectedVotes] = useState<Record<number, number>>(
     {}
   );
