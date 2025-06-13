@@ -43,7 +43,7 @@ export default function ProposalChart({
     }
   };
 
-  if (!votes.length) return null
+  if (!votes.length) return null;
 
   return (
     <div className="border border-line rounded-lg p-4 pb-2 w-full bg-neutral">
