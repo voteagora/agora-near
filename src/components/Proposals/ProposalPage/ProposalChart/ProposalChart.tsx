@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { TimelineChart } from "@/components/Proposals/ProposalPage/Charts/TimelineChart";
 import TreeMapChart from "../TreeMapChart/TreeMapChart";
 import BubbleChart from "../BubbleChart/BubbleChart";
@@ -21,7 +21,9 @@ export default function ProposalChart({
     proposalId: String(proposal.id),
   });
 
-  const votes = chartData?.data ?? [];
+  const votes = useMemo(() => {
+    return chartData?.data ?? [];
+  }, [chartData]);
 
   const tabs = [
     { name: "Timeline", index: 0 },
