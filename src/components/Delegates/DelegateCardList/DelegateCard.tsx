@@ -39,6 +39,8 @@ const DelegateCard = ({
               <span className="text-primary font-bold">
                 <NearTokenAmount
                   amount={delegate.votingPower ?? "0"}
+                  minimumFractionDigits={1}
+                  maximumSignificantDigits={1}
                   currency="veNEAR"
                 />
               </span>

@@ -9,6 +9,7 @@ import DelegationsContainerWrapper from "@/components/Delegates/Delegations/Dele
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDelegateProfile } from "@/hooks/useDelegateProfile";
+import { useVotingPower } from "@/hooks/useVotingPower";
 
 export const DelegateProfileContent = ({ address }: { address: string }) => {
   const {
@@ -19,7 +20,10 @@ export const DelegateProfileContent = ({ address }: { address: string }) => {
     accountId: address,
   });
 
-  if (isLoadingProfile) {
+  const { data: votingPower, isLoading: isLoadingVotingPower } =
+    useVotingPower(address);
+
+  if (isLoadingProfile || isLoadingVotingPower) {
     return (
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 justify-between mt-12 w-full max-w-full">
         <Skeleton className="w-[350px] h-[50vh]" />
@@ -48,7 +52,7 @@ export const DelegateProfileContent = ({ address }: { address: string }) => {
             statement: delegate.statement,
           }}
           stats={{
-            votingPower: delegate.votingPower,
+            votingPower,
             numOfDelegators: delegate.delegatedFromCount?.toString() ?? "0",
             participationRate: delegate.participationRate,
             votedFor: delegate.forCount?.toString() ?? "0",
