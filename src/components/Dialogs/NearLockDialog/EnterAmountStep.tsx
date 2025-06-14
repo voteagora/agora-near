@@ -11,6 +11,7 @@ import { useCallback, useMemo } from "react";
 import { AssetIcon } from "../../common/AssetIcon";
 import NearTokenAmount from "../../shared/NearTokenAmount";
 import { useLockProviderContext } from "../LockProvider";
+import { utils } from "near-api-js";
 
 type EnterAmountStepProps = {
   openAssetSelector: () => void;
@@ -31,6 +32,7 @@ export const EnterAmountStep = ({
     setEnteredAmount,
     maxAmountToLock,
     amountError,
+    isLockingMax,
   } = useLockProviderContext();
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,13 +103,21 @@ export const EnterAmountStep = ({
               <Input
                 type="text"
                 placeholder="0"
-                value={enteredAmount}
+                value={
+                  // Override value for display purposes when locking max
+                  isLockingMax
+                    ? Big(
+                        utils.format.formatNearAmount(maxAmountToLock ?? "0")
+                      ).toFixed(4)
+                    : enteredAmount
+                }
                 onChange={handleAmountChange}
                 className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </div>
             <button
               onClick={onMaxPressed}
+              disabled={!maxAmountToLock || Big(maxAmountToLock).lte(0)}
               className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200"
             >
               Max
