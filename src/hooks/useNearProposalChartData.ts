@@ -9,7 +9,7 @@ export const useProposalChartData = ({
 }: {
   proposalId: string;
 }) => {
-  const { data, error, isFetching, status } = useQuery({
+  const { data, error, status, isPending } = useQuery({
     queryKey: [CHART_DATA_QK, proposalId],
     queryFn: () => {
       return fetchProposalChartData(proposalId);
@@ -19,7 +19,7 @@ export const useProposalChartData = ({
   return {
     data,
     error,
-    isFetching,
+    isLoading: isPending,
     status,
   };
 };
