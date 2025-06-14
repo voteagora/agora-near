@@ -53,6 +53,7 @@ export const HoldingsSection = memo(() => {
     (preSelectedTokenId?: string) => {
       openDialog({
         type: "NEAR_LOCK",
+        className: "sm:w-[500px]",
         params: {
           source: "account_management",
           preSelectedTokenId,

@@ -99,6 +99,7 @@ export type NearProposalDialogType = {
 
 export type NearLockDialogType = {
   type: "NEAR_LOCK";
+  className?: string;
   params: {
     source: LockDialogSource;
     preSelectedTokenId?: string;

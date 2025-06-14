@@ -76,20 +76,20 @@ export const EnterStakingAmount = ({
               <span className="font-medium">NEAR</span>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center ml-2">
+              <Input
+                type="text"
+                placeholder="0"
+                value={enteredAmount}
+                onChange={(e) => setEnteredAmount(e.target.value)}
+                className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
               <button
                 onClick={onStakeMax}
                 className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200"
               >
                 Max
               </button>
-              <Input
-                type="text"
-                placeholder="0"
-                value={enteredAmount}
-                onChange={(e) => setEnteredAmount(e.target.value)}
-                className="w-full bg-transparent border-none text-lg text-right p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
             </div>
           </div>
           <div className="mt-2 text-sm text-red-500 h-2">{amountError}</div>
