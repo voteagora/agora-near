@@ -57,7 +57,7 @@ export const AssetRow = memo(
             </div>
             <div className="flex flex-col">
               <span className="font-medium text-gray-900">
-                {metadata?.symbol}
+                {metadata?.name}
               </span>
             </div>
           </div>
