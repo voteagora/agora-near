@@ -63,6 +63,7 @@ export function NearLockDialogContent({ closeDialog }: DialogContentProps) {
     closeDialog();
     openDialog({
       type: "NEAR_STAKING",
+      className: "sm:w-[500px]",
       params: {
         source,
       },

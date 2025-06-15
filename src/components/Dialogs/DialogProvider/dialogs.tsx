@@ -108,6 +108,7 @@ export type NearLockDialogType = {
 
 export type NearStakingDialogType = {
   type: "NEAR_STAKING";
+  className?: string;
   params: {
     prefilledAmount?: string;
     source: StakingSource;
