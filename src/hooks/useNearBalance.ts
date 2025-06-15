@@ -1,7 +1,7 @@
 import { useNear } from "@/contexts/NearContext";
 import { useQuery } from "@tanstack/react-query";
 
-export const QK = "near-balance";
+export const NEAR_BALANCE_QK = "near-balance";
 
 export const useNearBalance = (accountId: string | undefined) => {
   const { getBalance } = useNear();
@@ -11,7 +11,7 @@ export const useNearBalance = (accountId: string | undefined) => {
     isLoading: isLoadingNearBalance,
     error: nearBalanceError,
   } = useQuery({
-    queryKey: [QK, accountId],
+    queryKey: [NEAR_BALANCE_QK, accountId],
     queryFn: () => (accountId ? getBalance(accountId) : null),
     enabled: !!accountId,
   });

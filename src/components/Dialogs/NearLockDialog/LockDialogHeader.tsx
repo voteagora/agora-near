@@ -3,7 +3,7 @@ import { useLockProviderContext } from "../LockProvider";
 import { useMemo } from "react";
 
 export const LockDialogHeader = () => {
-  const { source, selectedToken } = useLockProviderContext();
+  const { selectedToken } = useLockProviderContext();
 
   const steps = useMemo(() => {
     const steps = ["Lock assets"];
@@ -15,7 +15,7 @@ export const LockDialogHeader = () => {
     return steps;
   }, [selectedToken?.type]);
 
-  return source === "onboarding" ? (
+  return steps.length > 1 ? (
     <BreadcrumbHeader steps={steps} currentStepIndex={0} />
   ) : null;
 };

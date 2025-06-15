@@ -7,6 +7,8 @@ import Image from "next/image";
 import { useCallback } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingOptionCard } from "./StakingOptionCard";
+import { utils } from "near-api-js";
+import Big from "big.js";
 
 type EnterStakingAmountProps = {
   onContinue: (selectedProvider: StakingPool) => void;
@@ -29,6 +31,7 @@ export const EnterStakingAmount = ({
     setSelectedPool,
     source,
     hasAlreadySelectedStakingPool,
+    isStakingMax,
   } = useStakingProviderContext();
 
   const handleContinue = useCallback(() => {
@@ -76,20 +79,28 @@ export const EnterStakingAmount = ({
               <span className="font-medium">NEAR</span>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center ml-2">
+              <Input
+                type="text"
+                placeholder="0"
+                value={
+                  // Override value for display purposes when staking max
+                  isStakingMax
+                    ? Big(
+                        utils.format.formatNearAmount(maxStakingAmount ?? "0")
+                      ).toFixed(4)
+                    : enteredAmount
+                }
+                onChange={(e) => setEnteredAmount(e.target.value)}
+                className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
               <button
                 onClick={onStakeMax}
+                disabled={!maxStakingAmount || Big(maxStakingAmount).lte(0)}
                 className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200"
               >
                 Max
               </button>
-              <Input
-                type="text"
-                placeholder="0"
-                value={enteredAmount}
-                onChange={(e) => setEnteredAmount(e.target.value)}
-                className="w-full bg-transparent border-none text-lg text-right p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
             </div>
           </div>
           <div className="mt-2 text-sm text-red-500 h-2">{amountError}</div>

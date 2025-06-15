@@ -7,6 +7,7 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import Big from "big.js";
+import { utils } from "near-api-js";
 import { useCallback, useMemo } from "react";
 import { AssetIcon } from "../../common/AssetIcon";
 import NearTokenAmount from "../../shared/NearTokenAmount";
@@ -31,6 +32,7 @@ export const EnterAmountStep = ({
     setEnteredAmount,
     maxAmountToLock,
     amountError,
+    isLockingMax,
   } = useLockProviderContext();
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,35 +83,45 @@ export const EnterAmountStep = ({
       </div>
       <div className="relative flex h-[150px] flex-col border border-line rounded-lg">
         <div className="flex-1 flex">
-          <div className="flex flex-row w-full items-center p-4 justify-between">
-            <button
-              onClick={openAssetSelector}
-              className="flex flex-row items-center gap-2 bg-[#F2F1EA] px-3 py-1.5 rounded-md hover:bg-opacity-80"
-            >
-              <AssetIcon
-                icon={selectedToken?.metadata?.icon ?? ""}
-                name={selectedToken?.metadata?.name ?? ""}
-              />
-              <span className="font-medium text-sm">
-                {selectedToken?.metadata?.symbol ?? "Select Token"}
-              </span>
-              <ChevronDownIcon className="w-4 h-4 text-primary" />
-            </button>
-            <div className="flex-1 flex flex-row gap-1 max-w-[150px] items-center">
+          <div className="flex flex-row w-full items-center p-4">
+            <div className="flex-1">
+              <button
+                onClick={openAssetSelector}
+                className="flex flex-row items-center gap-2 bg-[#F2F1EA] px-3 py-1.5 rounded-md hover:bg-opacity-80"
+              >
+                <AssetIcon
+                  icon={selectedToken?.metadata?.icon ?? ""}
+                  name={selectedToken?.metadata?.name ?? ""}
+                />
+                <span className="font-medium text-sm">
+                  {selectedToken?.metadata?.symbol ?? "Select Token"}
+                </span>
+                <ChevronDownIcon className="w-4 h-4 text-primary" />
+              </button>
+            </div>
+            <div className="flex-1 grow flex flex-row max-w-[350px] overflow-hidden">
               <Input
                 type="text"
                 placeholder="0"
-                value={enteredAmount}
+                value={
+                  // Override value for display purposes when locking max
+                  isLockingMax
+                    ? Big(
+                        utils.format.formatNearAmount(maxAmountToLock ?? "0")
+                      ).toFixed(4)
+                    : enteredAmount
+                }
                 onChange={handleAmountChange}
-                className="w-full bg-transparent border-none text-lg text-right p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
               />
-              <button
-                onClick={onMaxPressed}
-                className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200"
-              >
-                Max
-              </button>
             </div>
+            <button
+              onClick={onMaxPressed}
+              disabled={!maxAmountToLock || Big(maxAmountToLock).lte(0)}
+              className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200"
+            >
+              Max
+            </button>
           </div>
         </div>
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">

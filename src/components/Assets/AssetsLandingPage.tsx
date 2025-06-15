@@ -51,6 +51,7 @@ export const AssetsLandingPage = memo(() => {
 
     openDialog({
       type: "NEAR_LOCK",
+      className: "sm:w-[500px]",
       params: {
         source: accountInfo ? "account_management" : "onboarding",
       },
@@ -116,7 +117,7 @@ export const AssetsLandingPage = memo(() => {
                 onClick={handleStakeAndLock}
                 className="px-8 py-3 text-lg font-semibold bg-black text-white hover:bg-black/90 rounded-lg"
               >
-                Stake & Lock
+                Lock & Stake
               </UpdatedButton>
             </div>
 

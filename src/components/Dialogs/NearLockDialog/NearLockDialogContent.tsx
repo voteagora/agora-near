@@ -1,13 +1,16 @@
+import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { TokenWithBalance } from "@/lib/types";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import LoadingSpinner from "../../shared/LoadingSpinner";
+import { useOpenDialog } from "../DialogProvider/DialogProvider";
 import { useLockProviderContext } from "../LockProvider";
 import { AssetSelector } from "./AssetSelector";
 import { EnterAmountStep } from "./EnterAmountStep";
-import { ReviewStep } from "./ReviewStep";
-import { useOpenDialog } from "../DialogProvider/DialogProvider";
 import { LockDialogHeader } from "./LockDialogHeader";
-import { useRouter } from "next/navigation";
+import { ReviewStep } from "./ReviewStep";
 
 type DialogContentProps = {
   closeDialog: () => void;
@@ -23,6 +26,8 @@ export function NearLockDialogContent({ closeDialog }: DialogContentProps) {
   const [isAssetSelectorOpen, setIsAssetSelectorOpen] = useState(false);
 
   const openDialog = useOpenDialog();
+
+  const queryClient = useQueryClient();
 
   const handleReview = () => {
     setCurrentStep(2);
@@ -58,6 +63,7 @@ export function NearLockDialogContent({ closeDialog }: DialogContentProps) {
     closeDialog();
     openDialog({
       type: "NEAR_STAKING",
+      className: "sm:w-[500px]",
       params: {
         source,
       },
@@ -66,8 +72,11 @@ export function NearLockDialogContent({ closeDialog }: DialogContentProps) {
 
   const handleViewDashboard = useCallback(() => {
     closeDialog();
+    queryClient.invalidateQueries({
+      queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
+    });
     router.push("/assets");
-  }, [closeDialog, router]);
+  }, [closeDialog, queryClient, router]);
 
   const content = useMemo(() => {
     if (isAssetSelectorOpen) {

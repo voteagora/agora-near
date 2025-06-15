@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNear } from "@/contexts/NearContext";
 import { useRegisterLockup } from "@/hooks/useRegisterLockup";
 import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
@@ -7,8 +7,13 @@ import {
   LockTransaction,
   useLockProviderContext,
 } from "@/components/Dialogs/LockProvider";
+import { useQueryClient } from "@tanstack/react-query";
+import { FUNGIBLE_TOKEN_QK } from "./useFungibleTokens";
+import { NEAR_BALANCE_QK } from "./useNearBalance";
+import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 
-export const useTransactionExecution = () => {
+export const useDeployLockupAndLock = () => {
   const {
     lockupAccountId,
     selectedToken,
@@ -45,21 +50,24 @@ export const useTransactionExecution = () => {
     lockupAccountId: lockupAccountId ?? "",
   });
 
-  const getTransactionText = useCallback((step: LockTransaction) => {
-    switch (step) {
-      case "deploy_lockup":
-        return "Deploying lockup contract...";
-      case "transfer_near":
-      case "transfer_ft":
-        return "Transferring tokens...";
-      case "select_staking_pool":
-        return "Selecting staking pool...";
-      case "refresh_balance":
-        return "Refreshing balance...";
-      case "lock_near":
-        return "Locking NEAR...";
-    }
-  }, []);
+  const getTransactionText = useCallback(
+    (step: LockTransaction) => {
+      switch (step) {
+        case "deploy_lockup":
+          return "Deploying lockup contract...";
+        case "transfer_near":
+        case "transfer_ft":
+          return "Transferring tokens...";
+        case "select_staking_pool":
+          return "Selecting staking pool...";
+        case "refresh_balance":
+          return "Refreshing balance...";
+        case "lock_near":
+          return `Locking ${selectedToken?.metadata?.name}...`;
+      }
+    },
+    [selectedToken?.metadata?.name]
+  );
 
   const executeTransaction = useCallback(
     async (transaction: LockTransaction) => {
@@ -118,12 +126,50 @@ export const useTransactionExecution = () => {
     ]
   );
 
+  const queryClient = useQueryClient();
+
+  const refreshBalances = useCallback(() => {
+    queryClient.invalidateQueries({
+      queryKey: [FUNGIBLE_TOKEN_QK],
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: [NEAR_BALANCE_QK],
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: [
+        READ_NEAR_CONTRACT_QK,
+        lockupAccountId,
+        "get_venear_liquid_balance",
+      ],
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: [
+        READ_NEAR_CONTRACT_QK,
+        TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        "ft_balance_of",
+      ],
+    });
+  }, [queryClient, lockupAccountId]);
+
   const executeTransactions = useCallback(
-    async ({ numTransactions }: { numTransactions: number }) => {
+    async ({
+      numTransactions,
+      startAt = 0,
+    }: {
+      numTransactions: number;
+      startAt?: number;
+    }) => {
       try {
+        if (startAt < 0 || startAt >= requiredTransactions.length) {
+          throw new Error("Something went wrong executing lock transactions");
+        }
+
         setNumTransactions(numTransactions);
         setIsSubmitting(true);
-        for (let i = 0; i < requiredTransactions.length; i++) {
+        for (let i = startAt; i < requiredTransactions.length; i++) {
           const transaction = requiredTransactions[i];
 
           setTransactionText(getTransactionText(transaction));
@@ -134,14 +180,58 @@ export const useTransactionExecution = () => {
 
         setIsCompleted(true);
         setTransactionText("Locked");
+        refreshBalances();
       } catch (e) {
         setError(e instanceof Error ? e : new Error(String(e)));
       } finally {
         setIsSubmitting(false);
       }
     },
-    [requiredTransactions, getTransactionText, executeTransaction]
+    [
+      refreshBalances,
+      requiredTransactions,
+      getTransactionText,
+      executeTransaction,
+    ]
   );
+
+  const retryFromCurrentStep = useCallback(() => {
+    executeTransactions({
+      numTransactions: requiredTransactions.length,
+      startAt: transactionStep,
+    });
+  }, [executeTransactions, requiredTransactions.length, transactionStep]);
+
+  const errorMessage = useMemo(() => {
+    if (registerAndDeployLockupError) {
+      return "Something went wrong deploying your lockup contract";
+    }
+
+    if (selectStakingPoolError) {
+      return "Something went wrong selecting a staking pool";
+    }
+
+    if (refreshStakingPoolBalanceError) {
+      return "Something went wrong refreshing your balance";
+    }
+
+    if (lockingNearError) {
+      return `Something went wrong locking your ${selectedToken?.metadata?.name}`;
+    }
+
+    if (error) {
+      return error.message;
+    }
+
+    return null;
+  }, [
+    error,
+    lockingNearError,
+    refreshStakingPoolBalanceError,
+    registerAndDeployLockupError,
+    selectStakingPoolError,
+    selectedToken?.metadata?.name,
+  ]);
 
   return {
     transactionText,
@@ -150,11 +240,7 @@ export const useTransactionExecution = () => {
     isSubmitting,
     isCompleted,
     executeTransactions,
-    error:
-      registerAndDeployLockupError ||
-      selectStakingPoolError ||
-      refreshStakingPoolBalanceError ||
-      lockingNearError ||
-      error,
+    error: errorMessage,
+    retryFromCurrentStep,
   };
 };

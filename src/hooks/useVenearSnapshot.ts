@@ -24,7 +24,7 @@ export const useVenearSnapshot = ({
       config: {
         args: {},
         enabled,
-        staleTime: CACHE_TTL.SHORT,
+        staleTime: CACHE_TTL.MEDIUM,
       },
     },
   ]);

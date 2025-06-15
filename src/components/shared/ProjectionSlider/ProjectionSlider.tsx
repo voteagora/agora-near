@@ -2,6 +2,8 @@
 
 import { memo, useCallback, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
+import NearTokenAmount from "../NearTokenAmount";
+import { utils } from "near-api-js";
 
 interface ProjectionSliderProps {
   apy: number; // Annual percentage yield as decimal (e.g., 0.0599 for 5.99%)
@@ -35,7 +37,7 @@ export const ProjectionSlider = memo(
     const calculateProjection = useCallback(
       (years: number) => {
         if (years === 0) return startingAmount;
-        return Math.round(startingAmount * Math.pow(1 + apy, years));
+        return startingAmount * Math.pow(1 + apy, years);
       },
       [apy, startingAmount]
     );
@@ -64,6 +66,7 @@ export const ProjectionSlider = memo(
 
     const currentProjection = calculateProjection(selectedValue);
     const progressPercentage = (selectedValue / MAX_YEARS) * 100;
+    const shouldShowDecimals = startingAmount < 100;
 
     return (
       <div className={cn("w-full max-w-4xl mx-auto", className)}>
@@ -73,7 +76,16 @@ export const ProjectionSlider = memo(
             {(apy * 100).toFixed(2)}% APY
           </h3>
           <div className="text-6xl font-bold text-primary mb-8 tabular-nums">
-            {currentProjection.toLocaleString()}
+            <NearTokenAmount
+              amount={
+                utils.format.parseNearAmount(currentProjection.toString()) ??
+                "0"
+              }
+              compact={false}
+              hideCurrency={true}
+              minimumFractionDigits={shouldShowDecimals ? 4 : 0}
+              maximumSignificantDigits={shouldShowDecimals ? 4 : 0}
+            />
           </div>
         </div>
 

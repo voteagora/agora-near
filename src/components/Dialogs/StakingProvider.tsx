@@ -196,6 +196,11 @@ export const StakingProvider = ({
     setIsStakingMax(false);
   }, []);
 
+  const setAmount = useCallback((amount: string) => {
+    setIsStakingMax(false);
+    setEnteredAmount(amount);
+  }, []);
+
   const isLoading =
     isLoadingLockupAccount ||
     isLoadingStakingPoolId ||
@@ -213,7 +218,7 @@ export const StakingProvider = ({
         hasAlreadySelectedStakingPool: !!preSelectedStakingPool,
         setSelectedPool,
         enteredAmount,
-        setEnteredAmount,
+        setEnteredAmount: setAmount,
         isStakingMax,
         lockupAccountId,
         isLoading,

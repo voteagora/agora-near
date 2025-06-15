@@ -1,6 +1,5 @@
 "use client";
 
-import { RegisterToVoteButton } from "@/components/AccountActions/RegisterToVoteButton";
 import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { Button } from "@/components/ui/button";
@@ -80,11 +79,7 @@ export default function NearProposalVotingActions({
   }
 
   if (!isRegisteredToVote) {
-    return (
-      <div className="flex flex-col justify-between py-3 px-3 border-t border-line">
-        <RegisterToVoteButton />
-      </div>
-    );
+    return null;
   }
 
   const handleOpenMultiOptionVoteDialog = () => {

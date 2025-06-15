@@ -5,15 +5,14 @@ import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 import { memo } from "react";
 import AgoraLoader from "../shared/AgoraLoader/AgoraLoader";
 import { AssetsLandingPage } from "./AssetsLandingPage";
-import { useVotingPower } from "@/hooks/useVotingPower";
-import NearTokenAmount from "../shared/NearTokenAmount";
+import { GovernanceRewardsCard } from "./GovernanceRewardsCard";
+import { HoldingsSection } from "./HoldingsSection";
+import { VotingPowerCard } from "./VotingPowerCard";
 
 export const AssetsHome = memo(() => {
   const { signedAccountId } = useNear();
   const { data: accountInfo, isLoading: isLoadingAccount } =
     useVenearAccountInfo(signedAccountId);
-
-  const { data: votingPower } = useVotingPower(signedAccountId);
 
   if (isLoadingAccount) {
     return (
@@ -23,12 +22,22 @@ export const AssetsHome = memo(() => {
     );
   }
 
-  return accountInfo ? (
-    <div className="flex flex-col w-full min-h-screen justify-center items-center">
-      Your voting power: <NearTokenAmount amount={votingPower ?? "0"} />
+  if (!accountInfo) {
+    return <AssetsLandingPage />;
+  }
+
+  return (
+    <div className="flex flex-col w-full min-h-screen">
+      <div className="flex flex-row gap-6 p-6">
+        <div className="w-[70%] flex">
+          <VotingPowerCard />
+        </div>
+        <div className="w-[30%] flex">
+          <GovernanceRewardsCard />
+        </div>
+      </div>
+      <HoldingsSection />
     </div>
-  ) : (
-    <AssetsLandingPage />
   );
 });
 
