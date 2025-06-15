@@ -1,6 +1,7 @@
 import coin from "@/assets/icons/Staking.png";
 import { UpdatedButton } from "@/components/Button";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useMemo } from "react";
@@ -45,7 +46,23 @@ export const StakingSubmitting = ({
             <span className="text-sm font-medium">
               {`Pending ${currentStep + 1} of ${requiredSteps.length} wallet signatures`}
             </span>
-            <InformationCircleIcon className="w-5 h-5 text-[#9D9FA1]" />
+            <TooltipWithTap
+              content={
+                <div className="max-w-[300px] flex flex-col text-left p-3">
+                  <h4 className="text-lg font-bold">
+                    You&apos;ll need to complete a few wallet signatures to
+                    complete setup.
+                  </h4>
+                  <div className="border-b border-gray-200 my-2" />
+                  <ul className="text-sm space-y-1 font-medium list-disc pl-4">
+                    <li>Selecting your staking pool (for stNEAR/liNEAR)</li>
+                    <li>Refreshing your balance</li>
+                  </ul>
+                </div>
+              }
+            >
+              <InformationCircleIcon className="w-5 h-5 text-[#9D9FA1]" />
+            </TooltipWithTap>
           </div>
         </div>
         <UpdatedButton
