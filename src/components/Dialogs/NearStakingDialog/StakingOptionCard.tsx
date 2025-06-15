@@ -35,20 +35,20 @@ export const StakingOptionCard = ({
             alt={tokenMetadata.symbol}
             width={24}
             height={24}
-            className="rounded-full"
+            className="rounded-full border border-black bg-white"
           />
-          <span className="font-medium">{tokenMetadata.symbol}</span>
+          <span className="font-medium">{tokenMetadata.name}</span>
         </div>
 
         <div className="text-center">
-          <div className="text-sm opacity-70 mb-1">APY</div>
-          <div className="text-2xl font-bold">
+          <div className="text-xs mb-1 text-[#676767]">EST. APY</div>
+          <div className="text-4xl font-light">
             {apy ? `${apy.toFixed(2)}%` : "-"}
           </div>
         </div>
       </div>
       <div className="mt-auto">
-        <div className="text-sm opacity-70 mb-1">
+        <div className="text-xs text-[#676767] mb-1">
           <span>Tot. Vol</span>
         </div>
         <div className="text-sm">

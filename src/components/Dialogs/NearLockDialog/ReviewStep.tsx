@@ -3,6 +3,7 @@ import LockOpenIcon from "@/assets/icons/Locking.png";
 import { UpdatedButton } from "@/components/Button";
 import { useDeployLockupAndLock } from "@/hooks/useDeployLockupAndLock";
 import { DEFAULT_GAS_RESERVE } from "@/lib/constants";
+import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Big from "big.js";
 import { utils } from "near-api-js";
@@ -194,7 +195,27 @@ export const ReviewStep = memo(
                 </div>
               </div>
               <div className="px-2">
-                <InformationCircleIcon className="w-4 h-4 text-gray-400" />
+                <TooltipWithTap
+                  content={
+                    <div className="max-w-[300px] flex flex-col text-left p-3">
+                      <h4 className="text-lg font-bold mb-2">
+                        You&apos;ll need to complete a few wallet signatures to
+                        complete setup.
+                      </h4>
+                      <p className="text-sm">
+                        Depending on what you&apos;re locking, this may include:
+                      </p>
+                      <div className="border-b border-gray-200 my-2" />
+                      <ul className="text-md space-y-1 font-bold list-disc pl-4">
+                        <li>Deploying your lockup contract (one-time)</li>
+                        <li>Transferring tokens</li>
+                        <li>Locking your assets</li>
+                      </ul>
+                    </div>
+                  }
+                >
+                  <InformationCircleIcon className="w-4 h-4 text-gray-400" />
+                </TooltipWithTap>
               </div>
             </div>
             <UpdatedButton

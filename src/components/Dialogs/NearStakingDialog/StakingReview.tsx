@@ -7,10 +7,11 @@ import { useNearPrice } from "@/hooks/useNearPrice";
 import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
 import { useStakeNear } from "@/hooks/useStakeNear";
 import { yoctoNearToUsdFormatted } from "@/lib/utils";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingSubmitting } from "./StakingSubmitting";
 import { StakingSuccess } from "./StakingSuccess";
+import { StakingDisclosures } from "./StakingDisclosures";
 
 export type StakingStep = "select_pool" | "stake";
 
@@ -33,8 +34,11 @@ export const StakingReview = ({
     currentStakingPoolId,
   } = useStakingProviderContext();
 
-  const [stakingStep, setStakingStep] = useState<StakingStep>();
+  const [stakingStep, setStakingStep] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDisclosures, setShowDisclosures] = useState(false);
+
+  const needsToSelectPool = useRef(!currentStakingPoolId);
 
   const { networkId } = useNear();
 
@@ -69,40 +73,78 @@ export const StakingReview = ({
     return null;
   }, [stakingNearError, selectStakingPoolError]);
 
-  const onStake = useCallback(async () => {
-    try {
-      setIsSubmitting(true);
-      if (!currentStakingPoolId) {
-        setStakingStep("select_pool");
-        await selectStakingPoolAsync({
-          stakingPoolId: selectedPool.contracts[networkId],
-        });
-      }
-      setStakingStep("stake");
-      await stakeNear(enteredAmountYoctoNear);
-
-      setIsStakeCompleted(true);
-    } catch (e) {
-      console.error(`Staking error: ${e}`);
-    } finally {
-      setIsSubmitting(false);
+  const requiredSteps = useMemo(() => {
+    const steps: StakingStep[] = [];
+    if (needsToSelectPool.current) {
+      steps.push("select_pool");
     }
-  }, [
-    currentStakingPoolId,
-    enteredAmountYoctoNear,
-    networkId,
-    selectStakingPoolAsync,
-    selectedPool.contracts,
-    stakeNear,
-  ]);
+    steps.push("stake");
+    return steps;
+  }, []);
+
+  const onStake = useCallback(
+    async ({ startAtStep = 0 }: { startAtStep?: number }) => {
+      try {
+        setIsSubmitting(true);
+
+        for (let i = startAtStep; i < requiredSteps.length; i++) {
+          const step = requiredSteps[i];
+          setStakingStep(i);
+
+          if (step === "select_pool") {
+            await selectStakingPoolAsync({
+              stakingPoolId: selectedPool.contracts[networkId],
+            });
+          } else if (step === "stake") {
+            await stakeNear(enteredAmountYoctoNear);
+          }
+        }
+
+        setIsStakeCompleted(true);
+      } catch (e) {
+        console.error(`Staking error: ${e}`);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [
+      enteredAmountYoctoNear,
+      networkId,
+      requiredSteps,
+      selectStakingPoolAsync,
+      selectedPool.contracts,
+      stakeNear,
+    ]
+  );
+
+  const onRetryFromCurrentStep = useCallback(() => {
+    onStake({ startAtStep: stakingStep });
+  }, [onStake, stakingStep]);
 
   const handleStakeMoreFunds = useCallback(() => {
     resetForm();
     onBack();
   }, [resetForm, onBack]);
 
-  if (isSubmitting && stakingStep) {
-    return <StakingSubmitting stakingStep={stakingStep} />;
+  const handleShowDisclosures = useCallback(() => {
+    setShowDisclosures(true);
+  }, []);
+
+  const handleBackFromDisclosures = useCallback(() => {
+    setShowDisclosures(false);
+  }, []);
+
+  if (showDisclosures) {
+    return <StakingDisclosures onBack={handleBackFromDisclosures} />;
+  }
+
+  if (isSubmitting) {
+    return (
+      <StakingSubmitting
+        requiredSteps={requiredSteps}
+        currentStep={stakingStep}
+      />
+    );
   }
 
   if (isStakeCompleted && !stakeError) {
@@ -118,14 +160,14 @@ export const StakingReview = ({
     return (
       <TransactionError
         message={stakeError}
-        onRetry={onStake}
+        onRetry={onRetryFromCurrentStep}
         onGoBack={onBack}
       />
     );
   }
 
   return (
-    <div className="flex flex-col h-full gap-12">
+    <div className="flex flex-col w-full h-full gap-12">
       <div>
         <button
           onClick={onBack}
@@ -137,10 +179,8 @@ export const StakingReview = ({
       <div className="flex flex-col gap-4">
         <div className="flex justify-between items-start">
           <div>
-            <h2 className="text-md font-semibold text-gray-900 mb-1">
-              Amount staking
-            </h2>
-            <div className="text-sm text-gray-500">
+            <h2 className="text-md font-semibold mb-1">Amount staking</h2>
+            <div className="text-sm text-[#9D9FA1]">
               {`${selectedStats?.apy?.toFixed(2) ?? "-"}% APY`}
             </div>
           </div>
@@ -151,12 +191,12 @@ export const StakingReview = ({
             {isLoadingNearPrice ? (
               <Skeleton className="w-16 h-4" />
             ) : (
-              <div className="text-sm text-gray-500">{totalUsd}</div>
+              <div className="text-sm text-[#9D9FA1]">{totalUsd}</div>
             )}
           </div>
         </div>
         <div className="flex flex-col items-end">
-          <div className="text-sm text-gray-500">Total</div>
+          <div className="text-sm text-[#9D9FA1]">Total</div>
           <div className="flex flex-col">
             <div className="text-2xl font-bold text-gray-900">
               <NearTokenAmount
@@ -167,7 +207,7 @@ export const StakingReview = ({
           </div>
         </div>
       </div>
-      <div className="flex-1 flex flex-col justify-end gap-2">
+      <div className="flex-1 flex flex-col justify-end gap-4">
         <UpdatedButton
           isLoading={isStakingNear}
           onClick={onStake}
@@ -175,9 +215,12 @@ export const StakingReview = ({
         >
           {stakingNearError ? "Failed to stake - try again" : "Stake tokens"}
         </UpdatedButton>
-        <div className="text-center text-sm text-gray-500">
-          You may unlock your tokens at any time.{" "}
-          <button className="underline text-black font-medium">
+        <div className="text-center text-xs text-[#9D9FA1]">
+          You may unstake your tokens at any time.{" "}
+          <button
+            onClick={handleShowDisclosures}
+            className="underline text-black font-medium"
+          >
             Disclosures
           </button>
         </div>

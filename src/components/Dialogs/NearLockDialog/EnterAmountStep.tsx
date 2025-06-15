@@ -1,5 +1,6 @@
 import { UpdatedButton } from "@/components/Button";
 import { Input } from "@/components/ui/input";
+import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
 import { VENEAR_TOKEN_METADATA } from "@/lib/constants";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import {
@@ -66,7 +67,19 @@ export const EnterAmountStep = ({
       <div className="flex flex-col gap-1">
         <div className="flex items-center text-sm text-secondary">
           <span>Available to lock</span>
-          <InformationCircleIcon className="w-4 h-4 ml-1 text-secondary" />
+          <TooltipWithTap
+            content={
+              <div className="max-w-[300px] flex flex-col text-left p-3">
+                <h4 className="text-lg font-bold mb-2">Available to lock</h4>
+                <p className="text-sm">
+                  You can lock this balance to gain voting power and boost your
+                  rewards.
+                </p>
+              </div>
+            }
+          >
+            <InformationCircleIcon className="w-4 h-4 ml-1 text-secondary" />
+          </TooltipWithTap>
         </div>
         <div>
           <span className="text-3xl font-bold text-primary">
