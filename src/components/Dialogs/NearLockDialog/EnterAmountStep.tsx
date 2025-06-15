@@ -7,11 +7,11 @@ import {
   InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import Big from "big.js";
+import { utils } from "near-api-js";
 import { useCallback, useMemo } from "react";
 import { AssetIcon } from "../../common/AssetIcon";
 import NearTokenAmount from "../../shared/NearTokenAmount";
 import { useLockProviderContext } from "../LockProvider";
-import { utils } from "near-api-js";
 
 type EnterAmountStepProps = {
   openAssetSelector: () => void;

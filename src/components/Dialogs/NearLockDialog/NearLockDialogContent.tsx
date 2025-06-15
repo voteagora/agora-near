@@ -1,16 +1,16 @@
+import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { TokenWithBalance } from "@/lib/types";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import LoadingSpinner from "../../shared/LoadingSpinner";
+import { useOpenDialog } from "../DialogProvider/DialogProvider";
 import { useLockProviderContext } from "../LockProvider";
 import { AssetSelector } from "./AssetSelector";
 import { EnterAmountStep } from "./EnterAmountStep";
-import { ReviewStep } from "./ReviewStep";
-import { useOpenDialog } from "../DialogProvider/DialogProvider";
 import { LockDialogHeader } from "./LockDialogHeader";
-import { useRouter } from "next/navigation";
-import { useQueryClient } from "@tanstack/react-query";
-import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { ReviewStep } from "./ReviewStep";
 
 type DialogContentProps = {
   closeDialog: () => void;

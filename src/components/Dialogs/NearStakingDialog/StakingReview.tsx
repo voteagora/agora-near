@@ -1,20 +1,20 @@
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
-import { useStakingProviderContext } from "../StakingProvider";
-import { useNearPrice } from "@/hooks/useNearPrice";
-import { useCallback, useMemo, useState } from "react";
-import { yoctoNearToUsdFormatted } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useStakeNear } from "@/hooks/useStakeNear";
 import { UpdatedButton } from "@/components/Button";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import { TransactionError } from "@/components/TransactionError";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useNear } from "@/contexts/NearContext";
+import { useNearPrice } from "@/hooks/useNearPrice";
+import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
+import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
+import { useStakeNear } from "@/hooks/useStakeNear";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { yoctoNearToUsdFormatted } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useCallback, useMemo, useState } from "react";
+import { useStakingProviderContext } from "../StakingProvider";
 import { StakingSubmitting } from "./StakingSubmitting";
 import { StakingSuccess } from "./StakingSuccess";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
-import { useNear } from "@/contexts/NearContext";
-import { useQueryClient } from "@tanstack/react-query";
-import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 
 export type StakingStep = "select_pool" | "stake";
 
@@ -62,9 +62,20 @@ export const StakingReview = ({
     lockupAccountId: lockupAccountId ?? "",
   });
 
-  const { selectStakingPoolAsync } = useSelectStakingPool({
-    lockupAccountId: lockupAccountId ?? "",
-  });
+  const { selectStakingPoolAsync, error: selectStakingPoolError } =
+    useSelectStakingPool({
+      lockupAccountId: lockupAccountId ?? "",
+    });
+
+  const stakeError = useMemo(() => {
+    if (stakingNearError) {
+      return "Something went wrong staking your funds.";
+    }
+    if (selectStakingPoolError) {
+      return "Something went wrong selecting a staking pool.";
+    }
+    return null;
+  }, [stakingNearError, selectStakingPoolError]);
 
   const onStake = useCallback(async () => {
     try {
@@ -77,11 +88,12 @@ export const StakingReview = ({
       }
       setStakingStep("stake");
       await stakeNear(enteredAmountYoctoNear);
-    } catch {
-      toast.error("Something went wrong");
+
+      setIsStakeCompleted(true);
+    } catch (e) {
+      console.error(`Staking error: ${e}`);
     } finally {
       setIsSubmitting(false);
-      setIsStakeCompleted(true);
     }
   }, [
     currentStakingPoolId,
@@ -109,11 +121,21 @@ export const StakingReview = ({
     return <StakingSubmitting stakingStep={stakingStep} />;
   }
 
-  if (isStakeCompleted && !stakingNearError) {
+  if (isStakeCompleted && !stakeError) {
     return (
       <StakingSuccess
         onStakeMore={handleStakeMoreFunds}
         onViewDashboard={handleViewDashboard}
+      />
+    );
+  }
+
+  if (stakeError) {
+    return (
+      <TransactionError
+        message={stakeError}
+        onRetry={onStake}
+        onGoBack={onBack}
       />
     );
   }
