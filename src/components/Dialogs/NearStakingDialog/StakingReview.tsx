@@ -4,13 +4,9 @@ import { TransactionError } from "@/components/TransactionError";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNear } from "@/contexts/NearContext";
 import { useNearPrice } from "@/hooks/useNearPrice";
-import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
 import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
 import { useStakeNear } from "@/hooks/useStakeNear";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { yoctoNearToUsdFormatted } from "@/lib/utils";
-import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingSubmitting } from "./StakingSubmitting";
@@ -20,12 +16,12 @@ export type StakingStep = "select_pool" | "stake";
 
 type StakingReviewProps = {
   onBack: () => void;
-  onCloseDialog: () => void;
+  handleViewDashboard: () => void;
 };
 
 export const StakingReview = ({
   onBack,
-  onCloseDialog,
+  handleViewDashboard,
 }: StakingReviewProps) => {
   const {
     poolStats,
@@ -39,10 +35,6 @@ export const StakingReview = ({
 
   const [stakingStep, setStakingStep] = useState<StakingStep>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const queryClient = useQueryClient();
-
-  const router = useRouter();
 
   const { networkId } = useNear();
 
@@ -108,14 +100,6 @@ export const StakingReview = ({
     resetForm();
     onBack();
   }, [resetForm, onBack]);
-
-  const handleViewDashboard = useCallback(() => {
-    onCloseDialog();
-    queryClient.invalidateQueries({
-      queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
-    });
-    router.push("/assets");
-  }, [onCloseDialog, queryClient, router]);
 
   if (isSubmitting && stakingStep) {
     return <StakingSubmitting stakingStep={stakingStep} />;
