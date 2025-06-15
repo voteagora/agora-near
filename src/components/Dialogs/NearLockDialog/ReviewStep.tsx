@@ -1,7 +1,7 @@
 import LockClosedIcon from "@/assets/icons/Locked.png";
 import LockOpenIcon from "@/assets/icons/Locking.png";
 import { UpdatedButton } from "@/components/Button";
-import { useTransactionExecution } from "@/hooks/useTransactionExecution";
+import { useDeployLockupAndLock } from "@/hooks/useDeployLockupAndLock";
 import { DEFAULT_GAS_RESERVE } from "@/lib/constants";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Big from "big.js";
@@ -13,6 +13,7 @@ import { useLockProviderContext } from "../LockProvider";
 import { DepositTooltip } from "./DepositTooltip";
 import { DisclosuresContent } from "./DisclosuresContent";
 import LockedIcon from "@/assets/icons/Locked.png";
+import { TransactionError } from "@/components/TransactionError";
 
 type ReviewStepProps = {
   handleEdit: () => void;
@@ -51,7 +52,8 @@ export const ReviewStep = memo(
       isCompleted,
       executeTransactions,
       error,
-    } = useTransactionExecution();
+      retryFromCurrentStep,
+    } = useDeployLockupAndLock();
 
     const handleShowDisclosures = useCallback(() => {
       setShowDisclosures(true);
@@ -71,6 +73,12 @@ export const ReviewStep = memo(
         />
       );
     }, [venearAmount]);
+
+    const onSubmit = useCallback(() => {
+      executeTransactions({
+        numTransactions: requiredTransactions.length,
+      });
+    }, [executeTransactions, requiredTransactions.length]);
 
     if (showDisclosures) {
       return <DisclosuresContent onBack={handleHideDisclosures} />;
@@ -203,6 +211,16 @@ export const ReviewStep = memo(
       );
     }
 
+    if (error) {
+      return (
+        <TransactionError
+          message={error}
+          onRetry={retryFromCurrentStep}
+          onGoBack={handleEdit}
+        />
+      );
+    }
+
     return (
       <div className="flex flex-col gap-6 w-full h-full">
         <div className="flex justify-start">
@@ -278,11 +296,7 @@ export const ReviewStep = memo(
           <div className="flex flex-col gap-2">
             <UpdatedButton
               type="primary"
-              onClick={async () => {
-                await executeTransactions({
-                  numTransactions: requiredTransactions.length,
-                });
-              }}
+              onClick={onSubmit}
               disabled={
                 !enteredAmount ||
                 enteredAmount === "0" ||
@@ -292,7 +306,7 @@ export const ReviewStep = memo(
               className="w-full mt-4"
               variant="rounded"
             >
-              {error ? "Failed to lock - try again" : "Lock tokens"}
+              Lock tokens
             </UpdatedButton>
             <p className="text-xs text-secondary text-center text-[#9D9FA1]">
               You may unlock your tokens at any time.{" "}
