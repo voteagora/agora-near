@@ -1,14 +1,13 @@
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
+import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { StakingPool } from "@/lib/types";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { StakingProvider, useStakingProviderContext } from "../StakingProvider";
 import { EnterStakingAmount } from "./EnterStakingAmount";
 import { StakingReview } from "./StakingReview";
-import { StakingPool } from "@/lib/types";
-import { StakingDialogHeader } from "./StakingDialogHeader";
-import { useQueryClient } from "@tanstack/react-query";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
-import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
-import { useRouter } from "next/navigation";
 
 export type StakingSource = "onboarding" | "account_management";
 
@@ -59,10 +58,7 @@ const StakingDialogContent = ({ closeDialog }: { closeDialog: () => void }) => {
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <StakingDialogHeader />
-      <EnterStakingAmount onContinue={handleContinue} onSkip={goToDashboard} />
-    </div>
+    <EnterStakingAmount onContinue={handleContinue} onSkip={goToDashboard} />
   );
 };
 

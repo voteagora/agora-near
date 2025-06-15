@@ -3,6 +3,7 @@ import LockOpenIcon from "@/assets/icons/Locking.png";
 import { UpdatedButton } from "@/components/Button";
 import { useDeployLockupAndLock } from "@/hooks/useDeployLockupAndLock";
 import { DEFAULT_GAS_RESERVE } from "@/lib/constants";
+import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Big from "big.js";
 import { utils } from "near-api-js";
@@ -181,20 +182,36 @@ export const ReviewStep = memo(
             </div>
           </div>
           <div className="flex-1 flex flex-col justify-end w-full items-center gap-4 pb-4">
-            <div className="flex items-center justify-between gap-2 bg-white border border-gray-200 rounded-lg w-full">
-              <div className="flex flex-row items-center gap-2">
-                <div className="h-full flex grow">
-                  <div className="flex items-center justify-center w-8 h-8 bg-purple-100">
-                    <InformationCircleIcon className="text-purple-600" />
-                  </div>
-                </div>
-                <div className="flex text-sm py-2 text-gray-900 font-medium">
+            <div className="bg-white w-full border border-gray-200 rounded-xl overflow-hidden flex items-center shadow-sm">
+              <div className="flex items-center justify-center bg-[#9797FF]/30 gap-3 w-[40px] h-[40px]">
+                <InformationCircleIcon className="w-5 h-5 text-[#9797FF]" />
+              </div>
+              <div className="flex flex-row w-full justify-center items-center gap-2">
+                <span className="text-sm font-medium">
                   Pending {transactionStep + 1} of {numTransactions} wallet
                   signatures
-                </div>
-              </div>
-              <div className="px-2">
-                <InformationCircleIcon className="w-4 h-4 text-gray-400" />
+                </span>
+                <TooltipWithTap
+                  content={
+                    <div className="max-w-[300px] flex flex-col text-left p-3">
+                      <h4 className="text-lg font-bold mb-2">
+                        You&apos;ll need to complete a few wallet signatures to
+                        complete setup.
+                      </h4>
+                      <p className="text-sm">
+                        Depending on what you&apos;re locking, this may include:
+                      </p>
+                      <div className="border-b border-gray-200 my-2" />
+                      <ul className="text-md space-y-1 font-bold list-disc pl-4">
+                        <li>Deploying your lockup contract (one-time)</li>
+                        <li>Transferring tokens</li>
+                        <li>Locking your assets</li>
+                      </ul>
+                    </div>
+                  }
+                >
+                  <InformationCircleIcon className="w-4 h-4 text-[#9D9FA1]" />
+                </TooltipWithTap>
               </div>
             </div>
             <UpdatedButton

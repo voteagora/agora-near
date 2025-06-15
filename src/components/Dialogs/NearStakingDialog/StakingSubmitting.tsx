@@ -1,26 +1,30 @@
 import coin from "@/assets/icons/Staking.png";
 import { UpdatedButton } from "@/components/Button";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { useMemo } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingStep } from "./StakingReview";
-import { useMemo } from "react";
 
 export const StakingSubmitting = ({
-  stakingStep,
+  requiredSteps,
+  currentStep,
 }: {
-  stakingStep: StakingStep;
+  requiredSteps: StakingStep[];
+  currentStep: number;
 }) => {
   const { enteredAmountYoctoNear } = useStakingProviderContext();
 
   const stepMessage = useMemo(() => {
-    switch (stakingStep) {
+    switch (requiredSteps[currentStep]) {
       case "select_pool":
         return "Selecting pool...";
       case "stake":
         return "Staking your NEAR...";
     }
-  }, [stakingStep]);
+  }, [currentStep, requiredSteps]);
 
   return (
     <div className="flex flex-col h-full items-center w-full justify-center">
@@ -33,7 +37,34 @@ export const StakingSubmitting = ({
           </div>
         </div>
       </div>
-      <div className="flex-1 flex flex-col justify-end w-full">
+      <div className="flex-1 flex flex-col justify-end w-full gap-4">
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden flex items-center shadow-sm">
+          <div className="flex items-center justify-center bg-[#9797FF]/30 gap-3 w-[40px] h-[40px]">
+            <InformationCircleIcon className="w-5 h-5 text-[#9797FF]" />
+          </div>
+          <div className="flex flex-row w-full justify-center items-center gap-2">
+            <span className="text-sm font-medium">
+              {`Pending ${currentStep + 1} of ${requiredSteps.length} wallet signatures`}
+            </span>
+            <TooltipWithTap
+              content={
+                <div className="max-w-[300px] flex flex-col text-left p-3">
+                  <h4 className="text-lg font-bold">
+                    You&apos;ll need to complete a few wallet signatures to
+                    complete setup.
+                  </h4>
+                  <div className="border-b border-gray-200 my-2" />
+                  <ul className="text-sm space-y-1 font-medium list-disc pl-4">
+                    <li>Selecting your staking pool (for stNEAR/liNEAR)</li>
+                    <li>Refreshing your balance</li>
+                  </ul>
+                </div>
+              }
+            >
+              <InformationCircleIcon className="w-5 h-5 text-[#9D9FA1]" />
+            </TooltipWithTap>
+          </div>
+        </div>
         <UpdatedButton
           type="secondary"
           className="flex w-full justify-center items-center"
