@@ -125,7 +125,7 @@ export function NearLockDialogContent({ closeDialog }: DialogContentProps) {
   }
 
   return (
-    <div className="flex flex-col items-center w-full pt-4 px-4 h-[600px]">
+    <div className="flex flex-col items-center w-full pt-4 px-2 h-[600px]">
       {content}
     </div>
   );
