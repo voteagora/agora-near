@@ -64,9 +64,11 @@ export const HoldingsSection = memo(() => {
   );
 
   const handleUnlock = useCallback(() => {
-    // TODO: Implement unlock functionality
-    console.log("Unlock clicked");
-  }, []);
+    openDialog({
+      type: "NEAR_UNLOCK",
+      params: {},
+    });
+  }, [openDialog]);
 
   const handleManageStaking = useCallback(
     (tokenAccountId: string) => {
