@@ -41,11 +41,7 @@ const transformVotesToTreeData = (votes: ProposalVotingHistoryRecord[]) => {
     children: sortedVotes.map((vote) => ({
       address: vote.accountId,
       support:
-        vote.voteOption === "0"
-          ? "1"
-          : vote.voteOption === "1"
-            ? "0"
-            : vote.voteOption,
+        vote.voteOption === "0" ? "1" : vote.voteOption === "1" ? "0" : "2",
       value: Math.max(Number(vote.votingPower), 0.000001),
     })),
   };
