@@ -20,9 +20,9 @@ export const createDelegateStatement = async (
   return response.data;
 };
 
-export const getDelegate = async (address: string) => {
+export const getDelegate = async (address: string, networkId: string) => {
   const { data } = await axios.get<GetDelegateResponse>(
-    `${Endpoint.Delegates}/${address}`
+    `${Endpoint.Delegates}/${address}?networkId=${networkId}`
   );
 
   return data.delegate;
