@@ -45,12 +45,12 @@ export const NearProposal = memo(({ proposal }: { proposal: ProposalInfo }) => {
         </div>
         <div className="flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6 w-[25%] flex-start justify-center hidden sm:block">
           <div className="overflow-hidden overflow-ellipsis">
-            {proposal.voting_options.length !== 2 && (
+            {proposal.voting_options.length > 3 && (
               <VStack className="text-right">
                 <p>{proposal.voting_options.length} Choices</p>
               </VStack>
             )}
-            {proposal.voting_options.length === 2 && (
+            {proposal.voting_options.length <= 3 && (
               <NearProposalStatus proposal={proposal} />
             )}
           </div>

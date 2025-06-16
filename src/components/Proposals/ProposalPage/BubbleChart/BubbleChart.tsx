@@ -39,7 +39,12 @@ const transformVotesToBubbleData = (
   const maxWeight = Math.max(...sortedVotes.map((v) => Number(v.votingPower)));
   return sortedVotes.map((vote) => ({
     address: vote.accountId,
-    support: vote.voteOption === "0" ? "1" : "0",
+    support:
+      vote.voteOption === "0"
+        ? "1"
+        : vote.voteOption === "1"
+          ? "0"
+          : vote.voteOption,
     value: Number(vote.votingPower),
     r: Math.pow(Number(vote.votingPower) / maxWeight, SCALING_EXPONENT) * 40,
   }));

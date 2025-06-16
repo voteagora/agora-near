@@ -93,7 +93,7 @@ export default function NearProposalVotingActions({
   };
 
   // For multiple options, show the dialog button
-  if (proposal.voting_options.length !== 2) {
+  if (proposal.voting_options.length > 3) {
     return (
       <div className="flex flex-col justify-between py-3 px-3 border-t border-line">
         <Button className="w-full" onClick={handleOpenMultiOptionVoteDialog}>
@@ -103,25 +103,27 @@ export default function NearProposalVotingActions({
     );
   }
 
-  // For 2 options, show inline voting buttons
+  // For 3 options, show inline voting buttons
   return (
     <div className="flex flex-col gap-3 py-3 px-3 border-t border-line">
       <div className="flex flex-row gap-2">
         {proposal.voting_options.map((option, index) => {
           const isFor = index === 0;
+          const isAgainst = index === 1;
+
           const isSelected = selectedVote === index;
           const selectedStyle = isSelected
             ? isFor
-              ? "border-positive bg-positive/10"
-              : "border-negative bg-negative/10"
+              ? "border-positive bg-positive/10 text-positive"
+              : isAgainst
+                ? "border-negative bg-negative/10 text-negative"
+                : "border-secondary bg-secondary/10 text-secondary"
             : "bg-neutral";
 
           return (
             <button
               key={index}
-              className={`${
-                isFor ? "text-positive" : "text-negative"
-              } ${selectedStyle} rounded-md border border-line text-sm font-medium cursor-pointer py-2 px-3 transition-all hover:bg-wash active:shadow-none disabled:bg-line disabled:text-secondary h-8 capitalize flex items-center justify-center flex-1`}
+              className={`${selectedStyle} rounded-md border border-line text-sm font-medium cursor-pointer py-2 px-3 transition-all hover:bg-wash active:shadow-none disabled:bg-line disabled:text-secondary h-8 capitalize flex items-center justify-center flex-1`}
               onClick={() => setSelectedVote(index)}
             >
               {option.toLowerCase()}

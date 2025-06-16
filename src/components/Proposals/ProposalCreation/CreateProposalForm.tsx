@@ -36,7 +36,7 @@ export default function CreateProposalForm({
       title: "",
       description: "",
       link: "",
-      options: [{ title: "For" }, { title: "Against" }],
+      options: [{ title: "For" }, { title: "Against" }, { title: "Abstain" }],
     },
     mode: "onBlur",
   });

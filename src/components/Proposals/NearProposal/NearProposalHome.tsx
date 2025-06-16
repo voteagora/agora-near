@@ -41,10 +41,10 @@ export default function NearProposalHome({
         <div className="flex flex-col gap-4 w-full sm:w-[calc(100%-24rem)]">
           <NearProposalDescription proposal={proposal} />
         </div>
-        {proposal.voting_options.length !== 2 && (
+        {proposal.voting_options.length > 3 && (
           <NearProposalOptionsResult proposal={proposal} config={config} />
         )}
-        {proposal.voting_options.length === 2 && (
+        {proposal.voting_options.length <= 3 && (
           <NearProposalVoteResult proposal={proposal} config={config} />
         )}
       </div>

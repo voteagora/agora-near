@@ -158,6 +158,14 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
           />
           <Area
             type="step"
+            dataKey="abstain"
+            stackId={stackIds.abstain}
+            stroke={rgbStringToHex(ui.customization?.secondary)}
+            fill={rgbStringToHex(ui.customization?.secondary)}
+            name="Abstain"
+          />
+          <Area
+            type="step"
             dataKey="for"
             stackId={stackIds.for}
             stroke={rgbStringToHex(ui.customization?.positive)}
