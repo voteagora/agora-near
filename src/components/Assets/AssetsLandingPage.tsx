@@ -15,7 +15,7 @@ import { useStakingPoolStats } from "@/hooks/useStakingPoolStats";
 import { LINEAR_POOL, STNEAR_POOL } from "@/lib/constants";
 import Big from "big.js";
 
-const DEFAULT_BALANCE_FOR_PROJECTION = 5000;
+const DEFAULT_BALANCE_FOR_PROJECTION = 10000;
 
 export const AssetsLandingPage = memo(() => {
   const openDialog = useOpenDialog();
