@@ -190,7 +190,8 @@ export function formatNumber(
   maximumSignificantDigits = 4,
   useSpecialFormatting?: boolean,
   useCompactDisplay = true,
-  minimumFractionDigits = 0
+  minimumFractionDigits = 0,
+  trailingZeroDisplay?: Intl.NumberFormatOptions["trailingZeroDisplay"]
 ) {
   let bigIntAmount: bigint;
 
@@ -230,6 +231,7 @@ export function formatNumber(
     notation: useCompactDisplay ? "compact" : "standard",
     maximumFractionDigits: maximumSignificantDigits,
     minimumFractionDigits,
+    trailingZeroDisplay,
   });
 
   return numberFormat.format(standardUnitAmount);
