@@ -12,6 +12,8 @@ type Props = {
   className?: string;
 };
 
+const DEFAULT_MIN_DIGITS = 4;
+
 export default function NearTokenAmount({
   amount,
   maximumSignificantDigits,
@@ -21,6 +23,13 @@ export default function NearTokenAmount({
   minimumFractionDigits,
   className,
 }: Props) {
+  const minDigits = useMemo(() => {
+    return Math.min(
+      minimumFractionDigits ?? DEFAULT_MIN_DIGITS,
+      maximumSignificantDigits ?? DEFAULT_MIN_DIGITS
+    );
+  }, [minimumFractionDigits, maximumSignificantDigits]);
+
   const formattedNumber = useMemo(() => {
     const formattedNearAmount = formatNumber(
       amount,
@@ -28,11 +37,12 @@ export default function NearTokenAmount({
       maximumSignificantDigits,
       false,
       compact,
-      minimumFractionDigits
+      minDigits,
+      "stripIfInteger"
     );
 
     return formattedNearAmount;
-  }, [amount, compact, maximumSignificantDigits, minimumFractionDigits]);
+  }, [amount, compact, maximumSignificantDigits, minDigits]);
 
   return (
     <span className={cn(className)}>

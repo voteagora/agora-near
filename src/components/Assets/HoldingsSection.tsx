@@ -2,13 +2,14 @@ import { useNear } from "@/contexts/NearContext";
 import { useAvailableTokens } from "@/hooks/useAvailableTokens";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
-import { useReadHOSContract } from "@/hooks/useReadHOSContract";
+import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 import {
   LINEAR_TOKEN_CONTRACTS,
   STNEAR_TOKEN_CONTRACTS,
   VENEAR_TOKEN_METADATA,
 } from "@/lib/constants";
-import { memo, useCallback, useState } from "react";
+import Big from "big.js";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
 import NearTokenAmount from "../shared/NearTokenAmount";
 import { Skeleton } from "../ui/skeleton";
@@ -31,17 +32,16 @@ export const HoldingsSection = memo(() => {
   const { lockupAccountId, isLoading: isLoadingLockupAccountId } =
     useLockupAccount();
 
-  const [{ data: venearLockedBalance, isLoading: isLoadingLockedBalance }] =
-    useReadHOSContract([
-      {
-        contractId: lockupAccountId ?? "",
-        methodName: "get_venear_locked_balance" as const,
-        config: {
-          args: {},
-          enabled: !!signedAccountId && !!lockupAccountId,
-        },
-      },
-    ]);
+  const { data: accountInfo, isLoading: isLoadingAccountInfo } =
+    useVenearAccountInfo(signedAccountId);
+
+  const balanceWithRewards = useMemo(
+    () =>
+      Big(accountInfo?.totalBalance.near ?? "0")
+        .add(accountInfo?.totalBalance.extraBalance ?? "0")
+        .toFixed(),
+    [accountInfo]
+  );
 
   const { stakingPoolId, isLoadingStakingPoolId } = useCurrentStakingPoolId({
     lockupAccountId,
@@ -90,7 +90,7 @@ export const HoldingsSection = memo(() => {
     isLoadingAvailableTokens ||
     isLoadingLockupAccountId ||
     isLoadingStakingPoolId ||
-    isLoadingLockedBalance;
+    isLoadingAccountInfo;
 
   if (isLoading) {
     return (
@@ -140,7 +140,7 @@ export const HoldingsSection = memo(() => {
                       title: "Locked",
                       subtitle: (
                         <NearTokenAmount
-                          amount={venearLockedBalance ?? "0"}
+                          amount={balanceWithRewards}
                           currency={VENEAR_TOKEN_METADATA.symbol}
                           maximumSignificantDigits={4}
                           minimumFractionDigits={4}

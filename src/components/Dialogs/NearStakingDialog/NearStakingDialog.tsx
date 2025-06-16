@@ -68,7 +68,7 @@ export const NearStakingDialog = ({
 }: NearStakingDialogProps) => {
   return (
     <StakingProvider source={source}>
-      <div className="flex flex-col items-center h-[600px] p-4">
+      <div className="flex flex-col items-center h-[600px] px-2">
         <StakingDialogContent closeDialog={closeDialog} />
       </div>
     </StakingProvider>
