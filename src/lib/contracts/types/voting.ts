@@ -25,6 +25,8 @@ export enum ProposalStatus {
   Approved = "Approved",
   Voting = "Voting",
   Finished = "Finished",
+  Defeated = "Defeated",
+  Succeeded = "Succeeded",
 }
 
 export type VoterStats = { total_venear: string; total_votes: number };

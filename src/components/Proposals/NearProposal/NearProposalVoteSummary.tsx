@@ -47,16 +47,16 @@ export default function NearProposalVoteSummary({
               </div>
             </div>
             <NearProposalVoteBar proposal={proposal} />
-            <div className="text-secondary font-normal">
+            <div className="text-secondary font-normal pb-2">
               Quorum <NearTokenAmount amount={quorum.toFixed()} hideCurrency />
             </div>
-            <div>
-              <NearProposalStatusDetail
-                proposal={proposal}
-                className="-mx-4 border-t border-line"
-              />
-            </div>
           </HoverCardTrigger>
+          <div className="cursor-pointer flex flex-col gap-2 px-4">
+            <NearProposalStatusDetail
+              proposal={proposal}
+              className="-mx-4 border-t border-line"
+            />
+          </div>
         </div>
         <HoverCardContent
           className="pb-0 absolute w-auto mt-1"
