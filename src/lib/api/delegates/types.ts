@@ -56,6 +56,7 @@ export type DelegateProfile = {
   numOfDelegators?: string | null;
   forCount?: number | null;
   againstCount?: number | null;
+  abstainCount?: number | null;
   delegatedFromCount?: number | null;
 };
 

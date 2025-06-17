@@ -48,8 +48,13 @@ export default function DelegateVotes({
                   <HStack justifyContent="justify-between" gap={2}>
                     <VStack>
                       <span className="text-tertiary text-xs font-medium">
-                        Voted {vote.voteOption === "0" ? "for" : "against"} this
-                        proposal{" "}
+                        Voted{" "}
+                        {vote.voteOption === "0"
+                          ? "for"
+                          : vote.voteOption === "1"
+                            ? "against"
+                            : "abstain"}{" "}
+                        this proposal{" "}
                         {formatDistanceToNow(new Date(vote.votedAt ?? 0))} ago
                         with{" "}
                         <NearTokenAmount
@@ -63,7 +68,13 @@ export default function DelegateVotes({
                     </VStack>
                     <DelegateVoteIcon
                       proposalType="STANDARD"
-                      support={vote.voteOption === "0" ? "FOR" : "AGAINST"}
+                      support={
+                        vote.voteOption === "0"
+                          ? "FOR"
+                          : vote.voteOption === "1"
+                            ? "AGAINST"
+                            : "ABSTAIN"
+                      }
                     />
                   </HStack>
                 </VStack>
