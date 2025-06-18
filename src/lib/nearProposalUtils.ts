@@ -1,6 +1,7 @@
 import {
   ProposalInfo,
   ProposalStatus,
+  ProposalDisplayStatus,
   VoterStats,
 } from "./contracts/types/voting";
 import { format } from "date-fns";
@@ -18,12 +19,6 @@ export function votingOptionsToVoteStats(proposal: ProposalInfo) {
   );
 }
 
-export const isQuorumFulfilled = (proposal: ProposalInfo) => {
-  const quorum = getNearQuorum(proposal);
-  const qorum = getNearQorum(proposal);
-  return qorum >= quorum;
-};
-
 export const isForGreaterThanAgainst = (proposal: ProposalInfo) => {
   const votedFor = Big(proposal.votes[0].total_venear);
   const votedAgainst = Big(proposal.votes[1].total_venear);
@@ -31,26 +26,22 @@ export const isForGreaterThanAgainst = (proposal: ProposalInfo) => {
 };
 
 export function getProposalStatus(proposal: ProposalInfo) {
-  let status = proposal.status;
-  if (status === ProposalStatus.Finished) {
+  if (proposal.status === ProposalStatus.Finished) {
     const quorumFulfilled = isQuorumFulfilled(proposal);
+    const forGreaterThanAgainst = isForGreaterThanAgainst(proposal);
 
-    if (!quorumFulfilled) {
-      status = ProposalStatus.Defeated;
-    } else {
-      const forGreaterThanAgainst = isForGreaterThanAgainst(proposal);
-
-      if (forGreaterThanAgainst) {
-        status = ProposalStatus.Succeeded;
-      } else {
-        status = ProposalStatus.Defeated;
-      }
-    }
+    return quorumFulfilled && forGreaterThanAgainst
+      ? ProposalDisplayStatus.Succeeded
+      : ProposalDisplayStatus.Defeated;
+  } else if (proposal.status === ProposalStatus.Created) {
+    return ProposalDisplayStatus.Active;
   }
-  return status;
+  return proposal.status;
 }
 
-export function getProposalStatusColor(proposalStatus: ProposalStatus) {
+export function getProposalStatusColor(
+  proposalStatus: ProposalStatus | ProposalDisplayStatus
+) {
   switch (proposalStatus) {
     case ProposalStatus.Voting:
       return {
@@ -58,13 +49,13 @@ export function getProposalStatusColor(proposalStatus: ProposalStatus) {
         bg: "bg-sky-200",
       };
     case ProposalStatus.Finished:
-    case ProposalStatus.Succeeded:
+    case ProposalDisplayStatus.Succeeded:
       return {
         text: "text-green-600",
         bg: "bg-green-200",
       };
     case ProposalStatus.Rejected:
-    case ProposalStatus.Defeated:
+    case ProposalDisplayStatus.Defeated:
       return {
         text: "text-red-600",
         bg: "bg-red-200",
@@ -75,6 +66,7 @@ export function getProposalStatusColor(proposalStatus: ProposalStatus) {
         bg: "bg-sky-200",
       };
     case ProposalStatus.Created:
+    case ProposalDisplayStatus.Active:
       return {
         text: "text-blue-600",
         bg: "bg-blue-200",
@@ -105,19 +97,29 @@ export const getNearProposalTimes = (proposal: ProposalInfo) => {
   };
 };
 
-export const getNearQuorum = (proposal: ProposalInfo) => {
+export const getPreciseNearQuorum = (proposal: ProposalInfo) => {
   const quorumPercentage = Big(
     process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.30"
   );
-
-  return Big(proposal.snapshot_and_state?.total_venear ?? 0)
-    .mul(quorumPercentage)
-    .round(0, 3)
-    .toNumber();
+  return Big(proposal.snapshot_and_state?.total_venear ?? 0).mul(
+    quorumPercentage
+  );
 };
 
-export const getNearQorum = (proposal: ProposalInfo) => {
-  return Big(proposal.votes[0].total_venear)
-    .plus(proposal.votes[1].total_venear)
-    .toNumber();
+export const getNearQuorum = (proposal: ProposalInfo) => {
+  const nearQuorum = getPreciseNearQuorum(proposal);
+
+  return nearQuorum.round(0, 3).toNumber();
+};
+
+const getTotalForAgainstVotes = (proposal: ProposalInfo) => {
+  return Big(proposal.votes[0].total_venear).plus(
+    proposal.votes[1].total_venear
+  );
+};
+
+export const isQuorumFulfilled = (proposal: ProposalInfo) => {
+  const quorum = getPreciseNearQuorum(proposal);
+  const totalForAgainstVotes = getTotalForAgainstVotes(proposal);
+  return totalForAgainstVotes.gte(quorum);
 };

@@ -1,8 +1,9 @@
-import { ProposalInfo, ProposalStatus } from "@/lib/contracts/types/voting";
+import { ProposalInfo } from "@/lib/contracts/types/voting";
 
 import { cn } from "@/lib/utils";
 import NearProposalTimeStatus from "../NearProposals/NearProposalTimeStatus";
 import {
+  getNearQuorum,
   getProposalStatus,
   getProposalStatusColor,
   isForGreaterThanAgainst,
@@ -15,6 +16,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import Big from "big.js";
 
 export default function NearProposalStatusDetail({
   proposal,
@@ -27,6 +30,7 @@ export default function NearProposalStatusDetail({
 
   const { text, bg } = getProposalStatusColor(status);
 
+  const quorum = getNearQuorum(proposal);
   const quorumFulfilled = isQuorumFulfilled(proposal);
   const forGreaterThanAgainst = isForGreaterThanAgainst(proposal);
 
@@ -54,7 +58,8 @@ export default function NearProposalStatusDetail({
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[400px]">
                   Even though in House of Stake v1, quorum is not modeled
-                  onchain, the community has decided that if 30% of the people
+                  onchain, the community has decided that if 30% of the voting
+                  power (<NearTokenAmount amount={Big(quorum).toString()} />)
                   don&apos;t vote, the proposal will not be considered passed.{" "}
                   <a href="https://docs.near.org/integrations/faq">
                     Learn more here

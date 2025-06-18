@@ -25,6 +25,11 @@ export enum ProposalStatus {
   Approved = "Approved",
   Voting = "Voting",
   Finished = "Finished",
+}
+
+export enum ProposalDisplayStatus {
+  Active = "Active",
+  Voting = "Voting",
   Defeated = "Defeated",
   Succeeded = "Succeeded",
 }
