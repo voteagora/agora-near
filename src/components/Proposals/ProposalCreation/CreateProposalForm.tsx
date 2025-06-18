@@ -7,6 +7,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 import ProposalDetailsForm from "./ProposalDetailsForm";
 import SubmitButton from "./SubmitButton";
+import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -36,7 +37,7 @@ export default function CreateProposalForm({
       title: "",
       description: "",
       link: "",
-      options: [{ title: "For" }, { title: "Against" }, { title: "Abstain" }],
+      options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
     },
     mode: "onBlur",
   });

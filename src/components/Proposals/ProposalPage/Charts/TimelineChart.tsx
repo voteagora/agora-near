@@ -56,7 +56,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
 
   const stackIds: { [key: string]: string } = {
     for: "1",
-    abstain: "1",
+    abstain: "2",
     against: "1",
   };
 

@@ -54,7 +54,7 @@ export default function DelegateVotes({
                           : vote.voteOption === "1"
                             ? "against"
                             : "abstain"}{" "}
-                        this proposal{" "}
+                        on this proposal{" "}
                         {formatDistanceToNow(new Date(vote.votedAt ?? 0))} ago
                         with{" "}
                         <NearTokenAmount

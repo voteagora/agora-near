@@ -92,18 +92,6 @@ export default function NearProposalVotingActions({
     });
   };
 
-  // For multiple options, show the dialog button
-  if (proposal.voting_options.length > 3) {
-    return (
-      <div className="flex flex-col justify-between py-3 px-3 border-t border-line">
-        <Button className="w-full" onClick={handleOpenMultiOptionVoteDialog}>
-          Cast vote
-        </Button>
-      </div>
-    );
-  }
-
-  // For 3 options, show inline voting buttons
   return (
     <div className="flex flex-col gap-3 py-3 px-3 border-t border-line">
       <div className="flex flex-row gap-2">
