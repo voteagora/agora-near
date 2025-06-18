@@ -1,8 +1,7 @@
-import { useNear } from "@/contexts/NearContext";
 import { useAvailableToUnlock } from "@/hooks/useAvailableToUnlock";
-import { useUnlockNear } from "@/hooks/useUnlockNear";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
-import { isValidNearAmount } from "@/lib/utils";
+import { useVenearConfig } from "@/hooks/useVenearConfig";
+import { formatNanoSecondsToTimeUnit, isValidNearAmount } from "@/lib/utils";
 import Big from "big.js";
 import { utils } from "near-api-js";
 import {
@@ -12,7 +11,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import toast from "react-hot-toast";
 
 type UnlockProviderContextType = {
   isLoading: boolean;
@@ -23,13 +21,11 @@ type UnlockProviderContextType = {
   setEnteredAmount: (amount: string) => void;
   isUnlockingMax: boolean;
   onUnlockMax: () => void;
-  unlockNear: ({ amount }: { amount?: string }) => Promise<void>;
-  isUnlockingNear: boolean;
-  unlockingNearError: Error | null;
   maxAmountToUnlock: string;
   amountError: string | null;
   resetForm: () => void;
   nearAmount: string;
+  formattedUnlockDuration: string;
 };
 
 export const UnlockProviderContext = createContext<UnlockProviderContextType>({
@@ -41,13 +37,11 @@ export const UnlockProviderContext = createContext<UnlockProviderContextType>({
   setEnteredAmount: () => {},
   isUnlockingMax: false,
   onUnlockMax: () => {},
-  unlockNear: () => Promise.resolve(),
-  isUnlockingNear: false,
-  unlockingNearError: null,
   maxAmountToUnlock: "0",
   amountError: null,
   resetForm: () => {},
   nearAmount: "0",
+  formattedUnlockDuration: "0",
 });
 
 export const useUnlockProviderContext = () => {
@@ -56,15 +50,9 @@ export const useUnlockProviderContext = () => {
 
 type UnlockProviderProps = {
   children: React.ReactNode;
-  onUnlockSuccess?: () => void;
 };
 
-export const UnlockProvider = ({
-  children,
-  onUnlockSuccess,
-}: UnlockProviderProps) => {
-  const { signedAccountId } = useNear();
-
+export const UnlockProvider = ({ children }: UnlockProviderProps) => {
   const [enteredAmount, setEnteredAmount] = useState<string>("");
   const [isUnlockingMax, setIsUnlockingMax] = useState<boolean>(false);
   const [amountError, setAmountError] = useState<string | null>(null);
@@ -80,14 +68,7 @@ export const UnlockProvider = ({
       lockupAccountId: lockupAccountId || "",
     });
 
-  const { beginUnlockNear, isUnlockingNear, unlockingNearError } =
-    useUnlockNear({
-      lockupAccountId: lockupAccountId || "",
-      onSuccess: () => {
-        toast.success("Unlock successful");
-        onUnlockSuccess?.();
-      },
-    });
+  const { unlockDuration } = useVenearConfig({ enabled: true });
 
   const isInitializing = isLoadingLockupAccount || isLoadingAvailableToUnlock;
 
@@ -147,6 +128,10 @@ export const UnlockProvider = ({
     [validateAmount]
   );
 
+  const formattedUnlockDuration = useMemo(() => {
+    return formatNanoSecondsToTimeUnit(unlockDuration.toString());
+  }, [unlockDuration]);
+
   return (
     <UnlockProviderContext.Provider
       value={{
@@ -158,13 +143,11 @@ export const UnlockProvider = ({
         setEnteredAmount: onEnteredAmountUpdated,
         isUnlockingMax,
         onUnlockMax,
-        unlockNear: beginUnlockNear,
-        isUnlockingNear,
-        unlockingNearError,
         maxAmountToUnlock,
         amountError,
         resetForm,
         nearAmount,
+        formattedUnlockDuration,
       }}
     >
       {children}

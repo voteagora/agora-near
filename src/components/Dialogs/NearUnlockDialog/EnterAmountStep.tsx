@@ -162,8 +162,8 @@ export const EnterAmountStep = ({ handleReview }: EnterAmountStepProps) => {
           </div>
         </div>
       </div>
-      <UnlockWarning />
-      <div className="flex-1 flex flex-col justify-end pb-4">
+      <div className="flex-1 flex flex-col justify-end pb-4 gap-4">
+        <UnlockWarning />
         <UpdatedButton
           onClick={handleReview}
           type={shouldDisableButton ? "disabled" : "primary"}

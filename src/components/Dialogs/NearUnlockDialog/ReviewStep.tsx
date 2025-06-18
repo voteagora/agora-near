@@ -12,6 +12,10 @@ import { UnlockWarning } from "./UnlockWarning";
 import { useNearPrice } from "@/hooks/useNearPrice";
 import Big from "big.js";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUnlockNear } from "@/hooks/useUnlockNear";
+import { useQueryClient } from "@tanstack/react-query";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
 
 type ReviewStepProps = {
   handleEdit: () => void;
@@ -27,10 +31,27 @@ export const ReviewStep = memo(
     const {
       enteredAmount,
       nearAmount,
-      unlockNear,
-      isUnlockingNear,
-      unlockingNearError,
+      lockupAccountId,
+      formattedUnlockDuration,
     } = useUnlockProviderContext();
+
+    const queryClient = useQueryClient();
+
+    const { beginUnlockNear, isUnlockingNear, unlockingNearError } =
+      useUnlockNear({
+        lockupAccountId: lockupAccountId || "",
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: [
+              READ_NEAR_CONTRACT_QK,
+              TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+            ],
+          });
+          queryClient.invalidateQueries({
+            queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
+          });
+        },
+      });
 
     const onSubmit = useCallback(async () => {
       try {
@@ -38,7 +59,12 @@ export const ReviewStep = memo(
         setError(null);
 
         const amountInYocto = utils.format.parseNearAmount(enteredAmount);
-        await unlockNear({ amount: amountInYocto || undefined });
+
+        if (!amountInYocto) {
+          throw new Error("Invalid unlock amount");
+        }
+
+        await beginUnlockNear({ amount: amountInYocto });
 
         setIsCompleted(true);
       } catch (e) {
@@ -46,7 +72,7 @@ export const ReviewStep = memo(
       } finally {
         setIsSubmitting(false);
       }
-    }, [enteredAmount, unlockNear]);
+    }, [enteredAmount, beginUnlockNear]);
 
     const { price, isLoading: isLoadingNearPrice } = useNearPrice();
 
@@ -67,24 +93,15 @@ export const ReviewStep = memo(
       return (
         <div className="flex flex-col items-center justify-center w-full h-full">
           <div className="flex-1 flex flex-col justify-end items-center gap-6">
-            <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center">
-              <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xl">!</span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 text-center">
-              <h2 className="text-3xl font-bold text-gray-900">
+            <div className="flex flex-col gap-4 text-center">
+              <h2 className="text-4xl font-bold">
                 Your voting power is depleted
               </h2>
-              <p className="text-base text-gray-600 max-w-sm">
-                You have successfully unlocked{" "}
-                <span className="font-semibold">{enteredAmount} veNEAR</span>{" "}
-                and will receive{" "}
-                <span className="font-semibold">{enteredAmount} NEAR</span>.
+              <p className="text-2xl">
+                You can always lock more to re-engage with your community
               </p>
             </div>
           </div>
-
           <div className="flex-1 flex flex-col justify-end items-center gap-4 w-full">
             <UpdatedButton
               type="primary"
@@ -134,9 +151,7 @@ export const ReviewStep = memo(
                         Unlock Transaction
                       </h4>
                       <p className="text-sm">
-                        You need to sign a transaction to begin unlocking your
-                        veNEAR tokens. This will convert your veNEAR back to
-                        NEAR tokens.
+                        You need to sign a transaction to initiate the unlock.
                       </p>
                     </div>
                   }
@@ -183,8 +198,8 @@ export const ReviewStep = memo(
             Edit
           </button>
         </div>
-        <div className="flex flex-col text-sm border-b border-line">
-          <div className="flex flex-row justify-between items-start py-4">
+        <div className="flex flex-col text-sm border-b border-line gap-4 pb-4">
+          <div className="flex flex-row justify-between items-start">
             <div className="flex flex-col">
               <span className="font-bold text-primary">Amount unlocking</span>
             </div>
@@ -194,7 +209,14 @@ export const ReviewStep = memo(
               className="font-bold"
             />
           </div>
-          <div className="border-t border-gray-200"></div>
+          <div className="flex flex-row justify-between items-start">
+            <span className="font-bold text-primary">
+              Available to withdraw after
+            </span>
+            <span className="font-bold text-primary">
+              {formattedUnlockDuration}
+            </span>
+          </div>
         </div>
         <div className="flex flex-col items-end">
           <div className="text-sm text-[#737373]">Total</div>
@@ -209,8 +231,8 @@ export const ReviewStep = memo(
             )}
           </div>
         </div>
-        <UnlockWarning />
-        <div className="flex-1 flex flex-col justify-end pb-4">
+        <div className="flex-1 flex flex-col justify-end pb-4 gap-4">
+          <UnlockWarning />
           <UpdatedButton
             type="primary"
             onClick={onSubmit}

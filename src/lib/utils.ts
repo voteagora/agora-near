@@ -649,6 +649,46 @@ export const convertNanoSecondsToDays = (nanoSeconds: string) => {
   return Number(nanoSeconds) / NANO_SECONDS_IN_DAY;
 };
 
+export const formatNanoSecondsToTimeUnit = (nanoSeconds: string | number) => {
+  const nanoSecondsNum =
+    typeof nanoSeconds === "string" ? Number(nanoSeconds) : nanoSeconds;
+
+  // Constants for conversion
+  const NANO_SECONDS_IN_MINUTE = 1000000000 * 60; // 60 billion nanoseconds
+  const NANO_SECONDS_IN_HOUR = NANO_SECONDS_IN_MINUTE * 60; // 3.6 trillion nanoseconds
+
+  // Convert to days if >= 1 day
+  if (nanoSecondsNum >= NANO_SECONDS_IN_DAY) {
+    const days = nanoSecondsNum / NANO_SECONDS_IN_DAY;
+    const roundedDays = Math.round(days * 10) / 10; // Round to 1 decimal place
+    return roundedDays === 1 ? "1 day" : `${roundedDays} days`;
+  }
+
+  // Convert to hours if >= 1 hour
+  if (nanoSecondsNum >= NANO_SECONDS_IN_HOUR) {
+    const hours = nanoSecondsNum / NANO_SECONDS_IN_HOUR;
+    const roundedHours = Math.round(hours * 10) / 10; // Round to 1 decimal place
+    return roundedHours === 1 ? "1 hour" : `${roundedHours} hours`;
+  }
+
+  // Convert to minutes if >= 1 minute
+  if (nanoSecondsNum >= NANO_SECONDS_IN_MINUTE) {
+    const minutes = nanoSecondsNum / NANO_SECONDS_IN_MINUTE;
+    const roundedMinutes = Math.round(minutes * 10) / 10; // Round to 1 decimal place
+    return roundedMinutes === 1 ? "1 minute" : `${roundedMinutes} minutes`;
+  }
+
+  // For very small amounts, show seconds
+  const seconds = nanoSecondsNum / 1000000000;
+  const roundedSeconds = Math.round(seconds * 10) / 10;
+
+  if (roundedSeconds < 0.1) {
+    return "< 0.1 seconds";
+  }
+
+  return roundedSeconds === 1 ? "1 second" : `${roundedSeconds} seconds`;
+};
+
 export const formatNearAccountId = (address?: string) => {
   if (!address) {
     return "";
