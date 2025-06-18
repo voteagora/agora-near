@@ -59,7 +59,7 @@ export default function NearProposalStatusDetail({
                 <TooltipContent className="max-w-[400px]">
                   Even though in House of Stake v1, quorum is not modeled
                   onchain, the community has decided that if 30% of the voting
-                  power (<NearTokenAmount amount={Big(quorum).toString()} />)
+                  power (<NearTokenAmount amount={quorum.toString()} />)
                   don&apos;t vote, the proposal will not be considered passed.{" "}
                   <a href="https://docs.near.org/integrations/faq">
                     Learn more here
