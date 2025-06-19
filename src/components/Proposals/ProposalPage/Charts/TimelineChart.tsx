@@ -1,5 +1,20 @@
 "use client";
 
+import { rgbStringToHex } from "@/app/lib/utils/color";
+import { ChartSkeleton } from "@/components/Proposals/ProposalPage/ProposalChart/ProposalChart";
+import { useLatestBlock } from "@/hooks/useLatestBlock";
+import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
+import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { formatNearTime, getVenearForQuorum } from "@/lib/nearProposalUtils";
+import Tenant from "@/lib/tenant/tenant";
+import {
+  formatFullDate,
+  formatNumber,
+  formatNumberWithScientificNotation,
+  isScientificNotation,
+} from "@/lib/utils";
+import { format } from "date-fns";
+import { useEffect, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -10,21 +25,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { format } from "date-fns";
-import Tenant from "@/lib/tenant/tenant";
-import {
-  formatFullDate,
-  formatNumber,
-  formatNumberWithScientificNotation,
-  isScientificNotation,
-} from "@/lib/utils";
-import { rgbStringToHex } from "@/app/lib/utils/color";
-import { useLatestBlock } from "@/hooks/useLatestBlock";
-import { useEffect, useState } from "react";
-import { ChartSkeleton } from "@/components/Proposals/ProposalPage/ProposalChart/ProposalChart";
-import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
-import { ProposalInfo } from "@/lib/contracts/types/voting";
-import { formatNearTime, getNearQuorum } from "@/lib/nearProposalUtils";
 
 const { token, ui } = Tenant.current();
 
@@ -52,7 +52,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
       Number(proposal.voting_duration_ns)
     ).toString()
   );
-  const quorum = getNearQuorum(proposal);
+  const quorum = getVenearForQuorum(proposal);
 
   const stackIds: { [key: string]: string } = {
     for: "1",
@@ -125,7 +125,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
               0,
               (dataMax: number) => {
                 // Add 10% padding above the higher value between dataMax and quorum
-                return Math.max(dataMax, quorum) * 1.1;
+                return Math.max(dataMax, quorum.toNumber()) * 1.1;
               },
             ]}
           />

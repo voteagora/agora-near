@@ -1,23 +1,21 @@
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 
-import { cn } from "@/lib/utils";
-import NearProposalTimeStatus from "../NearProposals/NearProposalTimeStatus";
-import {
-  getNearQuorum,
-  getProposalStatus,
-  getProposalStatusColor,
-  isForGreaterThanAgainst,
-  isQuorumFulfilled,
-} from "@/lib/nearProposalUtils";
-import { InfoIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
-import Big from "big.js";
+import {
+  getProposalStatus,
+  getProposalStatusColor,
+  getQuorumPercentage,
+  isForGreaterThanAgainst,
+  isQuorumFulfilled,
+} from "@/lib/nearProposalUtils";
+import { cn } from "@/lib/utils";
+import { InfoIcon } from "lucide-react";
+import NearProposalTimeStatus from "../NearProposals/NearProposalTimeStatus";
 
 export default function NearProposalStatusDetail({
   proposal,
@@ -30,7 +28,6 @@ export default function NearProposalStatusDetail({
 
   const { text, bg } = getProposalStatusColor(status);
 
-  const quorum = getNearQuorum(proposal);
   const quorumFulfilled = isQuorumFulfilled(proposal);
   const forGreaterThanAgainst = isForGreaterThanAgainst(proposal);
 
@@ -57,11 +54,9 @@ export default function NearProposalStatusDetail({
                   <InfoIcon size={14} />
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[400px]">
-                  Even though in House of Stake v1, quorum is not modeled
-                  onchain, the community has decided that if 30% of the voting
-                  power (<NearTokenAmount amount={quorum.toString()} />)
-                  don&apos;t vote, the proposal will not be considered passed.{" "}
-                  <a href="https://docs.near.org/integrations/faq">
+                  {`Even though quorum is not modeled onchain in House of Stake v1, the community has decided that
+                  if ${getQuorumPercentage()}% of the voting power does not participate, the proposal will not be considered passed.`}{" "}
+                  <a className="text-blue-500" href="">
                     Learn more here
                   </a>
                 </TooltipContent>
