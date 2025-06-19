@@ -100,7 +100,7 @@ export const getQuorumPercentage = () =>
   Number(process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.30") *
   100;
 
-const getTotalForAgainstVotes = (proposal: ProposalInfo) => {
+export const getTotalForAgainstVotes = (proposal: ProposalInfo) => {
   return Big(proposal.votes[0].total_venear).plus(
     proposal.votes[1].total_venear
   );

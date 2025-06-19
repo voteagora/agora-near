@@ -3,6 +3,7 @@ import checkIcon from "@/icons/check.svg";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import {
   getNearProposalTimes,
+  getTotalForAgainstVotes,
   getVenearForQuorum,
   isQuorumFulfilled,
 } from "@/lib/nearProposalUtils";
@@ -24,6 +25,7 @@ const NearProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
 
   const quorum = getVenearForQuorum(proposal);
   const hasMetQuorum = isQuorumFulfilled(proposal);
+  const totalForAgainstVotes = getTotalForAgainstVotes(proposal);
 
   return (
     <div className="flex flex-col font-inter font-semibold text-xs w-full max-w-[317px] sm:min-w-[317px] bg-wash">
@@ -64,7 +66,7 @@ const NearProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
             )}
             <p className="text-xs font-semibold text-secondary">
               <NearTokenAmount
-                amount={proposal.total_votes.total_venear}
+                amount={totalForAgainstVotes.toFixed(0)}
                 hideCurrency
               />{" "}
               / <NearTokenAmount amount={quorum.toFixed(0)} hideCurrency />
