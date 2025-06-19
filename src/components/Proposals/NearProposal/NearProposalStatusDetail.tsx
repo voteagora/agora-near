@@ -1,4 +1,7 @@
-import { ProposalInfo } from "@/lib/contracts/types/voting";
+import {
+  ProposalDisplayStatus,
+  ProposalInfo,
+} from "@/lib/contracts/types/voting";
 
 import {
   Tooltip,
@@ -10,7 +13,6 @@ import {
   getProposalStatus,
   getProposalStatusColor,
   getQuorumPercentage,
-  isForGreaterThanAgainst,
   isQuorumFulfilled,
 } from "@/lib/nearProposalUtils";
 import { cn } from "@/lib/utils";
@@ -25,11 +27,11 @@ export default function NearProposalStatusDetail({
   className?: string;
 }) {
   const status = getProposalStatus(proposal);
+  const isDefeated = status === ProposalDisplayStatus.Defeated;
 
   const { text, bg } = getProposalStatusColor(status);
 
   const quorumFulfilled = isQuorumFulfilled(proposal);
-  const forGreaterThanAgainst = isForGreaterThanAgainst(proposal);
 
   return (
     <div
@@ -47,7 +49,7 @@ export default function NearProposalStatusDetail({
           )}
         >
           {status.toUpperCase()}
-          {!quorumFulfilled && forGreaterThanAgainst && (
+          {!quorumFulfilled && isDefeated && (
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger>

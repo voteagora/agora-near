@@ -145,7 +145,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
           )}
 
           <Tooltip
-            content={<CustomTooltip quorum={quorum} />}
+            content={<CustomTooltip quorum={quorum.toFixed(0)} />}
             cursor={{ stroke: "#666", strokeWidth: 1, strokeDasharray: "4 4" }}
           />
           <Area
