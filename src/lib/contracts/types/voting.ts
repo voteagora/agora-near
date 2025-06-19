@@ -27,6 +27,12 @@ export enum ProposalStatus {
   Finished = "Finished",
 }
 
+export enum ProposalDisplayStatus {
+  Active = "Active",
+  Defeated = "Defeated",
+  Succeeded = "Succeeded",
+}
+
 export type VoterStats = { total_venear: string; total_votes: number };
 
 export interface ProposalInfo {

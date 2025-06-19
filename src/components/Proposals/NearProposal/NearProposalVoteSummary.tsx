@@ -6,11 +6,11 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { getVenearForQuorum } from "@/lib/nearProposalUtils";
 import { useState } from "react";
+import NearProposalPopover from "./NearProposalPopover";
 import NearProposalStatusDetail from "./NearProposalStatusDetail";
 import NearProposalVoteBar from "./NearProposalVoteBar";
-import NearProposalPopover from "./NearProposalPopover";
-import { getNearQuorum } from "@/lib/nearProposalUtils";
 
 export default function NearProposalVoteSummary({
   proposal,
@@ -18,7 +18,7 @@ export default function NearProposalVoteSummary({
   proposal: ProposalInfo;
 }) {
   const [showDetails, setShowDetails] = useState(false);
-  const quorum = getNearQuorum(proposal);
+  const quorum = getVenearForQuorum(proposal);
 
   return (
     <HoverCard
@@ -47,16 +47,16 @@ export default function NearProposalVoteSummary({
               </div>
             </div>
             <NearProposalVoteBar proposal={proposal} />
-            <div className="text-secondary font-normal">
-              Quorum <NearTokenAmount amount={quorum.toFixed()} hideCurrency />
-            </div>
-            <div>
-              <NearProposalStatusDetail
-                proposal={proposal}
-                className="-mx-4 border-t border-line"
-              />
+            <div className="text-secondary font-normal pb-2">
+              Quorum <NearTokenAmount amount={quorum.toFixed(0)} hideCurrency />
             </div>
           </HoverCardTrigger>
+          <div className="cursor-pointer flex flex-col gap-2 px-4">
+            <NearProposalStatusDetail
+              proposal={proposal}
+              className="-mx-4 border-t border-line"
+            />
+          </div>
         </div>
         <HoverCardContent
           className="pb-0 absolute w-auto mt-1"

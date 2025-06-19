@@ -1,6 +1,7 @@
 import {
   ProposalInfo,
   ProposalStatus,
+  ProposalDisplayStatus,
   VoterStats,
 } from "./contracts/types/voting";
 import { format } from "date-fns";
@@ -18,29 +19,44 @@ export function votingOptionsToVoteStats(proposal: ProposalInfo) {
   );
 }
 
-export function getProposalStatusColor(proposalStatus: ProposalStatus) {
-  switch (proposalStatus) {
+export const isForGreaterThanAgainst = (proposal: ProposalInfo) => {
+  const votedFor = Big(proposal.votes[0].total_venear);
+  const votedAgainst = Big(proposal.votes[1].total_venear);
+  return votedFor.gt(votedAgainst);
+};
+
+export function getProposalStatus(proposal: ProposalInfo) {
+  switch (proposal.status) {
+    case ProposalStatus.Finished: {
+      const quorumFulfilled = isQuorumFulfilled(proposal);
+      const forGreaterThanAgainst = isForGreaterThanAgainst(proposal);
+      return quorumFulfilled && forGreaterThanAgainst
+        ? ProposalDisplayStatus.Succeeded
+        : ProposalDisplayStatus.Defeated;
+    }
+    case ProposalStatus.Created:
+    case ProposalStatus.Approved:
     case ProposalStatus.Voting:
-      return {
-        text: "text-blue-600",
-        bg: "bg-sky-200",
-      };
-    case ProposalStatus.Finished:
+      return ProposalDisplayStatus.Active;
+    default:
+      return proposal.status;
+  }
+}
+
+export function getProposalStatusColor(proposalStatus: string) {
+  switch (proposalStatus) {
+    case ProposalDisplayStatus.Succeeded:
       return {
         text: "text-green-600",
         bg: "bg-green-200",
       };
     case ProposalStatus.Rejected:
+    case ProposalDisplayStatus.Defeated:
       return {
         text: "text-red-600",
         bg: "bg-red-200",
       };
-    case ProposalStatus.Approved:
-      return {
-        text: "text-blue-600",
-        bg: "bg-sky-200",
-      };
-    case ProposalStatus.Created:
+    case ProposalDisplayStatus.Active:
       return {
         text: "text-blue-600",
         bg: "bg-blue-200",
@@ -71,13 +87,27 @@ export const getNearProposalTimes = (proposal: ProposalInfo) => {
   };
 };
 
-export const getNearQuorum = (proposal: ProposalInfo) => {
+export const getVenearForQuorum = (proposal: ProposalInfo) => {
   const quorumPercentage = Big(
-    process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.10"
+    process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.30"
   );
+  return Big(proposal.snapshot_and_state?.total_venear ?? 0).mul(
+    quorumPercentage
+  );
+};
 
-  return Big(proposal.snapshot_and_state?.total_venear ?? 0)
-    .mul(quorumPercentage)
-    .round(0, 3)
-    .toNumber();
+export const getQuorumPercentage = () =>
+  Number(process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.30") *
+  100;
+
+const getTotalForAgainstVotes = (proposal: ProposalInfo) => {
+  return Big(proposal.votes[0].total_venear).plus(
+    proposal.votes[1].total_venear
+  );
+};
+
+export const isQuorumFulfilled = (proposal: ProposalInfo) => {
+  const quorum = getVenearForQuorum(proposal);
+  const totalForAgainstVotes = getTotalForAgainstVotes(proposal);
+  return totalForAgainstVotes.gte(quorum);
 };

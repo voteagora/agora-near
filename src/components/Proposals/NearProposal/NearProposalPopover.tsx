@@ -1,11 +1,15 @@
-import { ProposalInfo } from "@/lib/contracts/types/voting";
-import NearProposalVoteBar from "./NearProposalVoteBar";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
-import { getNearProposalTimes, getNearQuorum } from "@/lib/nearProposalUtils";
 import checkIcon from "@/icons/check.svg";
-import Image from "next/image";
+import { ProposalInfo } from "@/lib/contracts/types/voting";
+import {
+  getNearProposalTimes,
+  getVenearForQuorum,
+  isQuorumFulfilled,
+} from "@/lib/nearProposalUtils";
 import Big from "big.js";
+import Image from "next/image";
 import { useMemo } from "react";
+import NearProposalVoteBar from "./NearProposalVoteBar";
 
 const NearProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
   const { createdTime, startTime, endTime } = getNearProposalTimes(proposal);
@@ -18,8 +22,8 @@ const NearProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
     return row;
   }, [createdTime, startTime, endTime]);
 
-  const quorum = getNearQuorum(proposal);
-  const hasMetQuorum = Big(proposal.total_votes.total_venear).gte(quorum);
+  const quorum = getVenearForQuorum(proposal);
+  const hasMetQuorum = isQuorumFulfilled(proposal);
 
   return (
     <div className="flex flex-col font-inter font-semibold text-xs w-full max-w-[317px] sm:min-w-[317px] bg-wash">
@@ -63,7 +67,7 @@ const NearProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
                 amount={proposal.total_votes.total_venear}
                 hideCurrency
               />{" "}
-              / <NearTokenAmount amount={quorum.toFixed()} hideCurrency />
+              / <NearTokenAmount amount={quorum.toFixed(0)} hideCurrency />
               Required
             </p>
           </div>
