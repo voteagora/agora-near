@@ -76,6 +76,9 @@ export default function DelegateProfile({
                     <span className="text-negative font-bold border border-line rounded-md px-2 py-1">
                       {stats?.votedAgainst ?? "0"}
                     </span>
+                    <span className="text-tertiary font-bold border border-line rounded-md px-2 py-1">
+                      {stats?.votedAbstain ?? "0"}
+                    </span>
                   </div>
                 }
               />

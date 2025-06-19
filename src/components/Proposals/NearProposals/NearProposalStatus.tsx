@@ -8,6 +8,7 @@ export default function NearProposalStatus({
 }) {
   const forVotes = proposal.votes[0].total_venear;
   const againstVotes = proposal.votes[1].total_venear;
+  const abstainVotes = proposal.votes[2]?.total_venear ?? "0";
   const totalVotes = proposal.total_votes.total_venear;
 
   return (
@@ -29,6 +30,12 @@ export default function NearProposalStatus({
             className=" bg-positive h-1 rounded-l-full"
             style={{
               width: `${(Number(forVotes) / Number(totalVotes)) * 100}%`,
+            }}
+          ></div>
+          <div
+            className=" bg-secondary h-1 rounded-l-full"
+            style={{
+              width: `${(Number(abstainVotes) / Number(totalVotes)) * 100}%`,
             }}
           ></div>
           <div

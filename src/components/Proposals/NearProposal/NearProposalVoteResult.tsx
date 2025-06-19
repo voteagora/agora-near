@@ -16,7 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CheckIcon, X } from "lucide-react";
+import { CheckIcon, X, MinusIcon } from "lucide-react";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import clsx from "clsx";
 import { useNear } from "@/contexts/NearContext";
@@ -110,22 +110,31 @@ const NearProposalVoteResult = ({
                                             "flex items-center gap-1",
                                             Number(vote.voteOption) === 0
                                               ? "text-positive"
-                                              : "text-negative"
+                                              : Number(vote.voteOption) === 1
+                                                ? "text-negative"
+                                                : "text-secondary"
                                           )}
                                         >
                                           <NearTokenAmount
                                             amount={vote.votingPower}
                                             hideCurrency
                                           />
-                                          {Number(vote.voteOption) === 0 ? (
+                                          {Number(vote.voteOption) === 0 && (
                                             <CheckIcon
                                               strokeWidth={4}
                                               className="w-3 h-3 text-positive"
                                             />
-                                          ) : (
+                                          )}
+                                          {Number(vote.voteOption) === 1 && (
                                             <X
                                               strokeWidth={4}
                                               className="w-3 h-3 text-negative"
+                                            />
+                                          )}
+                                          {Number(vote.voteOption) === 2 && (
+                                            <MinusIcon
+                                              strokeWidth={4}
+                                              className="w-3 h-3 text-secondary"
                                             />
                                           )}
                                         </div>
@@ -137,7 +146,9 @@ const NearProposalVoteResult = ({
                                         Voted{" "}
                                         {Number(vote.voteOption) === 0
                                           ? "For"
-                                          : "Against"}
+                                          : Number(vote.voteOption) === 1
+                                            ? "Against"
+                                            : "Abstain"}
                                       </TooltipContent>
                                     </Tooltip>
                                   </TooltipProvider>

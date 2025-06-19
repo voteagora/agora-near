@@ -10,6 +10,7 @@ export default function NearProposalVoteBar({
 
   const forVotes = Number(proposal.votes[0].total_venear);
   const againstVotes = Number(proposal.votes[1].total_venear);
+  const abstainVotes = Number(proposal.votes[2]?.total_venear ?? "0");
   const totalVotes = Number(proposal.total_votes.total_venear);
 
   return (
@@ -20,6 +21,12 @@ export default function NearProposalVoteBar({
             <div
               style={{ flex: forVotes / totalVotes }}
               className="min-w-[1px] bg-positive h-[10px]"
+            ></div>
+          )}
+          {abstainVotes > 0 && (
+            <div
+              style={{ flex: abstainVotes / totalVotes }}
+              className="min-w-[1px] bg-secondary h-[10px]"
             ></div>
           )}
           {againstVotes > 0 && (

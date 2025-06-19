@@ -144,7 +144,7 @@ export enum TIMELOCK_TYPE {
   TIMELOCKCONTROLLER_WITH_ACCESS_CONTROL_ERC721_ERC115 = "TIMELOCKCONTROLLER_WITH_ACCESS_CONTROL_ERC721_ERC115",
 }
 
-export const NEAR_VOTING_OPTIONS = ["For", "Against"];
+export const NEAR_VOTING_OPTIONS = ["For", "Against", "Abstain"];
 
 export const NEAR_TOKEN: TenantToken = {
   name: "NEAR Protocol",

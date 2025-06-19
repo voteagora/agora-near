@@ -3,7 +3,6 @@
 import { useProposal } from "@/hooks/useProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import NearProposalDescription from "./NearProposalDescription";
-import NearProposalOptionsResult from "./NearProposalOptionsResult";
 import NearProposalVoteResult from "./NearProposalVoteResult";
 import { NearProposalActions } from "./NearProposalActions";
 
@@ -41,12 +40,7 @@ export default function NearProposalHome({
         <div className="flex flex-col gap-4 w-full sm:w-[calc(100%-24rem)]">
           <NearProposalDescription proposal={proposal} />
         </div>
-        {proposal.voting_options.length !== 2 && (
-          <NearProposalOptionsResult proposal={proposal} config={config} />
-        )}
-        {proposal.voting_options.length === 2 && (
-          <NearProposalVoteResult proposal={proposal} config={config} />
-        )}
+        <NearProposalVoteResult proposal={proposal} config={config} />
       </div>
     </div>
   );

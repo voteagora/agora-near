@@ -56,7 +56,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
 
   const stackIds: { [key: string]: string } = {
     for: "1",
-    abstain: "1",
+    abstain: "2",
     against: "1",
   };
 
@@ -155,6 +155,14 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
             stroke={rgbStringToHex(ui.customization?.negative)}
             fill={rgbStringToHex(ui.customization?.negative)}
             name="Against"
+          />
+          <Area
+            type="step"
+            dataKey="abstain"
+            stackId={stackIds.abstain}
+            stroke={rgbStringToHex(ui.customization?.secondary)}
+            fill={rgbStringToHex(ui.customization?.secondary)}
+            name="Abstain"
           />
           <Area
             type="step"

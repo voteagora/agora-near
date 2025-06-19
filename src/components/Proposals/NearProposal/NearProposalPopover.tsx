@@ -32,6 +32,15 @@ const NearProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
             total={proposal.total_votes.total_venear}
           />
         </div>
+        {proposal.voting_options.length > 2 && (
+          <div className="text-secondary flex justify-between">
+            {proposal.voting_options[2]}
+            <AmountAndPercent
+              amount={proposal.votes[2].total_venear}
+              total={proposal.total_votes.total_venear}
+            />
+          </div>
+        )}
         <div className="text-negative flex justify-between">
           {proposal.voting_options[1]}
           <AmountAndPercent
