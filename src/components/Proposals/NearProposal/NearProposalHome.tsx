@@ -5,6 +5,8 @@ import { useProposalConfig } from "@/hooks/useProposalConfig";
 import NearProposalDescription from "./NearProposalDescription";
 import NearProposalVoteResult from "./NearProposalVoteResult";
 import { NearProposalActions } from "./NearProposalActions";
+import { NearPendingProposal } from "./NearPendingProposal";
+import { ProposalStatus } from "@/lib/contracts/types/voting";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -30,6 +32,10 @@ export default function NearProposalHome({
 
   if (!proposal || !config) {
     return <div>Proposal not found</div>;
+  }
+
+  if (proposal.status === ProposalStatus.Created) {
+    return <NearPendingProposal proposal={proposal} />;
   }
 
   return (

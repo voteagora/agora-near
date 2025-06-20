@@ -1,17 +1,17 @@
 import axios from "axios";
 import { Endpoint } from "../constants";
-import { ProposalVotingHistoryRecord } from "./types";
+import { Proposal, ProposalVotingHistoryRecord } from "./types";
 
-export const fetchProposalVotes = async (
-  proposalId: string,
+export const fetchPendingProposals = async (
   pageSize: number,
-  currentPage: number
+  currentPage: number,
+  createdBy?: string
 ) => {
   const response = await axios.get<{
-    votes: ProposalVotingHistoryRecord[];
+    proposals: Proposal[];
     count: number;
   }>(
-    `${Endpoint.Proposals}/${proposalId}/votes?page_size=${pageSize}&page=${currentPage}`
+    `${Endpoint.Proposals}/pending?page_size=${pageSize}&page=${currentPage}${createdBy ? `&created_by=${createdBy}` : ""}`
   );
 
   return response.data;
