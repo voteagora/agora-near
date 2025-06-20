@@ -1,6 +1,7 @@
 import Big from "big.js";
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 import { NANO_SECONDS_IN_DAY, NANO_SECONDS_IN_YEAR } from "./constants";
+import { formatFullDate } from "./utils";
 
 export const getAPYFromGrowthRate = (growthRateNs: Big) => {
   try {
@@ -49,4 +50,21 @@ export const getIsEligibleToUnlock = (unlockTimestampNs: string) => {
   const unlockTimestampMs = Big(unlockTimestampNs).div(1000000);
   const currentTimestampMs = Big(Date.now());
   return currentTimestampMs.gte(unlockTimestampMs);
+};
+
+export const getFormattedUnlockTimestamp = (unlockTimestampNs: string) => {
+  const unlockTimestampMs = Big(unlockTimestampNs).div(1000000).toNumber();
+  const date = new Date(unlockTimestampMs);
+
+  return date
+    .toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    })
+    .replace(" AM", "am")
+    .replace(" PM", "pm");
 };

@@ -36,7 +36,7 @@ export const useLockupPendingBalance = ({
   }, [unlockTimestamp]);
 
   const hasPendingBalance = useMemo(
-    () => pendingBalance && Big(pendingBalance).gt(0),
+    () => !!pendingBalance && Big(pendingBalance).gt(0),
     [pendingBalance]
   );
 

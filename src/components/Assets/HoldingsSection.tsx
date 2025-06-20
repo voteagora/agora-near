@@ -3,10 +3,7 @@ import { useAvailableTokens } from "@/hooks/useAvailableTokens";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useLockupPendingBalance } from "@/hooks/useLockupPendingBalance";
-import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
-import { useUnlockNear } from "@/hooks/useUnlockNear";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
-import { useQueryClient } from "@tanstack/react-query";
 import Big from "big.js";
 import { memo, useCallback, useMemo, useState } from "react";
 import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
@@ -18,8 +15,6 @@ export const HoldingsSection = memo(() => {
   const [activeTab, setActiveTab] = useState<"Holdings" | "Activity">(
     "Holdings"
   );
-
-  const queryClient = useQueryClient();
 
   const { signedAccountId } = useNear();
 
@@ -41,17 +36,9 @@ export const HoldingsSection = memo(() => {
     pendingBalance,
     isEligibleToUnlock,
     hasPendingBalance,
+    isLoading: isLoadingLockupPendingBalance,
   } = useLockupPendingBalance({
     lockupAccountId: lockupAccountId,
-  });
-
-  const { endUnlockNear, isUnlockingNear } = useUnlockNear({
-    lockupAccountId: lockupAccountId ?? "",
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
-      });
-    },
   });
 
   const balanceWithRewards = useMemo(
@@ -82,22 +69,12 @@ export const HoldingsSection = memo(() => {
     [openDialog]
   );
 
-  const handleBeginUnlockTokens = useCallback(() => {
-    openDialog({
-      type: "NEAR_UNLOCK",
-      params: {},
-    });
-  }, [openDialog]);
-
-  const handleCompleteUnlockTokens = useCallback(() => {
-    endUnlockNear({});
-  }, [endUnlockNear]);
-
   const isLoading =
     isLoadingAvailableTokens ||
     isLoadingLockupAccountId ||
     isLoadingStakingPoolId ||
-    isLoadingAccountInfo;
+    isLoadingAccountInfo ||
+    isLoadingLockupPendingBalance;
 
   if (isLoading) {
     return (
@@ -141,12 +118,12 @@ export const HoldingsSection = memo(() => {
             <table className="w-full">
               <tbody>
                 <VeNearAssetRow
+                  unlockTimestamp={unlockTimestamp}
+                  lockupAccountId={lockupAccountId}
                   balanceWithRewards={balanceWithRewards}
                   hasPendingBalance={hasPendingBalance}
                   pendingBalance={pendingBalance}
                   isEligibleToUnlock={isEligibleToUnlock}
-                  onCompleteUnlockTokens={handleCompleteUnlockTokens}
-                  onBeginUnlockTokens={handleBeginUnlockTokens}
                 />
                 {availableTokens.map((token) => (
                   <AvailableTokenRow
