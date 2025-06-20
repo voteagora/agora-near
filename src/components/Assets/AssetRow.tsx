@@ -1,17 +1,18 @@
-import { TokenMetadata } from "@/lib/types";
-import {
-  EllipsisHorizontalIcon,
-  ArrowTopRightOnSquareIcon,
-} from "@heroicons/react/24/outline";
-import Image from "next/image";
-import React, { memo } from "react";
-import { UpdatedButton } from "../Button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { TokenMetadata } from "@/lib/types";
+import {
+  ArrowTopRightOnSquareIcon,
+  EllipsisHorizontalIcon,
+} from "@heroicons/react/24/outline";
+import Image from "next/image";
+import React, { memo, useMemo } from "react";
+import { UpdatedButton } from "../Button";
+import LoadingSpinner from "../shared/LoadingSpinner";
 
 type OverflowButton = {
   title: string;
@@ -22,7 +23,7 @@ type OverflowButton = {
 type AssetRowProps = {
   metadata?: TokenMetadata | null;
   columns: {
-    title: string;
+    title: React.ReactNode;
     subtitle: React.ReactNode;
   }[];
   showOverflowMenu: boolean;
@@ -31,8 +32,11 @@ type AssetRowProps = {
     title: string;
     onClick: () => void;
     disabled?: boolean;
+    isLoading?: boolean;
   };
 };
+
+const MAX_COLUMNS = 4;
 
 export const AssetRow = memo(
   ({
@@ -42,6 +46,42 @@ export const AssetRow = memo(
     overflowButtons,
     actionButton,
   }: AssetRowProps) => {
+    const numColPlaceholders = MAX_COLUMNS - columns.length - 1;
+
+    if (numColPlaceholders < 0) {
+      throw new Error("Columns length is greater than maximum columns");
+    }
+
+    const columnPlaceholders = Array.from(
+      { length: numColPlaceholders },
+      (_, index) => (
+        <td key={index} className="py-4 pl-2 pr-4">
+          <></>
+        </td>
+      )
+    );
+
+    const actionButtonContent = useMemo(() => {
+      if (!actionButton) return null;
+
+      return (
+        <UpdatedButton
+          className="w-full"
+          variant="rounded"
+          onClick={actionButton.disabled ? undefined : actionButton.onClick}
+          type={actionButton.disabled ? "disabled" : undefined}
+        >
+          {actionButton.isLoading ? (
+            <div className="flex items-center justify-center">
+              <LoadingSpinner />
+            </div>
+          ) : (
+            actionButton.title
+          )}
+        </UpdatedButton>
+      );
+    }, [actionButton]);
+
     return (
       <tr className="border-b border-gray-100 last:border-b-0">
         <td className="py-4 pr-16 w-1 whitespace-nowrap">
@@ -62,33 +102,19 @@ export const AssetRow = memo(
             </div>
           </div>
         </td>
-
-        {columns.map((col) => (
-          <td key={col.title} className="py-4 pl-2 pr-4">
+        {columns.map((col, index) => (
+          <td key={index} className="py-4 px-2 w-[200px]">
             <div className="flex flex-col">
               <span className="text-sm text-gray-600 mb-1">{col.title}</span>
               <span className="font-medium text-gray-900">{col.subtitle}</span>
             </div>
           </td>
         ))}
-
+        {/* Placeholders to fill gaps for rows that don't need all the columns */}
+        {columnPlaceholders}
         <td className="py-4 pl-4 w-1 whitespace-nowrap">
           <div className="flex items-center justify-end gap-2">
-            <div className="w-40">
-              {actionButton && (
-                <UpdatedButton
-                  className="w-full"
-                  variant="rounded"
-                  onClick={
-                    actionButton.disabled ? undefined : actionButton.onClick
-                  }
-                  type={actionButton.disabled ? "disabled" : undefined}
-                >
-                  {actionButton.title}
-                </UpdatedButton>
-              )}
-            </div>
-
+            <div className="w-40">{actionButtonContent}</div>
             <div className="w-9 h-9 flex items-center justify-center">
               {showOverflowMenu &&
                 overflowButtons &&
