@@ -44,3 +44,9 @@ export const getFormattedUnlockDuration = (
     return `${Math.ceil(durationInDays)} day${durationInDays > 1 ? "s" : ""}`;
   }
 };
+
+export const getIsEligibleToUnlock = (unlockTimestampNs: string) => {
+  const unlockTimestampMs = Big(unlockTimestampNs).div(1000000);
+  const currentTimestampMs = Big(Date.now());
+  return currentTimestampMs.gte(unlockTimestampMs);
+};

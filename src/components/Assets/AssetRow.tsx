@@ -34,6 +34,8 @@ type AssetRowProps = {
   };
 };
 
+const MAX_COLUMNS = 4;
+
 export const AssetRow = memo(
   ({
     metadata,
@@ -42,6 +44,21 @@ export const AssetRow = memo(
     overflowButtons,
     actionButton,
   }: AssetRowProps) => {
+    const numColPlaceholders = MAX_COLUMNS - columns.length - 1;
+
+    if (numColPlaceholders < 0) {
+      throw new Error("Columns length is greater than maximum columns");
+    }
+
+    const columnPlaceholders = Array.from(
+      { length: numColPlaceholders },
+      (_, index) => (
+        <td key={index} className="py-4 pl-2 pr-4">
+          <></>
+        </td>
+      )
+    );
+
     return (
       <tr className="border-b border-gray-100 last:border-b-0">
         <td className="py-4 pr-16 w-1 whitespace-nowrap">
@@ -62,16 +79,16 @@ export const AssetRow = memo(
             </div>
           </div>
         </td>
-
         {columns.map((col) => (
-          <td key={col.title} className="py-4 pl-2 pr-4">
+          <td key={col.title} className="py-4 px-2 w-[200px]">
             <div className="flex flex-col">
               <span className="text-sm text-gray-600 mb-1">{col.title}</span>
               <span className="font-medium text-gray-900">{col.subtitle}</span>
             </div>
           </td>
         ))}
-
+        {/* Placeholders to fill gaps for rows that don't need all the columns */}
+        {columnPlaceholders}
         <td className="py-4 pl-4 w-1 whitespace-nowrap">
           <div className="flex items-center justify-end gap-2">
             <div className="w-40">
