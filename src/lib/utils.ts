@@ -787,3 +787,29 @@ export const convertNearToStakingToken = (
     return "0";
   }
 };
+
+/**
+ * Browser detection utilities
+ */
+export const getBrowserType = () => {
+  if (typeof window === "undefined") return null;
+
+  const userAgent = window.navigator.userAgent;
+  if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) {
+    return "chrome";
+  } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+    return "safari";
+  }
+  return "other";
+};
+
+export const getPopupHelpLink = (browserType: string | null) => {
+  switch (browserType) {
+    case "chrome":
+      return "https://support.google.com/chrome/answer/95472";
+    case "safari":
+      return "https://support.apple.com/guide/safari/manage-pop-ups-sfri40696/mac";
+    default:
+      return "https://support.google.com/chrome/answer/95472"; // Default to Chrome instructions
+  }
+};
