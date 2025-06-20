@@ -69,6 +69,16 @@ export const HoldingsSection = memo(() => {
     [openDialog]
   );
 
+  const lockupTokens = useMemo(
+    () => availableTokens.filter((token) => token.type === "lockup"),
+    [availableTokens]
+  );
+
+  const walletTokens = useMemo(
+    () => availableTokens.filter((token) => token.type !== "lockup"),
+    [availableTokens]
+  );
+
   const isLoading =
     isLoadingAvailableTokens ||
     isLoadingLockupAccountId ||
@@ -117,6 +127,11 @@ export const HoldingsSection = memo(() => {
           {activeTab === "Holdings" ? (
             <table className="w-full">
               <tbody>
+                <tr>
+                  <td colSpan={3} className="pb-3">
+                    <h3 className="text-lg font-semibold">Lockup Holdings</h3>
+                  </td>
+                </tr>
                 <VeNearAssetRow
                   unlockTimestamp={unlockTimestamp}
                   lockupAccountId={lockupAccountId}
@@ -125,7 +140,7 @@ export const HoldingsSection = memo(() => {
                   pendingBalance={pendingBalance}
                   isEligibleToUnlock={isEligibleToUnlock}
                 />
-                {availableTokens.map((token) => (
+                {lockupTokens.map((token) => (
                   <AvailableTokenRow
                     key={token.accountId}
                     token={token}
@@ -133,6 +148,25 @@ export const HoldingsSection = memo(() => {
                     onLockClick={openLockDialog}
                   />
                 ))}
+                {walletTokens.length > 0 && (
+                  <>
+                    <tr>
+                      <td colSpan={3} className="pt-8 pb-3">
+                        <h3 className="text-lg font-semibold">
+                          Wallet Holdings
+                        </h3>
+                      </td>
+                    </tr>
+                    {walletTokens.map((token) => (
+                      <AvailableTokenRow
+                        key={token.accountId}
+                        token={token}
+                        stakingPoolId={stakingPoolId}
+                        onLockClick={openLockDialog}
+                      />
+                    ))}
+                  </>
+                )}
               </tbody>
             </table>
           ) : (
