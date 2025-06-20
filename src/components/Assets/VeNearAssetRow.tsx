@@ -1,4 +1,4 @@
-import { useUnlockAndWithdraw } from "@/hooks/useUnlockAndWithdraw";
+import { useCompleteUnlock } from "@/hooks/useCompleteUnlock";
 import { VENEAR_TOKEN_METADATA } from "@/lib/constants";
 import { getFormattedUnlockTimestamp } from "@/lib/lockUtils";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
@@ -29,22 +29,28 @@ export const VeNearAssetRow = memo<VeNearAssetRowProps>(
   }) => {
     const openDialog = useOpenDialog();
 
-    const { unlockAndWithdraw, isLoading: isLoadingUnlockAndWithdraw } =
-      useUnlockAndWithdraw({
-        lockupAccountId: lockupAccountId ?? "",
-        onSuccess: () => toast.success("Withdraw complete"),
-      });
+    const { completeUnlock } = useCompleteUnlock({
+      lockupAccountId: lockupAccountId ?? "",
+      onSuccess: () => toast.success("Unlock complete"),
+    });
 
-    const handleBeginUnlockTokens = useCallback(() => {
+    const handleUnlockTokens = useCallback(() => {
+      if (isEligibleToUnlock && hasPendingBalance) {
+        completeUnlock({ amount: pendingBalance });
+        return;
+      }
+
       openDialog({
         type: "NEAR_UNLOCK",
         params: {},
       });
-    }, [openDialog]);
-
-    const handleWithdrawTokens = useCallback(() => {
-      unlockAndWithdraw({ amount: pendingBalance });
-    }, [unlockAndWithdraw, pendingBalance]);
+    }, [
+      openDialog,
+      isEligibleToUnlock,
+      hasPendingBalance,
+      completeUnlock,
+      pendingBalance,
+    ]);
 
     const pendingBalanceCol = useMemo(() => {
       if (!hasPendingBalance) return null;
@@ -54,16 +60,14 @@ export const VeNearAssetRow = memo<VeNearAssetRowProps>(
           <>
             <div className="flex flex-row items-center gap-2">
               <span>
-                {isEligibleToUnlock
-                  ? "Available to withdraw"
-                  : "Pending unlock"}
+                {isEligibleToUnlock ? "Ready for unlock" : "Pending unlock"}
               </span>
               {unlockTimestamp && !isEligibleToUnlock && (
                 <TooltipWithTap
                   content={
                     <div className="max-w-[300px]">
                       <p>
-                        Funds available for withdrawal after{" "}
+                        Funds can be unlocked after{" "}
                         <span className="font-bold">
                           {getFormattedUnlockTimestamp(unlockTimestamp)}
                         </span>
@@ -110,39 +114,20 @@ export const VeNearAssetRow = memo<VeNearAssetRowProps>(
       [balanceWithRewards, pendingBalanceCol]
     );
 
-    const actionButton = useMemo(
-      () =>
-        hasPendingBalance
-          ? {
-              title: "Withdraw",
-              onClick: handleWithdrawTokens,
-              disabled: !isEligibleToUnlock,
-              isLoading: isLoadingUnlockAndWithdraw,
-            }
-          : undefined,
-      [
-        hasPendingBalance,
-        handleWithdrawTokens,
-        isEligibleToUnlock,
-        isLoadingUnlockAndWithdraw,
-      ]
-    );
-
     const overflowButtons = useMemo(
       () => [
         {
           title: "Unlock",
-          onClick: handleBeginUnlockTokens,
+          onClick: handleUnlockTokens,
         },
       ],
-      [handleBeginUnlockTokens]
+      [handleUnlockTokens]
     );
 
     return (
       <AssetRow
         metadata={VENEAR_TOKEN_METADATA}
         columns={columns}
-        actionButton={actionButton}
         showOverflowMenu
         overflowButtons={overflowButtons}
       />

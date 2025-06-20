@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { NEAR_BALANCE_QK } from "./useNearBalance";
 
-export const useUnlockAndWithdraw = ({
+export const useTransferLockup = ({
   onSuccess,
   lockupAccountId,
 }: {
@@ -30,12 +30,11 @@ export const useUnlockAndWithdraw = ({
     },
   });
 
-  const unlockAndWithdraw = useCallback(
+  const transferLockup = useCallback(
     ({ amount }: { amount?: string }) => {
       return mutateAsync({
         contractId: lockupAccountId,
         methodCalls: [
-          { methodName: "end_unlock_near" as const, args: { amount } },
           {
             methodName: "transfer" as const,
             args: { amount, receiver_id: signedAccountId },
@@ -47,7 +46,7 @@ export const useUnlockAndWithdraw = ({
   );
 
   return {
-    unlockAndWithdraw,
+    transferLockup,
     isLoading: isPending,
     error,
   };

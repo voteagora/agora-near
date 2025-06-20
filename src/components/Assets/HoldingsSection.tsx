@@ -11,6 +11,7 @@ import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
 import { Skeleton } from "../ui/skeleton";
 import { LockableAssetRow } from "./LockableAssetRow";
 import { VeNearAssetRow } from "./VeNearAssetRow";
+import { VeNearLiquidAssetRow } from "./VeNearLiquidAssetRow";
 import { VeNearStakedAssetRow } from "./VeNearStakedAssetRow";
 
 export const HoldingsSection = memo(() => {
@@ -78,7 +79,7 @@ export const HoldingsSection = memo(() => {
     [openDialog]
   );
 
-  const lockupTokens = useMemo(
+  const lockupLiquidTokens = useMemo(
     () => availableTokens.filter((token) => token.type === "lockup"),
     [availableTokens]
   );
@@ -150,12 +151,13 @@ export const HoldingsSection = memo(() => {
                   pendingBalance={pendingBalance}
                   isEligibleToUnlock={isEligibleToUnlock}
                 />
-                {lockupTokens.map((token) => (
-                  <LockableAssetRow
+                {lockupLiquidTokens.map((token) => (
+                  <VeNearLiquidAssetRow
                     key={token.accountId}
                     token={token}
                     stakingPoolId={stakingPoolId}
                     onLockClick={openLockDialog}
+                    lockupAccountId={lockupAccountId}
                   />
                 ))}
                 {stakingPoolId && (
