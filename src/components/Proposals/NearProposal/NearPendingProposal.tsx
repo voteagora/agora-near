@@ -5,12 +5,16 @@ import { useNear } from "@/contexts/NearContext";
 import { Button } from "@/components/ui/button";
 import { useProposalActions } from "@/hooks/useProposalActions";
 import { toast } from "react-hot-toast";
+import { ChevronLeftIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const NearPendingProposal = ({
   proposal,
 }: {
   proposal: ProposalInfo;
 }) => {
+  const router = useRouter();
+
   const { config } = useProposalConfig();
   const { signedAccountId } = useNear();
 
@@ -35,7 +39,10 @@ export const NearPendingProposal = ({
 
   return (
     <section>
-      <header className="py-8">
+      <header className="py-8 flex items-center gap-2">
+        <Button variant="ghost" size="icon" onClick={() => router.back()}>
+          <ChevronLeftIcon className="w-4 h-4" />
+        </Button>
         <p className="text-lg font-semibold">Proposal</p>
       </header>
       <section className="flex gap-8">
