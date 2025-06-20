@@ -6,6 +6,7 @@ import {
   READ_NEAR_CONTRACT_QK,
   useReadHOSContract,
 } from "./useReadHOSContract";
+import { STAKED_BALANCE_QK } from "./useStakedBalance";
 
 type Props = {
   lockupAccountId: string;
@@ -46,6 +47,10 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
 
         queryClient.invalidateQueries({
           queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: [STAKED_BALANCE_QK, lockupAccountId],
         });
       } catch (e) {
         setStakingNearError(e as Error);

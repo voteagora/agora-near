@@ -131,7 +131,7 @@ export const VeNearAssetRow = memo<VeNearAssetRowProps>(
     const overflowButtons = useMemo(
       () => [
         {
-          title: "New unlock",
+          title: "Unlock",
           onClick: handleBeginUnlockTokens,
         },
       ],

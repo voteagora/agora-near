@@ -3,13 +3,15 @@ import { useAvailableTokens } from "@/hooks/useAvailableTokens";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useLockupPendingBalance } from "@/hooks/useLockupPendingBalance";
+import { useStakedBalance } from "@/hooks/useStakedBalance";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 import Big from "big.js";
 import { memo, useCallback, useMemo, useState } from "react";
 import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
 import { Skeleton } from "../ui/skeleton";
-import { AvailableTokenRow } from "./AvailableTokenRow";
+import { LockableAssetRow } from "./LockableAssetRow";
 import { VeNearAssetRow } from "./VeNearAssetRow";
+import { VeNearStakedAssetRow } from "./VeNearStakedAssetRow";
 
 export const HoldingsSection = memo(() => {
   const [activeTab, setActiveTab] = useState<"Holdings" | "Activity">(
@@ -53,6 +55,13 @@ export const HoldingsSection = memo(() => {
     lockupAccountId,
   });
 
+  const { stakedBalance, isLoading: isLoadingStakedBalance } = useStakedBalance(
+    {
+      stakingPoolId,
+      accountId: lockupAccountId,
+    }
+  );
+
   const openDialog = useOpenDialog();
 
   const openLockDialog = useCallback(
@@ -84,7 +93,8 @@ export const HoldingsSection = memo(() => {
     isLoadingLockupAccountId ||
     isLoadingStakingPoolId ||
     isLoadingAccountInfo ||
-    isLoadingLockupPendingBalance;
+    isLoadingLockupPendingBalance ||
+    isLoadingStakedBalance;
 
   if (isLoading) {
     return (
@@ -141,13 +151,19 @@ export const HoldingsSection = memo(() => {
                   isEligibleToUnlock={isEligibleToUnlock}
                 />
                 {lockupTokens.map((token) => (
-                  <AvailableTokenRow
+                  <LockableAssetRow
                     key={token.accountId}
                     token={token}
                     stakingPoolId={stakingPoolId}
                     onLockClick={openLockDialog}
                   />
                 ))}
+                {stakingPoolId && (
+                  <VeNearStakedAssetRow
+                    stakingPoolId={stakingPoolId}
+                    stakedBalance={stakedBalance ?? "0"}
+                  />
+                )}
                 {walletTokens.length > 0 && (
                   <>
                     <tr>
@@ -158,7 +174,7 @@ export const HoldingsSection = memo(() => {
                       </td>
                     </tr>
                     {walletTokens.map((token) => (
-                      <AvailableTokenRow
+                      <LockableAssetRow
                         key={token.accountId}
                         token={token}
                         stakingPoolId={stakingPoolId}

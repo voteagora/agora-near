@@ -8,13 +8,13 @@ import { TokenWithBalance } from "@/lib/types";
 import NearTokenAmount from "../shared/NearTokenAmount";
 import { AssetRow } from "./AssetRow";
 
-interface AvailableTokenRowProps {
+interface LockableAssetRowProps {
   token: TokenWithBalance;
   stakingPoolId?: string | null;
   onLockClick: (tokenAccountId?: string) => void;
 }
 
-export const AvailableTokenRow = memo<AvailableTokenRowProps>(
+export const LockableAssetRow = memo<LockableAssetRowProps>(
   ({ token, stakingPoolId, onLockClick }) => {
     const { networkId } = useNear();
 
@@ -99,4 +99,4 @@ export const AvailableTokenRow = memo<AvailableTokenRowProps>(
   }
 );
 
-AvailableTokenRow.displayName = "AvailableTokenRow";
+LockableAssetRow.displayName = "AvailableTokenRow";
