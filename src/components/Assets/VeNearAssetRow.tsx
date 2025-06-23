@@ -103,7 +103,6 @@ export const VeNearAssetRow = memo<VeNearAssetRowProps>(
           subtitle: (
             <NearTokenAmount
               amount={balanceWithRewards}
-              currency={VENEAR_TOKEN_METADATA.symbol}
               maximumSignificantDigits={4}
               minimumFractionDigits={4}
             />

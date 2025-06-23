@@ -98,3 +98,17 @@ export type DelegationEvent = {
   eventDate: string;
   nearAmount?: string;
 };
+
+export type HosActivity = {
+  receiptId?: string | null;
+  blockHeight?: string | null;
+  eventDate?: string | null;
+  nearAmount?: string | null;
+  lockedNearBalance?: string | null;
+  transactionType?: string | null;
+};
+
+export type GetHosActivityResponse = {
+  count: number;
+  hosActivity: HosActivity[];
+};

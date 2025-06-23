@@ -20,10 +20,10 @@ export const useStakedBalance = ({
         method: "get_account_staked_balance",
         args: {
           account_id: accountId,
-          enabled: !!stakingPoolId && !!accountId,
         },
       }) as Promise<string | null | undefined>;
     },
+    enabled: !!stakingPoolId && !!accountId,
   });
 
   return {
