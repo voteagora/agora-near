@@ -20,6 +20,7 @@ import { CheckIcon, X, MinusIcon } from "lucide-react";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import clsx from "clsx";
 import { useNear } from "@/contexts/NearContext";
+import { useProposalNonVoters } from "@/hooks/useNearProposalNonVoters";
 
 const NearProposalVoteResult = ({
   proposal,
@@ -37,6 +38,16 @@ const NearProposalVoteResult = ({
     hasNextPage,
     fetchNextPage,
   } = useProposalVotes({
+    proposalId: proposal.id.toString(),
+    pageSize: 20,
+  });
+
+  const {
+    data: nonVoters,
+    isFetching: isNonVotersFetching,
+    hasNextPage: hasNextNonVotersPage,
+    fetchNextPage: fetchNextNonVotersPage,
+  } = useProposalNonVoters({
     proposalId: proposal.id.toString(),
     pageSize: 20,
   });
@@ -61,7 +72,59 @@ const NearProposalVoteResult = ({
             />
           </div>
           <div className="px-4 pb-4 overflow-y-auto max-h-[calc(100vh-437px)]">
-            {!isVotingHistoryFetching && votingHistory ? (
+            {!showVoters && !isNonVotersFetching && nonVoters && (
+              <InfiniteScroll
+                hasMore={hasNextNonVotersPage}
+                pageStart={0}
+                loadMore={() => {
+                  if (hasNextNonVotersPage) {
+                    fetchNextNonVotersPage();
+                  }
+                }}
+                useWindow={false}
+                loader={
+                  <div
+                    className="flex text-xs font-medium text-secondary"
+                    key={0}
+                  >
+                    Loading more non-voters...
+                  </div>
+                }
+                element="main"
+              >
+                <ul className="flex flex-col">
+                  {nonVoters.map((nonVoter) => (
+                    <li key={nonVoter.id}>
+                      <VStack
+                        gap={2}
+                        className="text-xs text-tertiary px-0 py-1"
+                      >
+                        <VStack>
+                          <HoverCard openDelay={100} closeDelay={100}>
+                            <HoverCardTrigger>
+                              <HStack
+                                justifyContent="justify-between"
+                                className="font-semibold text-secondary"
+                              >
+                                <HStack gap={1} alignItems="items-center">
+                                  {nonVoter.registeredVoterId}
+                                  {nonVoter.registeredVoterId ===
+                                    signedAccountId && (
+                                    <p className="text-primary">(you)</p>
+                                  )}
+                                </HStack>
+                              </HStack>
+                            </HoverCardTrigger>
+                          </HoverCard>
+                        </VStack>
+                      </VStack>
+                    </li>
+                  ))}
+                </ul>
+              </InfiniteScroll>
+            )}
+
+            {showVoters && !isVotingHistoryFetching && votingHistory && (
               <InfiniteScroll
                 hasMore={hasNextPage}
                 pageStart={0}
@@ -162,7 +225,9 @@ const NearProposalVoteResult = ({
                   ))}
                 </ul>
               </InfiniteScroll>
-            ) : (
+            )}
+
+            {(isVotingHistoryFetching || isNonVotersFetching) && (
               <div className="text-secondary text-xs">Loading...</div>
             )}
           </div>
