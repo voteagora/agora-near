@@ -2,25 +2,25 @@ import { useNear } from "@/contexts/NearContext";
 import { useAvailableTokens } from "@/hooks/useAvailableTokens";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
+import { useLockupPendingBalance } from "@/hooks/useLockupPendingBalance";
+import { useStakedBalance } from "@/hooks/useStakedBalance";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
-import {
-  LINEAR_TOKEN_CONTRACTS,
-  STNEAR_TOKEN_CONTRACTS,
-  VENEAR_TOKEN_METADATA,
-} from "@/lib/constants";
 import Big from "big.js";
 import { memo, useCallback, useMemo, useState } from "react";
 import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
-import NearTokenAmount from "../shared/NearTokenAmount";
 import { Skeleton } from "../ui/skeleton";
-import { AssetRow } from "./AssetRow";
+import { LockableAssetRow } from "./LockableAssetRow";
+import { VeNearAssetRow } from "./VeNearAssetRow";
+import { VeNearLiquidAssetRow } from "./VeNearLiquidAssetRow";
+import { VeNearStakedAssetRow } from "./VeNearStakedAssetRow";
+import { HosActivityTable } from "./HosActivityTable";
 
 export const HoldingsSection = memo(() => {
   const [activeTab, setActiveTab] = useState<"Holdings" | "Activity">(
     "Holdings"
   );
 
-  const { signedAccountId, networkId } = useNear();
+  const { signedAccountId } = useNear();
 
   const handleTabClick = useCallback((tab: "Holdings" | "Activity") => {
     setActiveTab(tab);
@@ -35,6 +35,16 @@ export const HoldingsSection = memo(() => {
   const { data: accountInfo, isLoading: isLoadingAccountInfo } =
     useVenearAccountInfo(signedAccountId);
 
+  const {
+    unlockTimestamp,
+    pendingBalance,
+    isEligibleToUnlock,
+    hasPendingBalance,
+    isLoading: isLoadingLockupPendingBalance,
+  } = useLockupPendingBalance({
+    lockupAccountId: lockupAccountId,
+  });
+
   const balanceWithRewards = useMemo(
     () =>
       Big(accountInfo?.totalBalance.near ?? "0")
@@ -46,6 +56,13 @@ export const HoldingsSection = memo(() => {
   const { stakingPoolId, isLoadingStakingPoolId } = useCurrentStakingPoolId({
     lockupAccountId,
   });
+
+  const { stakedBalance, isLoading: isLoadingStakedBalance } = useStakedBalance(
+    {
+      stakingPoolId,
+      accountId: lockupAccountId,
+    }
+  );
 
   const openDialog = useOpenDialog();
 
@@ -63,34 +80,23 @@ export const HoldingsSection = memo(() => {
     [openDialog]
   );
 
-  const handleUnlock = useCallback(() => {
-    // TODO: Implement unlock functionality
-    console.log("Unlock clicked");
-  }, []);
+  const lockupLiquidTokens = useMemo(
+    () => availableTokens.filter((token) => token.type === "lockup"),
+    [availableTokens]
+  );
 
-  const handleManageStaking = useCallback(
-    (tokenAccountId: string) => {
-      let url = "";
-
-      // Determine the correct URL based on the token
-      if (tokenAccountId === LINEAR_TOKEN_CONTRACTS[networkId]) {
-        url = "https://app.linearprotocol.org/";
-      } else if (tokenAccountId === STNEAR_TOKEN_CONTRACTS[networkId]) {
-        url = "https://www.metapool.app/stake/?token=near";
-      }
-
-      if (url) {
-        window.open(url, "_blank");
-      }
-    },
-    [networkId]
+  const walletTokens = useMemo(
+    () => availableTokens.filter((token) => token.type !== "lockup"),
+    [availableTokens]
   );
 
   const isLoading =
     isLoadingAvailableTokens ||
     isLoadingLockupAccountId ||
     isLoadingStakingPoolId ||
-    isLoadingAccountInfo;
+    isLoadingAccountInfo ||
+    isLoadingLockupPendingBalance ||
+    isLoadingStakedBalance;
 
   if (isLoading) {
     return (
@@ -133,77 +139,57 @@ export const HoldingsSection = memo(() => {
           {activeTab === "Holdings" ? (
             <table className="w-full">
               <tbody>
-                <AssetRow
-                  metadata={VENEAR_TOKEN_METADATA}
-                  columns={[
-                    {
-                      title: "Locked",
-                      subtitle: (
-                        <NearTokenAmount
-                          amount={balanceWithRewards}
-                          currency={VENEAR_TOKEN_METADATA.symbol}
-                          maximumSignificantDigits={4}
-                          minimumFractionDigits={4}
-                        />
-                      ),
-                    },
-                  ]}
-                  showOverflowMenu
-                  overflowButtons={[
-                    {
-                      title: "Unlock",
-                      onClick: handleUnlock,
-                    },
-                  ]}
+                <tr>
+                  <td colSpan={3} className="pb-3">
+                    <h3 className="text-lg font-semibold">Lockup Holdings</h3>
+                  </td>
+                </tr>
+                <VeNearAssetRow
+                  unlockTimestamp={unlockTimestamp}
+                  lockupAccountId={lockupAccountId}
+                  balanceWithRewards={balanceWithRewards}
+                  hasPendingBalance={hasPendingBalance}
+                  pendingBalance={pendingBalance}
+                  isEligibleToUnlock={isEligibleToUnlock}
                 />
-                {availableTokens.map((token) => {
-                  const overflowButtons = [];
-
-                  // Add "Manage staking" button for LST tokens
-                  if (token.type === "lst") {
-                    overflowButtons.push({
-                      title: "Manage staking",
-                      onClick: () => handleManageStaking(token.accountId ?? ""),
-                      showExternalIcon: true,
-                    });
-                  }
-
-                  return (
-                    <AssetRow
-                      key={token.accountId}
-                      metadata={token.metadata}
-                      columns={[
-                        {
-                          title: "Lockable",
-                          subtitle: (
-                            <NearTokenAmount
-                              amount={token.balance}
-                              currency={token.metadata?.symbol}
-                              maximumSignificantDigits={4}
-                              minimumFractionDigits={4}
-                            />
-                          ),
-                        },
-                      ]}
-                      showOverflowMenu
-                      overflowButtons={overflowButtons}
-                      actionButton={{
-                        title: token.type === "lst" ? "Lock" : "Lock & Stake",
-                        onClick: () => openLockDialog(token.accountId),
-                        disabled:
-                          !!stakingPoolId &&
-                          token.type === "lst" &&
-                          stakingPoolId !== token.accountId,
-                      }}
-                    />
-                  );
-                })}
+                {lockupLiquidTokens.map((token) => (
+                  <VeNearLiquidAssetRow
+                    key={token.accountId}
+                    token={token}
+                    stakingPoolId={stakingPoolId}
+                    onLockClick={openLockDialog}
+                    lockupAccountId={lockupAccountId}
+                  />
+                ))}
+                {stakingPoolId && (
+                  <VeNearStakedAssetRow
+                    stakingPoolId={stakingPoolId}
+                    stakedBalance={stakedBalance ?? "0"}
+                  />
+                )}
+                {walletTokens.length > 0 && (
+                  <>
+                    <tr>
+                      <td colSpan={3} className="pt-8 pb-3">
+                        <h3 className="text-lg font-semibold">
+                          Wallet Holdings
+                        </h3>
+                      </td>
+                    </tr>
+                    {walletTokens.map((token) => (
+                      <LockableAssetRow
+                        key={token.accountId}
+                        token={token}
+                        stakingPoolId={stakingPoolId}
+                        onLockClick={openLockDialog}
+                      />
+                    ))}
+                  </>
+                )}
               </tbody>
             </table>
           ) : (
-            <div className="text-center py-12 text-gray-500">
-              Activity tab content coming soon...
-            </div>
+            <HosActivityTable address={signedAccountId} />
           )}
         </div>
       </div>

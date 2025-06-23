@@ -152,6 +152,14 @@ export const useDeployLockupAndLock = () => {
         "ft_balance_of",
       ],
     });
+
+    queryClient.invalidateQueries({
+      queryKey: [
+        READ_NEAR_CONTRACT_QK,
+        lockupAccountId,
+        "get_liquid_owners_balance",
+      ],
+    });
   }, [queryClient, lockupAccountId]);
 
   const executeTransactions = useCallback(

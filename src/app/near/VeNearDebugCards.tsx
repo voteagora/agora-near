@@ -370,6 +370,16 @@ export default function VeNearDebugCards() {
           >
             Open locking modal
           </Button>
+          <Button
+            onClick={() =>
+              openDialog({
+                type: "NEAR_UNLOCK",
+                params: {},
+              })
+            }
+          >
+            Open unlock modal
+          </Button>
         </div>
         {isLoadingAccount ? (
           <LoadingState />

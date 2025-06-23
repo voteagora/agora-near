@@ -22,3 +22,9 @@ export type Proposal = {
   rejectedAt: Date | null;
   rejecterId: string | null;
 };
+
+export type ProposalNonVotersRecord = {
+  id: string;
+  proposalId: number;
+  registeredVoterId: string;
+};
