@@ -227,10 +227,9 @@ const NearProposalVoteResult = ({
               </InfiniteScroll>
             )}
 
-            {isVotingHistoryFetching ||
-              (isNonVotersFetching && (
-                <div className="text-secondary text-xs">Loading...</div>
-              ))}
+            {(isVotingHistoryFetching || isNonVotersFetching) && (
+              <div className="text-secondary text-xs">Loading...</div>
+            )}
           </div>
           <NearProposalVotingActions proposal={proposal} config={config} />
         </div>
