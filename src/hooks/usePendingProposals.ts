@@ -21,7 +21,7 @@ export const usePendingProposals = ({
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: [PENDING_PROPOSALS_QK],
+    queryKey: [PENDING_PROPOSALS_QK, createdBy],
     queryFn: ({ pageParam = 1 }) => {
       return fetchPendingProposals(pageSize, pageParam, createdBy);
     },

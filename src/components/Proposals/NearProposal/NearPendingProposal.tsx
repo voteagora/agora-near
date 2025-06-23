@@ -7,6 +7,7 @@ import { useProposalActions } from "@/hooks/useProposalActions";
 import { toast } from "react-hot-toast";
 import { ChevronLeftIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { getVotingDays } from "@/lib/nearProposalUtils";
 
 export const NearPendingProposal = ({
   proposal,
@@ -21,21 +22,14 @@ export const NearPendingProposal = ({
   const isReviewer =
     signedAccountId && config?.reviewer_ids.includes(signedAccountId);
 
-  const {
-    approveProposal,
-    isApprovingProposal,
-    rejectProposal,
-    isRejectingProposal,
-    approveProposalError,
-    rejectProposalError,
-  } = useProposalActions({
-    onApproveSuccess: () => {
-      toast.success("Proposal approved");
-    },
-    onRejectSuccess: () => {
-      toast.success("Proposal rejected");
-    },
-  });
+  const votingDuration = config ? getVotingDays(config) : "";
+
+  const { approveProposal, isApprovingProposal, approveProposalError } =
+    useProposalActions({
+      onApproveSuccess: () => {
+        toast.success("Proposal approved");
+      },
+    });
 
   return (
     <section>
@@ -56,7 +50,12 @@ export const NearPendingProposal = ({
               </header>
               <a
                 className="flex underline text-primary m-4"
-                href={`https://${proposal.link}`}
+                href={
+                  proposal.link?.includes("https://") ||
+                  proposal.link?.includes("http://")
+                    ? proposal.link
+                    : `https://${proposal.link}`
+                }
                 target="_blank"
                 rel="noreferrer noopener"
               >
@@ -69,10 +68,16 @@ export const NearPendingProposal = ({
         <section className="w-80 flex flex-col gap-2">
           <h2 className="text-lg font-semibold">Pending Approval</h2>
           <p className="text-sm text-secondary">
-            Submitting your proposal will send it to the Screening Committee for
-            review. Any committee member can approve it. Once approved, your
-            proposal will go live for one day.
+            {isReviewer
+              ? "As a member of the Screening Committee, you can approve this proposal."
+              : `Submitting your proposal will send it to the Screening Committee for review. Any committee member can approve it. Once approved, your proposal will go live for ${votingDuration}.`}
           </p>
+          {isReviewer && (
+            <p className="text-sm text-secondary">
+              Please follow your committee&apos;s approval guidelines. If
+              approved, the proposal will go live for a {votingDuration} vote.
+            </p>
+          )}
           {isReviewer && (
             <div className="flex gap-2 mt-4">
               <Button
@@ -84,17 +89,6 @@ export const NearPendingProposal = ({
                   : approveProposalError
                     ? "Error - try again"
                     : "Approve Proposal"}
-              </Button>
-              <Button
-                onClick={() => rejectProposal(proposal.id)}
-                variant="destructive"
-                className="rounded-full w-full"
-              >
-                {isRejectingProposal
-                  ? "Rejecting..."
-                  : rejectProposalError
-                    ? "Error - try again"
-                    : "Reject Proposal"}
               </Button>
             </div>
           )}
