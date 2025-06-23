@@ -7,6 +7,7 @@ import {
   CreateDelegateStatementResponse,
   GetVoteHistoryResponse,
   GetDelegationEventsResponse,
+  GetHosActivityResponse,
 } from "./types";
 
 export const createDelegateStatement = async (
@@ -72,6 +73,20 @@ export const fetchDelegationTo = async (
 ) => {
   const { data } = await axios.get<GetDelegationEventsResponse>(
     `${Endpoint.Delegates}/${address}/delegated-to?page_size=${pageSize}&page=${page}`
+  );
+
+  return data;
+};
+
+export const fetchHosActivity = async (
+  pageSize: number,
+  page: number,
+  address: string,
+  networkId: string,
+  contractId: string
+) => {
+  const { data } = await axios.get<GetHosActivityResponse>(
+    `${Endpoint.Delegates}/${address}/hos-activity?page_size=${pageSize}&page=${page}&network_id=${networkId}&contract_id=${contractId}`
   );
 
   return data;

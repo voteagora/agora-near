@@ -13,6 +13,7 @@ import { LockableAssetRow } from "./LockableAssetRow";
 import { VeNearAssetRow } from "./VeNearAssetRow";
 import { VeNearLiquidAssetRow } from "./VeNearLiquidAssetRow";
 import { VeNearStakedAssetRow } from "./VeNearStakedAssetRow";
+import { HosActivityTable } from "./HosActivityTable";
 
 export const HoldingsSection = memo(() => {
   const [activeTab, setActiveTab] = useState<"Holdings" | "Activity">(
@@ -188,9 +189,7 @@ export const HoldingsSection = memo(() => {
               </tbody>
             </table>
           ) : (
-            <div className="text-center py-12 text-gray-500">
-              Activity tab content coming soon...
-            </div>
+            <HosActivityTable address={signedAccountId} />
           )}
         </div>
       </div>
