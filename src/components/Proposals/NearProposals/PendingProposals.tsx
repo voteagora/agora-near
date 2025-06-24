@@ -30,6 +30,8 @@ export function PendingProposalsList() {
   const isReviewer =
     signedAccountId && config?.reviewer_ids.includes(signedAccountId);
 
+  const enabled = !!signedAccountId;
+
   const {
     data: proposals,
     isFetching,
@@ -39,6 +41,7 @@ export function PendingProposalsList() {
     status,
     error,
   } = usePendingProposals({
+    enabled,
     pageSize: 10,
     createdBy: isReviewer ? undefined : signedAccountId,
   });
@@ -51,7 +54,7 @@ export function PendingProposalsList() {
     fetchNextPage();
   }, [hasNextPage, isFetching, isFetchingNextPage, fetchNextPage]);
 
-  if (status === "pending") {
+  if (enabled && status === "pending") {
     return <Loader />;
   }
 
@@ -59,7 +62,7 @@ export function PendingProposalsList() {
     return <div>{error?.message}</div>;
   }
 
-  if (proposals?.length === 0) {
+  if (!enabled || proposals?.length === 0) {
     return <div className="px-6 py-4">No pending proposals</div>;
   }
 
