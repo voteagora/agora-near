@@ -5,6 +5,24 @@ export type ProposalVotingHistoryRecord = {
   votedAt: number;
 };
 
+export type Proposal = {
+  id: string;
+  approvedAt: Date | null;
+  approverId: string | null;
+  createdAt: Date;
+  creatorId: string;
+  hasVote: boolean;
+  isApproved: boolean;
+  isRejected: boolean;
+  proposalDescription: string;
+  proposalId: number;
+  proposalTitle: string;
+  proposalUrl: string;
+  receiptId: string;
+  rejectedAt: Date | null;
+  rejecterId: string | null;
+};
+
 export type ProposalNonVotersRecord = {
   id: string;
   proposalId: number;

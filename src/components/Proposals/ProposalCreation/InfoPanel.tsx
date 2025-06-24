@@ -1,7 +1,7 @@
 import { VStack } from "@/components/Layout/Stack";
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { VotingConfig } from "@/lib/contracts/types/voting";
-import { convertNanoSecondsToDays } from "@/lib/utils";
+import { getVotingDays } from "@/lib/nearProposalUtils";
 import Big from "big.js";
 
 type InfoPanelProps = {
@@ -9,8 +9,7 @@ type InfoPanelProps = {
 };
 
 export default function InfoPanel({ votingConfig }: InfoPanelProps) {
-  const votingDays = convertNanoSecondsToDays(votingConfig.voting_duration_ns);
-  const votingDuration = `${votingDays} ${votingDays === 1 ? "day" : "days"}`;
+  const votingDuration = getVotingDays(votingConfig);
   const totalDeposit = Big(votingConfig.base_proposal_fee)
     .plus(Big(votingConfig.vote_storage_fee))
     .toFixed();

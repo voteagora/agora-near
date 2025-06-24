@@ -3,9 +3,11 @@ import {
   ProposalStatus,
   ProposalDisplayStatus,
   VoterStats,
+  VotingConfig,
 } from "./contracts/types/voting";
 import { format } from "date-fns";
 import Big from "big.js";
+import { convertNanoSecondsToDays } from "@/lib/utils";
 
 export function votingOptionsToVoteStats(proposal: ProposalInfo) {
   return proposal.voting_options.reduce(
@@ -110,4 +112,10 @@ export const isQuorumFulfilled = (proposal: ProposalInfo) => {
   const quorum = getVenearForQuorum(proposal);
   const totalForAgainstVotes = getTotalForAgainstVotes(proposal);
   return totalForAgainstVotes.gte(quorum);
+};
+
+export const getVotingDays = (votingConfig: VotingConfig) => {
+  const votingDays = convertNanoSecondsToDays(votingConfig.voting_duration_ns);
+  const votingDuration = `${votingDays} ${votingDays === 1 ? "day" : "days"}`;
+  return votingDuration;
 };
