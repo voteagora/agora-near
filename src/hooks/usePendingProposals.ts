@@ -8,9 +8,11 @@ export const PENDING_PROPOSALS_QK = `${Endpoint.Proposals}/pending`;
 export const usePendingProposals = ({
   pageSize,
   createdBy,
+  enabled = true,
 }: {
   pageSize: number;
   createdBy?: string;
+  enabled?: boolean;
 }) => {
   const {
     data,
@@ -21,6 +23,7 @@ export const usePendingProposals = ({
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
+    enabled,
     queryKey: [PENDING_PROPOSALS_QK, createdBy],
     queryFn: ({ pageParam = 1 }) => {
       return fetchPendingProposals(pageSize, pageParam, createdBy);
