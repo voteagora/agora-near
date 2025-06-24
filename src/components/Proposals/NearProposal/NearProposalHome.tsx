@@ -39,10 +39,8 @@ export default function NearProposalHome({
 
   return (
     <div className="flex flex-col items-center mt-12">
-      <div className="flex gap-16 justify-between items-start max-w-[76rem] w-full flex-col sm:flex-row">
-        <div className="flex flex-col gap-4 w-full sm:w-[calc(100%-24rem)]">
-          <NearProposalDescription proposal={proposal} />
-        </div>
+      <div className="flex gap-8 lg:gap-16 justify-between items-start max-w-[1280px] w-full flex-col md:flex-row md:items-start md:justify-between">
+        <NearProposalDescription proposal={proposal} />
         <NearProposalVoteResult proposal={proposal} config={config} />
       </div>
     </div>

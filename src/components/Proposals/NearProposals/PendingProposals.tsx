@@ -87,7 +87,7 @@ export const PendingProposal = ({ proposal }: { proposal: Proposal }) => {
         <div
           className={cn(
             "flex flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6",
-            "w-full sm:w-[55%] items-start justify-center"
+            "w-full items-start justify-center"
           )}
         >
           <div className="text-xs text-secondary">
@@ -97,17 +97,15 @@ export const PendingProposal = ({ proposal }: { proposal: Proposal }) => {
             {proposal.proposalTitle}
           </div>
         </div>
-        <div className="flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6 w-[20%] flex-start justify-center hidden sm:block">
+        <div className="flex-col whitespace-nowrap py-4 px-6 w-fit flex-start justify-center hidden sm:block">
           <div className="text-xs text-secondary">Submitted on</div>
           <div className="overflow-ellipsis overflow-visible whitespace-normal break-words text-primary">
             {format(new Date(proposal.createdAt), "MM/dd/yyyy")}
           </div>
         </div>
-        <div className="flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6 w-[25%] flex-start justify-center hidden sm:block">
+        <div className="flex-col whitespace-nowrap py-4 px-6 w-fit flex-start justify-center hidden sm:block">
           <div className="text-xs text-secondary">Status</div>
-          <div className="overflow-ellipsis overflow-visible whitespace-normal break-words text-primary">
-            Pending Approval
-          </div>
+          <div className="text-primary">Pending Approval</div>
         </div>
       </div>
     </Link>

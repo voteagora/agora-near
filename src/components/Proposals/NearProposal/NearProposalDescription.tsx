@@ -10,9 +10,7 @@ export default function NearProposalDescription({
   proposal: ProposalInfo;
 }) {
   return (
-    <div
-      className={`flex flex-col gap-4 sm:w-[48rem] w-full max-w-[calc(100vw-2rem)] sm:max-w-none`}
-    >
+    <div className="flex flex-col gap-4 w-full">
       <div className="flex-col items-start">
         <div className="text-xs font-semibold text-secondary flex items-center">
           Proposal by {proposal.proposer_id}

@@ -39,8 +39,8 @@ export const NearPendingProposal = ({
         </Button>
         <p className="text-lg font-semibold">Proposal</p>
       </header>
-      <section className="flex gap-8">
-        <section className="px-4 flex-1">
+      <section className="flex gap-8 flex-col md:flex-row">
+        <section className="px-4 flex-1 w-full">
           <h1 className="text-2xl font-bold">{proposal.title}</h1>
           <p>Submitted by: {proposal.proposer_id}</p>
           <section className="mt-8 px-4 py-6 border border-secondary/20 rounded-md gap-4 flex flex-col">
@@ -65,7 +65,7 @@ export const NearPendingProposal = ({
             <Markdown content={proposal.description ?? ""} />
           </section>
         </section>
-        <section className="w-80 flex flex-col gap-2">
+        <section className="max-md:p-4 w-full md:w-[20rem] lg:w-[24rem] flex flex-col gap-2">
           <h2 className="text-lg font-semibold">Pending Approval</h2>
           <p className="text-sm text-secondary">
             {isReviewer

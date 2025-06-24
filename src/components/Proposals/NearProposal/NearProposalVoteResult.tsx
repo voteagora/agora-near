@@ -54,7 +54,7 @@ const NearProposalVoteResult = ({
 
   return (
     <div
-      className={`fixed flex justify-between gap-4 sm:sticky top-[auto] sm:top-20 sm:max-h-[calc(100vh-162px)] sm:w-[24rem] w-[calc(100%-32px)] max-h-[calc(100%-190px)] items-stretch flex-shrink max-w-[24rem] bg-neutral border border-line rounded-xl shadow-newDefault mb-8 transition-all`}
+      className="w-full md:min-w-[20rem] md:max-w-[20rem] lg:min-w-[24rem] lg:max-w-[24rem] flex justify-between gap-4 items-stretch flex-shrink bg-neutral border border-line rounded-xl shadow-newDefault mb-8 transition-all"
       style={{
         transition: "bottom 600ms cubic-bezier(0, 0.975, 0.015, 0.995)",
       }}

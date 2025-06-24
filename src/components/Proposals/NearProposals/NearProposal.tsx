@@ -17,7 +17,7 @@ export const NearProposal = memo(({ proposal }: { proposal: ProposalInfo }) => {
         <div
           className={cn(
             "flex flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6",
-            "w-full sm:w-[55%] items-start justify-center"
+            "w-full items-start justify-center"
           )}
         >
           <div className="flex flex-row text-xs text-secondary gap-1">
@@ -34,7 +34,7 @@ export const NearProposal = memo(({ proposal }: { proposal: ProposalInfo }) => {
               : proposal.title}
           </div>
         </div>
-        <div className="flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6 w-[20%] flex-start justify-center hidden sm:block">
+        <div className="flex-col whitespace-nowrap overflow-visible py-4 px-6 w-fit flex-start justify-center hidden sm:block">
           <div className="flex flex-col items-end">
             <div className="text-xs text-secondary">
               <NearProposalTimeStatus proposal={proposal} />
@@ -42,7 +42,7 @@ export const NearProposal = memo(({ proposal }: { proposal: ProposalInfo }) => {
             <NearProposalStatusText proposal={proposal} />
           </div>
         </div>
-        <div className="flex-col whitespace-nowrap overflow-ellipsis overflow-hidden py-4 px-6 w-[25%] flex-start justify-center hidden sm:block">
+        <div className="flex-col whitespace-nowrap overflow-visible py-4 px-6 w-fit flex-start justify-center hidden lg:block">
           <div className="overflow-hidden overflow-ellipsis">
             <NearProposalStatus proposal={proposal} />
           </div>

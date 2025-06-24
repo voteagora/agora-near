@@ -14,7 +14,7 @@ export function PageContainer({ children }: Props) {
   return (
     <DialogProvider>
       <div
-        className="container my-4 mx-auto px-4 sm:px-8 sm:min-w-desktop min-h-screen"
+        className="max-w-[1280px] my-4 mx-auto px-4 sm:px-8 w-full min-h-screen"
         id="root-container"
       >
         <div className="bg-dotted-pattern" />
