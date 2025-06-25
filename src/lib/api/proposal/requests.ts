@@ -1,6 +1,10 @@
 import axios from "axios";
 import { Endpoint } from "../constants";
-import { Proposal, ProposalVotingHistoryRecord, ProposalNonVotersRecord } from "./types";
+import {
+  Proposal,
+  ProposalVotingHistoryRecord,
+  ProposalNonVotersRecord,
+} from "./types";
 
 export const fetchPendingProposals = async (
   pageSize: number,
