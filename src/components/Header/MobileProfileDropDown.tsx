@@ -11,7 +11,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
-import { AccountActionsButton } from "../AccountActions/AccountActionsButton";
+import { AccountActions } from "../AccountActions/AccountActionsButton";
 import { PanelRow } from "../Delegates/DelegateProfile/DelegateProfile";
 import NearTokenAmount from "../shared/NearTokenAmount";
 import { formatNearAccountId } from "@/lib/utils";
@@ -120,7 +120,7 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
                               </RowSkeletonWrapper>
                             }
                           />
-                          <AccountActionsButton />
+                          <AccountActions close={close} />
                         </div>
                         <div className="py-4 border-t border-line bg-neutral rounded-[0px_0px_12px_12px]">
                           <div
