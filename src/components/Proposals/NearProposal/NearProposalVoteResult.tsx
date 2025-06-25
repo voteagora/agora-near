@@ -21,6 +21,7 @@ import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import clsx from "clsx";
 import { useNear } from "@/contexts/NearContext";
 import { useProposalNonVoters } from "@/hooks/useNearProposalNonVoters";
+import { icons } from "@/assets/icons/icons";
 
 const NearProposalVoteResult = ({
   proposal,
@@ -31,6 +32,7 @@ const NearProposalVoteResult = ({
 }) => {
   const [showVoters, setShowVoters] = useState(true);
   const { signedAccountId } = useNear();
+  const [isClicked, setIsClicked] = useState(false);
 
   const {
     data: votingHistory,
@@ -52,14 +54,26 @@ const NearProposalVoteResult = ({
     pageSize: 20,
   });
 
+  const handleClick = () => {
+    setIsClicked(!isClicked);
+  };
+
   return (
     <div
-      className="w-full md:min-w-[20rem] md:max-w-[20rem] lg:min-w-[24rem] lg:max-w-[24rem] flex justify-between gap-4 items-stretch flex-shrink bg-neutral border border-line rounded-xl shadow-newDefault mb-8 transition-all"
+      className={`fixed flex justify-between gap-4 md:sticky top-[auto] md:top-20 md:max-h-[calc(100vh-220px)] max-h-[calc(100%-160px)] items-stretch flex-shrink w-[calc(100vw-2rem)] sm:w-[calc(100vw-4rem)] md:w-[20rem] lg:w-[24rem] bg-neutral border border-line rounded-xl shadow-newDefault mb-8 transition-all ${isClicked ? "bottom-[20px]" : "bottom-[calc(-100%+350px)] h-[calc(100%-160px)] md:h-auto"} md:overflow-y-auto`}
       style={{
         transition: "bottom 600ms cubic-bezier(0, 0.975, 0.015, 0.995)",
       }}
     >
       <div className="flex flex-col gap-4 min-h-0 shrink pt-4 w-full">
+        <button
+          onClick={handleClick}
+          className="border w-10 h-10 rounded-full bg-neutral absolute top-[-20px] left-[calc(50%-20px)] shadow-newDefault block md:hidden"
+        >
+          <div className="flex flex-col justify-center">
+            <img className="opacity-60" src={icons.expand.src} alt="expand" />
+          </div>
+        </button>
         <div className="flex flex-col gap-4">
           <div className="font-semibold px-4 text-primary">Voting activity</div>
           <NearProposalVoteSummary proposal={proposal} />
@@ -71,7 +85,7 @@ const NearProposalVoteResult = ({
               }}
             />
           </div>
-          <div className="px-4 pb-4 overflow-y-auto max-h-[calc(100vh-437px)]">
+          <div className="px-4 pb-4 overflow-y-auto max-h-[calc(100vh-580px)]">
             {!showVoters && !isNonVotersFetching && nonVoters && (
               <InfiniteScroll
                 hasMore={hasNextNonVotersPage}

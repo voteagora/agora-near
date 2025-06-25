@@ -372,6 +372,7 @@ module.exports = {
         "5xl": "64rem",
         "6xl": "76rem",
         full: "100%",
+        desktop: "1280px",
       },
       transitionDuration: {
         // duration-{var}
