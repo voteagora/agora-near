@@ -39,12 +39,14 @@ export default function NearProposalHome({
 
   return (
     <div className="flex flex-col items-center mt-12">
-      <div className="flex gap-16 justify-between items-start max-w-[76rem] w-full flex-col sm:flex-row">
-        <div className="flex flex-col gap-4 w-full sm:w-[calc(100%-24rem)]">
-          <NearProposalDescription proposal={proposal} />
+      <div className="flex gap-8 lg:gap-16 justify-between items-start max-w-desktop w-full flex-col md:flex-row md:items-start md:justify-between">
+        <NearProposalDescription proposal={proposal} />
+        <div className="w-full md:max-w-[24rem]">
+          <NearProposalVoteResult proposal={proposal} config={config} />
         </div>
-        <NearProposalVoteResult proposal={proposal} config={config} />
       </div>
+      {/* Mobile-only spacer to prevent overlap with modal/circle */}
+      <div className="block md:hidden" style={{ height: 65 }} />
     </div>
   );
 }
