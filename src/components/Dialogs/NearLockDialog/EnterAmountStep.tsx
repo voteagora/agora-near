@@ -1,7 +1,7 @@
 import { UpdatedButton } from "@/components/Button";
 import { Input } from "@/components/ui/input";
 import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
-import { VENEAR_TOKEN_METADATA } from "@/lib/constants";
+import { DEFAULT_GAS_RESERVE, VENEAR_TOKEN_METADATA } from "@/lib/constants";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import {
   ChevronDownIcon,
@@ -72,8 +72,9 @@ export const EnterAmountStep = ({
               <div className="max-w-[300px] flex flex-col text-left p-3">
                 <h4 className="text-lg font-bold mb-2">Available to lock</h4>
                 <p className="text-sm">
-                  You can lock this balance to gain voting power and boost your
-                  rewards.
+                  {`Amount available to lock, with ${utils.format.formatNearAmount(
+                    DEFAULT_GAS_RESERVE
+                  )} NEAR reserved for gas fees.`}
                 </p>
               </div>
             }

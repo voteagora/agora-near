@@ -51,7 +51,6 @@ export const AssetsLandingPage = memo(() => {
 
     openDialog({
       type: "NEAR_LOCK",
-      className: "sm:w-[500px]",
       params: {
         source: accountInfo ? "account_management" : "onboarding",
       },

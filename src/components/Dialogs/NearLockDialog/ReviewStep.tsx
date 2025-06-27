@@ -1,9 +1,12 @@
-import LockClosedIcon from "@/assets/icons/Locked.png";
+import {
+  default as LockClosedIcon,
+  default as LockedIcon,
+} from "@/assets/icons/Locked.png";
 import LockOpenIcon from "@/assets/icons/Locking.png";
 import { UpdatedButton } from "@/components/Button";
-import { useDeployLockupAndLock } from "@/hooks/useDeployLockupAndLock";
-import { DEFAULT_GAS_RESERVE } from "@/lib/constants";
+import { TransactionError } from "@/components/TransactionError";
 import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
+import { useDeployLockupAndLock } from "@/hooks/useDeployLockupAndLock";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Big from "big.js";
 import { utils } from "near-api-js";
@@ -13,8 +16,6 @@ import NearTokenAmount from "../../shared/NearTokenAmount";
 import { useLockProviderContext } from "../LockProvider";
 import { DepositTooltip } from "./DepositTooltip";
 import { DisclosuresContent } from "./DisclosuresContent";
-import LockedIcon from "@/assets/icons/Locked.png";
-import { TransactionError } from "@/components/TransactionError";
 
 type ReviewStepProps = {
   handleEdit: () => void;
@@ -295,14 +296,6 @@ export const ReviewStep = memo(
               </div>
             </>
           )}
-          <div className="border-t border-gray-200"></div>
-          <div className="flex flex-row justify-between items-center py-4">
-            <span className="font-bold text-primary">Gas reserve</span>
-            <NearTokenAmount
-              amount={DEFAULT_GAS_RESERVE}
-              className="font-bold"
-            />
-          </div>
         </div>
         <div className="flex flex-col items-end">
           <span>Total est. veNEAR</span>

@@ -8,7 +8,7 @@ import Tenant from "@/lib/tenant/tenant";
 import { Popover, Transition } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ReactNode, useState } from "react";
-import { AccountActionsButton } from "../AccountActions/AccountActionsButton";
+import { AccountActions } from "../AccountActions/AccountActionsButton";
 import { PanelRow } from "../Delegates/DelegateProfile/DelegateProfile";
 import NearTokenAmount from "../shared/NearTokenAmount";
 import { formatNearAccountId } from "@/lib/utils";
@@ -77,8 +77,8 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                           </div>
                         </div>
                       </div>
-                      <div className="self-stretch py-8 px-4 flex flex-col gap-6">
-                        <div className="flex flex-col gap-4">
+                      <div className="self-stretch py-8 flex flex-col gap-6">
+                        <div className="flex flex-col gap-4 px-4">
                           <PanelRow
                             title={
                               ui.tacticalStrings?.myBalance || "My balance"
@@ -110,7 +110,9 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                             className="w-[300px] justify-between"
                           />
                         </div>
-                        <AccountActionsButton />
+                        <div className="border-t border-line pt-4">
+                          <AccountActions close={close} />
+                        </div>
                       </div>
                       <div className="p-4 border-t border-line bg-neutral rounded-[0px_0px_12px_12px]">
                         <div onClick={signOut} className="cursor-pointer flex">
