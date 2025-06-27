@@ -4,15 +4,21 @@ import NearProposalTimeStatus from "./NearProposalTimeStatus";
 import NearProposalStatus from "./NearProposalStatus";
 import { cn } from "@/lib/utils";
 import { memo } from "react";
-import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { NearProposalStatusText } from "./NearProposalStatusText";
+import { Proposal } from "@/lib/api/proposal/types";
+import { useProposal } from "@/hooks/useProposal";
 
-export const NearProposal = memo(({ proposal }: { proposal: ProposalInfo }) => {
+export const NearProposal = memo(({ proposal }: { proposal: Proposal }) => {
+  const { proposal: proposalInfo } = useProposal(
+    proposal.proposalId.toString()
+  );
+
+  if (!proposalInfo) {
+    return null;
+  }
+
   return (
-    <Link
-      key={`${proposal.id}-${proposal.status}`}
-      href={`/proposals/${proposal.id}`}
-    >
+    <Link key={proposal.id} href={`/proposals/${proposal.proposalId}`}>
       <div className="border-b border-line items-center flex flex-row bg-neutral">
         <div
           className={cn(
@@ -22,24 +28,24 @@ export const NearProposal = memo(({ proposal }: { proposal: ProposalInfo }) => {
         >
           <div className="flex flex-row text-xs text-secondary gap-1">
             <div className="hidden sm:inline">
-              Proposal by {proposal.proposer_id}
+              Proposal by {proposal.creatorId}
             </div>
             <div className="block sm:hidden">
-              <NearProposalStatusText proposal={proposal} />
+              <NearProposalStatusText proposal={proposalInfo} />
             </div>
           </div>
           <div className="overflow-ellipsis overflow-visible whitespace-normal break-words text-primary">
-            {(proposal.title ?? "").length > 80
-              ? `${proposal.title?.slice(0, 80)}...`
-              : proposal.title}
+            {(proposal.proposalTitle ?? "").length > 80
+              ? `${proposal.proposalTitle?.slice(0, 80)}...`
+              : proposal.proposalTitle}
           </div>
         </div>
         <div className="flex-col whitespace-nowrap overflow-visible py-4 px-6 w-fit flex-start justify-center hidden sm:block">
           <div className="flex flex-col items-end">
             <div className="text-xs text-secondary">
-              <NearProposalTimeStatus proposal={proposal} />
+              <NearProposalTimeStatus proposal={proposalInfo} />
             </div>
-            <NearProposalStatusText proposal={proposal} />
+            <NearProposalStatusText proposal={proposalInfo} />
           </div>
         </div>
         <div className="flex-col whitespace-nowrap overflow-visible py-4 px-6 w-fit flex-start justify-center hidden lg:block">
