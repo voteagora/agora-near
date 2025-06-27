@@ -23,19 +23,31 @@ export const LockTokensCard = memo(
         )}
         style={{ backgroundColor: "#00E391" }}
       >
-        <CardContent className="p-6 flex flex-col gap-8">
-          <Image src={LockClosedIcon} alt="coin" width={40} height={40} />
+        <CardContent className="p-3 sm:p-4 lg:p-6 flex flex-col gap-4 sm:gap-6 lg:gap-8">
+          <Image
+            src={LockClosedIcon}
+            alt="coin"
+            width={32}
+            height={32}
+            className="sm:w-9 sm:h-9 lg:w-10 lg:h-10"
+          />
           <div className="text-black">
-            <h3 className="text-2xl font-bold mb-2">Lock Tokens</h3>
-            <p className="text-lg mb-4">Get boosted voting power!</p>
+            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">
+              Lock Tokens
+            </h3>
+            <p className="text-sm sm:text-base lg:text-lg mb-4">
+              Get boosted voting power!
+            </p>
 
             <div className="flex items-baseline gap-1 mb-4">
-              <span className="text-6xl font-bold">{apy}%</span>
-              <span className="text-lg">APY</span>
+              <span className="text-3xl sm:text-4xl lg:text-6xl font-bold">
+                {apy}%
+              </span>
+              <span className="text-xs sm:text-sm lg:text-lg">APY</span>
             </div>
             <button className="flex items-center text-black font-medium hover:opacity-80 transition-opacity gap-2">
               Learn More
-              <ArrowRightIcon className="w-6 h-6" />
+              <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
             </button>
           </div>
         </CardContent>
