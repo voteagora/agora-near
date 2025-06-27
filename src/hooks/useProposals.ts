@@ -38,7 +38,6 @@ export const useProposals = ({
     const records = data?.pages.map((page) => page.proposals).flat();
     return records?.flat();
   }, [data]);
-  console.log(flatData);
 
   return {
     proposals: flatData,
