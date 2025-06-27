@@ -1,4 +1,7 @@
 import nearLogo from "@/assets/tenant/near_logo.svg";
+import infoPageCard00 from "@/assets/tenant/ens_info_0.png";
+import infoPageCard01 from "@/assets/tenant/ens_info_1.png";
+import infoPageCard02 from "@/assets/tenant/ens_info_2.png";
 import { TenantUI } from "@/lib/tenant/tenantUI";
 
 export const nearTenantUIConfig = new TenantUI({
@@ -131,6 +134,38 @@ export const nearTenantUIConfig = new TenantUI({
         imageDescription: "Home of the NEAR House of Stake governance",
       },
     },
+    {
+      route: "info",
+      title: "Welcome to the NEAR Community",
+      description:
+        "Agora is the home of NEAR governance, where NEAR token holders lock tokens for voting rights, delegate votes to trusted representatives, and participate in shaping the future of the NEAR ecosystem.",
+      meta: {
+        title: "NEAR Agora",
+        description: "Home of NEAR House of Stake governance",
+        imageTitle: "NEAR Agora",
+        imageDescription: "Home of NEAR House of Stake governance",
+      },
+      links: [
+        {
+          name: "Governance Forums",
+          title: "Governance Forums",
+          url: "https://gov.near.org/",
+          image: infoPageCard01,
+        },
+        {
+          name: "Governance Docs",
+          title: "Protocol Docs",
+          url: "https://docs.near.org/",
+          image: infoPageCard02,
+        },
+        {
+          name: "Community Discord",
+          title: "Community Discord",
+          url: "https://discord.gg/nearprotocol",
+          image: infoPageCard00,
+        },
+      ],
+    },
   ],
 
   toggles: [
@@ -160,7 +195,7 @@ export const nearTenantUIConfig = new TenantUI({
     },
     {
       name: "info",
-      enabled: false,
+      enabled: true,
     },
     {
       name: "proposal-execute",
