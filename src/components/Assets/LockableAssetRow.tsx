@@ -6,7 +6,7 @@ import {
 import { useNear } from "@/contexts/NearContext";
 import { TokenWithBalance } from "@/lib/types";
 import NearTokenAmount from "../shared/NearTokenAmount";
-import { AssetRow } from "./AssetRow";
+import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
 
 interface LockableAssetRowProps {
   token: TokenWithBalance;
@@ -88,7 +88,7 @@ export const LockableAssetRow = memo<LockableAssetRowProps>(
     );
 
     return (
-      <AssetRow
+      <ResponsiveAssetRow
         metadata={token.metadata}
         columns={columns}
         showOverflowMenu

@@ -2,7 +2,7 @@ import { useReadHOSContract } from "@/hooks/useReadHOSContract";
 import Big from "big.js";
 import { useCallback, useMemo } from "react";
 import NearTokenAmount from "../shared/NearTokenAmount";
-import { AssetRow } from "./AssetRow";
+import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
 import { TokenWithBalance } from "@/lib/types";
 import { Skeleton } from "../ui/skeleton";
 import { useTransferLockup } from "@/hooks/useTransferLockup";
@@ -119,17 +119,22 @@ export const VeNearLiquidAssetRow = ({
     [token.balance, token.metadata?.symbol, availableToTransferCol]
   );
 
+  const overflowButtons = useMemo(
+    () => [
+      {
+        title: "Withdraw",
+        onClick: () => transferLockup({ amount: availableToTransfer }),
+      },
+    ],
+    [transferLockup, availableToTransfer]
+  );
+
   return (
-    <AssetRow
+    <ResponsiveAssetRow
       metadata={token.metadata}
       columns={columns}
       showOverflowMenu
-      overflowButtons={[
-        {
-          title: "Withdraw",
-          onClick: () => transferLockup({ amount: availableToTransfer }),
-        },
-      ]}
+      overflowButtons={overflowButtons}
       actionButton={actionButton}
     />
   );

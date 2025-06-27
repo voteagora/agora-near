@@ -109,7 +109,7 @@ export const HoldingsSection = memo(() => {
   }
 
   return (
-    <div className="flex-1 px-6 pb-6">
+    <div className="flex-1 sm:px-6 pb-6">
       <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
         <div className="flex border-b border-gray-200">
           <button
@@ -134,47 +134,98 @@ export const HoldingsSection = memo(() => {
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="sm:px-6 py-6 px-2">
           {activeTab === "Holdings" ? (
-            <table className="w-full">
-              <tbody>
-                <tr>
-                  <td colSpan={3} className="pb-3">
-                    <h3 className="text-lg font-semibold">Lockup Holdings</h3>
-                  </td>
-                </tr>
-                <VeNearAssetRow
-                  unlockTimestamp={unlockTimestamp}
-                  lockupAccountId={lockupAccountId}
-                  balanceWithRewards={balanceWithRewards}
-                  hasPendingBalance={hasPendingBalance}
-                  pendingBalance={pendingBalance}
-                  isEligibleToUnlock={isEligibleToUnlock}
-                />
-                {lockupLiquidTokens.map((token) => (
-                  <VeNearLiquidAssetRow
-                    key={token.accountId}
-                    token={token}
-                    stakingPoolId={stakingPoolId}
-                    onLockClick={openLockDialog}
+            <>
+              {/* Desktop table view */}
+              <table className="w-full hidden sm:table">
+                <tbody>
+                  <tr>
+                    <td colSpan={3} className="pb-3">
+                      <h3 className="text-lg font-semibold">Lockup Holdings</h3>
+                    </td>
+                  </tr>
+                  <VeNearAssetRow
+                    unlockTimestamp={unlockTimestamp}
                     lockupAccountId={lockupAccountId}
+                    balanceWithRewards={balanceWithRewards}
+                    hasPendingBalance={hasPendingBalance}
+                    pendingBalance={pendingBalance}
+                    isEligibleToUnlock={isEligibleToUnlock}
                   />
-                ))}
-                {stakingPoolId && (
-                  <VeNearStakedAssetRow
-                    stakingPoolId={stakingPoolId}
-                    stakedBalance={stakedBalance ?? "0"}
+                  {lockupLiquidTokens.map((token) => (
+                    <VeNearLiquidAssetRow
+                      key={token.accountId}
+                      token={token}
+                      stakingPoolId={stakingPoolId}
+                      onLockClick={openLockDialog}
+                      lockupAccountId={lockupAccountId}
+                    />
+                  ))}
+                  {stakingPoolId && (
+                    <VeNearStakedAssetRow
+                      stakingPoolId={stakingPoolId}
+                      stakedBalance={stakedBalance ?? "0"}
+                    />
+                  )}
+                  {walletTokens.length > 0 && (
+                    <>
+                      <tr>
+                        <td colSpan={3} className="pt-8 pb-3">
+                          <h3 className="text-lg font-semibold">
+                            Wallet Holdings
+                          </h3>
+                        </td>
+                      </tr>
+                      {walletTokens.map((token) => (
+                        <LockableAssetRow
+                          key={token.accountId}
+                          token={token}
+                          stakingPoolId={stakingPoolId}
+                          onLockClick={openLockDialog}
+                        />
+                      ))}
+                    </>
+                  )}
+                </tbody>
+              </table>
+
+              {/* Mobile list view */}
+              <div className="sm:hidden">
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-4">
+                    Lockup Holdings
+                  </h3>
+                  <VeNearAssetRow
+                    unlockTimestamp={unlockTimestamp}
+                    lockupAccountId={lockupAccountId}
+                    balanceWithRewards={balanceWithRewards}
+                    hasPendingBalance={hasPendingBalance}
+                    pendingBalance={pendingBalance}
+                    isEligibleToUnlock={isEligibleToUnlock}
                   />
-                )}
+                  {lockupLiquidTokens.map((token) => (
+                    <VeNearLiquidAssetRow
+                      key={token.accountId}
+                      token={token}
+                      stakingPoolId={stakingPoolId}
+                      onLockClick={openLockDialog}
+                      lockupAccountId={lockupAccountId}
+                    />
+                  ))}
+                  {stakingPoolId && (
+                    <VeNearStakedAssetRow
+                      stakingPoolId={stakingPoolId}
+                      stakedBalance={stakedBalance ?? "0"}
+                    />
+                  )}
+                </div>
+
                 {walletTokens.length > 0 && (
-                  <>
-                    <tr>
-                      <td colSpan={3} className="pt-8 pb-3">
-                        <h3 className="text-lg font-semibold">
-                          Wallet Holdings
-                        </h3>
-                      </td>
-                    </tr>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">
+                      Wallet Holdings
+                    </h3>
                     {walletTokens.map((token) => (
                       <LockableAssetRow
                         key={token.accountId}
@@ -183,10 +234,10 @@ export const HoldingsSection = memo(() => {
                         onLockClick={openLockDialog}
                       />
                     ))}
-                  </>
+                  </div>
                 )}
-              </tbody>
-            </table>
+              </div>
+            </>
           ) : (
             <HosActivityTable address={signedAccountId} />
           )}

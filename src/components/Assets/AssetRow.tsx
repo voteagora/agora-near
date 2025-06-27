@@ -34,6 +34,7 @@ type AssetRowProps = {
     disabled?: boolean;
     isLoading?: boolean;
   };
+  className?: string;
 };
 
 const MAX_COLUMNS = 4;
@@ -45,6 +46,7 @@ export const AssetRow = memo(
     showOverflowMenu,
     overflowButtons,
     actionButton,
+    className,
   }: AssetRowProps) => {
     const numColPlaceholders = MAX_COLUMNS - columns.length - 1;
 
@@ -83,7 +85,9 @@ export const AssetRow = memo(
     }, [actionButton]);
 
     return (
-      <tr className="border-b border-gray-100 last:border-b-0">
+      <tr
+        className={`border-b border-gray-100 last:border-b-0 ${className || ""}`}
+      >
         <td className="py-4 pr-16 w-1 whitespace-nowrap">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">

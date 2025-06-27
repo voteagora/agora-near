@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
 import NearTokenAmount from "../shared/NearTokenAmount";
 import { TooltipWithTap } from "../ui/tooltip-with-tap";
-import { AssetRow } from "./AssetRow";
+import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
 
 interface VeNearAssetRowProps {
   balanceWithRewards: string;
@@ -124,7 +124,7 @@ export const VeNearAssetRow = memo<VeNearAssetRowProps>(
     );
 
     return (
-      <AssetRow
+      <ResponsiveAssetRow
         metadata={VENEAR_TOKEN_METADATA}
         columns={columns}
         showOverflowMenu
