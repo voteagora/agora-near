@@ -74,8 +74,8 @@ export const AssetsLandingPage = memo(() => {
 
   return (
     <div className="w-full min-h-screen relative">
-      <div className="flex flex-col gap-16 mt-12">
-        <div className="grid relative mx-auto py-16">
+      <div className="flex flex-col gap-8 lg:gap-16 mt-6 lg:mt-12">
+        <div className="grid relative mx-auto py-8 lg:py-16">
           <div className="absolute inset-0 overflow-hidden p-4">
             <div
               style={{
@@ -101,30 +101,26 @@ export const AssetsLandingPage = memo(() => {
               ))}
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-8 items-center">
-            <div className="text-left order-1 z-10 bg-white py-8 ml-10">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-black mb-6 leading-tight">
-                Lock & stake tokens for boosted voting power rewards
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 items-center px-4 lg:px-0">
+            <div className="text-center lg:text-left order-1 lg:order-1 z-10 bg-white py-6 lg:py-8 lg:ml-10">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-black mb-4 lg:mb-6 leading-tight">
+                Lock & stake tokens for boosted voting power & rewards
               </h1>
-              <p className="text-lg text-gray-600 mb-8 max-w-lg">
-                Cras sed scelerisque elementum adipiscing vestibulum. Aenean
-                morbi aenean nunc
-              </p>
               <UpdatedButton
                 type="primary"
                 variant="rounded"
                 onClick={handleStakeAndLock}
-                className="px-8 py-3 text-lg font-semibold bg-black text-white hover:bg-black/90 rounded-lg"
+                className="px-6 lg:px-8 py-3 text-base lg:text-lg font-semibold bg-black text-white hover:bg-black/90 rounded-lg"
               >
                 Lock & Stake
               </UpdatedButton>
             </div>
 
-            <div className="flex flex-row gap-6 order-2">
-              <div className="mb-4 w-[300px] h-[400px]">
+            <div className="flex flex-row gap-2 lg:gap-6 order-2 lg:order-2 justify-center lg:justify-start mx-auto lg:mx-0">
+              <div className="w-[160px] sm:w-[200px] lg:w-[300px] h-[280px] sm:h-[320px] lg:h-[400px] lg:mb-4">
                 <LockTokensCard apy={lockApy} />
               </div>
-              <div className="mt-4 w-[300px] h-[400px] flex grow">
+              <div className="w-[160px] sm:w-[200px] lg:w-[300px] h-[280px] sm:h-[320px] lg:h-[400px] lg:mt-4 flex grow">
                 <StakingRewardsCard
                   apy={maxStakingApy}
                   isLoadingApy={isLoadingStakingPoolStats}
@@ -134,7 +130,7 @@ export const AssetsLandingPage = memo(() => {
           </div>
         </div>
 
-        <div className="mb-16">
+        <div className="mb-8 lg:mb-16 px-4 lg:px-0">
           <ProjectionSlider
             apy={Number(lockApy) / 100}
             startingAmount={DEFAULT_BALANCE_FOR_PROJECTION}

@@ -28,11 +28,11 @@ export const AssetsHome = memo(() => {
 
   return (
     <div className="flex flex-col w-full min-h-screen">
-      <div className="flex flex-row gap-6 p-6">
-        <div className="w-[70%] flex">
+      <div className="flex flex-col sm:flex-row gap-6 sm:px-6 py-6">
+        <div className="w-full sm:w-[70%] flex">
           <VotingPowerCard />
         </div>
-        <div className="w-[30%] flex">
+        <div className="w-full sm:w-[30%] flex">
           <GovernanceRewardsCard />
         </div>
       </div>

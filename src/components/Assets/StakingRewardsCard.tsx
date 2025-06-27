@@ -19,29 +19,37 @@ export const StakingRewardsCard = memo(
           className
         )}
       >
-        <CardContent className="relative">
+        <CardContent className="relative p-3 sm:p-4 lg:p-6">
           <div className="relative text-center">
-            <div className="flex flex-col py-8">
-              <h3 className="text-2xl font-bold mb-2">Staking Rewards</h3>
-              <p className="text-sm mb-4 text-white">
+            <div className="flex flex-col py-4 sm:py-6 lg:py-8">
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">
+                Staking Rewards
+              </h3>
+              <p className="text-xs sm:text-sm lg:text-sm mb-4 text-white">
                 Keep your tokens working!
               </p>
               <div className="flex flex-col items-center gap-1">
-                <span className="text-sm text-white">up to</span>
+                <span className="text-xs sm:text-sm lg:text-sm text-white">
+                  up to
+                </span>
                 {isLoadingApy ? (
                   "--"
                 ) : (
-                  <span className="text-6xl font-bold">{apy}%</span>
+                  <span className="text-3xl sm:text-4xl lg:text-6xl font-bold">
+                    {apy}%
+                  </span>
                 )}
-                <span className="text-sm text-white">APY</span>
+                <span className="text-xs sm:text-sm lg:text-sm text-white">
+                  APY
+                </span>
               </div>
             </div>
             <div className="flex flex-row w-full justify-center">
-              <div className="grid grid-cols-5 gap-4 ">
+              <div className="grid grid-cols-5 gap-1 sm:gap-2 lg:gap-4">
                 {Array.from({ length: 10 }).map((_, i) => (
                   <div
                     key={i}
-                    className="w-8 h-8 text-current"
+                    className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-current"
                     style={{ color: "#00E391" }}
                   >
                     <svg viewBox="0 0 24 24" fill="currentColor">

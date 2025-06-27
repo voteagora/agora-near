@@ -2,7 +2,7 @@ import { useHosActivity } from "@/hooks/useHosActivity";
 import { HosActivity } from "@/lib/api/delegates/types";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import { memo, useCallback, useEffect, useRef } from "react";
 import NearTokenAmount from "../shared/NearTokenAmount";
 import { Skeleton } from "../ui/skeleton";
 
@@ -68,10 +68,12 @@ const HosActivityRow = memo(({ activity }: HosActivityRowProps) => {
 
   return (
     <tr className="border-b border-gray-100 last:border-b-0">
-      <td className="py-4 text-sm text-gray-900">
-        {activity.eventDate
-          ? format(new Date(activity.eventDate), "MMM d, yyyy")
-          : "-"}
+      <td className="hidden md:table-cell py-4 text-sm text-gray-900">
+        {activity.eventDate ? (
+          <span>{format(new Date(activity.eventDate), "M/d/yy")}</span>
+        ) : (
+          "-"
+        )}
       </td>
       <td className="py-4 text-sm text-gray-900">
         {activity.transactionType
@@ -95,7 +97,7 @@ const HosActivityRow = memo(({ activity }: HosActivityRowProps) => {
           "-"
         )}
       </td>
-      <td className="py-4 text-sm text-gray-900">
+      <td className="hidden md:table-cell py-4 text-sm text-gray-900">
         {activity.lockedNearBalance ? (
           <NearTokenAmount amount={activity.lockedNearBalance} />
         ) : (
@@ -169,7 +171,7 @@ export const HosActivityTable = memo(({ address }: Props) => {
       <table className="w-full">
         <thead>
           <tr className="border-b-2 border-gray-200">
-            <th className="text-left py-3 text-sm font-semibold text-gray-900">
+            <th className="hidden md:table-cell text-left py-3 text-sm font-semibold text-gray-900">
               Date
             </th>
             <th className="text-left py-3 text-sm font-semibold text-gray-900">
@@ -178,7 +180,7 @@ export const HosActivityTable = memo(({ address }: Props) => {
             <th className="text-left py-3 text-sm font-semibold text-gray-900">
               Change in Voting Power
             </th>
-            <th className="text-left py-3 text-sm font-semibold text-gray-900">
+            <th className="hidden md:table-cell text-left py-3 text-sm font-semibold text-gray-900">
               New Locked Balance
             </th>
           </tr>
