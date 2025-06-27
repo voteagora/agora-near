@@ -1,17 +1,37 @@
-import { Endpoint } from "@/lib/api/constants";
-import { fetchApprovedProposals } from "@/lib/api/proposal/requests";
+import { useNear } from "@/contexts/NearContext";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { useNumProposals } from "./useNumProposals";
 
-export const APPROVED_PROPOSALS_QK = `${Endpoint.Proposals}/approved`;
+const PROPOSAL_QUERY_KEY = "proposals";
 
-export const useProposals = ({
-  pageSize,
-  enabled = true,
-}: {
-  pageSize: number;
-  enabled?: boolean;
-}) => {
+const DEFAULT_PAGE_SIZE = 10;
+
+type UseProposalsProps = {
+  pageSize?: number;
+};
+
+export function useProposals({
+  pageSize = DEFAULT_PAGE_SIZE,
+}: UseProposalsProps) {
+  const { viewMethod } = useNear();
+
+  const { numProposals } = useNumProposals();
+
+  const fetchProposals = useCallback(
+    async ({ pageParam = 0 }) => {
+      const result = (await viewMethod({
+        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        method: "get_proposals",
+        args: { from_index: pageParam, limit: pageSize },
+      })) as ProposalInfo[];
+      return result;
+    },
+    [viewMethod]
+  );
+
   const {
     data,
     error,
@@ -21,31 +41,43 @@ export const useProposals = ({
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    enabled,
-    queryKey: [APPROVED_PROPOSALS_QK],
-    queryFn: ({ pageParam = 1 }) => {
-      return fetchApprovedProposals(pageSize, pageParam);
-    },
-    getNextPageParam: (currentPage, _, pageParam) => {
-      if (currentPage.count <= pageParam * pageSize) return undefined;
+    queryKey: [PROPOSAL_QUERY_KEY],
+    queryFn: fetchProposals,
+    getNextPageParam: (currentPage, pages) => {
+      // If we have numProposals, use that as source of truth
+      if (numProposals && pages.length * pageSize >= numProposals) {
+        return undefined;
+      }
 
-      return pageParam + 1;
+      // We may not have fetched numProposals yet, in which case fallback to using the currently fetched
+      // page to determine if we've reached the end
+      if (!currentPage || currentPage.length === 0) {
+        return undefined;
+      }
+
+      return pages.length * pageSize;
     },
-    initialPageParam: 1,
+    initialPageParam: 0,
   });
 
-  const flatData = useMemo(() => {
-    const records = data?.pages.map((page) => page.proposals).flat();
-    return records?.flat();
-  }, [data]);
-
-  return {
-    proposals: flatData,
-    error,
-    isFetching,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    status,
-  };
-};
+  return useMemo(
+    () => ({
+      proposals: data?.pages.flat(),
+      error,
+      isFetching,
+      fetchNextPage,
+      hasNextPage,
+      isFetchingNextPage,
+      status,
+    }),
+    [
+      data?.pages,
+      error,
+      fetchNextPage,
+      hasNextPage,
+      isFetching,
+      isFetchingNextPage,
+      status,
+    ]
+  );
+}

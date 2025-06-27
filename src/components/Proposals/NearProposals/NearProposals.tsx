@@ -2,7 +2,7 @@
 
 import { UpdatedButton } from "@/components/Button";
 import PageHeader from "@/components/Layout/PageHeader/PageHeader";
-import { useProposals } from "@/hooks/useProposals";
+import { useNearProposals } from "@/hooks/useNearProposals";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
@@ -32,7 +32,7 @@ function NearProposalsList() {
     isFetchingNextPage,
     status,
     error,
-  } = useProposals({ pageSize: 10 });
+  } = useNearProposals({ pageSize: 10 });
 
   const onLoadMore = useCallback(() => {
     if (!hasNextPage || isFetching || isFetchingNextPage) {
@@ -60,7 +60,7 @@ function NearProposalsList() {
       >
         {proposals?.map((proposal) => (
           <NearProposal
-            key={`${proposal.id}-${proposal.status}`}
+            key={proposal.id}
             proposal={proposal}
           />
         ))}
