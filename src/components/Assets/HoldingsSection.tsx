@@ -9,10 +9,7 @@ import Big from "big.js";
 import { memo, useCallback, useMemo, useState } from "react";
 import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
 import { Skeleton } from "../ui/skeleton";
-import { LockableAssetRow } from "./LockableAssetRow";
-import { VeNearAssetRow } from "./VeNearAssetRow";
-import { VeNearLiquidAssetRow } from "./VeNearLiquidAssetRow";
-import { VeNearStakedAssetRow } from "./VeNearStakedAssetRow";
+import { HoldingsContent } from "./HoldingsContent";
 import { HosActivityTable } from "./HosActivityTable";
 
 export const HoldingsSection = memo(() => {
@@ -136,108 +133,19 @@ export const HoldingsSection = memo(() => {
 
         <div className="sm:px-6 py-6 px-2">
           {activeTab === "Holdings" ? (
-            <>
-              {/* Desktop table view */}
-              <table className="w-full hidden sm:table">
-                <tbody>
-                  <tr>
-                    <td colSpan={3} className="pb-3">
-                      <h3 className="text-lg font-semibold">Lockup Holdings</h3>
-                    </td>
-                  </tr>
-                  <VeNearAssetRow
-                    unlockTimestamp={unlockTimestamp}
-                    lockupAccountId={lockupAccountId}
-                    balanceWithRewards={balanceWithRewards}
-                    hasPendingBalance={hasPendingBalance}
-                    pendingBalance={pendingBalance}
-                    isEligibleToUnlock={isEligibleToUnlock}
-                  />
-                  {lockupLiquidTokens.map((token) => (
-                    <VeNearLiquidAssetRow
-                      key={token.accountId}
-                      token={token}
-                      stakingPoolId={stakingPoolId}
-                      onLockClick={openLockDialog}
-                      lockupAccountId={lockupAccountId}
-                    />
-                  ))}
-                  {stakingPoolId && (
-                    <VeNearStakedAssetRow
-                      stakingPoolId={stakingPoolId}
-                      stakedBalance={stakedBalance ?? "0"}
-                    />
-                  )}
-                  {walletTokens.length > 0 && (
-                    <>
-                      <tr>
-                        <td colSpan={3} className="pt-8 pb-3">
-                          <h3 className="text-lg font-semibold">
-                            Wallet Holdings
-                          </h3>
-                        </td>
-                      </tr>
-                      {walletTokens.map((token) => (
-                        <LockableAssetRow
-                          key={token.accountId}
-                          token={token}
-                          stakingPoolId={stakingPoolId}
-                          onLockClick={openLockDialog}
-                        />
-                      ))}
-                    </>
-                  )}
-                </tbody>
-              </table>
-
-              {/* Mobile list view */}
-              <div className="sm:hidden">
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-4">
-                    Lockup Holdings
-                  </h3>
-                  <VeNearAssetRow
-                    unlockTimestamp={unlockTimestamp}
-                    lockupAccountId={lockupAccountId}
-                    balanceWithRewards={balanceWithRewards}
-                    hasPendingBalance={hasPendingBalance}
-                    pendingBalance={pendingBalance}
-                    isEligibleToUnlock={isEligibleToUnlock}
-                  />
-                  {lockupLiquidTokens.map((token) => (
-                    <VeNearLiquidAssetRow
-                      key={token.accountId}
-                      token={token}
-                      stakingPoolId={stakingPoolId}
-                      onLockClick={openLockDialog}
-                      lockupAccountId={lockupAccountId}
-                    />
-                  ))}
-                  {stakingPoolId && (
-                    <VeNearStakedAssetRow
-                      stakingPoolId={stakingPoolId}
-                      stakedBalance={stakedBalance ?? "0"}
-                    />
-                  )}
-                </div>
-
-                {walletTokens.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">
-                      Wallet Holdings
-                    </h3>
-                    {walletTokens.map((token) => (
-                      <LockableAssetRow
-                        key={token.accountId}
-                        token={token}
-                        stakingPoolId={stakingPoolId}
-                        onLockClick={openLockDialog}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-            </>
+            <HoldingsContent
+              lockupLiquidTokens={lockupLiquidTokens}
+              walletTokens={walletTokens}
+              unlockTimestamp={unlockTimestamp}
+              lockupAccountId={lockupAccountId}
+              balanceWithRewards={balanceWithRewards}
+              hasPendingBalance={hasPendingBalance}
+              pendingBalance={pendingBalance}
+              isEligibleToUnlock={isEligibleToUnlock}
+              stakingPoolId={stakingPoolId}
+              stakedBalance={stakedBalance}
+              openLockDialog={openLockDialog}
+            />
           ) : (
             <HosActivityTable address={signedAccountId} />
           )}
