@@ -21,6 +21,9 @@ export type Proposal = {
   receiptId: string;
   rejectedAt: Date | null;
   rejecterId: string | null;
+  forVotingPower: string;
+  againstVotingPower: string;
+  abstainVotingPower: string;
 };
 
 export type ProposalNonVotersRecord = {

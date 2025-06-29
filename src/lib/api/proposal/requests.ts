@@ -6,6 +6,20 @@ import {
   ProposalNonVotersRecord,
 } from "./types";
 
+export const fetchApprovedProposals = async (
+  pageSize: number,
+  currentPage: number
+) => {
+  const response = await axios.get<{
+    proposals: Proposal[];
+    count: number;
+  }>(
+    `${Endpoint.Proposals}/approved?page_size=${pageSize}&page=${currentPage}`
+  );
+
+  return response.data;
+};
+
 export const fetchPendingProposals = async (
   pageSize: number,
   currentPage: number,

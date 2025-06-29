@@ -1,27 +1,31 @@
 import NearTokenAmount from "@/components/shared/NearTokenAmount";
-import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { Proposal } from "@/lib/api/proposal/types";
+import Big from "big.js";
 
 export default function NearProposalStatus({
   proposal,
 }: {
-  proposal: ProposalInfo;
+  proposal: Proposal;
 }) {
-  const forVotes = proposal.votes[0].total_venear;
-  const againstVotes = proposal.votes[1].total_venear;
-  const abstainVotes = proposal.votes[2]?.total_venear ?? "0";
-  const totalVotes = proposal.total_votes.total_venear;
+  const forVotes = proposal.forVotingPower;
+  const againstVotes = proposal.againstVotingPower;
+  const abstainVotes = proposal.abstainVotingPower;
+  const totalVotes = Big(proposal.forVotingPower)
+    .plus(proposal.againstVotingPower)
+    .plus(proposal.abstainVotingPower)
+    .toFixed();
 
   return (
     <div className="flex flex-col items-end gap-1 justify-center">
       <div className="flex flex-row space-between text-primary gap-1">
         <div>
           <NearTokenAmount amount={forVotes} hideCurrency />
-          {proposal.voting_options[0]}
+          For
         </div>
         <div>–</div>
         <div>
           <NearTokenAmount amount={againstVotes} hideCurrency />
-          {proposal.voting_options[1]}
+          Against
         </div>
       </div>
       {totalVotes !== "0" && (

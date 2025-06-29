@@ -2,13 +2,14 @@
 
 import { UpdatedButton } from "@/components/Button";
 import PageHeader from "@/components/Layout/PageHeader/PageHeader";
-import { useProposals } from "@/hooks/useProposals";
+import { useNearProposals } from "@/hooks/useNearProposals";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { NearProposal } from "./NearProposal";
 import { PendingProposalsList } from "./PendingProposals";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Loader = () => {
   return (
@@ -32,7 +33,8 @@ function NearProposalsList() {
     isFetchingNextPage,
     status,
     error,
-  } = useProposals({ pageSize: 10 });
+    isLoading,
+  } = useNearProposals({ pageSize: 10 });
 
   const onLoadMore = useCallback(() => {
     if (!hasNextPage || isFetching || isFetchingNextPage) {
@@ -42,8 +44,14 @@ function NearProposalsList() {
     fetchNextPage();
   }, [hasNextPage, isFetching, isFetchingNextPage, fetchNextPage]);
 
-  if (status === "pending") {
-    return <Loader />;
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4 p-4">
+        <Skeleton className="w-full h-16" />
+        <Skeleton className="w-full h-16" />
+        <Skeleton className="w-full h-16" />
+      </div>
+    );
   }
 
   if (status === "error") {
@@ -59,10 +67,7 @@ function NearProposalsList() {
         element="main"
       >
         {proposals?.map((proposal) => (
-          <NearProposal
-            key={`${proposal.id}-${proposal.status}`}
-            proposal={proposal}
-          />
+          <NearProposal key={proposal.id} proposal={proposal} />
         ))}
         {isFetchingNextPage && <Loader />}
       </InfiniteScroll>
