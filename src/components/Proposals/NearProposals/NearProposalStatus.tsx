@@ -13,7 +13,7 @@ export default function NearProposalStatus({
   const totalVotes = Big(proposal.forVotingPower)
     .plus(proposal.againstVotingPower)
     .plus(proposal.abstainVotingPower)
-    .toString();
+    .toFixed();
 
   return (
     <div className="flex flex-col items-end gap-1 justify-center">
