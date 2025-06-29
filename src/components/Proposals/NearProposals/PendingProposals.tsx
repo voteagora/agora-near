@@ -9,6 +9,7 @@ import { Proposal } from "@/lib/api/proposal/types";
 import { format } from "date-fns";
 import { useNear } from "@/contexts/NearContext";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Loader = () => {
   return (
@@ -55,7 +56,13 @@ export function PendingProposalsList() {
   }, [hasNextPage, isFetching, isFetchingNextPage, fetchNextPage]);
 
   if (enabled && status === "pending") {
-    return <Loader />;
+    return (
+      <div className="flex flex-col gap-4 p-4">
+        <Skeleton className="w-full h-16" />
+        <Skeleton className="w-full h-16" />
+        <Skeleton className="w-full h-16" />
+      </div>
+    );
   }
 
   if (status === "error") {

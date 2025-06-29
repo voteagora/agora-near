@@ -9,6 +9,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import { NearProposal } from "./NearProposal";
 import { PendingProposalsList } from "./PendingProposals";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Loader = () => {
   return (
@@ -44,7 +45,13 @@ function NearProposalsList() {
   }, [hasNextPage, isFetching, isFetchingNextPage, fetchNextPage]);
 
   if (isLoading) {
-    return <Loader />;
+    return (
+      <div className="flex flex-col gap-4 p-4">
+        <Skeleton className="w-full h-16" />
+        <Skeleton className="w-full h-16" />
+        <Skeleton className="w-full h-16" />
+      </div>
+    );
   }
 
   if (status === "error") {
