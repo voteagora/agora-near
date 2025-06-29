@@ -32,6 +32,7 @@ function NearProposalsList() {
     isFetchingNextPage,
     status,
     error,
+    isLoading,
   } = useNearProposals({ pageSize: 10 });
 
   const onLoadMore = useCallback(() => {
@@ -42,7 +43,7 @@ function NearProposalsList() {
     fetchNextPage();
   }, [hasNextPage, isFetching, isFetchingNextPage, fetchNextPage]);
 
-  if (status === "pending") {
+  if (isLoading) {
     return <Loader />;
   }
 
@@ -59,10 +60,7 @@ function NearProposalsList() {
         element="main"
       >
         {proposals?.map((proposal) => (
-          <NearProposal
-            key={proposal.id}
-            proposal={proposal}
-          />
+          <NearProposal key={proposal.id} proposal={proposal} />
         ))}
         {isFetchingNextPage && <Loader />}
       </InfiniteScroll>

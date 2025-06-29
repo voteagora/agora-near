@@ -7,15 +7,13 @@ import { memo } from "react";
 import { NearProposalStatusText } from "./NearProposalStatusText";
 import { Proposal } from "@/lib/api/proposal/types";
 import { useProposal } from "@/hooks/useProposal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const NearProposal = memo(({ proposal }: { proposal: Proposal }) => {
-  const { proposal: proposalInfo } = useProposal(
-    proposal.proposalId.toString()
-  );
-
-  if (!proposalInfo) {
-    return null;
-  }
+  // TODO: Currently our BE is missing some data for proposals, requiring us to fetch the remaining data
+  // from the contract. This is a stopgap solution that will be removed when AXB-167 lands.
+  const { proposal: proposalInfo, isLoading: isLoadingProposalFromContract } =
+    useProposal(proposal.proposalId.toString());
 
   return (
     <Link key={proposal.id} href={`/proposals/${proposal.proposalId}`}>
@@ -31,7 +29,11 @@ export const NearProposal = memo(({ proposal }: { proposal: Proposal }) => {
               Proposal by {proposal.creatorId}
             </div>
             <div className="block sm:hidden">
-              <NearProposalStatusText proposal={proposalInfo} />
+              {isLoadingProposalFromContract || !proposalInfo ? (
+                <Skeleton className="w-16 h-4" />
+              ) : (
+                <NearProposalStatusText proposal={proposalInfo} />
+              )}
             </div>
           </div>
           <div className="overflow-ellipsis overflow-visible whitespace-normal break-words text-primary">
@@ -42,10 +44,19 @@ export const NearProposal = memo(({ proposal }: { proposal: Proposal }) => {
         </div>
         <div className="flex-col whitespace-nowrap overflow-visible py-4 px-6 w-fit flex-start justify-center hidden sm:block">
           <div className="flex flex-col items-end">
-            <div className="text-xs text-secondary">
-              <NearProposalTimeStatus proposal={proposalInfo} />
-            </div>
-            <NearProposalStatusText proposal={proposalInfo} />
+            {isLoadingProposalFromContract || !proposalInfo ? (
+              <div className="flex flex-col items-end gap-1">
+                <Skeleton className="w-[120px] h-4" />
+                <Skeleton className="w-[90px] h-4" />
+              </div>
+            ) : (
+              <>
+                <div className="text-xs text-secondary">
+                  <NearProposalTimeStatus proposal={proposalInfo} />
+                </div>
+                <NearProposalStatusText proposal={proposalInfo} />
+              </>
+            )}
           </div>
         </div>
         <div className="flex-col whitespace-nowrap overflow-visible py-4 px-6 w-fit flex-start justify-center hidden lg:block">

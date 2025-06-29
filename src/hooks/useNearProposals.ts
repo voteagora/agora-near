@@ -20,6 +20,7 @@ export const useNearProposals = ({
     isFetching,
     isFetchingNextPage,
     status,
+    isLoading,
   } = useInfiniteQuery({
     enabled,
     queryKey: [APPROVED_PROPOSALS_QK],
@@ -47,5 +48,6 @@ export const useNearProposals = ({
     hasNextPage,
     isFetchingNextPage,
     status,
+    isLoading,
   };
 };
