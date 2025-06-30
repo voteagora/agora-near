@@ -17,12 +17,12 @@ const ContractList = () => {
 
   const list = [
     {
-      title: "Governor",
-      address: contracts.governor.address,
+      title: "neNEAR",
+      address: "v.r-1748895584.testnet",
     },
     {
-      title: "Token",
-      address: contracts.token.address,
+      title: "Governor",
+      address: "vote.r-1748895584.testnet",
     },
   ];
 

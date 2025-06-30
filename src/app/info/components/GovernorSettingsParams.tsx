@@ -63,9 +63,7 @@ const GovernorSettingsParams = () => {
             Voting Delay
           </TableCell>
           <TableCell className="text-base font-semibold text-right text-primary">
-            {isDelayFetched && votingDelay !== undefined
-              ? secondsToHuman(blocksToSeconds(Number(votingDelay)))
-              : "Loading..."}
+            0s
           </TableCell>
         </TableRow>
         <TableRow>
@@ -83,9 +81,7 @@ const GovernorSettingsParams = () => {
               !contracts.timelock && "rounded-br-xl"
             )}
           >
-            {isPeriodFetched && votingPeriod !== undefined
-              ? secondsToHuman(blocksToSeconds(Number(votingPeriod)))
-              : "Loading..."}
+            1d
           </TableCell>
         </TableRow>
         {contracts.timelock && (
@@ -94,9 +90,7 @@ const GovernorSettingsParams = () => {
               Timelock Delay
             </TableCell>
             <TableCell className="text-base font-semibold text-right text-primary rounded-br-xl">
-              {isTimeLockDelayFetched && timeLockDelay !== undefined
-                ? secondsToHuman(Number(timeLockDelay))
-                : "Loading..."}
+              Signal Only
             </TableCell>
           </TableRow>
         )}

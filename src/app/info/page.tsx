@@ -5,7 +5,8 @@ import { InfoHero } from "@/app/info/components/InfoHero";
 import { ChartTreasury } from "@/app/info/components/ChartTreasury";
 import GovernorSettings from "@/app/info/components/GovernorSettings";
 import GovernanceCharts from "@/app/info/components/GovernanceCharts";
-import InfoFAQ from "@/components/Info/InfoFAQ";
+import InfoFAQ from "@/app/info/components/InfoFAQ";
+import InfoRoadmap from "@/app/info/components/InfoRoadmap";
 import Tenant from "@/lib/tenant/tenant";
 import { FREQUENCY_FILTERS, TENANT_NAMESPACES } from "@/lib/constants";
 import { apiFetchTreasuryBalanceTS } from "@/app/api/balances/[frequency]/getTreasuryBalanceTS";
@@ -67,6 +68,7 @@ export default async function Page() {
         <InfoAbout />
         <GovernorSettings />
         <InfoFAQ />
+        <InfoRoadmap />
         {treasuryData.result.length > 0 && (
           <ChartTreasury
             initialData={treasuryData.result}

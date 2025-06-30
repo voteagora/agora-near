@@ -50,7 +50,7 @@ const InfoAbout = () => {
   const page = ui.page("info/about");
 
   if (!page) {
-    return <div>Page metadata not defined</div>;
+    return <div></div>;
   }
 
   return (
