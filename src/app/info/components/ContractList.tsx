@@ -17,7 +17,7 @@ const ContractList = () => {
 
   const list = [
     {
-      title: "neNEAR",
+      title: "veNEAR",
       address: "v.r-1748895584.testnet",
     },
     {
