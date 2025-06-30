@@ -44,9 +44,6 @@ const DelegateCard = ({
                   currency="veNEAR"
                 />
               </span>
-              <span className="text-primary font-bold">
-                {Number(delegate.participationRate ?? 0) * 100}% Participation
-              </span>
             </div>
             <div className="min-h-[48px] px-4">
               {sanitizedTruncatedStatement ? (

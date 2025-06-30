@@ -38,7 +38,6 @@ export default function DelegateTableRow({
           "-"
         )}
       </TableCell>
-      <TableCell>{`${Number(delegate.participationRate ?? 0) * 100}%`}</TableCell>
     </TableRow>
   );
 }

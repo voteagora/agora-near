@@ -33,9 +33,6 @@ export default function DelegateTable({
               <TableHead className="h-10 text-secondary">
                 Voting power
               </TableHead>
-              <TableHead className="h-10 text-secondary">
-                Participation
-              </TableHead>
             </TableRow>
           </TableHeader>
           <InfiniteScroll
