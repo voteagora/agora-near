@@ -88,7 +88,7 @@ const InfoFAQ = () => {
             <AccordionTrigger className="text-left text-primary hover:text-secondary">
               {faq.question}
             </AccordionTrigger>
-            <AccordionContent className="text-secondary px-4">
+            <AccordionContent className="text-sm px-4">
               {faq.answer}
             </AccordionContent>
           </AccordionItem>

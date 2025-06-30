@@ -32,7 +32,16 @@ const GovernorSettings = async () => {
             </div>
           </div>
           <div className="w-full border border-line rounded-lg mt-6">
-            <GovernorSettingsProposalTypes proposalTypes={proposalTypes} />
+            <div className="p-6 text-center">
+              <a
+                href="https://docs.agora.xyz/crypto-governance/glossary#proposal-type"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-secondary text-sm hover:text-primary transition-colors"
+              >
+                Proposal Types coming in House of Stake v2.0
+              </a>
+            </div>
           </div>
         </AccordionContent>
       </AccordionItem>
