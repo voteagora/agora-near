@@ -23,23 +23,7 @@ export const InfoHero = () => {
         <h1 className="text-4xl leading-[36px] sm:text-[40px] sm:leading-[40px] font-black text-primary">
           {page!.title}
         </h1>
-        <p className="text-base text-secondary mt-4">
-          {page!.description}
-          {namespace === TENANT_NAMESPACES.SCROLL && (
-            <div className="flex flex-row gap-2 mt-4">
-              <Link href={"https://scroll.io/sessions"}>
-                <Button className="bg-brandPrimary hover:bg-brandPrimary/90 cursor-pointer block">
-                  Join Session 2
-                </Button>
-              </Link>
-              <Link href={"https://claim.scroll.io/faq"}>
-                <Button className="bg-wash text-primary border border-line hover:bg-wash/90 hover:text-secondary cursor-pointer block">
-                  FAQ
-                </Button>
-              </Link>
-            </div>
-          )}
-        </p>
+        <p className="text-base text-secondary mt-4">{page!.description}</p>
       </div>
 
       <div className="grid grid-cols-2 sm:flex sm:flex-row self-start justify-between sm:justify-end w-full sm:w-3/5 gap-4">
