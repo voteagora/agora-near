@@ -55,6 +55,12 @@ const roadmapData: RoadmapVersion[] = [
     version: "v2.0",
     items: [
       {
+        title: "Optimistic Voting",
+        difficulty: "Medium",
+        description:
+          "With the goal of leaning into AI governance for NEAR, optimistic proposal types allow for a more decentralized and efficient voting process that is easily delegated to AI. This will be a new voting type that will be used for all proposals.",
+      },
+      {
         title: "Dynamic Token Allocation",
         difficulty: "Medium",
         description:
