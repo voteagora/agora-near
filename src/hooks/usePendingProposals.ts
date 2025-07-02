@@ -24,6 +24,7 @@ export const usePendingProposals = ({
     status,
   } = useInfiniteQuery({
     enabled,
+    refetchInterval: 1000 * 60 * 2, // 2 minutes
     queryKey: [PENDING_PROPOSALS_QK, createdBy],
     queryFn: ({ pageParam = 1 }) => {
       return fetchPendingProposals(pageSize, pageParam, createdBy);

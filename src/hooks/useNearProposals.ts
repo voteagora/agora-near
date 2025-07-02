@@ -23,6 +23,7 @@ export const useNearProposals = ({
     isLoading,
   } = useInfiniteQuery({
     enabled,
+    refetchInterval: 1000 * 60 * 2, // 2 minutes
     queryKey: [APPROVED_PROPOSALS_QK],
     queryFn: ({ pageParam = 1 }) => {
       return fetchApprovedProposals(pageSize, pageParam);
