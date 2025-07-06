@@ -81,7 +81,6 @@ type LockProviderContextType = {
   venearAmount?: string;
   stakingPoolId?: string | null;
   depositTotal: string;
-  gasTotal: string;
   requiredTransactions: LockTransaction[];
   transferAmountYocto?: string;
   getAmountToLock: () => Promise<string | undefined>;
@@ -115,7 +114,6 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   venearAmount: undefined,
   stakingPoolId: undefined,
   depositTotal: "0",
-  gasTotal: "0",
   requiredTransactions: [],
   transferAmountYocto: "0",
   getAmountToLock: () => Promise.resolve("0"),
@@ -513,16 +511,6 @@ export const LockProvider = ({
     return transactions;
   }, [selectedToken?.type, stakingPoolId, venearAccountInfo]);
 
-  const gasTotal = useMemo(() => {
-    let totalGas = new Big(0);
-
-    for (const transaction of requiredTransactions) {
-      totalGas = totalGas.plus(new Big(gasFees[transaction] ?? "0"));
-    }
-
-    return totalGas.toFixed();
-  }, [requiredTransactions]);
-
   const transferAmountYocto = useMemo(() => {
     if (selectedToken?.type === "lst") {
       return enteredAmountYocto;
@@ -606,7 +594,6 @@ export const LockProvider = ({
         venearAmount,
         stakingPoolId,
         depositTotal,
-        gasTotal,
         requiredTransactions,
         totalRegistrationCost: totalRegistrationCost.toString(),
         transferAmountYocto,
