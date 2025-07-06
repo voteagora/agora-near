@@ -15,10 +15,11 @@ import {
   STNEAR_TOKEN_CONTRACTS,
 } from "@/lib/constants";
 import { isValidNearAmount } from "@/lib/utils";
+import * as utils from "@/lib/utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import Big from "big.js";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LockProvider, useLockProviderContext } from "../LockProvider";
 
@@ -74,12 +75,6 @@ vi.mock("react-hot-toast", () => ({
   },
 }));
 
-// Mock the utils
-vi.mock("@/lib/utils", () => ({
-  ...vi.importActual("@/lib/utils"),
-  isValidNearAmount: vi.fn(),
-}));
-
 const mockUseNear = vi.mocked(useNear);
 const mockUseAvailableToLock = vi.mocked(useAvailableToLock);
 const mockUseCurrentStakingPoolId = vi.mocked(useCurrentStakingPoolId);
@@ -95,6 +90,17 @@ const mockUseVenearConfig = vi.mocked(useVenearConfig);
 // Test component that consumes the context
 const TestComponent = () => {
   const context = useLockProviderContext();
+  const [amountToLock, setAmountToLock] = useState<string | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    async function getAmountToLock() {
+      const result = await context.getAmountToLock();
+      setAmountToLock(result);
+    }
+    getAmountToLock();
+  });
 
   return (
     <div>
@@ -109,8 +115,9 @@ const TestComponent = () => {
         {context.availableTokens.length}
       </div>
       <div data-testid="selectedTokenId">
-        {context.selectedToken?.accountId || "null"}
+        {context.selectedToken?.accountId}
       </div>
+      <div data-testid="transferAmountYocto">{context.transferAmountYocto}</div>
       <div data-testid="depositTotal">{context.depositTotal}</div>
       <div data-testid="requiredTransactions">
         {context.requiredTransactions.join(",")}
@@ -119,12 +126,38 @@ const TestComponent = () => {
       <div data-testid="maxAmountToLock">
         {context.maxAmountToLock || "null"}
       </div>
+      <div data-testid="maxAmount">{context.maxAmountToLock}</div>
       <div data-testid="source">{context.source}</div>
+      {amountToLock && <div data-testid="amountToLock">{amountToLock}</div>}
       <button
         data-testid="setAmount"
         onClick={() => context.setEnteredAmount("2")}
       >
-        Set Amount
+        Set Amount to 2 NEAR
+      </button>
+      <button
+        data-testid="setSelectedToken"
+        onClick={() => context.setSelectedToken(context.availableTokens[1])}
+      >
+        Set Selected Token
+      </button>
+      <button
+        data-testid="setAmountFourNEAR"
+        onClick={() => context.setEnteredAmount("4")}
+      >
+        Set Amount to 4 NEAR
+      </button>
+      <button
+        data-testid="setAmountInvalid"
+        onClick={() => context.setEnteredAmount("invalid")}
+      >
+        Set Amount to Invalid Amount
+      </button>
+      <button
+        data-testid="setAmountLarge"
+        onClick={() => context.setEnteredAmount("100000000000000000000000000")} // 100 NEAR
+      >
+        Set Amount to Large Amount
       </button>
       <button data-testid="lockMax" onClick={() => context.onLockMax()}>
         Lock Max
@@ -148,6 +181,8 @@ describe("LockProvider", () => {
 
   const mockLockNearAsync = vi.fn();
   const mockRefetchAvailableToLock = vi.fn();
+  const mockOnTokenSelected = vi.fn();
+  const mockOnLockSuccess = vi.fn();
 
   const mockGrowthRateNs = "10";
 
@@ -301,17 +336,6 @@ describe("LockProvider", () => {
       unlockDuration: BigInt("1000000000000000000"), // 1 second
       isLoading: false,
       error: null,
-    });
-
-    // Mock isValidNearAmount
-    vi.mocked(isValidNearAmount).mockImplementation((amount?: string) => {
-      if (!amount) return false;
-      try {
-        const parsed = parseFloat(amount);
-        return !isNaN(parsed) && parsed > 0;
-      } catch {
-        return false;
-      }
     });
 
     mockRefetchAvailableToLock.mockResolvedValue({
@@ -536,7 +560,7 @@ describe("LockProvider", () => {
     });
 
     it("should show error for invalid amount", async () => {
-      vi.mocked(isValidNearAmount).mockReturnValue(false);
+      const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(false);
 
       render(
         <LockProvider source="onboarding">
@@ -552,6 +576,8 @@ describe("LockProvider", () => {
       expect(screen.getByTestId("amountError")).toHaveTextContent(
         "Please enter a valid amount"
       );
+
+      spy.mockRestore();
     });
 
     it("should handle max amount correctly", async () => {
@@ -594,35 +620,6 @@ describe("LockProvider", () => {
 
       expect(screen.getByTestId("enteredAmount")).toHaveTextContent("");
       expect(screen.getByTestId("amountError")).toHaveTextContent("null");
-    });
-  });
-
-  describe("Callbacks", () => {
-    it("should call onLockSuccess when lock succeeds", async () => {
-      const mockOnLockSuccess = vi.fn();
-
-      // Set up the mock to resolve successfully
-      mockLockNearAsync.mockResolvedValue({});
-
-      render(
-        <LockProvider source="onboarding" onLockSuccess={mockOnLockSuccess}>
-          <TestComponent />
-        </LockProvider>,
-        { wrapper }
-      );
-
-      // Simulate successful lock
-      await act(async () => {
-        screen.getByTestId("lockNear").click();
-      });
-
-      // Wait for the async operation to complete
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      });
-
-      // The onLockSuccess callback should be called when lockNear succeeds
-      expect(mockLockNearAsync).toHaveBeenCalled();
     });
   });
 
@@ -823,7 +820,7 @@ describe("LockProvider", () => {
 
   describe("VeNEAR Amount Calculation", () => {
     it("should calculate venear amount for NEAR token", async () => {
-      //   vi.mocked(isValidNearAmount).mockReturnValue(true);
+      const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(true);
 
       render(
         <LockProvider
@@ -842,6 +839,8 @@ describe("LockProvider", () => {
       expect(screen.getByTestId("venearAmount")).toHaveTextContent(
         "2000000000000000000000000"
       );
+
+      spy.mockRestore();
     });
 
     it("should calculate venear amount for stNEAR token", async () => {
@@ -910,7 +909,7 @@ describe("LockProvider", () => {
     });
 
     it("should return 0 for invalid amount", () => {
-      vi.mocked(isValidNearAmount).mockReturnValue(false);
+      const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(false);
 
       render(
         <LockProvider source="onboarding">
@@ -920,10 +919,12 @@ describe("LockProvider", () => {
       );
 
       expect(screen.getByTestId("venearAmount")).toHaveTextContent("0");
+
+      spy.mockRestore();
     });
 
     it("should handle calculation errors gracefully", async () => {
-      vi.mocked(isValidNearAmount).mockReturnValue(true);
+      const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(true);
       mockUseStakingPool.mockReturnValue({
         stakingPools: {
           stNear: {
@@ -957,6 +958,8 @@ describe("LockProvider", () => {
       });
 
       expect(screen.getByTestId("venearAmount")).toHaveTextContent("0");
+
+      spy.mockRestore();
     });
   });
 
@@ -1019,7 +1022,7 @@ describe("LockProvider", () => {
 
   describe("Amount Validation Edge Cases", () => {
     it("should show error when amount exceeds available funds", async () => {
-      vi.mocked(isValidNearAmount).mockReturnValue(true);
+      const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(true);
 
       // Mock a very small balance
       mockUseNearBalance.mockReturnValue({
@@ -1045,10 +1048,12 @@ describe("LockProvider", () => {
       expect(screen.getByTestId("amountError")).toHaveTextContent(
         "Not enough funds in this account"
       );
+
+      spy.mockRestore();
     });
 
     it("should show error when NEAR amount is below minimum deposit", async () => {
-      vi.mocked(isValidNearAmount).mockReturnValue(true);
+      const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(true);
 
       mockUseNearBalance.mockReturnValue({
         nearBalance: "10000000000000000000000000", // 10 NEAR
@@ -1056,7 +1061,6 @@ describe("LockProvider", () => {
         nearBalanceError: null,
       });
 
-      // Mock venearAccountInfo to null so onboarding depositTotal includes registration cost
       mockUseVenearAccountInfo.mockReturnValue({
         data: null,
         isLoading: false,
@@ -1074,7 +1078,7 @@ describe("LockProvider", () => {
       );
 
       await act(async () => {
-        screen.getByTestId("setAmount").click();
+        screen.getByTestId("setAmount").click(); // 2 NEAR
       });
 
       // Should show minimum deposit error if amount is too low
@@ -1082,38 +1086,45 @@ describe("LockProvider", () => {
       await waitFor(() => {
         expect(errorText).toContain("You must lock at least");
       });
+
+      spy.mockRestore();
     });
 
     it("should handle validation errors gracefully", async () => {
-      // Create a custom test component that sets an invalid amount
-      const TestComponentWithInvalidAmount = () => {
-        const context = useLockProviderContext();
-
-        React.useEffect(() => {
-          context.setEnteredAmount("invalid");
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, []);
-
-        return (
-          <div>
-            <div data-testid="amountError">{context.amountError || "null"}</div>
-          </div>
-        );
-      };
+      const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(false);
 
       render(
         <LockProvider source="onboarding">
-          <TestComponentWithInvalidAmount />
+          <TestComponent />
         </LockProvider>,
         { wrapper }
       );
 
       await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 0));
+        screen.getByTestId("setAmountInvalid").click();
       });
 
       expect(screen.getByTestId("amountError")).toHaveTextContent(
         "Please enter a valid amount"
+      );
+
+      spy.mockRestore();
+    });
+
+    it("should handle amount that exceeds available balance", async () => {
+      render(
+        <LockProvider source="onboarding">
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      await act(async () => {
+        screen.getByTestId("setAmountLarge").click();
+      });
+
+      expect(screen.getByTestId("amountError")).toHaveTextContent(
+        "Not enough funds in this account"
       );
     });
   });
@@ -1175,7 +1186,7 @@ describe("LockProvider", () => {
 
   describe("Transfer Amount Calculation", () => {
     it("should calculate transfer amount for NEAR token", async () => {
-      vi.mocked(isValidNearAmount).mockReturnValue(true);
+      const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(true);
 
       render(
         <LockProvider
@@ -1196,6 +1207,8 @@ describe("LockProvider", () => {
       expect(screen.getByTestId("requiredTransactions")).toHaveTextContent(
         "transfer_near"
       );
+
+      spy.mockRestore();
     });
 
     it("should calculate transfer amount for LST token", async () => {
@@ -1273,7 +1286,7 @@ describe("LockProvider", () => {
     });
 
     it("should calculate amount for non-onboarding source", async () => {
-      vi.mocked(isValidNearAmount).mockReturnValue(true);
+      const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(true);
       mockRefetchAvailableToLock.mockResolvedValue({
         data: "1000000000000000000000000",
       });
@@ -1330,6 +1343,8 @@ describe("LockProvider", () => {
       expect(screen.getByTestId("calculatedAmount")).toHaveTextContent(
         "1000000000000000000000000"
       );
+
+      spy.mockRestore();
     });
   });
 
@@ -1397,6 +1412,353 @@ describe("LockProvider", () => {
       expect(screen.getByTestId("availableTokensLength")).toHaveTextContent(
         "3"
       );
+    });
+  });
+
+  describe("Callback Functions", () => {
+    it("should call onTokenSelected when token is selected", async () => {
+      render(
+        <LockProvider source="onboarding" onTokenSelected={mockOnTokenSelected}>
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      await act(async () => {
+        screen.getByTestId("setSelectedToken").click();
+      });
+
+      expect(mockOnTokenSelected).toHaveBeenCalled();
+    });
+
+    it("should call onLockSuccess when lock succeeds", async () => {
+      render(
+        <LockProvider source="onboarding" onLockSuccess={mockOnLockSuccess}>
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      // Simulate success callback
+      mockUseLockNear.mock.calls[0][0].onSuccess?.();
+
+      expect(mockOnLockSuccess).toHaveBeenCalled();
+    });
+  });
+
+  describe("Transfer amount calculations", () => {
+    it("should calculate transferAmountYocto for LST tokens during onboarding", async () => {
+      render(
+        <LockProvider
+          source="onboarding"
+          preSelectedTokenId="linear-protocol.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      await act(async () => {
+        screen.getByTestId("setAmount").click(); // 2 liNEAR
+      });
+
+      // Amount to transfer is 1:1 with amount to lock (2 liNEAR)
+      expect(screen.getByTestId("transferAmountYocto")).toHaveTextContent(
+        "2000000000000000000000000"
+      );
+      expect(screen.getByTestId("selectedTokenId")).toHaveTextContent(
+        "linear-protocol.testnet"
+      );
+    });
+
+    it("should calculate transferAmountYocto for LST tokens post-onboarding", async () => {
+      render(
+        <LockProvider
+          source="account_management"
+          preSelectedTokenId="linear-protocol.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      await act(async () => {
+        screen.getByTestId("setAmount").click(); // 2 liNEAR
+      });
+
+      expect(screen.getByTestId("transferAmountYocto")).toHaveTextContent(
+        "2000000000000000000000000"
+      );
+      expect(screen.getByTestId("selectedTokenId")).toHaveTextContent(
+        "linear-protocol.testnet"
+      );
+    });
+
+    it("should calculate transferAmountYocto for NEAR tokens during onboarding", async () => {
+      mockUseNearBalance.mockReturnValue({
+        nearBalance: "10000000000000000000000000",
+        isLoadingNearBalance: false,
+        nearBalanceError: null,
+      });
+
+      render(
+        <LockProvider
+          source="onboarding"
+          preSelectedTokenId="test-account.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      await act(async () => {
+        screen.getByTestId("setAmountFourNEAR").click(); // 4 NEAR
+      });
+
+      // Transfer amount is 4 NEAR - registration cost = 4 NEAR - 3 NEAR = 1 NEAR
+      expect(screen.getByTestId("transferAmountYocto")).toHaveTextContent(
+        "1000000000000000000000000"
+      );
+      expect(screen.getByTestId("selectedTokenId")).toHaveTextContent(
+        "test-account.testnet"
+      );
+    });
+
+    it("should calculate transferAmountYocto for NEAR tokens post-onboarding", async () => {
+      mockUseNearBalance.mockReturnValue({
+        nearBalance: "10000000000000000000000000",
+        isLoadingNearBalance: false,
+        nearBalanceError: null,
+      });
+
+      render(
+        <LockProvider
+          source="account_management"
+          preSelectedTokenId="test-account.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      await act(async () => {
+        screen.getByTestId("setAmountFourNEAR").click(); // 4 NEAR
+      });
+
+      // Transfer amount is 4 NEAR - registration cost = 4 NEAR - 3 NEAR = 1 NEAR
+      expect(screen.getByTestId("transferAmountYocto")).toHaveTextContent(
+        "4000000000000000000000000"
+      );
+      expect(screen.getByTestId("selectedTokenId")).toHaveTextContent(
+        "test-account.testnet"
+      );
+    });
+  });
+
+  describe("Amount to lock calculations", () => {
+    it("should return undefined amount for onboarding (lock all)", async () => {
+      const TestGetAmountOnboarding = () => {
+        const context = useLockProviderContext();
+        const [result, setResult] = React.useState<string | undefined>(
+          undefined
+        );
+
+        const handleGetAmount = async () => {
+          const amount = await context.getAmountToLock();
+          setResult(amount);
+        };
+
+        return (
+          <div>
+            <button data-testid="getAmount" onClick={handleGetAmount}>
+              Get Amount
+            </button>
+            {result && <div data-testid="result">{result}</div>}
+          </div>
+        );
+      };
+
+      render(
+        <LockProvider source="onboarding">
+          <TestGetAmountOnboarding />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      await act(async () => {
+        screen.getByTestId("getAmount").click();
+      });
+
+      expect(screen.queryByTestId("result")).toBeFalsy();
+    });
+
+    it("should calculate amount to lock for LST tokens for onboarded users", async () => {
+      mockRefetchAvailableToLock.mockResolvedValue({
+        data: "10000000000000000000000000", // 10 NEAR
+      });
+
+      render(
+        <LockProvider
+          source="account_management"
+          preSelectedTokenId="linear-protocol.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      await act(async () => {
+        screen.getByTestId("setAmount").click(); // 2 liNEAR
+      });
+
+      // Amount to lock is the minimum of: amount available in lockup contract (10 NEAR) and amount to lock (2 liNEAR = 2.1 NEAR) = 2.1 NEAR
+      await waitFor(() => {
+        expect(screen.getByTestId("amountToLock")).toHaveTextContent(
+          "2100000000000000000000000"
+        );
+      });
+    });
+
+    it("should calculate amount to lock for NEAR tokens for onboarded users", async () => {
+      mockRefetchAvailableToLock.mockResolvedValue({
+        data: "10000000000000000000000000", // 10 NEAR
+      });
+
+      render(
+        <LockProvider
+          source="account_management"
+          preSelectedTokenId="test-account.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      await act(async () => {
+        screen.getByTestId("setAmount").click(); // 2 NEAR
+      });
+
+      // Amount to lock is the minimum of: amount available in lockup contract (10 NEAR) and amount to lock (2 NEAR) = 2 NEAR
+      await waitFor(() => {
+        expect(screen.getByTestId("amountToLock")).toHaveTextContent(
+          "2000000000000000000000000"
+        );
+      });
+    });
+
+    it("should return minimum of target amount and available amount", async () => {
+      mockRefetchAvailableToLock.mockResolvedValue({
+        data: "500000000000000000000000", // 0.5 NEAR (less than entered amount)
+      });
+
+      render(
+        <LockProvider
+          source="account_management"
+          preSelectedTokenId="test-account.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      await act(async () => {
+        screen.getByTestId("setAmount").click(); // 2 liNEAR
+      });
+
+      // Should return the smaller available amount
+      expect(screen.getByTestId("amountToLock")).toHaveTextContent(
+        "500000000000000000000000"
+      );
+    });
+  });
+
+  describe("Edge Cases and Error Handling", () => {
+    it("should handle zero balance correctly", () => {
+      mockUseNearBalance.mockReturnValue({
+        nearBalance: "0",
+        isLoadingNearBalance: false,
+        nearBalanceError: null,
+      });
+
+      render(
+        <LockProvider
+          source="onboarding"
+          preSelectedTokenId="test-account.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      expect(screen.getByTestId("maxAmount")).toHaveTextContent("0");
+    });
+
+    it("should handle very small balance (below gas reserve)", () => {
+      mockUseNearBalance.mockReturnValue({
+        nearBalance: "100000000000000000000000", // 0.1 NEAR (below gas reserve)
+        isLoadingNearBalance: false,
+        nearBalanceError: null,
+      });
+
+      render(
+        <LockProvider
+          source="onboarding"
+          preSelectedTokenId="test-account.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      expect(screen.getByTestId("maxAmount")).toHaveTextContent("0");
+    });
+
+    it("should handle non-existent preselected token ID", () => {
+      render(
+        <LockProvider
+          source="onboarding"
+          preSelectedTokenId="non-existent-token"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      expect(screen.getByTestId("selectedTokenId")).toHaveTextContent(
+        "linear-protocol.testnet"
+      );
+    });
+
+    it("should handle venearAmount calculation with null staking pool price", () => {
+      mockUseStakingPool.mockReturnValue({
+        stakingPools: {
+          stNear: {
+            price: null, // This should cause calculation to return "0"
+            deposit: {
+              min: "1000000000000000000000000",
+            },
+          },
+          liNear: {
+            price: "1.05",
+            deposit: {
+              min: "1000000000000000000000000",
+            },
+          },
+        },
+        isLoading: false,
+      });
+
+      render(
+        <LockProvider
+          source="onboarding"
+          preSelectedTokenId="meta-v2.pool.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      expect(screen.getByTestId("venearAmount")).toHaveTextContent("0");
     });
   });
 });

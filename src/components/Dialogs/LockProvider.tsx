@@ -14,11 +14,9 @@ import {
   STNEAR_TOKEN_CONTRACTS,
   STNEAR_TOKEN_METADATA,
 } from "@/lib/constants";
-import { lockupMethodConfig } from "@/lib/contracts/config/methods/lockup";
-import { venearMethodConfig } from "@/lib/contracts/config/methods/venear";
 import { getAPYFromGrowthRate } from "@/lib/lockUtils";
 import { TokenWithBalance } from "@/lib/types";
-import { convertUnit } from "@fastnear/utils";
+import { isValidNearAmount } from "@/lib/utils";
 import Big from "big.js";
 import { utils } from "near-api-js";
 import {
@@ -34,7 +32,6 @@ import { useLockupAccount } from "../../hooks/useLockupAccount";
 import { useVenearAccountInfo } from "../../hooks/useVenearAccountInfo";
 import { useVenearConfig } from "../../hooks/useVenearConfig";
 import { LockDialogSource } from "./NearLockDialog/index";
-import { isValidNearAmount } from "@/lib/utils";
 
 export type LockTransaction =
   | "deploy_lockup"
@@ -43,21 +40,6 @@ export type LockTransaction =
   | "select_staking_pool"
   | "refresh_balance"
   | "lock_near";
-
-const gasFees: Record<LockTransaction, string> = {
-  deploy_lockup: convertUnit(
-    venearMethodConfig["deploy_lockup"].gas ?? "30 Tgas"
-  ),
-  select_staking_pool: convertUnit(
-    lockupMethodConfig["select_staking_pool"].gas ?? "30 Tgas"
-  ),
-  refresh_balance: convertUnit(
-    lockupMethodConfig["refresh_staking_pool_balance"].gas ?? "30 Tgas"
-  ),
-  lock_near: convertUnit(lockupMethodConfig["lock_near"].gas ?? "30 Tgas"),
-  transfer_near: convertUnit("30 Tgas"),
-  transfer_ft: convertUnit("30 Tgas"),
-};
 
 type LockProviderContextType = {
   isLoading: boolean;
