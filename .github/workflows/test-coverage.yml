@@ -126,7 +126,7 @@ jobs:
               };
               
               return `
-            | Metric | Coverage | Icon |
+            | Metric | Coverage | Threshold |
             |--------|----------|------|
             | Lines | ${formatPercent(data.lines.pct)} | ${getIcon(data.lines.pct)} |
             | Functions | ${formatPercent(data.functions.pct)} | ${getIcon(data.functions.pct)} |
@@ -140,18 +140,55 @@ jobs:
               const files = Object.keys(coverage).filter(key => key !== 'total');
               if (files.length === 0) return '';
               
+              // Filter files with non-zero coverage
+              const filesWithCoverage = files.filter(file => {
+                const data = coverage[file];
+                return data.lines.pct > 0 || data.functions.pct > 0 || 
+                       data.branches.pct > 0 || data.statements.pct > 0;
+              });
+              
+              if (filesWithCoverage.length === 0) {
+                return `
+            ## 📁 Detailed Coverage by File
+
+            *No files with test coverage found.*`;
+              }
+              
+              const createFileRow = (file) => {
+                const data = coverage[file];
+                const fileName = file.replace(process.cwd() + '/', '');
+                return `| \`${fileName}\` | ${data.lines.pct}% | ${data.functions.pct}% | ${data.branches.pct}% | ${data.statements.pct}% |`;
+              };
+              
               let table = `
             ## 📁 Detailed Coverage by File
 
             | File | Lines | Functions | Branches | Statements |
             |------|-------|-----------|----------|------------|`;
               
-              files.forEach(file => {
-                const data = coverage[file];
-                const fileName = file.replace(process.cwd() + '/', '');
-                table += `
-            | \`${fileName}\` | ${data.lines.pct}% | ${data.functions.pct}% | ${data.branches.pct}% | ${data.statements.pct}% |`;
+              // Show first 20 files
+              const firstBatch = filesWithCoverage.slice(0, 20);
+              firstBatch.forEach(file => {
+                table += '\n' + createFileRow(file);
               });
+              
+              // If there are more than 20 files, add collapsible section for the rest
+              if (filesWithCoverage.length > 20) {
+                const remainingFiles = filesWithCoverage.slice(20);
+                table += `
+
+            <details>
+            <summary>📋 Show ${remainingFiles.length} more files...</summary>
+
+            | File | Lines | Functions | Branches | Statements |
+            |------|-------|-----------|----------|------------|`;
+                
+                remainingFiles.forEach(file => {
+                  table += '\n' + createFileRow(file);
+                });
+                
+                table += '\n</details>';
+              }
               
               return table;
             };
