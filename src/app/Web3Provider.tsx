@@ -45,9 +45,7 @@ const Web3Provider: FC<PropsWithChildren<{}>> = ({ children }) => (
       <ConnectKitProvider options={{ enforceSupportedChains: false }}>
         <NearProvider>
           <body className={inter.variable}>
-            <noscript>
-              You need to enable JavaScript to run this app.
-            </noscript>
+            <noscript>You need to enable JavaScript to run this app.</noscript>
             <PageContainer>
               <Toaster />
               <AgoraProvider>{children}</AgoraProvider>

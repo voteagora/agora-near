@@ -11,7 +11,6 @@ import linkIcon from "@/assets/icons/link.svg";
 import Link from "next/link";
 
 const ContractList = () => {
-
   const list = [
     {
       title: "veNEAR",
@@ -51,10 +50,7 @@ const ContractList = () => {
             <TableCell
               className={`px-1 ${index === list.length - 1 && "rounded-br-lg"}`}
             >
-              <Link
-                href={contract.address}
-                target="_blank"
-              >
+              <Link href={contract.address} target="_blank">
                 <Image
                   alt={contract.title}
                   width={20}

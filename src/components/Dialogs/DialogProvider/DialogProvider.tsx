@@ -81,9 +81,7 @@ export const DialogProvider: FC<Props> = ({ children }) => {
     <DialogContext.Provider value={setCurrentDialog}>
       <Modal
         open={!!currentDialog}
-        onClose={() =>
-          setCurrentDialog(null)
-        }
+        onClose={() => setCurrentDialog(null)}
         transparent={(currentDialog as { transparent?: boolean })?.transparent}
         className={cn(
           "max-h-[95vh] overflow-y-auto",

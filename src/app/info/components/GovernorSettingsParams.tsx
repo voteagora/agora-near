@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 
 const GovernorSettingsParams = () => {
-
   return (
     <Table>
       <TableHeader>
@@ -33,14 +32,10 @@ const GovernorSettingsParams = () => {
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell
-            className="text-base font-semibold text-left text-secondary rounded-bl-xl"
-          >
+          <TableCell className="text-base font-semibold text-left text-secondary rounded-bl-xl">
             Voting Period
           </TableCell>
-          <TableCell
-            className="text-base font-semibold text-right text-primary rounded-br-xl"
-          >
+          <TableCell className="text-base font-semibold text-right text-primary rounded-br-xl">
             1d
           </TableCell>
         </TableRow>

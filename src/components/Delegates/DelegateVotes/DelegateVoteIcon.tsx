@@ -4,11 +4,7 @@ import {
   EllipsisVerticalIcon,
 } from "@heroicons/react/20/solid";
 
-function DelegateVoteIcon({
-  support,
-}: {
-  support: string;
-}) {
+function DelegateVoteIcon({ support }: { support: string }) {
   if (support === "FOR")
     return (
       <span className="h-5 w-5 flex items-center justify-center rounded-full bg-green-600 self-start">

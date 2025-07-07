@@ -20,11 +20,8 @@ export default function DAOMetricsHeader() {
   const { ui } = Tenant.current();
   const [isClient, setIsClient] = useState(false);
 
-  const {
-    totalSupply: totalSupplyFromNear,
-    votableSupply: votableSupplyFromNear,
-    isLoading: isLoadingSupply,
-  } = useTotalSupply();
+  const { totalSupply: totalSupplyFromNear, isLoading: isLoadingSupply } =
+    useTotalSupply();
 
   const governanceForumLink = ui.link("governance-forum");
   const bugsLink = ui.link("bugs");

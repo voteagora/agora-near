@@ -8,7 +8,6 @@ import GovernorSettingsParams from "@/app/info/components/GovernorSettingsParams
 import ContractList from "@/app/info/components/ContractList";
 
 const GovernorSettings = async () => {
-
   return (
     <Accordion
       type="single"

@@ -1,8 +1,5 @@
 import { TenantUI } from "@/lib/tenant/tenantUI";
-import {
-  type TenantNamespace,
-  type TenantToken,
-} from "../types";
+import { type TenantNamespace, type TenantToken } from "../types";
 import { nearTenantUIConfig } from "./configs/ui/near";
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 
