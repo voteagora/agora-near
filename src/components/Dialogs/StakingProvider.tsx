@@ -135,7 +135,7 @@ export const StakingProvider = ({
         const rawStats = stats[curr.id];
 
         acc[curr.id] = {
-          apy: rawStats?.apy * 100,
+          apy: (rawStats?.apy ?? 0) * 100,
           totalVolumeYocto: convertStakingTokenToNear(
             rawStats?.supply,
             exchangeRateMap[curr.id]
