@@ -27,9 +27,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Generate Typechain
-        run: yarn generate-typechain
-
       - name: Run tests with coverage
         run: yarn test:coverage
 
