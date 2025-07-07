@@ -1,0 +1,251 @@
+name: Test Coverage Report
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    env:
+      READ_WRITE_WEB2_DATABASE_URL_DEV: ${{ secrets.READ_WRITE_WEB2_DATABASE_URL_DEV }}
+      READ_ONLY_WEB3_DATABASE_URL_DEV: ${{ secrets.READ_ONLY_WEB3_DATABASE_URL_DEV }}
+      NEXT_PUBLIC_AGORA_ENV: "dev"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Generate Typechain
+        run: yarn generate-typechain
+
+      - name: Run tests with coverage
+        run: yarn test:coverage
+
+      - name: Verify coverage files
+        run: |
+          echo "🔍 Checking coverage output..."
+          echo "Current directory contents:"
+          ls -la
+          echo ""
+          echo "Coverage directory contents:"
+          ls -la coverage/ || echo "Coverage directory not found"
+          echo ""
+          echo "Looking for coverage files:"
+          find . -name "*coverage*" -type f || echo "No coverage files found"
+
+      - name: Coverage Summary
+        id: coverage
+        run: |
+          # Check if coverage files exist
+          if [ ! -f "coverage/coverage-summary.json" ]; then
+            echo "❌ Coverage summary file not found. Checking what files were generated..."
+            echo "Files in coverage directory:"
+            ls -la coverage/ || echo "Coverage directory doesn't exist"
+            echo "Files in current directory:"
+            ls -la | grep -i coverage || echo "No coverage files found"
+            exit 1
+          fi
+
+          # Parse coverage summary and create variables
+          echo "✅ Coverage summary file found. Parsing..."
+          COVERAGE_SUMMARY=$(cat coverage/coverage-summary.json)
+          TOTAL_LINES=$(echo $COVERAGE_SUMMARY | jq '.total.lines.pct')
+          TOTAL_FUNCTIONS=$(echo $COVERAGE_SUMMARY | jq '.total.functions.pct')
+          TOTAL_BRANCHES=$(echo $COVERAGE_SUMMARY | jq '.total.branches.pct')
+          TOTAL_STATEMENTS=$(echo $COVERAGE_SUMMARY | jq '.total.statements.pct')
+
+          echo "Coverage parsed successfully:"
+          echo "Lines: $TOTAL_LINES%"
+          echo "Functions: $TOTAL_FUNCTIONS%"
+          echo "Branches: $TOTAL_BRANCHES%"
+          echo "Statements: $TOTAL_STATEMENTS%"
+
+          echo "lines=$TOTAL_LINES" >> $GITHUB_OUTPUT
+          echo "functions=$TOTAL_FUNCTIONS" >> $GITHUB_OUTPUT
+          echo "branches=$TOTAL_BRANCHES" >> $GITHUB_OUTPUT
+          echo "statements=$TOTAL_STATEMENTS" >> $GITHUB_OUTPUT
+
+      - name: Generate Coverage Badge Color
+        id: badge
+        run: |
+          COVERAGE=${{ steps.coverage.outputs.statements }}
+          if (( $(echo "$COVERAGE >= 80" | bc -l) )); then
+            echo "color=green" >> $GITHUB_OUTPUT
+          elif (( $(echo "$COVERAGE >= 60" | bc -l) )); then
+            echo "color=yellow" >> $GITHUB_OUTPUT
+          else
+            echo "color=red" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment PR
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Read coverage summary
+            const coverageFile = path.join(process.cwd(), 'coverage/coverage-summary.json');
+
+            if (!fs.existsSync(coverageFile)) {
+              console.log('❌ Coverage summary file not found at:', coverageFile);
+              console.log('Available files in coverage directory:');
+              try {
+                const files = fs.readdirSync(path.join(process.cwd(), 'coverage'));
+                console.log(files);
+              } catch (error) {
+                console.log('Coverage directory does not exist');
+              }
+              throw new Error('Coverage summary file not found');
+            }
+
+            const coverage = JSON.parse(fs.readFileSync(coverageFile, 'utf8'));
+
+            // Create coverage table
+            const createCoverageTable = (data) => {
+              const formatPercent = (pct) => `${pct}%`;
+              const getIcon = (pct) => {
+                if (pct >= 80) return '🟢';
+                if (pct >= 60) return '🟡';
+                return '🔴';
+              };
+              
+              return `
+            | Metric | Coverage | Threshold |
+            |--------|----------|------|
+            | Lines | ${formatPercent(data.lines.pct)} | ${getIcon(data.lines.pct)} |
+            | Functions | ${formatPercent(data.functions.pct)} | ${getIcon(data.functions.pct)} |
+            | Branches | ${formatPercent(data.branches.pct)} | ${getIcon(data.branches.pct)} |
+            | Statements | ${formatPercent(data.statements.pct)} | ${getIcon(data.statements.pct)} |
+              `.trim();
+            };
+
+            // Create detailed file coverage table
+            const createDetailedTable = (coverage) => {
+              const files = Object.keys(coverage).filter(key => key !== 'total');
+              if (files.length === 0) return '';
+              
+              // Filter files with non-zero coverage
+              const filesWithCoverage = files.filter(file => {
+                const data = coverage[file];
+                return data.lines.pct > 0 || data.functions.pct > 0 || 
+                       data.branches.pct > 0 || data.statements.pct > 0;
+              });
+              
+              if (filesWithCoverage.length === 0) {
+                return `
+            ## 📁 Detailed Coverage by File
+
+            *No files with test coverage found.*`;
+              }
+              
+              const createFileRow = (file) => {
+                const data = coverage[file];
+                const fileName = file.replace(process.cwd() + '/', '');
+                return `| \`${fileName}\` | ${data.lines.pct}% | ${data.functions.pct}% | ${data.branches.pct}% | ${data.statements.pct}% |`;
+              };
+              
+              let table = `
+            ## 📁 Detailed Coverage by File
+
+            | File | Lines | Functions | Branches | Statements |
+            |------|-------|-----------|----------|------------|`;
+              
+              // Show first 20 files
+              const firstBatch = filesWithCoverage.slice(0, 20);
+              firstBatch.forEach(file => {
+                table += '\n' + createFileRow(file);
+              });
+              
+              // If there are more than 20 files, add collapsible section for the rest
+              if (filesWithCoverage.length > 20) {
+                const remainingFiles = filesWithCoverage.slice(20);
+                table += `
+
+            <details>
+            <summary>📋 Show ${remainingFiles.length} more files...</summary>
+
+            | File | Lines | Functions | Branches | Statements |
+            |------|-------|-----------|----------|------------|`;
+                
+                remainingFiles.forEach(file => {
+                  table += '\n' + createFileRow(file);
+                });
+                
+                table += '\n</details>';
+              }
+              
+              return table;
+            };
+
+            const coverageTable = createCoverageTable(coverage.total);
+            const detailedTable = createDetailedTable(coverage);
+
+            const comment = `
+            ## 📊 Test Coverage Report
+
+            ### Overall Coverage
+            ${coverageTable}
+
+            ${detailedTable}
+
+            ---
+
+            **Coverage Thresholds:**
+            - 🟢 Good: ≥80%
+            - 🟡 Moderate: 60-79%
+            - 🔴 Needs Improvement: <60%
+
+            *This report was generated by the Test Coverage workflow.*
+            `;
+
+            // Find existing coverage comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existingComment = comments.find(comment => 
+              comment.body.includes('📊 Test Coverage Report')
+            );
+
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: comment
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
+
+      - name: Upload coverage to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7

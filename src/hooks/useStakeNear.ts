@@ -1,12 +1,8 @@
-import { useCallback, useState } from "react";
-import { useWriteHOSContract } from "./useWriteHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  READ_NEAR_CONTRACT_QK,
-  useReadHOSContract,
-} from "./useReadHOSContract";
+import { useCallback, useState } from "react";
+import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { STAKED_BALANCE_QK } from "./useStakedBalance";
+import { useWriteHOSContract } from "./useWriteHOSContract";
 
 type Props = {
   lockupAccountId: string;

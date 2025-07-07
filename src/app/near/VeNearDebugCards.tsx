@@ -1,5 +1,6 @@
 "use client";
 
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,25 +16,24 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useNear } from "@/contexts/NearContext";
 import { useCastVote } from "@/hooks/useCastVote";
 import { useCreateProposal } from "@/hooks/useCreateProposal";
+import { useDelegateAll } from "@/hooks/useDelegateAll";
 import { useLockNear } from "@/hooks/useLockNear";
+import { useProposalActions } from "@/hooks/useProposalActions";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { useProposals } from "@/hooks/useProposals";
-import { useRegisterLockup } from "@/hooks/useRegisterLockup";
+import { useReadHOSContract } from "@/hooks/useReadHOSContract";
+import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
 import { useStakeNear } from "@/hooks/useStakeNear";
+import { useUndelegate } from "@/hooks/useUndelegate";
+import { useUnlockNear } from "@/hooks/useUnlockNear";
 import { useVenearAccountStats } from "@/hooks/useVenearAccountStats";
 import { useVenearStats } from "@/hooks/useVenearStats";
-import { useProposalActions } from "@/hooks/useProposalActions";
+import { LINEAR_TOKEN_CONTRACTS } from "@/lib/constants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
 import { utils } from "near-api-js";
 import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
-import { useDelegateAll } from "@/hooks/useDelegateAll";
-import { useUndelegate } from "@/hooks/useUndelegate";
-import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
-import { useReadHOSContract } from "@/hooks/useReadHOSContract";
-import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
-import { LINEAR_TOKEN_CONTRACTS } from "@/lib/constants";
 
 export default function VeNearDebugCards() {
   const { signedAccountId } = useNear();
@@ -44,16 +44,7 @@ export default function VeNearDebugCards() {
 
   const openDialog = useOpenDialog();
 
-  const { registerAndDeployLockup } = useRegisterLockup({});
-
-  const {
-    lockNear,
-    unlockNear,
-    isLockingNear,
-    isUnlockingNear,
-    lockingNearError,
-    unlockingNearError,
-  } = useLockNear({
+  const { lockNear, isLockingNear, lockingNearError } = useLockNear({
     lockupAccountId: accountInfo?.lockupAccountId || "",
   });
 
@@ -126,11 +117,16 @@ export default function VeNearDebugCards() {
     }
   }, [accountInfo?.lockupAccountId, lockNear]);
 
+  const { beginUnlockNear, isUnlockingNear, unlockingNearError } =
+    useUnlockNear({
+      lockupAccountId: accountInfo?.lockupAccountId ?? "",
+    });
+
   const unlockAllNear = useCallback(() => {
     if (accountInfo?.lockupAccountId) {
-      unlockNear({});
+      beginUnlockNear({});
     }
-  }, [accountInfo?.lockupAccountId, unlockNear]);
+  }, [accountInfo?.lockupAccountId, beginUnlockNear]);
 
   const handleLockAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -162,22 +158,11 @@ export default function VeNearDebugCards() {
     try {
       const yoctoAmount = utils.format.parseNearAmount(unlockAmount);
       if (!yoctoAmount) throw new Error("Invalid amount");
-      unlockNear({ amount: yoctoAmount });
+      beginUnlockNear({ amount: yoctoAmount });
     } catch (error) {
       console.error("Error converting unlock amount:", error);
     }
   };
-
-  const onRegisterToVote = useCallback(() => {
-    registerAndDeployLockup(
-      contractInfo?.storageDepositAmount || "0",
-      contractInfo?.lockupDeploymentCost || "0"
-    );
-  }, [
-    contractInfo?.lockupDeploymentCost,
-    contractInfo?.storageDepositAmount,
-    registerAndDeployLockup,
-  ]);
 
   const { selectStakingPoolAsync } = useSelectStakingPool({
     lockupAccountId: accountInfo?.lockupAccountId || "",
