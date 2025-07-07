@@ -11,7 +11,6 @@ import { getVpToDisplay } from "@/lib/voteUtils";
 import BlockScanUrls from "@/components/shared/BlockScanUrl";
 import useStandardVoting from "@/hooks/useStandardVoting";
 import Tenant from "@/lib/tenant/tenant";
-import { useScwVoting } from "@/hooks/useScwVoting";
 import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import ENSName from "@/components/shared/ENSName";
 
@@ -28,88 +27,6 @@ export function CastVoteDialog(props: CastVoteDialogProps) {
     <BasicVoteDialog {...props} />
   );
 }
-
-/**
- * Voting from the SCW wallet works but is not yet supported in the UI
- * Note that the voting power is derived from the scw wallet and not EOA
- */
-const SCWVoteDialog = ({
-  proposalId,
-  reason,
-  supportType,
-  closeDialog,
-  votingPower,
-  delegate,
-  missingVote,
-}: CastVoteDialogProps) => {
-  const { write, isLoading, isSuccess, data } = useScwVoting({
-    proposalId,
-    support: ["AGAINST", "FOR", "ABSTAIN"].indexOf(supportType),
-    reason,
-    missingVote,
-  });
-
-  const vpToDisplay = getVpToDisplay(votingPower, missingVote);
-
-  if (!delegate) {
-    // todo: log
-    return null;
-  }
-
-  if (isLoading) {
-    return <LoadingVote />;
-  }
-
-  return (
-    <>
-      {!isSuccess && (
-        <div
-          className="flex flex-col gap-4 w-full relative"
-          style={{ transformStyle: "preserve-3d" }}
-        >
-          <div className="flex flex-row justify-between">
-            <div className="flex flex-col">
-              {delegate.address ? (
-                <div className="text-xs text-tertiary font-medium">
-                  <ENSName address={delegate.address} />
-                </div>
-              ) : (
-                <div className="text-xs text-tertiary font-medium">
-                  Anonymous
-                </div>
-              )}
-              <div className="text-lg text-primary font-extrabold">
-                Casting vote&nbsp;{supportType.toLowerCase()}
-              </div>
-            </div>
-            <div className="flex flex-col items-end text-primary">
-              <div className="text-xs text-tertiary font-medium">with</div>
-              <TokenAmountDecorated amount={vpToDisplay} />
-            </div>
-          </div>
-          <div>
-            {reason ? (
-              <div className="max-h-[40vh] overflow-y-scroll text-secondary">
-                {reason}
-              </div>
-            ) : (
-              <div className="w-full py-6 px-4 rounded-lg border border-line text-center text-secondary">
-                No voting reason provided
-              </div>
-            )}
-          </div>
-          <div>
-            <VoteButton onClick={write}>
-              Vote {supportType.toLowerCase()} with{"\u00A0"}
-              <TokenAmountDecorated amount={vpToDisplay} />
-            </VoteButton>
-          </div>
-        </div>
-      )}
-      {isSuccess && <SuccessMessage closeDialog={closeDialog} data={data} />}
-    </>
-  );
-};
 
 const BasicVoteDialog = ({
   proposalId,
