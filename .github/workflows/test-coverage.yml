@@ -35,15 +35,44 @@ jobs:
       - name: Run tests with coverage
         run: yarn test:coverage
 
+      - name: Verify coverage files
+        run: |
+          echo "🔍 Checking coverage output..."
+          echo "Current directory contents:"
+          ls -la
+          echo ""
+          echo "Coverage directory contents:"
+          ls -la coverage/ || echo "Coverage directory not found"
+          echo ""
+          echo "Looking for coverage files:"
+          find . -name "*coverage*" -type f || echo "No coverage files found"
+
       - name: Coverage Summary
         id: coverage
         run: |
+          # Check if coverage files exist
+          if [ ! -f "coverage/coverage-summary.json" ]; then
+            echo "❌ Coverage summary file not found. Checking what files were generated..."
+            echo "Files in coverage directory:"
+            ls -la coverage/ || echo "Coverage directory doesn't exist"
+            echo "Files in current directory:"
+            ls -la | grep -i coverage || echo "No coverage files found"
+            exit 1
+          fi
+
           # Parse coverage summary and create variables
+          echo "✅ Coverage summary file found. Parsing..."
           COVERAGE_SUMMARY=$(cat coverage/coverage-summary.json)
           TOTAL_LINES=$(echo $COVERAGE_SUMMARY | jq '.total.lines.pct')
           TOTAL_FUNCTIONS=$(echo $COVERAGE_SUMMARY | jq '.total.functions.pct')
           TOTAL_BRANCHES=$(echo $COVERAGE_SUMMARY | jq '.total.branches.pct')
           TOTAL_STATEMENTS=$(echo $COVERAGE_SUMMARY | jq '.total.statements.pct')
+
+          echo "Coverage parsed successfully:"
+          echo "Lines: $TOTAL_LINES%"
+          echo "Functions: $TOTAL_FUNCTIONS%"
+          echo "Branches: $TOTAL_BRANCHES%"
+          echo "Statements: $TOTAL_STATEMENTS%"
 
           echo "lines=$TOTAL_LINES" >> $GITHUB_OUTPUT
           echo "functions=$TOTAL_FUNCTIONS" >> $GITHUB_OUTPUT
@@ -72,6 +101,19 @@ jobs:
 
             // Read coverage summary
             const coverageFile = path.join(process.cwd(), 'coverage/coverage-summary.json');
+
+            if (!fs.existsSync(coverageFile)) {
+              console.log('❌ Coverage summary file not found at:', coverageFile);
+              console.log('Available files in coverage directory:');
+              try {
+                const files = fs.readdirSync(path.join(process.cwd(), 'coverage'));
+                console.log(files);
+              } catch (error) {
+                console.log('Coverage directory does not exist');
+              }
+              throw new Error('Coverage summary file not found');
+            }
+
             const coverage = JSON.parse(fs.readFileSync(coverageFile, 'utf8'));
 
             // Create coverage table
