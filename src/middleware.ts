@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validateBearerToken } from "@/app/lib/auth/edgeAuth";
 
 const API_PREFIX = "/api/v1";
-const EXCLUDED_ROUTES_FROM_AUTH = [
-  "/spec",
-  "/auth/nonce",
-  "/auth/verify",
-  "/votable_supply",
-];
 const ROOT_PATH = process.env.NEXT_PUBLIC_AGORA_ROOT || "/";
 
 /*
@@ -86,22 +79,6 @@ export async function middleware(request: NextRequest) {
   }
 
   if (path.startsWith(API_PREFIX)) {
-    // validate bearer token for all api routes except excluded routes
-    if (
-      !EXCLUDED_ROUTES_FROM_AUTH.some((route) =>
-        path.startsWith(`${API_PREFIX}${route}`)
-      )
-    ) {
-      const authResponse = await validateBearerToken(request);
-      if (!authResponse.authenticated) {
-        return setCorsHeaders(
-          request,
-          new Response(authResponse.failReason, {
-            status: 401,
-          })
-        );
-      }
-    }
     return setCorsHeaders(request, NextResponse.next());
   }
 

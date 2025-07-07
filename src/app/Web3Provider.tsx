@@ -7,7 +7,6 @@ import Footer from "@/components/Footer";
 import { PageContainer } from "@/components/Layout/PageContainer";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 import AgoraProvider from "@/contexts/AgoraContext";
-import ConnectButtonProvider from "@/contexts/ConnectButtonContext";
 import { Toaster } from "react-hot-toast";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -26,7 +25,6 @@ const queryClient = new QueryClient({
 const metadata = {
   name: "Agora Next",
   description: "The on-chain governance company",
-  url: process.env.NEXT_PUBLIC_AGORA_BASE_URL!,
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
 };
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
@@ -38,7 +36,6 @@ export const config = createConfig(
     walletConnectProjectId: projectId,
     appName: metadata.name,
     appDescription: metadata.description,
-    appUrl: metadata.url,
   })
 );
 
@@ -51,12 +48,10 @@ const Web3Provider: FC<PropsWithChildren<{}>> = ({ children }) => (
             <noscript>
               You need to enable JavaScript to run this app.
             </noscript>
-            <ConnectButtonProvider>
-              <PageContainer>
-                <Toaster />
-                <AgoraProvider>{children}</AgoraProvider>
-              </PageContainer>
-            </ConnectButtonProvider>
+            <PageContainer>
+              <Toaster />
+              <AgoraProvider>{children}</AgoraProvider>
+            </PageContainer>
             {!shouldHideAgoraBranding && <Footer />}
             <SpeedInsights />
           </body>
