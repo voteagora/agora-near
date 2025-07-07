@@ -3,15 +3,6 @@ import { twMerge } from "tailwind-merge";
 import { useMemo } from "react";
 import Tenant from "./tenant/tenant";
 import { NANO_SECONDS_IN_DAY } from "./constants";
-import { AlchemyProvider } from "ethers";
-import {
-  Address,
-  hexToBigInt,
-  WaitForTransactionReceiptParameters,
-  WaitForTransactionReceiptReturnType,
-} from "viem";
-import { unstable_cache } from "next/cache";
-import { getPublicClient } from "./viem";
 import Big from "big.js";
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 import { utils } from "near-api-js";
@@ -331,24 +322,6 @@ export async function fetchAndSetAll<
   values.forEach((value, index) => setters[index](value));
 }
 
-export function getBlockScanAddress(address: string) {
-  const { contracts } = Tenant.current();
-  const url = contracts.token.chain.blockExplorers?.default.url;
-  return `https://testnet.nearblocks.io/address/${address}`;
-}
-
-export function getBlockScanUrl(hash: string | `0x${string}`) {
-  const { contracts } = Tenant.current();
-  const url = contracts.token.chain.blockExplorers?.default.url;
-  return `${url}/tx/${hash}`;
-}
-
-export function getBlockScanRawUrl() {
-  const { contracts } = Tenant.current();
-  const url = contracts.token.chain.blockExplorers?.default.url;
-  return url;
-}
-
 export const getTextWidth = (text: string, font = "14px inter") => {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
@@ -369,78 +342,11 @@ export const isURL = (value: string) => {
   return value === "" || urlRegExp.test(value);
 };
 
-export const mapArbitrumBlockToMainnetBlock = unstable_cache(
-  async (blockNumber: bigint) => {
-    const { contracts } = Tenant.current();
-    try {
-      const block = await (contracts.governor.provider as AlchemyProvider).send(
-        "eth_getBlockByNumber",
-        [`0x${blockNumber.toString(16)}`, false]
-      );
-
-      const l1BlockNumber = hexToBigInt(block.l1BlockNumber);
-
-      return l1BlockNumber;
-    } catch (error) {
-      return blockNumber;
-    }
-  },
-  ["mapArbitrumBlockToMainnetBlock"],
-  {
-    revalidate: 60 * 60 * 24 * 365, // 1 year cache
-  }
-);
-
-const isContractWallet = async (address: Address) => {
-  const publicClient = getPublicClient();
-  const bytecode = await publicClient.getCode({ address });
-
-  return bytecode && bytecode !== "0x" ? true : false;
-};
-
 export function delay(milliseconds: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, milliseconds);
   });
 }
-
-type TxServiceApiTransactionResponse = {
-  safe: Address;
-  to: Address;
-  data: `0x${string}`;
-  blockNumber: number;
-  transactionHash: `0x${string}`;
-  safeTxHash: `0x${string}`;
-  executor: Address;
-  isExecuted: boolean;
-  isSuccessful: boolean;
-  confirmations: Array<{
-    owner: Address;
-  }>;
-};
-
-export const wrappedWaitForTransactionReceipt = async (
-  params: WaitForTransactionReceiptParameters & {
-    address: Address;
-  }
-): Promise<WaitForTransactionReceiptReturnType> => {
-  const publicClient = getPublicClient();
-  if (!publicClient.chain) {
-    throw new Error("no chain on public client");
-  }
-
-  const isSafe = await isContractWallet(params.address);
-
-  if (isSafe) {
-    //try to resolve the underlying transaction
-    const resolvedTx = await resolveSafeTx(publicClient.chain.id, params.hash);
-    if (!resolvedTx) throw new Error("couldn't resolve safe tx");
-
-    return publicClient.waitForTransactionReceipt({ hash: resolvedTx });
-  } else {
-    return publicClient.waitForTransactionReceipt(params);
-  }
-};
 
 export function getFunctionSignature(decodedData: any): string | null {
   if (

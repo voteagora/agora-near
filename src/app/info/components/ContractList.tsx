@@ -8,12 +8,9 @@ import {
 } from "@/components/ui/table";
 import Image from "next/image";
 import linkIcon from "@/assets/icons/link.svg";
-import Tenant from "@/lib/tenant/tenant";
 import Link from "next/link";
-import { getBlockScanAddress } from "@/lib/utils";
 
 const ContractList = () => {
-  const { contracts } = Tenant.current();
 
   const list = [
     {
@@ -55,7 +52,7 @@ const ContractList = () => {
               className={`px-1 ${index === list.length - 1 && "rounded-br-lg"}`}
             >
               <Link
-                href={getBlockScanAddress(contract.address)}
+                href={contract.address}
                 target="_blank"
               >
                 <Image

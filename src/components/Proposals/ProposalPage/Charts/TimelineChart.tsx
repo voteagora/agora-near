@@ -2,7 +2,6 @@
 
 import { rgbStringToHex } from "@/app/lib/utils/color";
 import { ChartSkeleton } from "@/components/Proposals/ProposalPage/ProposalChart/ProposalChart";
-import { useLatestBlock } from "@/hooks/useLatestBlock";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { formatNearTime, getVenearForQuorum } from "@/lib/nearProposalUtils";
@@ -42,7 +41,6 @@ type ChartData = {
 };
 
 export const TimelineChart = ({ votes, proposal }: Props) => {
-  const { data: block } = useLatestBlock({ enabled: true });
   const [chartData, setChartData] = useState<ChartData[] | null>(null);
 
   const startTime = formatNearTime(proposal.voting_start_time_ns);
@@ -61,7 +59,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
   };
 
   useEffect(() => {
-    if (block && !chartData) {
+    if (!chartData) {
       const transformedData = transformVotesToChartData({
         votes: votes,
       });
@@ -84,9 +82,9 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
         },
       ]);
     }
-  }, [block, chartData, votes, startTime, endTime]);
+  }, [chartData, votes, startTime, endTime]);
 
-  if (!chartData || !block) return <ChartSkeleton />;
+  if (!chartData) return <ChartSkeleton />;
 
   return (
     <div className="relative">
