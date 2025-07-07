@@ -21,15 +21,6 @@ export const useLockNear = ({ lockupAccountId, onSuccess }: Props) => {
     onSuccess: onLockUnlockSuccess,
   });
 
-  const {
-    mutate: mutateUnlockNear,
-    isPending: isUnlockingNear,
-    error: unlockingNearError,
-  } = useWriteHOSContract({
-    contractType: "LOCKUP",
-    onSuccess: onLockUnlockSuccess,
-  });
-
   const lockNear = useCallback(
     ({ amount }: { amount?: string }) => {
       return mutateLockNear({
@@ -66,35 +57,12 @@ export const useLockNear = ({ lockupAccountId, onSuccess }: Props) => {
     [lockupAccountId, mutateLockNearAsync]
   );
 
-  const unlockNear = useCallback(
-    ({ amount }: { amount?: string }) => {
-      return mutateUnlockNear({
-        contractId: lockupAccountId,
-        methodCalls: [
-          { methodName: "begin_unlock_near" as const, args: { amount } },
-          { methodName: "end_unlock_near" as const, args: { amount } },
-        ],
-      });
-    },
-    [lockupAccountId, mutateUnlockNear]
-  );
   return useMemo(() => {
     return {
       lockNear,
-      unlockNear,
       isLockingNear,
       lockingNearError,
-      isUnlockingNear,
-      unlockingNearError,
       lockNearAsync,
     };
-  }, [
-    lockNear,
-    unlockNear,
-    isLockingNear,
-    isUnlockingNear,
-    lockingNearError,
-    unlockingNearError,
-    lockNearAsync,
-  ]);
+  }, [lockNear, isLockingNear, lockingNearError, lockNearAsync]);
 };

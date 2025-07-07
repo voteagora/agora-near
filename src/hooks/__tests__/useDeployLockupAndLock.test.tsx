@@ -75,7 +75,7 @@ describe("useDeployLockupAndLock", () => {
           decimals: 24,
           icon: "https://example.com/icon.png",
         },
-        type: "near",
+        type: "near" as const,
         balance: "5000000000000000000000000",
       },
       setSelectedToken: vi.fn(),
