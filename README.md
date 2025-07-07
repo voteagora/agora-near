@@ -16,36 +16,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You will find a mix of different styles at work in this repo. We are a small team and will be settling on standards in the coming months as we move more and more of the multi-tennant / instance style of Agora, into one codebase.
 
-### Data and data access paterns
-
-The entire data model for this application is based on Postgres and Prisma. All data access should happen through the `/api` endpoints which will use Prisma to interact with the database.
-
-We will be building a publicly accessible API soon, but for now, to keep things performant, we are using the NextJS pattern of keeping our backend, data fetching code in the `api` directory where you can see the methods that fetch the main objects in our Database:
-
-- Proposals
-- Votes
-- Deletgates (users)
-- Proposal transactions etc.
-
-Most of this data comes in the form as views, or materialized views in our Postgres database that we call via Prisma and then fetch the results to the page and cascade that state down to the components.
-
-NextJS has some peculiar data access patterns given the mix of server-side and client-side components, that we are still getting used to. When in doubt, have a look at the `<ProposalsList />` component the `src/app/page.jsx` to see the fetching model in action. The general rule in NextJS is that you primary "server" component should do the fetching to keep it fast and use the cache in the best way possible, and then your client components can recieve that data from server components to add any interactivity you want.
-
-#### Data fetching
-
-When rendering the various components on the page on the server, it's commong that many different components need to access the same data for a single request. For example, a user's address or ENS name may need to be displayed both on a component on the page and in the page metdata.
-
-To avoid re-fetching the same data for a given request, Next.JS includes the `fetch('example.api/resource')` API, which retrieves and caches external resources ([see](https://nextjs.org/docs/app/building-your-application/data-fetching)).
-
-When we're unable to use the `fetch()` (e.g. because we're accessing data via the Primsa ORM client, via the DynamoDB client, etc.) the pattern we have adopted to make sure that these resources are not being fetched and re-fetched needlessly in the single request is to use the react cache to manually wrap these accesses.
-
-As mentioned above, all data access code under `/api` should
-
-1. be wrapped in a `React.cache` invocation
-2. by default, _only_ export cache-wrapped data accesses, to prevent unintentional mutliple fetching
-
-See `/src/app/api/common/delegates/getDelegates.ts` for an example.
-
 ### Typescript vs. Javascript
 
 You will see a mix of JS and TS. Don't be alarmed. TS was meant to bolster the productivity of Javascript engineers but sometimes, it can get in the way when you are doing something simple. As a general rule, we will want backend API code written in TypeScript and will eventually move the whole app over, but if some views start as JSX files, don't complain or hammer Discord. Learn to love the chaos.
