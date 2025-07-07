@@ -27,56 +27,6 @@ type SiweData = {
   nonce: string;
 };
 
-// Note: this is not included in lib/middleware/auth.ts since that file will be
-// used in a non-node environment. This file is only intended to be used in/on node.
-export async function authenticateApiUser(
-  request: NextRequest
-): Promise<AuthInfo> {
-  const prismaModule = require("@/app/lib/prisma");
-  const prisma = prismaModule.prismaWeb2Client as PrismaClient;
-  let authResponse: AuthInfo = await validateBearerToken(request);
-
-  if (!authResponse.authenticated) {
-    return authResponse;
-  }
-
-  const key = authResponse.token as string;
-
-  // if JWT, authResponse is already resolved
-  if (authResponse.type === "jwt") {
-    return authResponse;
-  }
-
-  // TODO: caching logic, rate limiting
-  // lookup hashed API key if authResponse is an API key
-  const user = await prisma.api_user.findFirst({
-    where: {
-      api_key: hashApiKey(key),
-    },
-  });
-
-  if (!user) {
-    authResponse = {
-      authenticated: false,
-      failReason: REASON_INVALID_BEARER_TOKEN,
-    };
-  } else if (!user.enabled) {
-    authResponse = {
-      authenticated: false,
-      failReason: REASON_DISABLED_USER,
-    };
-  } else {
-    authResponse.userId = user.id;
-  }
-
-  return authResponse;
-}
-
-function hashApiKey(apiKey: string) {
-  const hash = createHash(HASH_FN);
-  hash.update(apiKey);
-  return hash.digest("hex");
-}
 
 export async function generateJwt(
   userId: string,

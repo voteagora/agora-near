@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      READ_WRITE_WEB2_DATABASE_URL_DEV: ${{ secrets.READ_WRITE_WEB2_DATABASE_URL_DEV }}
-      READ_ONLY_WEB3_DATABASE_URL_DEV: ${{ secrets.READ_ONLY_WEB3_DATABASE_URL_DEV }}
       NEXT_PUBLIC_AGORA_ENV: "dev"
 
     steps:

@@ -8,7 +8,6 @@ import {
   DERIVE_MAINNET_RPC,
   DERIVE_TESTNET_RPC,
 } from "@/lib/tenant/configs/contracts/derive";
-import { ProposalType } from "../app/proposals/draft/types";
 import { AlchemyProvider } from "ethers";
 import {
   Address,
@@ -469,20 +468,6 @@ export const getTransportForChain = (chainId: number) => {
     // for each new dao with a new chainId add them here
     default:
       return null;
-  }
-};
-
-export const getVotingModuleTypeForProposalType = (proposalType: {
-  quorum: number;
-  approval_threshold: number;
-  name: string;
-}) => {
-  if (proposalType.name.toLowerCase().includes("approval")) {
-    return ProposalType.APPROVAL;
-  } else if (proposalType.name.toLowerCase().includes("optimistic")) {
-    return ProposalType.OPTIMISTIC;
-  } else {
-    return ProposalType.BASIC;
   }
 };
 

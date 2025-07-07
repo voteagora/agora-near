@@ -1,7 +1,6 @@
 import { DialogDefinitions } from "./types";
 import { NearDelegateDialog } from "../DelegateDialog/NearDelegateDialog";
 import { NearUndelegateDialog } from "../UndelegateDialog/NearUndelegateDialog";
-import AddGithubPRDialog from "@/app/proposals/draft/components/dialogs/AddGithubPRDialog";
 import { NearVoteDialog } from "../NearVoteDialog";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { NearVoteOptionsDialog } from "../NearVoteOptionsDialog";
@@ -67,11 +66,6 @@ export type NearStakingDialogType = {
   };
 };
 
-export type OpenGithubPRDialog = {
-  type: "OPEN_GITHUB_PR";
-  params: { redirectUrl: string; githubUrl: string };
-};
-
 export type NearVoteDialogType = {
   type: "NEAR_VOTE";
   params: {
@@ -131,13 +125,6 @@ export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_LOCK: (params, closeDialog) => {
     return <NearLockDialog closeDialog={closeDialog} {...params} />;
   },
-  OPEN_GITHUB_PR: ({ redirectUrl, githubUrl }, closeDialog) => (
-    <AddGithubPRDialog
-      redirectUrl={redirectUrl}
-      githubUrl={githubUrl}
-      closeDialog={closeDialog}
-    />
-  ),
   NEAR_VOTE: (
     { proposal, config, preSelectedVote, onSuccess },
     closeDialog
