@@ -12,15 +12,12 @@ import {
 } from "vitest";
 import { NearProvider, useNear } from "../NearContext";
 
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { getRpcUrl } from "@/lib/utils";
-import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 import { setupWalletSelector } from "@near-wallet-selector/core";
-import { setupLedger } from "@near-wallet-selector/ledger";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupModal } from "@near-wallet-selector/modal-ui";
-import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { providers } from "near-api-js";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 
 // Mock all the dependencies
 vi.mock("@near-wallet-selector/core");
@@ -70,15 +67,9 @@ const mockSetupWalletSelector = setupWalletSelector as MockedFunction<
   typeof setupWalletSelector
 >;
 const mockSetupModal = setupModal as MockedFunction<typeof setupModal>;
-const mockSetupMyNearWallet = setupMyNearWallet as MockedFunction<
-  typeof setupMyNearWallet
->;
-const mockSetupLedger = setupLedger as MockedFunction<typeof setupLedger>;
+
 const mockSetupMeteorWallet = setupMeteorWallet as MockedFunction<
   typeof setupMeteorWallet
->;
-const mockSetupBitteWallet = setupBitteWallet as MockedFunction<
-  typeof setupBitteWallet
 >;
 
 const mockGetRpcUrl = getRpcUrl as MockedFunction<typeof getRpcUrl>;
@@ -103,10 +94,7 @@ describe("NearContext", () => {
     // Setup default mocks
     mockSetupWalletSelector.mockResolvedValue(mockWalletSelector as any);
     mockSetupModal.mockReturnValue(mockModal as any);
-    mockSetupMyNearWallet.mockReturnValue({} as any);
-    mockSetupLedger.mockReturnValue({} as any);
     mockSetupMeteorWallet.mockReturnValue({} as any);
-    mockSetupBitteWallet.mockReturnValue({} as any);
     mockGetRpcUrl.mockReturnValue("https://rpc.testnet.near.org");
     mockGetTransactionLastResult.mockReturnValue("mock-result");
 
