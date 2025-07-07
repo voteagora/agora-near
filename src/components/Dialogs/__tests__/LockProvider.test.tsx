@@ -14,7 +14,6 @@ import {
   NANO_SECONDS_IN_YEAR,
   STNEAR_TOKEN_CONTRACTS,
 } from "@/lib/constants";
-import { isValidNearAmount } from "@/lib/utils";
 import * as utils from "@/lib/utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
@@ -122,7 +121,8 @@ const TestComponent = () => {
       <div data-testid="requiredTransactions">
         {context.requiredTransactions.join(",")}
       </div>
-      <div data-testid="amountError">{context.amountError || "null"}</div>
+      <div data-testid="amountError">{context.amountError}</div>
+      <div data-testid="error">{context.error?.message}</div>
       <div data-testid="maxAmountToLock">
         {context.maxAmountToLock || "null"}
       </div>
@@ -280,13 +280,13 @@ describe("LockProvider", () => {
     mockUseStakingPool.mockReturnValue({
       stakingPools: {
         stNear: {
-          price: "1.1",
+          price: "1100000000000000000000000", // 1.1 NEAR
           deposit: {
             min: "1000000000000000000000000", // 1 NEAR
           },
         },
         liNear: {
-          price: "1050000000000000000000000",
+          price: "1050000000000000000000000", // 1.05 NEAR
           deposit: {
             min: "1000000000000000000000000", // 1 NEAR
           },
@@ -407,28 +407,6 @@ describe("LockProvider", () => {
 
       expect(screen.getByTestId("isLoading")).toHaveTextContent("true");
     });
-
-    it("should handle error state", () => {
-      mockUseVenearConfig.mockReturnValue({
-        venearStorageCost: BigInt("1000000000000000000000000"),
-        lockupStorageCost: BigInt("2000000000000000000000000"),
-        totalRegistrationCost: BigInt("3000000000000000000000000"),
-        stakingPoolWhitelistId: "whitelist.testnet",
-        unlockDuration: BigInt("1000000000000000000"),
-        isLoading: false,
-        error: new Error("Config error"),
-      });
-
-      render(
-        <LockProvider source="onboarding">
-          <TestComponent />
-        </LockProvider>,
-        { wrapper }
-      );
-
-      expect(screen.getByTestId("isLoading")).toHaveTextContent("false");
-      // The error should be propagated through the context
-    });
   });
 
   describe("Available Tokens", () => {
@@ -534,7 +512,7 @@ describe("LockProvider", () => {
         { wrapper }
       );
 
-      // Should select the first available token (lockup in this case)
+      // Should select the first available token
       expect(screen.getByTestId("selectedTokenId")).toHaveTextContent(
         "linear-protocol.testnet"
       );
@@ -556,7 +534,7 @@ describe("LockProvider", () => {
       });
 
       expect(screen.getByTestId("enteredAmount")).toHaveTextContent("2");
-      expect(screen.getByTestId("amountError")).toHaveTextContent("null");
+      expect(screen.getByTestId("amountError")).toHaveTextContent("");
     });
 
     it("should show error for invalid amount", async () => {
@@ -580,9 +558,12 @@ describe("LockProvider", () => {
       spy.mockRestore();
     });
 
-    it("should handle max amount correctly", async () => {
+    it("should handle max amount correctly when locking NEAR", async () => {
       render(
-        <LockProvider source="onboarding">
+        <LockProvider
+          source="onboarding"
+          preSelectedTokenId="test-account.testnet"
+        >
           <TestComponent />
         </LockProvider>,
         { wrapper }
@@ -592,8 +573,27 @@ describe("LockProvider", () => {
         screen.getByTestId("lockMax").click();
       });
 
-      // Should set amount to max available
-      expect(screen.getByTestId("enteredAmount")).not.toHaveTextContent("");
+      // Should set amount to max available (2 NEAR - 0.2 NEAR gas reserve = 1.8 NEAR)
+      expect(screen.getByTestId("enteredAmount")).toHaveTextContent("1.8");
+    });
+
+    it("should handle max amount correctly when locking LST", async () => {
+      render(
+        <LockProvider
+          source="onboarding"
+          preSelectedTokenId="linear-protocol.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      await act(async () => {
+        screen.getByTestId("lockMax").click();
+      });
+
+      // Should set amount to max available (5 liNEAR)
+      expect(screen.getByTestId("enteredAmount")).toHaveTextContent("5");
     });
   });
 
@@ -619,7 +619,7 @@ describe("LockProvider", () => {
       });
 
       expect(screen.getByTestId("enteredAmount")).toHaveTextContent("");
-      expect(screen.getByTestId("amountError")).toHaveTextContent("null");
+      expect(screen.getByTestId("amountError")).toHaveTextContent("");
     });
   });
 
@@ -641,6 +641,7 @@ describe("LockProvider", () => {
         { wrapper }
       );
 
+      // Total registration cost + stNear deposit = 3 NEAR + 1 NEAR = 4 NEAR
       expect(screen.getByTestId("depositTotal")).toHaveTextContent(
         "4000000000000000000000000"
       );
@@ -663,15 +664,16 @@ describe("LockProvider", () => {
         { wrapper }
       );
 
+      // Total registration cost = 3 NEAR
       expect(screen.getByTestId("depositTotal")).toHaveTextContent(
         "3000000000000000000000000"
       );
     });
 
-    it("should calculate deposit total post-onboarding with NEAR wallet", () => {
+    it("should calculate deposit total after onboarding with NEAR wallet", () => {
       render(
         <LockProvider
-          source="onboarding"
+          source="account_management"
           preSelectedTokenId="test-account.testnet"
         >
           <TestComponent />
@@ -679,17 +681,22 @@ describe("LockProvider", () => {
         { wrapper }
       );
 
+      // No deposit required since lockup is already deployed
       expect(screen.getByTestId("depositTotal")).toHaveTextContent("0");
     });
 
-    it("should calculate deposit total post-onboarding with LST", () => {
+    it("should calculate deposit total after onboarding with LST", () => {
       render(
-        <LockProvider source="onboarding">
+        <LockProvider
+          source="account_management"
+          preSelectedTokenId="linear-protocol.testnet"
+        >
           <TestComponent />
         </LockProvider>,
         { wrapper }
       );
 
+      // Deposit total = staking pool deposit = 1 NEAR
       expect(screen.getByTestId("depositTotal")).toHaveTextContent(
         "1000000000000000000000000"
       );
@@ -697,7 +704,7 @@ describe("LockProvider", () => {
   });
 
   describe("Required Transactions", () => {
-    it("should include deploy_lockup when no venear account", () => {
+    it("should include deploy_lockup when user is not registered with veNEAR contract", () => {
       mockUseVenearAccountInfo.mockReturnValue({
         data: null,
         isLoading: false,
@@ -729,7 +736,7 @@ describe("LockProvider", () => {
       );
     });
 
-    it("should include select_staking_pool for LST without staking pool", () => {
+    it("should include select_staking_pool when user has not selected a staking pool", () => {
       mockUseCurrentStakingPoolId.mockReturnValue({
         stakingPoolId: null,
         isLoadingStakingPoolId: false,
@@ -751,7 +758,7 @@ describe("LockProvider", () => {
       );
     });
 
-    it("should include transfer_near for NEAR token", () => {
+    it("should include transfer_near when locking NEAR", () => {
       render(
         <LockProvider
           source="onboarding"
@@ -767,7 +774,7 @@ describe("LockProvider", () => {
       );
     });
 
-    it("should include transfer_ft for fungible tokens", () => {
+    it("should include transfer_ft when locking LST", () => {
       render(
         <LockProvider
           source="onboarding"
@@ -783,7 +790,7 @@ describe("LockProvider", () => {
       );
     });
 
-    it("should include refresh_balance for LST tokens", () => {
+    it("should include refresh_balance when locking LST", () => {
       render(
         <LockProvider
           source="onboarding"
@@ -799,7 +806,7 @@ describe("LockProvider", () => {
       );
     });
 
-    it("should not include transfer for lockup tokens", () => {
+    it("should not include transfer transaction when locking NEAR in lockup account", () => {
       render(
         <LockProvider
           source="onboarding"
@@ -819,7 +826,7 @@ describe("LockProvider", () => {
   });
 
   describe("VeNEAR Amount Calculation", () => {
-    it("should calculate venear amount for NEAR token", async () => {
+    it("should calculate correct veNEAR amount when locking NEAR", async () => {
       const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(true);
 
       render(
@@ -843,7 +850,7 @@ describe("LockProvider", () => {
       spy.mockRestore();
     });
 
-    it("should calculate venear amount for stNEAR token", async () => {
+    it("should calculate correct veNEAR amount when locking stNEAR", async () => {
       render(
         <LockProvider
           source="onboarding"
@@ -858,11 +865,13 @@ describe("LockProvider", () => {
         screen.getByTestId("setAmount").click();
       });
 
-      // stNEAR: 2 * 1.1 = 2.2 NEAR value
-      expect(screen.getByTestId("venearAmount")).toHaveTextContent("2");
+      // stNEAR: 2 stNEAR * 1.1 NEAR/stNEAR rate = 2.2 NEAR/veNEAR
+      expect(screen.getByTestId("venearAmount")).toHaveTextContent(
+        "2200000000000000000000000"
+      );
     });
 
-    it("should calculate venear amount for LINEAR token", async () => {
+    it("should calculate correct veNEAR amount when locking liNEAR", async () => {
       render(
         <LockProvider
           source="onboarding"
@@ -877,11 +886,13 @@ describe("LockProvider", () => {
         screen.getByTestId("setAmount").click();
       });
 
-      // LINEAR: 2 * 1.05 = 2.1 NEAR value
-      expect(screen.getByTestId("venearAmount")).toHaveTextContent("2");
+      // liNEAR: 2 liNEAR * 1.05 NEAR/liNEAR rate = 2.1 NEAR/veNEAR
+      expect(screen.getByTestId("venearAmount")).toHaveTextContent(
+        "2100000000000000000000000"
+      );
     });
 
-    it("should include registration cost for new accounts", async () => {
+    it("should include registration cost in the veNEAR calculation for new accounts", async () => {
       mockUseVenearAccountInfo.mockReturnValue({
         data: null,
         isLoading: false,
@@ -917,45 +928,6 @@ describe("LockProvider", () => {
         </LockProvider>,
         { wrapper }
       );
-
-      expect(screen.getByTestId("venearAmount")).toHaveTextContent("0");
-
-      spy.mockRestore();
-    });
-
-    it("should handle calculation errors gracefully", async () => {
-      const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(true);
-      mockUseStakingPool.mockReturnValue({
-        stakingPools: {
-          stNear: {
-            price: null, // This should cause an error
-            deposit: {
-              min: "1000000000000000000000000",
-            },
-          },
-          liNear: {
-            price: "1.05",
-            deposit: {
-              min: "1000000000000000000000000",
-            },
-          },
-        },
-        isLoading: false,
-      });
-
-      render(
-        <LockProvider
-          source="onboarding"
-          preSelectedTokenId="meta-v2.pool.testnet"
-        >
-          <TestComponent />
-        </LockProvider>,
-        { wrapper }
-      );
-
-      await act(async () => {
-        screen.getByTestId("setAmount").click();
-      });
 
       expect(screen.getByTestId("venearAmount")).toHaveTextContent("0");
 
@@ -1090,7 +1062,7 @@ describe("LockProvider", () => {
       spy.mockRestore();
     });
 
-    it("should handle validation errors gracefully", async () => {
+    it("should handle invalid amounts", async () => {
       const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(false);
 
       render(
@@ -1130,23 +1102,6 @@ describe("LockProvider", () => {
   });
 
   describe("Max Amount Calculation", () => {
-    it("should calculate max amount for NEAR token correctly", () => {
-      render(
-        <LockProvider
-          source="onboarding"
-          preSelectedTokenId="test-account.testnet"
-        >
-          <TestComponent />
-        </LockProvider>,
-        { wrapper }
-      );
-
-      // Max amount should be balance minus gas reserve
-      expect(screen.getByTestId("maxAmountToLock")).not.toHaveTextContent(
-        "null"
-      );
-    });
-
     it("should handle zero balance correctly", () => {
       mockUseNearBalance.mockReturnValue({
         nearBalance: "0",
@@ -1164,10 +1119,47 @@ describe("LockProvider", () => {
         { wrapper }
       );
 
-      expect(screen.getByTestId("maxAmountToLock")).toHaveTextContent("0");
+      expect(screen.getByTestId("maxAmount")).toHaveTextContent("0");
     });
 
-    it("should use token balance for LST tokens", () => {
+    it("should handle very small balance (below gas reserve)", () => {
+      mockUseNearBalance.mockReturnValue({
+        nearBalance: "100000000000000000000000", // 0.1 NEAR (below gas reserve)
+        isLoadingNearBalance: false,
+        nearBalanceError: null,
+      });
+
+      render(
+        <LockProvider
+          source="onboarding"
+          preSelectedTokenId="test-account.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      expect(screen.getByTestId("maxAmount")).toHaveTextContent("0");
+    });
+
+    it("should calculate max amount to lock when locking NEAR", () => {
+      render(
+        <LockProvider
+          source="onboarding"
+          preSelectedTokenId="test-account.testnet"
+        >
+          <TestComponent />
+        </LockProvider>,
+        { wrapper }
+      );
+
+      // Max amount should be balance minus gas reserve = 2 NEAR - 0.2 NEAR = 1.8 NEAR
+      expect(screen.getByTestId("maxAmount")).toHaveTextContent(
+        "1800000000000000000000000"
+      );
+    });
+
+    it("should calculate max amount to lock when locking LST", () => {
       render(
         <LockProvider
           source="onboarding"
@@ -1178,7 +1170,8 @@ describe("LockProvider", () => {
         { wrapper }
       );
 
-      expect(screen.getByTestId("maxAmountToLock")).toHaveTextContent(
+      // Max amount should just be the token balance
+      expect(screen.getByTestId("maxAmount")).toHaveTextContent(
         "5000000000000000000000000"
       );
     });
@@ -1246,171 +1239,6 @@ describe("LockProvider", () => {
       // Should not subtract registration cost for non-onboarding
       expect(screen.getByTestId("source")).toHaveTextContent(
         "account_management"
-      );
-    });
-  });
-
-  describe("Get Amount to Lock", () => {
-    it("should return undefined for onboarding source", async () => {
-      const TestComponentWithGetAmount = () => {
-        const context = useLockProviderContext();
-        const [amount, setAmount] = React.useState<string | undefined>();
-
-        const handleGetAmount = async () => {
-          const result = await context.getAmountToLock();
-          setAmount(result);
-        };
-
-        return (
-          <div>
-            <button data-testid="getAmount" onClick={handleGetAmount}>
-              Get Amount
-            </button>
-            <div data-testid="calculatedAmount">{amount || "null"}</div>
-          </div>
-        );
-      };
-
-      render(
-        <LockProvider source="onboarding">
-          <TestComponentWithGetAmount />
-        </LockProvider>,
-        { wrapper }
-      );
-
-      await act(async () => {
-        screen.getByTestId("getAmount").click();
-      });
-
-      expect(screen.getByTestId("calculatedAmount")).toHaveTextContent("null");
-    });
-
-    it("should calculate amount for non-onboarding source", async () => {
-      const spy = vi.spyOn(utils, "isValidNearAmount").mockReturnValue(true);
-      mockRefetchAvailableToLock.mockResolvedValue({
-        data: "1000000000000000000000000",
-      });
-
-      const TestComponentWithGetAmount = () => {
-        const context = useLockProviderContext();
-        const [amount, setAmount] = React.useState<string | undefined>();
-        const [hasSetAmount, setHasSetAmount] = React.useState(false);
-
-        React.useEffect(() => {
-          if (!hasSetAmount) {
-            context.setEnteredAmount("2"); // Set a valid amount
-            setHasSetAmount(true);
-          }
-        }, [hasSetAmount, context]);
-
-        const handleGetAmount = async () => {
-          const result = await context.getAmountToLock();
-          setAmount(result);
-        };
-
-        return (
-          <div>
-            <button data-testid="getAmount" onClick={handleGetAmount}>
-              Get Amount
-            </button>
-            <div data-testid="calculatedAmount">{amount || "null"}</div>
-            <div data-testid="enteredAmount">{context.enteredAmount}</div>
-          </div>
-        );
-      };
-
-      render(
-        <LockProvider
-          source="account_management"
-          preSelectedTokenId="test-account.testnet"
-        >
-          <TestComponentWithGetAmount />
-        </LockProvider>,
-        { wrapper }
-      );
-
-      // Wait for amount to be set
-      await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      });
-
-      await act(async () => {
-        screen.getByTestId("getAmount").click();
-      });
-
-      // Should return the smaller of available amount or entered amount
-      // Since we set 2 NEAR and available is 1 NEAR, it should return 1 NEAR
-      expect(screen.getByTestId("calculatedAmount")).toHaveTextContent(
-        "1000000000000000000000000"
-      );
-
-      spy.mockRestore();
-    });
-  });
-
-  describe("Error Handling", () => {
-    it("should handle multiple error states", () => {
-      mockUseVenearConfig.mockReturnValue({
-        venearStorageCost: BigInt("1000000000000000000000000"),
-        lockupStorageCost: BigInt("2000000000000000000000000"),
-        totalRegistrationCost: BigInt("3000000000000000000000000"),
-        stakingPoolWhitelistId: "whitelist.testnet",
-        unlockDuration: BigInt("1000000000000000000"),
-        isLoading: false,
-        error: new Error("Config error"),
-      });
-
-      mockUseFungibleTokens.mockReturnValue({
-        data: undefined,
-        isLoading: false,
-        error: new Error("Fungible tokens error"),
-      } as any);
-
-      render(
-        <LockProvider source="onboarding">
-          <TestComponent />
-        </LockProvider>,
-        { wrapper }
-      );
-
-      // Should handle multiple errors gracefully
-      expect(screen.getByTestId("isLoading")).toHaveTextContent("false");
-    });
-
-    it("should handle lockup account error", () => {
-      mockUseLockupAccount.mockReturnValue({
-        lockupAccountId: undefined,
-        isLoading: false,
-        error: new Error("Lockup account error"),
-      });
-
-      render(
-        <LockProvider source="onboarding">
-          <TestComponent />
-        </LockProvider>,
-        { wrapper }
-      );
-
-      expect(screen.getByTestId("lockupAccountId")).toHaveTextContent("null");
-    });
-
-    it("should handle near balance error", () => {
-      mockUseNearBalance.mockReturnValue({
-        nearBalance: undefined,
-        isLoadingNearBalance: false,
-        nearBalanceError: new Error("Balance error"),
-      });
-
-      render(
-        <LockProvider source="onboarding">
-          <TestComponent />
-        </LockProvider>,
-        { wrapper }
-      );
-
-      // Should handle balance error gracefully
-      expect(screen.getByTestId("availableTokensLength")).toHaveTextContent(
-        "3"
       );
     });
   });
@@ -1672,45 +1500,50 @@ describe("LockProvider", () => {
     });
   });
 
-  describe("Edge Cases and Error Handling", () => {
-    it("should handle zero balance correctly", () => {
-      mockUseNearBalance.mockReturnValue({
-        nearBalance: "0",
-        isLoadingNearBalance: false,
-        nearBalanceError: null,
+  describe("Edge Cases and Errors", () => {
+    it("should return error", () => {
+      mockUseLockupAccount.mockReturnValue({
+        lockupAccountId: undefined,
+        isLoading: false,
+        error: new Error("Lockup account error"),
       });
 
       render(
-        <LockProvider
-          source="onboarding"
-          preSelectedTokenId="test-account.testnet"
-        >
+        <LockProvider source="onboarding">
           <TestComponent />
         </LockProvider>,
         { wrapper }
       );
 
-      expect(screen.getByTestId("maxAmount")).toHaveTextContent("0");
+      expect(screen.getByTestId("lockupAccountId")).toHaveTextContent("null");
+      expect(screen.getByTestId("error")).toHaveTextContent(
+        "Lockup account error"
+      );
     });
 
-    it("should handle very small balance (below gas reserve)", () => {
+    it("should return error from multiple hooks", () => {
+      mockUseLockupAccount.mockReturnValue({
+        lockupAccountId: undefined,
+        isLoading: false,
+        error: new Error("Lockup account error"),
+      });
+
       mockUseNearBalance.mockReturnValue({
-        nearBalance: "100000000000000000000000", // 0.1 NEAR (below gas reserve)
+        nearBalance: undefined,
         isLoadingNearBalance: false,
-        nearBalanceError: null,
+        nearBalanceError: new Error("Balance error"),
       });
 
       render(
-        <LockProvider
-          source="onboarding"
-          preSelectedTokenId="test-account.testnet"
-        >
+        <LockProvider source="onboarding">
           <TestComponent />
         </LockProvider>,
         { wrapper }
       );
 
-      expect(screen.getByTestId("maxAmount")).toHaveTextContent("0");
+      expect(screen.getByTestId("error")).toHaveTextContent(
+        "Lockup account error"
+      );
     });
 
     it("should handle non-existent preselected token ID", () => {
