@@ -263,12 +263,9 @@ describe("LockProvider", () => {
 
     mockUseLockNear.mockReturnValue({
       lockNear: vi.fn(),
-      unlockNear: vi.fn(),
       lockNearAsync: mockLockNearAsync,
       isLockingNear: false,
       lockingNearError: null,
-      isUnlockingNear: false,
-      unlockingNearError: null,
     });
 
     mockUseNearBalance.mockReturnValue({
