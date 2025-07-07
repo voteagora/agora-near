@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, PropsWithChildren } from "react";
-import { createConfig, WagmiProvider, type Transport } from "wagmi";
+import { createConfig, WagmiProvider } from "wagmi";
 import { inter } from "@/styles/fonts";
 import { mainnet } from "wagmi/chains";
 import Footer from "@/components/Footer";
@@ -14,7 +14,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { siweProviderConfig } from "@/components/shared/SiweProviderConfig";
 import Tenant from "@/lib/tenant/tenant";
-import { getTransportForChain } from "@/lib/utils";
 import { hashFn } from "@wagmi/core/query";
 import { NearProvider } from "@/contexts/NearContext";
 
@@ -40,12 +39,6 @@ export const config = createConfig(
   getDefaultConfig({
     walletConnectProjectId: projectId,
     chains: [contracts.token.chain, mainnet],
-    transports: {
-      [mainnet.id]: getTransportForChain(mainnet.id)!,
-      [contracts.token.chain.id]: getTransportForChain(
-        contracts.token.chain.id
-      )!,
-    },
     appName: metadata.name,
     appDescription: metadata.description,
     appUrl: metadata.url,

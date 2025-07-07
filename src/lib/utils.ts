@@ -2,12 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useMemo } from "react";
 import Tenant from "./tenant/tenant";
-import { NANO_SECONDS_IN_DAY, TENANT_NAMESPACES } from "./constants";
-import { http, fallback } from "wagmi";
-import {
-  DERIVE_MAINNET_RPC,
-  DERIVE_TESTNET_RPC,
-} from "@/lib/tenant/configs/contracts/derive";
+import { NANO_SECONDS_IN_DAY } from "./constants";
 import { AlchemyProvider } from "ethers";
 import {
   Address,
@@ -17,16 +12,6 @@ import {
 } from "viem";
 import { unstable_cache } from "next/cache";
 import { getPublicClient } from "./viem";
-import {
-  arbitrum,
-  base,
-  goerli,
-  mainnet,
-  optimism,
-  polygon,
-  sepolia,
-  scroll,
-} from "viem/chains";
 import Big from "big.js";
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 import { utils } from "near-api-js";
@@ -47,22 +32,6 @@ export function shortAddress(address: string) {
 export function bpsToString(bps: number) {
   return `${(Math.round(bps * 100) / 100).toFixed(2)}%`;
 }
-
-export const getProposalTypeText = (proposalType: string) => {
-  if (Tenant.current().namespace === TENANT_NAMESPACES.OPTIMISM) {
-    switch (proposalType) {
-      case "OPTIMISTIC":
-        return "Optimistic Proposal";
-      case "STANDARD":
-        return "Standard Proposal";
-      case "APPROVAL":
-        return "Approval Vote Proposal";
-      default:
-        return "Proposal";
-    }
-  }
-  return "Proposal";
-};
 
 const format = new Intl.NumberFormat("en", {
   style: "decimal",
@@ -400,77 +369,6 @@ export const isURL = (value: string) => {
   return value === "" || urlRegExp.test(value);
 };
 
-const FORK_NODE_URL = process.env.NEXT_PUBLIC_FORK_NODE_URL!;
-
-export const getTransportForChain = (chainId: number) => {
-  switch (chainId) {
-    // mainnet
-    case 1:
-      return http(
-        FORK_NODE_URL ||
-          `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // optimism
-    case 10:
-      return http(
-        FORK_NODE_URL ||
-          `https://opt-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // base
-    case 8453:
-      return http(
-        FORK_NODE_URL ||
-          `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // arbitrum one
-    case 42161:
-      return http(
-        FORK_NODE_URL ||
-          `https://arb-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // arbitrum sepolia
-    case 421614:
-      return http(
-        FORK_NODE_URL ||
-          `https://arb-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // sepolia
-    case 11155111:
-      return http(
-        FORK_NODE_URL ||
-          `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // cyber
-    case 7560:
-      return fallback([
-        http(FORK_NODE_URL || "https://rpc.cyber.co"),
-        http(FORK_NODE_URL || "https://cyber.alt.technology"),
-      ]);
-
-    // scroll
-    case 534_352:
-      return fallback([
-        http(
-          FORK_NODE_URL ||
-            "https://scroll-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}"
-        ),
-        http(FORK_NODE_URL || "https://rpc.scroll.io"),
-      ]);
-
-    // derive mainnet
-    case 957:
-      return http(FORK_NODE_URL || DERIVE_MAINNET_RPC);
-
-    // derive testnet
-    case 901:
-      return http(FORK_NODE_URL || DERIVE_TESTNET_RPC);
-
-    // for each new dao with a new chainId add them here
-    default:
-      return null;
-  }
-};
-
 export const mapArbitrumBlockToMainnetBlock = unstable_cache(
   async (blockNumber: bigint) => {
     const { contracts } = Tenant.current();
@@ -519,59 +417,6 @@ type TxServiceApiTransactionResponse = {
   confirmations: Array<{
     owner: Address;
   }>;
-};
-
-const apiNetworkName: Record<number, string> = {
-  [mainnet.id]: "mainnet",
-  [optimism.id]: "optimism",
-  [polygon.id]: "polygon",
-  [base.id]: "base",
-  [arbitrum.id]: "arbitrum",
-  [goerli.id]: "goerli",
-  [sepolia.id]: "sepolia",
-  [scroll.id]: "scroll",
-};
-
-export const resolveSafeTx = async (
-  networkId: number,
-  safeTxHash: `0x${string}`,
-  attempt = 1,
-  maxAttempts = 10
-): Promise<`0x${string}` | undefined> => {
-  const networkName = apiNetworkName[networkId];
-  if (attempt >= maxAttempts) {
-    throw new Error(
-      `timeout: couldn't find safeTx [${safeTxHash}] on [${networkName}]`
-    );
-  }
-
-  const endpoint = `https://safe-transaction-${networkName}.safe.global`;
-  const url = `${endpoint}/api/v1/multisig-transactions/${safeTxHash}`;
-
-  const response = await fetch(url);
-
-  const responseJson = <TxServiceApiTransactionResponse>await response.json();
-
-  console.debug(
-    `[${attempt}] looking up [${safeTxHash}] on [${networkName}]`,
-    response
-  );
-  if (response.status == 404) {
-    console.warn(
-      `didn't find safe tx [${safeTxHash}], assuming it's already the real one`
-    );
-    return safeTxHash;
-  }
-
-  if (responseJson.isSuccessful === null) {
-    await delay(1000 * attempt ** 1.75);
-    return resolveSafeTx(networkId, safeTxHash, attempt + 1, maxAttempts);
-  }
-
-  if (!responseJson.isSuccessful) {
-    return undefined;
-  }
-  return responseJson.transactionHash;
 };
 
 export const wrappedWaitForTransactionReceipt = async (
