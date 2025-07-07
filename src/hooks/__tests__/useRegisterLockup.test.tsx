@@ -2,7 +2,7 @@ import { useNear } from "@/contexts/NearContext";
 import { useWriteHOSContract } from "@/hooks/useWriteHOSContract";
 import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, cleanup, renderHook } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useRegisterLockup } from "../useRegisterLockup";
