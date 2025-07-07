@@ -24,8 +24,5 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Generate Typechain
-        run: yarn generate-typechain
-
       - name: Run unit tests
         run: yarn test
