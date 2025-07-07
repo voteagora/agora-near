@@ -62,8 +62,6 @@ const Web3Provider: FC<PropsWithChildren<{}>> = ({ children }) => (
               <noscript>
                 You need to enable JavaScript to run this app.
               </noscript>
-              {/* {namespace === TENANT_NAMESPACES.OPTIMISM && <BetaBanner />} */}
-              {/* ConnectButtonProvider should be above PageContainer where DialogProvider is since the context is called from this Dialogs  */}
               <ConnectButtonProvider>
                 <PageContainer>
                   <Toaster />

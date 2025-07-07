@@ -18,8 +18,6 @@ export type DialogType =
   | NearDelegateDialogType
   | NearUndelegateDialogType
   | NearProposalDialogType
-  | OpenGithubPRDialog
-  | OpenGithubPRDialog
   | NearVoteDialogType
   | NearVoteOptionsDialogType
   | NearLockDialogType
@@ -27,7 +25,6 @@ export type DialogType =
   | NearStakingDialogType
   | VotingPowerProjectionsDialogType
   | NearUnlockDialogType;
-// | FaqDialogType
 
 export type NearDelegateDialogType = {
   type: "NEAR_DELEGATE";

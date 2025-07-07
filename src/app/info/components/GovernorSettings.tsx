@@ -6,11 +6,8 @@ import {
 } from "@/components/ui/accordion";
 import GovernorSettingsParams from "@/app/info/components/GovernorSettingsParams";
 import ContractList from "@/app/info/components/ContractList";
-import GovernorSettingsProposalTypes from "@/app/info/components/GovernorSettingsProposalTypes";
-import { fetchProposalTypes } from "@/app/api/common/proposals/getProposals";
 
 const GovernorSettings = async () => {
-  const proposalTypes = await fetchProposalTypes();
 
   return (
     <Accordion

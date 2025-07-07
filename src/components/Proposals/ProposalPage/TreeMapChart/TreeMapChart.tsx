@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState, useMemo, memo } from "react";
 import * as d3 from "d3";
 import { useRouter } from "next/navigation";
-import ENSName from "@/components/shared/ENSName";
 import Tenant from "@/lib/tenant/tenant";
 import { rgbStringToHex } from "@/app/lib/utils/color";
 import { Plus, Minus, RotateCcw } from "lucide-react";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { formatNearAccountId } from "@/lib/utils";
 
 // TreeMap constants
 const CHART_DIMENSIONS = {
@@ -115,7 +115,7 @@ const TreeMapNode = memo(
               minHeight: "100%",
             }}
           >
-            <ENSName address={node.data.address || ""} truncate />
+            {formatNearAccountId(node.data.address || "")}
           </div>
         </foreignObject>
       </g>

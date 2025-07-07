@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import useTenantColorScheme from "@/hooks/useTenantColorScheme";
-import ENSName from "@/components/shared/ENSName";
+import { formatNearAccountId } from "@/lib/utils";
 
 type ChartData = {
   address: string;
@@ -68,7 +68,7 @@ const ChartGovernanceTopDelegates = ({ getData }: Props) => {
               />
               <div className="flex flex-col">
                 <h3 className="text-xs font-semibold text-secondary">
-                  <ENSName address={item.address} />
+                  {formatNearAccountId(item.address)}
                 </h3>
                 <p className="text-xs font-medium text-secondary">
                   {Number(item.weight).toFixed(2)}%

@@ -18,10 +18,8 @@ const filterOptions = {
 };
 
 const VotesContainer = ({
-  snapshotVotes,
   onchainVotes,
 }: {
-  snapshotVotes: React.ReactElement;
   onchainVotes: React.ReactElement;
 }) => {
   const [activeTab, setActiveTab] = useState<"snapshot" | "onchain">("onchain");
@@ -85,9 +83,6 @@ const VotesContainer = ({
             </Listbox.Options>
           </Transition>
         </Listbox>
-      </div>
-      <div className={activeTab === "onchain" ? "hidden" : "block"}>
-        {snapshotVotes}
       </div>
       <div className={activeTab === "onchain" ? "block" : "hidden"}>
         {onchainVotes}

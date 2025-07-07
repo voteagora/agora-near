@@ -82,7 +82,7 @@ export const DialogProvider: FC<Props> = ({ children }) => {
       <Modal
         open={!!currentDialog}
         onClose={() =>
-          currentDialog?.type !== "SWITCH_NETWORK" && setCurrentDialog(null)
+          setCurrentDialog(null)
         }
         transparent={(currentDialog as { transparent?: boolean })?.transparent}
         className={cn(

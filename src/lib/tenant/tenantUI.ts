@@ -4,7 +4,7 @@ import { icons } from "@/icons/icons";
 type UIToggle = {
   name: string;
   enabled: boolean;
-  config?: UIConfig | UIEndorsedConfig | UIGasRelayConfig;
+  config?: UIEndorsedConfig | UIGasRelayConfig;
 };
 
 export type UIEndorsedConfig = {

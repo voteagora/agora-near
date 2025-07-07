@@ -46,36 +46,6 @@ As mentioned above, all data access code under `/api` should
 
 See `/src/app/api/common/delegates/getDelegates.ts` for an example.
 
-#### DB Access
-
-You will want to have a Database / SQL Viewer so that you can explore the data. Most of us use:
-
-- [TablePlus](https://tableplus.com/)
-
-Ping the Discord to get access to the database.
-
-You can also explore the queries here: `https://github.com/voteagora/queries`
-
-#### Database strcuture
-
-This applicaiton uses a Postgres database with the following schemas:
-
-- **center**: Admin-only access
-- **config**: Shared configuration data
-- **agora**: Shared data, such as customer information and aggregations
-- **[dao namespace]**: Dao dedicated namespaces like optimism, ens, etc.
-
-While prisma is used to manage the access to the database and typescript abstractions, the actual schema is managed in a separate [repository](https://github.com/voteagora/queries) using custom migration scripts.
-
-To make sure that you are using the latest schema, you should run the following command:
-
-```bash
-npx prisma db pull
-npx prisma generate
-```
-
-More information about how to work with the database can be found in the [Database Maunal](https://www.notion.so/argoagora/Database-Manual-7f59ed03bffb4096a2b19e34e2956085)
-
 ### Typescript vs. Javascript
 
 You will see a mix of JS and TS. Don't be alarmed. TS was meant to bolster the productivity of Javascript engineers but sometimes, it can get in the way when you are doing something simple. As a general rule, we will want backend API code written in TypeScript and will eventually move the whole app over, but if some views start as JSX files, don't complain or hammer Discord. Learn to love the chaos.
