@@ -7,6 +7,7 @@ import InputBox from "@/components/shared/InputBox";
 import Markdown from "@/components/shared/Markdown/Markdown";
 import { useFormContext } from "react-hook-form";
 import { FormValues } from "./CreateProposalForm";
+import Link from "next/link";
 
 export const tipTextStyle = "text-sm text-secondary";
 const errorTextStyle = "text-sm text-negative mt-1";
@@ -126,15 +127,39 @@ export default function ProposalDetailsForm() {
         )}
 
         {displayMode === "preview" && <Markdown content={descriptionValue} />}
-        <h4 className="text-xs font-semibold mb-1 text-secondary">Link</h4>
+        <div className="flex items-center justify-between">
+          <h4 className="text-xs font-semibold mb-1 text-secondary">Link</h4>
+          <Link
+            href="/info#forum-post-requirement"
+            target="_blank"
+            className="text-xs text-primary hover:text-secondary underline"
+          >
+            Forum post required →
+          </Link>
+        </div>
         <InputBox
-          placeholder={"https://myproposal.com"}
+          placeholder={"https://gov.near.org/your-proposal"}
           value={watch("link")}
           onChange={(next) => setValue("link", next, { shouldValidate: true })}
           error={!!errors.link}
           required
         />
-        {errors.link && <p className={errorTextStyle}>{errors.link.message}</p>}
+        {errors.link && (
+          <div className={errorTextStyle}>
+            {errors.link.message}
+            {errors.link.message?.includes("https://gov.near.org/") && (
+              <div className="mt-1">
+                <Link
+                  href="/info#forum-post-requirement"
+                  target="_blank"
+                  className="text-primary hover:text-secondary underline"
+                >
+                  Learn more →
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </VStack>
   );
