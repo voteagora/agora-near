@@ -5,6 +5,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { DelegateProfile } from "@/lib/api/delegates/types";
 import { useRouter } from "next/navigation";
 import { DelegateAddress } from "../DelegateCard/DelegateAddress";
+import { EndorsedTooltip } from "./EndorsedTooltip";
 
 export default function DelegateTableRow({
   delegate,
@@ -12,6 +13,7 @@ export default function DelegateTableRow({
   delegate: DelegateProfile;
 }) {
   const router = useRouter();
+  const endorsed = delegate.endorsed;
 
   return (
     <TableRow
@@ -20,11 +22,13 @@ export default function DelegateTableRow({
         router.push(`/delegates/${delegate.address}`);
       }}
     >
-      <TableCell className="hidden sm:flex">
+      <TableCell className="hidden sm:flex gap-2 items-center">
         <DelegateAddress address={delegate.address} shouldTruncate={false} />
+        {endorsed && <EndorsedTooltip />}
       </TableCell>
-      <TableCell className="flex sm:hidden">
+      <TableCell className="flex sm:hidden gap-2 items-center">
         <DelegateAddress address={delegate.address} />
+        {endorsed && <EndorsedTooltip />}
       </TableCell>
       <TableCell>
         {delegate.votingPower ? (

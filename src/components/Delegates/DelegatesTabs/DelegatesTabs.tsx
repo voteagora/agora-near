@@ -7,8 +7,17 @@ import { useQueryState } from "nuqs";
 import { useTransition, type ReactNode } from "react";
 import DelegatesSortFilter from "@/components/Delegates/DelegatesFilter/DelegatesSortFilter";
 import DelegatesSearch from "@/components/Delegates/DelegatesSearch/DelegatesSearch";
+import { DelegatesFilter } from "../DelegatesFilter/DelegatesFilter";
 
-export default function DelegateTabs({ children }: { children: ReactNode }) {
+export default function DelegateTabs({
+  children,
+  startTransitionFilter,
+  startTransitionSort,
+}: {
+  children: ReactNode;
+  startTransitionFilter: (callback: () => void) => void;
+  startTransitionSort: (callback: () => void) => void;
+}) {
   const [isPending, startTransition] = useTransition();
   const [tab, setTab] = useQueryState("tab", {
     defaultValue: "delegates",
@@ -38,7 +47,8 @@ export default function DelegateTabs({ children }: { children: ReactNode }) {
         </TabsList>
         <div className="flex flex-col sm:flex-row justify-between gap-3 w-full sm:w-fit">
           <DelegatesSearch />
-          <DelegatesSortFilter />
+          <DelegatesSortFilter startTransitionSort={startTransitionSort} />
+          <DelegatesFilter startTransitionFilter={startTransitionFilter} />
           <div className="flex items-center gap-2 bg-wash rounded-full px-4 py-2 shrink-0">
             <button
               onClick={() => {

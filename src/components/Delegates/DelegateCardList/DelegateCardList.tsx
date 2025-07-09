@@ -9,16 +9,23 @@ interface Props {
   delegates?: DelegateProfile[];
   hasMore: boolean;
   onLoadMore: () => void;
+  isDelegatesFiltering: boolean;
+  orderByParam: string | null;
+  filterParam: string | null;
 }
 
 export default function DelegateCardList({
   delegates,
   hasMore,
   onLoadMore,
+  isDelegatesFiltering,
+  orderByParam,
+  filterParam,
 }: Props) {
   return (
     <DialogProvider>
       <InfiniteScroll
+        key={`${orderByParam}-${filterParam}`}
         className="grid grid-flow-row grid-cols-1 sm:grid-cols-3 justify-around sm:justify-between py-4 gap-4 sm:gap-8"
         hasMore={hasMore}
         pageStart={1}
@@ -38,7 +45,7 @@ export default function DelegateCardList({
             <DelegateCard
               key={idx}
               delegate={delegate}
-              isDelegatesFiltering={false}
+              isDelegatesFiltering={isDelegatesFiltering}
             />
           );
         })}

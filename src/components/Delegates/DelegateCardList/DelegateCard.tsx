@@ -4,6 +4,7 @@ import { sanitizeContent, stripMarkdown } from "@/lib/sanitizationUtils";
 import { cn, formatNearAccountId } from "@/lib/utils";
 import Link from "next/link";
 import { DelegateActions } from "../DelegateCard/DelegateActions";
+import { EndorsedTooltip } from "./EndorsedTooltip";
 
 type DelegateCardProps = {
   delegate: DelegateProfile;
@@ -20,6 +21,7 @@ const DelegateCard = ({
   );
 
   const sanitizedTruncatedStatement = sanitizeContent(truncatedStatement);
+  const endorsed = delegate.endorsed;
 
   return (
     <div
@@ -32,8 +34,9 @@ const DelegateCard = ({
       <Link href={`/delegates/${delegate.address}`}>
         <div className="flex flex-col gap-4 h-full rounded-xl bg-wash border border-line shadow-newDefault">
           <div className="flex flex-col gap-4 justify-center pt-4">
-            <div className="border-b border-line px-4 pb-4">
+            <div className="border-b border-line px-4 pb-4 flex flex-row gap-2 items-center">
               {formatNearAccountId(delegate.address)}
+              {endorsed && <EndorsedTooltip />}
             </div>
             <div className="px-4 flex flex-row gap-4 min-h-[24px]">
               <span className="text-primary font-bold">

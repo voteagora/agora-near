@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { delegatesFilterOptions } from "@/lib/constants";
+import { delegatesSortOptions } from "@/lib/constants";
 import FilterResetListbox from "@/components/common/FilterResetListbox";
 import { SortIcon } from "@/assets/Sort";
 import Tenant from "@/lib/tenant/tenant";
@@ -29,12 +29,18 @@ export const SortOption = ({ label, value, checked }: SortOptionProps) => (
   </DropdownMenuRadioItem>
 );
 
-export default function DelegatesSortFilter() {
+export default function DelegatesSortFilter({
+  startTransitionSort,
+}: {
+  startTransitionSort: (callback: () => void) => void;
+}) {
   const { ui } = Tenant.current();
   const [isOpen, setIsOpen] = useState(false);
 
   // Use shared sort hook
-  const { orderByParam, handleSortChange, resetSort } = useDelegatesSort();
+  const { orderByParam, handleSortChange, resetSort } = useDelegatesSort({
+    startTransition: startTransitionSort,
+  });
 
   return (
     <FilterResetListbox
@@ -54,23 +60,20 @@ export default function DelegatesSortFilter() {
           value={orderByParam}
           onValueChange={(value) => handleSortChange(value)}
         >
-          {Object.keys(delegatesFilterOptions).map((key) => (
+          {Object.keys(delegatesSortOptions).map((key) => (
             <SortOption
               key={key}
               label={
-                delegatesFilterOptions[
-                  key as keyof typeof delegatesFilterOptions
-                ].value
+                delegatesSortOptions[key as keyof typeof delegatesSortOptions]
+                  .value
               }
               value={
-                delegatesFilterOptions[
-                  key as keyof typeof delegatesFilterOptions
-                ].sort
+                delegatesSortOptions[key as keyof typeof delegatesSortOptions]
+                  .sort
               }
               checked={
-                delegatesFilterOptions[
-                  key as keyof typeof delegatesFilterOptions
-                ].sort === orderByParam
+                delegatesSortOptions[key as keyof typeof delegatesSortOptions]
+                  .sort === orderByParam
               }
             />
           ))}

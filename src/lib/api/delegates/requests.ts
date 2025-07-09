@@ -32,11 +32,13 @@ export const getDelegate = async (address: string, networkId: string) => {
 export const fetchDelegates = async (
   pageSize: number,
   page: number,
-  orderBy: string | null
+  orderBy: string | null,
+  filter: string | null
 ) => {
   const orderByParam = orderBy ? `&order_by=${orderBy}` : "";
+  const filterParam = filter ? `&filter_by=${filter}` : "";
   const { data } = await axios.get<GetDelegatesResponse>(
-    `${Endpoint.Delegates}?page_size=${pageSize}&page=${page}${orderByParam}`
+    `${Endpoint.Delegates}?page_size=${pageSize}&page=${page}${orderByParam}${filterParam}`
   );
 
   return data;

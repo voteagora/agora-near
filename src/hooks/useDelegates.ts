@@ -8,9 +8,11 @@ const DELEGATES_QK = `${Endpoint.Delegates}`;
 export const useDelegates = ({
   pageSize,
   orderBy,
+  filter,
 }: {
   pageSize: number;
   orderBy: string | null;
+  filter: string | null;
 }) => {
   const {
     data,
@@ -21,9 +23,9 @@ export const useDelegates = ({
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: [`${DELEGATES_QK}-${orderBy}`],
+    queryKey: [`${DELEGATES_QK}-${orderBy}-${filter}`],
     queryFn: ({ pageParam = 1 }) => {
-      return fetchDelegates(pageSize, pageParam, orderBy);
+      return fetchDelegates(pageSize, pageParam, orderBy, filter);
     },
     getNextPageParam: (currentPage, _, pageParam) => {
       if (currentPage.count <= pageParam * pageSize) return undefined;

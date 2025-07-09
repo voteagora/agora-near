@@ -7,8 +7,15 @@ import DelegateCardList from "./DelegateCardList";
 import DelegateTable from "./DelegateTable";
 import { DelegateCardLoadingState } from "./DelegateCardWrapper";
 
-export default function DelegateContent() {
+export default function DelegateContent({
+  isPendingFilter,
+  isPendingSort,
+}: {
+  isPendingFilter: boolean;
+  isPendingSort: boolean;
+}) {
   const [orderByParam] = useQueryState("order_by");
+  const [filterParam] = useQueryState("filter");
 
   const [layout] = useQueryState("layout", {
     defaultValue: "grid",
@@ -18,6 +25,7 @@ export default function DelegateContent() {
     useDelegates({
       pageSize: 10,
       orderBy: orderByParam,
+      filter: filterParam,
     });
 
   const onLoadMore = useCallback(() => {
@@ -37,12 +45,18 @@ export default function DelegateContent() {
       delegates={data}
       hasMore={hasNextPage}
       onLoadMore={onLoadMore}
+      isDelegatesFiltering={isPendingFilter || isPendingSort}
+      orderByParam={orderByParam}
+      filterParam={filterParam}
     />
   ) : (
     <DelegateTable
       delegates={data}
       hasMore={hasNextPage}
       onLoadMore={onLoadMore}
+      isDelegatesFiltering={isPendingFilter || isPendingSort}
+      orderByParam={orderByParam}
+      filterParam={filterParam}
     />
   );
 }

@@ -50,6 +50,7 @@ export type DelegateProfile = {
         value: string;
       }[]
     | null;
+  endorsed?: boolean | null;
   statement?: string | null;
   votingPower?: string | null;
   participationRate?: string | null;
