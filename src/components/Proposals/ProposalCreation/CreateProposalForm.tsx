@@ -46,7 +46,8 @@ export default function CreateProposalForm({
       link: "",
       options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
     },
-    mode: "onBlur",
+    reValidateMode: "onSubmit",
+    mode: "onSubmit",
   });
 
   return (

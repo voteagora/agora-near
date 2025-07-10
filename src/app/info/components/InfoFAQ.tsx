@@ -353,14 +353,14 @@ const faqs: FAQ[] = [
   {
     id: "proposal-process",
     question: "What is the proposal process?",
-    answer:
-      "The proposal process begins with community discussion on the governance forum. Once a proposal gains sufficient support, it can be submitted on-chain for voting. Proposals must meet quorum requirements and pass with the required majority to be implemented.",
-  },
-  {
-    id: "forum-post-requirement",
-    question: "Why must proposals be first posted on the forum?",
     answer: (
       <div className="space-y-4">
+        <p>
+          The proposal process begins with community discussion on the
+          governance forum. Once a proposal gains sufficient support, it can be
+          submitted on-chain for voting. Proposals must meet quorum requirements
+          and pass with the required majority to be implemented.
+        </p>
         <p>
           All proposals require a forum post on{" "}
           <a

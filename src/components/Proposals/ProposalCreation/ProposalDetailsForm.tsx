@@ -8,6 +8,7 @@ import Markdown from "@/components/shared/Markdown/Markdown";
 import { useFormContext } from "react-hook-form";
 import { FormValues } from "./CreateProposalForm";
 import Link from "next/link";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 
 export const tipTextStyle = "text-sm text-secondary";
 const errorTextStyle = "text-sm text-negative mt-1";
@@ -35,7 +36,7 @@ export default function ProposalDetailsForm() {
         <InputBox
           placeholder={"I'd like to propose..."}
           value={watch("title")}
-          onChange={(next) => setValue("title", next, { shouldValidate: true })}
+          onChange={(next) => setValue("title", next)}
           error={!!errors.title}
           required
         />
@@ -112,11 +113,7 @@ export default function ProposalDetailsForm() {
             <textarea
               className={`text-tertiary p-4 rounded-md outline-none w-full min-h-[16rem] border ${errors.description ? "border-negative" : "border-line"}`}
               value={descriptionValue}
-              onChange={(e) =>
-                setValue("description", e.target.value, {
-                  shouldValidate: true,
-                })
-              }
+              onChange={(e) => setValue("description", e.target.value)}
               placeholder="I'm a proposal body, and I like markdown formatting..."
               required
             />
@@ -130,17 +127,18 @@ export default function ProposalDetailsForm() {
         <div className="flex items-center justify-between">
           <h4 className="text-xs font-semibold mb-1 text-secondary">Link</h4>
           <Link
-            href="/info#forum-post-requirement"
+            href="/info#proposal-process"
             target="_blank"
-            className="text-xs text-primary hover:text-secondary underline"
+            className="text-xs text-primary hover:text-secondary underline flex items-center gap-1"
           >
-            Forum post required →
+            Forum post required{" "}
+            <ArrowTopRightOnSquareIcon className="w-4 h-4" />
           </Link>
         </div>
         <InputBox
           placeholder={"https://gov.near.org/your-proposal"}
           value={watch("link")}
-          onChange={(next) => setValue("link", next, { shouldValidate: true })}
+          onChange={(next) => setValue("link", next)}
           error={!!errors.link}
           required
         />
@@ -150,11 +148,11 @@ export default function ProposalDetailsForm() {
             {errors.link.message?.includes("https://gov.near.org/") && (
               <div className="mt-1">
                 <Link
-                  href="/info#forum-post-requirement"
+                  href="/info#proposal-process"
                   target="_blank"
-                  className="text-primary hover:text-secondary underline"
+                  className="text-primary hover:text-secondary underline flex items-center gap-1"
                 >
-                  Learn more →
+                  Learn more <ArrowTopRightOnSquareIcon className="w-4 h-4" />
                 </Link>
               </div>
             )}
