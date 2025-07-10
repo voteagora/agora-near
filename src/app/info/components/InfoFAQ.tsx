@@ -353,8 +353,36 @@ const faqs: FAQ[] = [
   {
     id: "proposal-process",
     question: "What is the proposal process?",
-    answer:
-      "The proposal process begins with community discussion on the governance forum. Once a proposal gains sufficient support, it can be submitted on-chain for voting. Proposals must meet quorum requirements and pass with the required majority to be implemented.",
+    answer: (
+      <div className="space-y-4">
+        <p>
+          The proposal process begins with community discussion on the
+          governance forum. Once a proposal gains sufficient support, it can be
+          submitted on-chain for voting. Proposals must meet quorum requirements
+          and pass with the required majority to be implemented.
+        </p>
+        <p>
+          All proposals require a forum post on{" "}
+          <a
+            href="https://gov.near.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline hover:text-secondary"
+          >
+            gov.near.org
+          </a>{" "}
+          before on-chain submission. This ensures proper community discussion.
+        </p>
+        <div className="bg-gray-50 border border-gray-200 rounded p-4">
+          <p className="font-semibold mb-2">Process:</p>
+          <ol className="list-decimal list-inside space-y-1 text-sm">
+            <li>Create a forum post discussing your proposal</li>
+            <li>Gather feedback and build community support</li>
+            <li>Submit on-chain using your forum post URL</li>
+          </ol>
+        </div>
+      </div>
+    ),
   },
   {
     id: "locking-period",

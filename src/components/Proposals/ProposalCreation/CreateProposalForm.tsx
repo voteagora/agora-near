@@ -12,7 +12,14 @@ import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-  link: z.string().min(1, "Link is required").url("Must be a valid URL"),
+  link: z
+    .string()
+    .min(1, "Link is required")
+    .url("Must be a valid URL")
+    .refine((url) => url.includes("https://gov.near.org/"), {
+      message:
+        "Proposal links must be from https://gov.near.org/. Create a forum post first to gather community support.",
+    }),
   options: z
     .array(
       z.object({
@@ -39,7 +46,8 @@ export default function CreateProposalForm({
       link: "",
       options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
     },
-    mode: "onBlur",
+    reValidateMode: "onSubmit",
+    mode: "onSubmit",
   });
 
   return (
