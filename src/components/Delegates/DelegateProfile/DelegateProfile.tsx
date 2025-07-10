@@ -4,6 +4,7 @@ import React from "react";
 import { DelegateActions } from "./DelegateActions";
 import { DelegateAddress } from "../DelegateCard/DelegateAddress";
 import { DelegateCardEditProfile } from "../DelegateCard/DelegateCardEditProfile";
+import { EndorsedTooltip } from "../DelegateCardList/EndorsedTooltip";
 
 type DelegateProfileProps = {
   profile: {
@@ -19,6 +20,7 @@ type DelegateProfileProps = {
         }[]
       | null;
     statement?: string | null;
+    endorsed?: boolean | null;
   };
   isEditMode?: boolean;
   stats?: {
@@ -44,7 +46,10 @@ export default function DelegateProfile({
       )}
       <div className="flex flex-col bg-wash border border-line shadow-newDefault rounded-xl">
         <div className="flex flex-col items-stretch p-7">
-          <DelegateAddress address={profile.address} shouldTruncate={false} />
+          <div className="flex flex-row items-center gap-2">
+            <DelegateAddress address={profile.address} shouldTruncate={false} />
+            {profile.endorsed && <EndorsedTooltip />}
+          </div>
         </div>
         {!isEditMode && (
           <div className="flex flex-col p-7 border-t border-line">

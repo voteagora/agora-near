@@ -1,7 +1,6 @@
 "use client";
 
 import DelegateStatementContainer from "./DelegateStatementContainer";
-import TopIssues from "./TopIssues";
 
 interface Props {
   statement: string;
@@ -16,11 +15,6 @@ const DelegateStatementWrapper = ({ statement, topIssues, address }: Props) => {
   return (
     <>
       <DelegateStatementContainer statement={statement} address={address} />
-      {statement && (
-        <>
-          <TopIssues topIssues={topIssues} />
-        </>
-      )}
     </>
   );
 };

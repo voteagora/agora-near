@@ -3,8 +3,8 @@ import { cn } from "@/lib/utils";
 import FilterResetListbox from "@/components/common/FilterResetListbox";
 import { delegatesFilterOptions } from "@/lib/constants";
 import { useDelegatesFilter } from "./useDelegatesFilter";
-import { FilterIcon } from "lucide-react";
 import { CheckmarkIcon } from "react-hot-toast";
+import { FilterIcon } from "@/icons/filter";
 
 type FilterButtonProps = {
   label: string;
