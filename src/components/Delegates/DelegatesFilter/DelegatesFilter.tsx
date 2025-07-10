@@ -68,7 +68,7 @@ export const DelegatesFilter = ({
       <div className="self-stretch px-2.5 py-6 bg-wash flex flex-col justify-start items-start">
         <div className="self-stretch inline-flex justify-start items-start gap-2.5 flex-wrap content-start">
           <FilterButton
-            label="All Delegates"
+            label={delegatesFilterOptions.all.value}
             isActive={filterParam === delegatesFilterOptions.all.filter}
             onClick={() =>
               handleFilterChange(delegatesFilterOptions.all.filter)
