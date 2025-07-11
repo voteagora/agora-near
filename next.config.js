@@ -1,19 +1,7 @@
 /** @type {import('next').NextConfig} */
 const path = require("path");
 
-// Environment-based API endpoint configuration
-const getApiEndpoint = () => {
-  if (process.env.NEXT_PUBLIC_AGORA_ENV === "dev") {
-    return "https://near-api-158107670134.us-west1.run.app/api";
-  }
-  // Default to production
-  return "https://near-api-237405837378.us-west1.run.app/api";
-};
-
 const nextConfig = {
-  env: {
-    NEXT_PUBLIC_NEAR_API_ENDPOINT: getApiEndpoint(),
-  },
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },
