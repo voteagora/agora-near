@@ -1,9 +1,9 @@
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import TokenAmount from "@/components/shared/TokenAmount";
 import { DelegateProfile } from "@/lib/api/delegates/types";
 import { sanitizeContent, stripMarkdown } from "@/lib/sanitizationUtils";
 import { cn, formatNearAccountId } from "@/lib/utils";
 import Link from "next/link";
-import { NearDelegateActions } from "../DelegateCard/NearDelegateActions";
+import { DelegateActions } from "../DelegateCard/DelegateActions";
 
 type DelegateCardProps = {
   delegate: DelegateProfile;
@@ -37,7 +37,7 @@ const DelegateCard = ({
             </div>
             <div className="px-4 flex flex-row gap-4 min-h-[24px]">
               <span className="text-primary font-bold">
-                <NearTokenAmount
+                <TokenAmount
                   amount={delegate.votingPower ?? "0"}
                   minimumFractionDigits={1}
                   maximumSignificantDigits={1}
@@ -56,7 +56,7 @@ const DelegateCard = ({
             </div>
           </div>
           <div className="min-h-[24px] px-4 pb-4">
-            <NearDelegateActions delegate={delegate} />
+            <DelegateActions delegate={delegate} />
           </div>
         </div>
       </Link>

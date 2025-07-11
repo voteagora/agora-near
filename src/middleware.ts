@@ -62,9 +62,6 @@ function setCorsHeaders(request: NextRequest, response: Response) {
 
   Currently only validating presence and formatting of API Key for /apiB
   routes.
-
-  Consider fully validating user api key against postgres pending prisma
-  client postgres support on edge runtime.
 */
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;

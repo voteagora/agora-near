@@ -1,4 +1,4 @@
-import { icons } from "@/icons/icons";
+import { icons } from "@/assets/icons";
 import Image from "next/image";
 import Tenant from "@/lib/tenant/tenant";
 

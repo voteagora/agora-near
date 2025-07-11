@@ -1,10 +1,10 @@
 "use client";
 
-import { rgbStringToHex } from "@/app/lib/utils/color";
-import { useNearTokenBalance } from "@/hooks/useNearTokenBalance";
+import { rgbStringToHex } from "@/lib/color";
+import { useTokenBalance } from "@/hooks/useTokenBalance";
 import { useVotingPower } from "@/hooks/useVotingPower";
-import { Logout } from "@/icons/logout";
-import walletIcon from "@/icons/wallet.svg";
+import { Logout } from "@/assets/logout";
+import walletIcon from "@/assets/wallet.svg";
 import Tenant from "@/lib/tenant/tenant";
 import { Popover, Transition } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -13,7 +13,7 @@ import { ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
 import { AccountActions } from "../AccountActions/AccountActionsButton";
 import { PanelRow } from "../Delegates/DelegateProfile/DelegateProfile";
-import NearTokenAmount from "../shared/NearTokenAmount";
+import TokenAmount from "../shared/TokenAmount";
 import { formatNearAccountId } from "@/lib/utils";
 
 type Props = {
@@ -35,7 +35,7 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
   const [shouldHydrate, setShouldHydrate] = useState(false);
 
   const { data: tokenBalance, isFetching: isFetchingTokenBalance } =
-    useNearTokenBalance(shouldHydrate ? accountId : undefined);
+    useTokenBalance(shouldHydrate ? accountId : undefined);
 
   const { data: votingPower, isLoading: isLoadingVotingPower } = useVotingPower(
     shouldHydrate ? accountId : undefined
@@ -101,7 +101,7 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
                               <RowSkeletonWrapper
                                 isLoading={isFetchingTokenBalance}
                               >
-                                <NearTokenAmount
+                                <TokenAmount
                                   amount={tokenBalance || BigInt(0)}
                                 />
                               </RowSkeletonWrapper>
@@ -113,7 +113,7 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
                               <RowSkeletonWrapper
                                 isLoading={isLoadingVotingPower}
                               >
-                                <NearTokenAmount
+                                <TokenAmount
                                   amount={votingPower || BigInt(0)}
                                   currency="veNEAR"
                                 />

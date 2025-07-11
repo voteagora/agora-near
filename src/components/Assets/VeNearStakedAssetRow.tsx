@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
-import NearTokenAmount from "../shared/NearTokenAmount";
+import TokenAmount from "../shared/TokenAmount";
 import { useNear } from "@/contexts/NearContext";
 import { LINEAR_POOL, STNEAR_POOL } from "@/lib/constants";
 
@@ -29,7 +29,7 @@ export const VeNearStakedAssetRow = ({
     return [
       {
         title: "Staked balance",
-        subtitle: <NearTokenAmount amount={stakedBalance} />,
+        subtitle: <TokenAmount amount={stakedBalance} />,
       },
     ];
   }, [stakedBalance]);

@@ -1,39 +1,9 @@
 import { StaticImageData } from "next/image";
-import { icons } from "@/icons/icons";
+import { icons } from "@/assets/icons";
 
 type UIToggle = {
   name: string;
   enabled: boolean;
-  config?: UIEndorsedConfig | UIGasRelayConfig;
-};
-
-export type UIEndorsedConfig = {
-  tooltip: string;
-  showFilterLabel: string;
-  hideFilterLabel: string;
-  defaultFilter: boolean;
-};
-
-export type UIGasRelayConfig = {
-  signature?: {
-    version?: string;
-  };
-  minBalance: string;
-  sponsorAddress: `0x${string}`;
-  minVPToUseGasRelay: string;
-};
-
-// Note: Modular accounts are not yet supported
-// https://accountkit.alchemy.com/smart-contracts/light-account
-export type UISmartAccountConfig = {
-  bundlerUrl: string;
-  entryPointAddress: `0x${string}`;
-  factoryAddress: `0x${string}`;
-  paymasterAddress: `0x${string}`;
-  paymasterUrl: string;
-  salt: bigint;
-  type: "LightAccount";
-  version: "v1.1.0" | "v2.0.0";
 };
 
 export type UILink = {
@@ -77,27 +47,14 @@ type UIGovernanceIssue = {
   title: string;
 };
 
-type UIGovernanceStakeholder = {
-  key: string;
-  title: string;
-};
-
-type UIOrganization = {
-  title: string;
-};
-
 type TenantUIParams = {
   assets: UIAssets;
   delegates?: UIDelegates;
-  googleAnalytics?: string;
   governanceIssues?: UIGovernanceIssue[];
-  governanceStakeholders?: UIGovernanceStakeholder[];
   hideAgoraBranding?: boolean;
   links?: UILink[];
   logo: string;
-  organization?: UIOrganization;
   pages?: UIPage[];
-  smartAccountConfig?: UISmartAccountConfig;
   title: string;
   toggles?: UIToggle[];
   customization?: {
@@ -130,13 +87,10 @@ type TenantUIParams = {
 export class TenantUI {
   private _assets: UIAssets;
   private _delegates?: UIDelegates;
-  private _googleAnalytics?: string;
   private _governanceIssues?: UIGovernanceIssue[];
-  private _governanceStakeholders?: UIGovernanceStakeholder[];
   private _hideAgoraBranding?: boolean;
   private _links?: UILink[];
   private _logo: string;
-  private _organization?: UIOrganization;
   private _pages?: UIPage[];
   private _title: string;
   private _toggles?: UIToggle[];
@@ -166,7 +120,6 @@ export class TenantUI {
   private _pagesCache: { [key: string]: UIPage | undefined } = {};
   private _togglesCache: { [key: string]: UIToggle | undefined } = {};
 
-  private _smartAccountConfig?: UISmartAccountConfig;
   private _tacticalStrings?: {
     myBalance?: string;
   };
@@ -176,15 +129,11 @@ export class TenantUI {
     customization,
     delegates,
     favicon,
-    googleAnalytics,
     governanceIssues,
-    governanceStakeholders,
     hideAgoraBranding,
     links,
     logo,
-    organization,
     pages,
-    smartAccountConfig,
     title,
     toggles,
     tacticalStrings,
@@ -194,15 +143,11 @@ export class TenantUI {
     this._customization = customization;
     this._delegates = delegates;
     this._favicon = favicon;
-    this._googleAnalytics = googleAnalytics;
     this._governanceIssues = governanceIssues;
-    this._governanceStakeholders = governanceStakeholders;
     this._hideAgoraBranding = hideAgoraBranding;
     this._links = links;
     this._logo = logo;
-    this._organization = organization;
     this._pages = pages;
-    this._smartAccountConfig = smartAccountConfig;
     this._title = title;
     this._toggles = toggles;
     this._tacticalStrings = tacticalStrings;
@@ -221,16 +166,8 @@ export class TenantUI {
     return this._governanceIssues;
   }
 
-  public get governanceStakeholders(): UIGovernanceStakeholder[] | undefined {
-    return this._governanceStakeholders;
-  }
-
   public get hideAgoraBranding(): boolean {
     return this._hideAgoraBranding || false;
-  }
-
-  public get googleAnalytics(): string | undefined {
-    return this._googleAnalytics;
   }
 
   public get title(): string {
@@ -239,10 +176,6 @@ export class TenantUI {
 
   public get logo(): string {
     return this._logo;
-  }
-
-  public get organization(): UIOrganization | undefined {
-    return this._organization;
   }
 
   public get customization():
@@ -308,10 +241,6 @@ export class TenantUI {
     const result = this._pages?.find((t) => t.route === route);
     this._pagesCache[route] = result;
     return result;
-  }
-
-  public get smartAccountConfig(): UISmartAccountConfig | undefined {
-    return this._smartAccountConfig;
   }
 
   public get tacticalStrings():

@@ -1,6 +1,6 @@
 "use client";
 
-import discord from "@/icons/discord.svg";
+import discord from "@/assets/discord.svg";
 import Tenant from "@/lib/tenant/tenant";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -12,7 +12,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import TokenAmount from "@/components/shared/TokenAmount";
 
 import { useTotalSupply } from "@/hooks/useTotalNearSupply";
 
@@ -62,7 +62,7 @@ export default function DAOMetricsHeader() {
                         {isLoadingSupply || !totalSupplyFromNear ? (
                           "-"
                         ) : (
-                          <NearTokenAmount amount={totalSupplyFromNear} />
+                          <TokenAmount amount={totalSupplyFromNear} />
                         )}
                         <span className="hidden sm:inline">supply</span>
                       </span>

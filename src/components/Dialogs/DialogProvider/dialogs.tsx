@@ -1,39 +1,36 @@
 import { DialogDefinitions } from "./types";
-import { NearDelegateDialog } from "../DelegateDialog/NearDelegateDialog";
-import { NearUndelegateDialog } from "../UndelegateDialog/NearUndelegateDialog";
-import { NearVoteDialog } from "../NearVoteDialog";
+import { DelegateDialog } from "../DelegateDialog/DelegateDialog";
+import { UndelegateDialog } from "../UndelegateDialog/UndelegateDialog";
+import { NearVoteDialog } from "../VoteDialog";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
-import { NearVoteOptionsDialog } from "../NearVoteOptionsDialog";
-import { NearProposalModal } from "@/components/Proposals/NearProposals/NearProposalModal";
-import { LockDialogSource, NearLockDialog } from "../NearLockDialog/index";
+import { VoteOptionsDialog } from "../VoteOptionsDialog";
+import { ProposalModal } from "@/components/Proposals/Proposals/ProposalModal";
+import { LockDialogSource, NearLockDialog } from "../LockDialog/index";
 import { VeNearOnboardingModal } from "@/app/near/VeNearOnboardingModal";
-import {
-  NearStakingDialog,
-  StakingSource,
-} from "../NearStakingDialog/NearStakingDialog";
+import { StakingDialog, StakingSource } from "../StakingDialog/StakingDialog";
 import { VotingPowerProjectionsDialog } from "../VotingPowerProjectionsDialog";
-import { NearUnlockDialog } from "../NearUnlockDialog";
+import { UnlockDialog } from "../UnlockDialog";
 
 export type DialogType =
-  | NearDelegateDialogType
-  | NearUndelegateDialogType
+  | DelegateDialogType
+  | UndelegateDialogType
   | NearProposalDialogType
   | NearVoteDialogType
-  | NearVoteOptionsDialogType
+  | VoteOptionsDialogType
   | NearLockDialogType
   | VeNearOnboardingDialogType
-  | NearStakingDialogType
+  | StakingDialogType
   | VotingPowerProjectionsDialogType
-  | NearUnlockDialogType;
+  | UnlockDialogType;
 
-export type NearDelegateDialogType = {
+export type DelegateDialogType = {
   type: "NEAR_DELEGATE";
   params: {
     delegateAddress: string;
   };
 };
 
-export type NearUndelegateDialogType = {
+export type UndelegateDialogType = {
   type: "NEAR_UNDELEGATE";
   params: {
     delegateAddress: string;
@@ -54,7 +51,7 @@ export type NearLockDialogType = {
   };
 };
 
-export type NearStakingDialogType = {
+export type StakingDialogType = {
   type: "NEAR_STAKING";
   className?: string;
   params: {
@@ -73,7 +70,7 @@ export type NearVoteDialogType = {
   };
 };
 
-export type NearVoteOptionsDialogType = {
+export type VoteOptionsDialogType = {
   type: "NEAR_VOTE_OPTIONS";
   params: {
     proposal: ProposalInfo;
@@ -94,7 +91,7 @@ export type VotingPowerProjectionsDialogType = {
   };
 };
 
-export type NearUnlockDialogType = {
+export type UnlockDialogType = {
   type: "NEAR_UNLOCK";
   params: Record<string, never>;
 };
@@ -102,7 +99,7 @@ export type NearUnlockDialogType = {
 export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_DELEGATE: ({ delegateAddress }, closeDialog) => {
     return (
-      <NearDelegateDialog
+      <DelegateDialog
         delegateAddress={delegateAddress}
         closeDialog={closeDialog}
       />
@@ -110,14 +107,14 @@ export const dialogs: DialogDefinitions<DialogType> = {
   },
   NEAR_UNDELEGATE: ({ delegateAddress }, closeDialog) => {
     return (
-      <NearUndelegateDialog
+      <UndelegateDialog
         delegateAddress={delegateAddress}
         closeDialog={closeDialog}
       />
     );
   },
   NEAR_PROPOSAL: () => {
-    return <NearProposalModal />;
+    return <ProposalModal />;
   },
   NEAR_LOCK: (params, closeDialog) => {
     return <NearLockDialog closeDialog={closeDialog} {...params} />;
@@ -135,7 +132,7 @@ export const dialogs: DialogDefinitions<DialogType> = {
     />
   ),
   NEAR_VOTE_OPTIONS: ({ proposal, config }, closeDialog) => (
-    <NearVoteOptionsDialog
+    <VoteOptionsDialog
       proposal={proposal}
       config={config}
       closeDialog={closeDialog}
@@ -145,7 +142,7 @@ export const dialogs: DialogDefinitions<DialogType> = {
     return <VeNearOnboardingModal closeDialog={closeDialog} />;
   },
   NEAR_STAKING: (params, closeDialog) => {
-    return <NearStakingDialog closeDialog={closeDialog} {...params} />;
+    return <StakingDialog closeDialog={closeDialog} {...params} />;
   },
   VOTING_POWER_PROJECTIONS: ({ votingPower }, closeDialog) => {
     return (
@@ -156,6 +153,6 @@ export const dialogs: DialogDefinitions<DialogType> = {
     );
   },
   NEAR_UNLOCK: (_, closeDialog) => {
-    return <NearUnlockDialog closeDialog={closeDialog} />;
+    return <UnlockDialog closeDialog={closeDialog} />;
   },
 };

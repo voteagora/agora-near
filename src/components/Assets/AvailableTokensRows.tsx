@@ -5,7 +5,7 @@ import {
 } from "@/lib/constants";
 import { useNear } from "@/contexts/NearContext";
 import { TokenWithBalance } from "@/lib/types";
-import NearTokenAmount from "../shared/NearTokenAmount";
+import TokenAmount from "../shared/TokenAmount";
 import { AssetRow } from "./AssetRow";
 
 interface AvailableTokenRowProps {
@@ -61,7 +61,7 @@ export const AvailableTokenRow = memo<AvailableTokenRowProps>(
           {
             title: "Lockable",
             subtitle: (
-              <NearTokenAmount
+              <TokenAmount
                 amount={token.balance}
                 currency={token.metadata?.symbol}
                 maximumSignificantDigits={4}

@@ -1,10 +1,10 @@
 "use client";
 
-import { rgbStringToHex } from "@/app/lib/utils/color";
+import { rgbStringToHex } from "@/lib/color";
 import { ChartSkeleton } from "@/components/Proposals/ProposalPage/ProposalChart/ProposalChart";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
-import { formatNearTime, getVenearForQuorum } from "@/lib/nearProposalUtils";
+import { formatNearTime, getVenearForQuorum } from "@/lib/proposalUtils";
 import Tenant from "@/lib/tenant/tenant";
 import {
   formatFullDate,

@@ -19,7 +19,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { StakingSource } from "./NearStakingDialog/NearStakingDialog";
+import { StakingSource } from "./StakingDialog/StakingDialog";
 
 const supportedPools: StakingPool[] = [LINEAR_POOL, STNEAR_POOL];
 

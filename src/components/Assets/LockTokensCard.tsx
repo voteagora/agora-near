@@ -3,7 +3,7 @@
 import { memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import LockClosedIcon from "@/assets/icons/lock_closed.svg";
+import LockClosedIcon from "@/assets/lock_closed.svg";
 
 import Image from "next/image";
 import { ArrowRightIcon } from "lucide-react";

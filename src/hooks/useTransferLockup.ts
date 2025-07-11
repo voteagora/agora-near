@@ -3,7 +3,7 @@ import { useWriteHOSContract } from "./useWriteHOSContract";
 import { useNear } from "@/contexts/NearContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
-import { NEAR_BALANCE_QK } from "./useNearBalance";
+import { NEAR_BALANCE_QK } from "./useBalance";
 
 export const useTransferLockup = ({
   onSuccess,

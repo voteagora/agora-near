@@ -1,6 +1,6 @@
 import { ArrowRightIcon } from "lucide-react";
 import { memo } from "react";
-import GreenStar from "../../assets/icons/green_star.svg";
+import GreenStar from "@/assets/green_star.svg";
 import Image from "next/image";
 
 export const GovernanceRewardsCard = memo(() => {

@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import { TimelineChart } from "@/components/Proposals/ProposalPage/Charts/TimelineChart";
 import TreeMapChart from "../TreeMapChart/TreeMapChart";
 import BubbleChart from "../BubbleChart/BubbleChart";
-import { icons } from "@/icons/icons";
+import { icons } from "@/assets/icons";
 import Image from "next/image";
-import { useProposalChartData } from "@/hooks/useNearProposalChartData";
+import { useProposalChartData } from "@/hooks/useProposalChartData";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 
 export default function ProposalChart({

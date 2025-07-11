@@ -1,7 +1,7 @@
 import { VStack } from "@/components/Layout/Stack";
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import TokenAmount from "@/components/shared/TokenAmount";
 import { VotingConfig } from "@/lib/contracts/types/voting";
-import { getVotingDays } from "@/lib/nearProposalUtils";
+import { getVotingDays } from "@/lib/proposalUtils";
 import Big from "big.js";
 
 type InfoPanelProps = {
@@ -31,7 +31,7 @@ export default function InfoPanel({ votingConfig }: InfoPanelProps) {
           <li>Once approved, voting will be open for {votingDuration}.</li>
           <li>
             Creating a proposal requires a minimum deposit of{" "}
-            <NearTokenAmount amount={totalDeposit} minimumFractionDigits={2} />.
+            <TokenAmount amount={totalDeposit} minimumFractionDigits={2} />.
           </li>
         </ul>
       </div>

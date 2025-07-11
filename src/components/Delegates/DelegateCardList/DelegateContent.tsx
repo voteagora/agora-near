@@ -1,6 +1,6 @@
 "use client";
 
-import { useNearDelegates } from "@/hooks/useNearDelegates";
+import { useDelegates } from "@/hooks/useDelegates";
 import { useQueryState } from "nuqs";
 import { useCallback } from "react";
 import DelegateCardList from "./DelegateCardList";
@@ -15,7 +15,7 @@ export default function DelegateContent() {
   });
 
   const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
-    useNearDelegates({
+    useDelegates({
       pageSize: 10,
       orderBy: orderByParam,
     });

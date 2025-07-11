@@ -2,12 +2,10 @@ import React from "react";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import Tenant from "@/lib/tenant/tenant";
-import { icons } from "@/assets/icons/icons";
-import { TENANT_NAMESPACES } from "@/lib/constants";
-import { Button } from "@/components/ui/button";
+import { icons } from "@/assets/icons";
 
 export const InfoHero = () => {
-  const { ui, namespace } = Tenant.current();
+  const { ui } = Tenant.current();
   const page = ui!.page("info");
 
   const rotationClasses = [

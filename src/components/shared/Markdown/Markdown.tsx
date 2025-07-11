@@ -3,7 +3,7 @@
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import styles from "./markdown.module.scss";
 import Tenant from "@/lib/tenant/tenant";
-import cn from "classnames";
+import { cn } from "@/lib/utils";
 
 const defaults = {
   primary: "23 23 23",

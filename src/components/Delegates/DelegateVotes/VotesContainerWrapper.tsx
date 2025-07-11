@@ -2,7 +2,7 @@
 
 import DelegateVotes from "./DelegateVotes";
 import VotesContainer from "./VotesContainer";
-import { useNearVoteHistory } from "@/hooks/useNearVoteHistory";
+import { useVoteHistory } from "@/hooks/useVoteHistory";
 import { useCallback } from "react";
 
 interface Props {
@@ -16,7 +16,7 @@ const VotesContainerWrapper = ({ address }: Props) => {
     fetchNextPage,
     isLoading,
     isFetchingNextPage,
-  } = useNearVoteHistory({
+  } = useVoteHistory({
     pageSize: 10,
     address,
   });

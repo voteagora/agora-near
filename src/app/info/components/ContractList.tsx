@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
-import linkIcon from "@/assets/icons/link.svg";
+import linkIcon from "@/assets/link.svg";
 import Link from "next/link";
 
 const ContractList = () => {

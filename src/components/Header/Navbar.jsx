@@ -3,8 +3,6 @@
 import Tenant from "@/lib/tenant/tenant";
 import { usePathname } from "next/navigation";
 import { HeaderLink } from "./HeaderLink";
-import { useAccount } from "wagmi";
-import { useAgoraContext } from "@/contexts/AgoraContext";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -12,9 +10,6 @@ export default function Navbar() {
 
   const hasProposals = ui.toggle("proposals") && ui.toggle("proposals").enabled;
   const hasProposalsHref = Boolean(ui.page("proposals")?.href);
-
-  const { address } = useAccount();
-  const { isConnected } = useAgoraContext();
 
   return (
     <div

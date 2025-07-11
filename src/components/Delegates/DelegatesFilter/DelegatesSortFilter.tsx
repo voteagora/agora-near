@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { delegatesFilterOptions } from "@/lib/constants";
 import FilterResetListbox from "@/components/common/FilterResetListbox";
-import { SortIcon } from "@/icons/Sort";
+import { SortIcon } from "@/assets/Sort";
 import Tenant from "@/lib/tenant/tenant";
-import { rgbStringToHex } from "@/app/lib/utils/color";
+import { rgbStringToHex } from "@/lib/color";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useDelegatesSort } from "@/components/Delegates/DelegatesFilter/useDelegatesSort";
 import { DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";

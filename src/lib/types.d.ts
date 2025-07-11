@@ -1,25 +1,6 @@
 import { TENANT_NAMESPACES } from "./constants";
 import { DelegateChunk } from "@/app/staking/components/delegates/DelegateCardList";
 import { StaticImageData } from "next/image";
-export type MetricTimeSeriesValue = {
-  day: string;
-  date: string;
-  value: any;
-};
-
-export type StakedDeposit = {
-  amount: string;
-  delegatee: string;
-  depositor: string;
-  id: number;
-};
-
-export type ChartVote = {
-  voter: string;
-  support: string;
-  weight: string;
-  block_number: string;
-};
 
 export type VoterStats = {
   voter: string;

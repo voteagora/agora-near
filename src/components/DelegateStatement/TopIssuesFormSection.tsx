@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { icons } from "@/icons/icons";
+import { icons } from "@/assets/icons";
 import { Input } from "@/components/ui/input";
 import { type UseFormReturn, useWatch } from "react-hook-form";
 import { type DelegateStatementFormValues } from "./CurrentDelegateStatement";

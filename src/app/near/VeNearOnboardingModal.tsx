@@ -7,7 +7,7 @@ import {
   useHouseOfStakeOnboardingContext,
 } from "@/components/Onboarding/HouseOfStakeOnboardingProvider";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import TokenAmount from "@/components/shared/TokenAmount";
 import { RadioButton } from "@/components/ui/radio-button";
 import { useHouseOfStakeOnboarding } from "@/hooks/useHouseOfStakeOnboarding";
 import { utils } from "near-api-js";
@@ -184,7 +184,7 @@ export const VeNearOnboardingModalContent = ({
               </div>
               <div className="flex flex-row items-center">
                 {selectedToken ? (
-                  <NearTokenAmount
+                  <TokenAmount
                     amount={selectedToken.balance}
                     currency={selectedToken.symbol}
                   />
@@ -213,7 +213,7 @@ export const VeNearOnboardingModalContent = ({
                   >
                     <span className="font-medium">{token.symbol}</span>
                     <span className="text-sm">
-                      <NearTokenAmount
+                      <TokenAmount
                         amount={token.balance}
                         currency={token.symbol}
                       />
@@ -228,7 +228,7 @@ export const VeNearOnboardingModalContent = ({
                 <span className="font-medium">Receive</span>
               </div>
               <span className="text-lg">
-                <NearTokenAmount
+                <TokenAmount
                   amount={estimatedVeNear}
                   currency="veNEAR"
                   maximumSignificantDigits={2}
@@ -317,7 +317,7 @@ export const VeNearOnboardingModalContent = ({
           <div className="mb-4">
             <span className="text-sm text-primary">You are about to lock</span>
             <div className="font-medium text-lg">
-              <NearTokenAmount
+              <TokenAmount
                 amount={utils.format.parseNearAmount(enteredAmount) || "0"}
                 currency={selectedToken?.symbol || ""}
                 maximumSignificantDigits={6}
@@ -327,7 +327,7 @@ export const VeNearOnboardingModalContent = ({
           <div className="mb-4">
             <span className="text-sm text-primary">You will receive</span>
             <div className="font-medium text-lg">
-              <NearTokenAmount amount={estimatedVeNear} currency="veNEAR" />
+              <TokenAmount amount={estimatedVeNear} currency="veNEAR" />
             </div>
           </div>
           <div>
