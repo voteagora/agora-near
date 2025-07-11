@@ -1,7 +1,6 @@
 import React from "react";
 import Image from "next/image";
 import Tenant from "@/lib/tenant/tenant";
-import { TENANT_NAMESPACES } from "@/lib/constants";
 import { CoinsIcon } from "@/icons/CoinsIcon";
 import { rgbStringToHex } from "@/app/lib/utils/color";
 import { NotificationIcon } from "@/icons/NotificationIcon";
@@ -46,7 +45,7 @@ const tabs = [
 ];
 
 const InfoAbout = () => {
-  const { namespace, ui, brandName } = Tenant.current();
+  const { ui } = Tenant.current();
   const page = ui.page("info/about");
 
   if (!page) {
@@ -68,46 +67,7 @@ const InfoAbout = () => {
               className="rounded-lg object-cover object-center"
             />
           </div>
-          <div className="sm:w-1/2">
-            <h3 className="text-lg font-bold text-primary">
-              {namespace === TENANT_NAMESPACES.DEMO
-                ? "About Canopy"
-                : "About " + brandName}
-            </h3>
-            <p className="text-secondary mt-3">{page.description}</p>
-            {/* So the image doesn't look smooshed for scroll :eye-roll: */}
-            {namespace === TENANT_NAMESPACES.SCROLL && (
-              <div className="sm:h-[105px] block"></div>
-            )}
-            {namespace === TENANT_NAMESPACES.B3 && (
-              <div className="sm:h-[120px] block"></div>
-            )}
-          </div>
         </div>
-        {namespace === TENANT_NAMESPACES.SCROLL && (
-          <div className="p-6 border-t border-line">
-            <div className="text-lg font-bold text-primary capitalize">
-              Our approach to governance
-            </div>
-            <p className="text-secondary mt-3">
-              <span className="italic">
-                “A complex system that works is invariably found to have evolved
-                from a simple system that worked.”
-              </span>{" "}
-              - John Gall.
-            </p>
-            <p className="text-secondary">
-              With this in mind, our plan is first to set up a minimal
-              governance structure, refine it, and iterate on first principles.
-              Scroll’s governance system will accordingly start simple. This
-              will leave plenty of room for experimentation in the future in
-              order to keep the door open for broader collaboration in building
-              our ecosystem. We aim to reach a place where the DAO is both
-              highly decentralized, but still engages in thoughtful discourse
-              and research, resulting in meaningful outcomes.
-            </p>
-          </div>
-        )}
         <div className="p-6  rounded-b-xl bg-neutral border-t border-line">
           <div className="flex flex-row gap-6 flex-wrap sm:flex-nowrap mb-4">
             {tabs.map((item, index) => (

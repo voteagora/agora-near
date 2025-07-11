@@ -1,7 +1,6 @@
 import Big from "big.js";
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 import { NANO_SECONDS_IN_DAY, NANO_SECONDS_IN_YEAR } from "./constants";
-import { formatFullDate } from "./utils";
 
 export const getAPYFromGrowthRate = (growthRateNs: Big) => {
   try {

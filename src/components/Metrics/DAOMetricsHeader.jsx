@@ -17,14 +17,11 @@ import NearTokenAmount from "@/components/shared/NearTokenAmount";
 import { useTotalSupply } from "@/hooks/useTotalNearSupply";
 
 export default function DAOMetricsHeader() {
-  const { ui, contracts } = Tenant.current();
+  const { ui } = Tenant.current();
   const [isClient, setIsClient] = useState(false);
 
-  const {
-    totalSupply: totalSupplyFromNear,
-    votableSupply: votableSupplyFromNear,
-    isLoading: isLoadingSupply,
-  } = useTotalSupply();
+  const { totalSupply: totalSupplyFromNear, isLoading: isLoadingSupply } =
+    useTotalSupply();
 
   const governanceForumLink = ui.link("governance-forum");
   const bugsLink = ui.link("bugs");
@@ -78,30 +75,6 @@ export default function DAOMetricsHeader() {
                       <span>Total amount of NEAR in existence</span>
                     </HoverCardContent>
                   </HoverCard>
-                  {contracts.token.isERC20() && (
-                    <HoverCard openDelay={100} closeDelay={100}>
-                      <HoverCardTrigger>
-                        <span className="cursor-default">
-                          {isLoadingSupply || !votableSupplyFromNear ? (
-                            "-"
-                          ) : (
-                            <NearTokenAmount
-                              amount={votableSupplyFromNear}
-                              currency="veNEAR"
-                            />
-                          )}
-                          <span className="hidden sm:inline">supply</span>
-                        </span>
-                      </HoverCardTrigger>
-                      <HoverCardContent
-                        className="w-full shadow text-primary"
-                        side="bottom"
-                        sideOffset={3}
-                      >
-                        <span>Total amount of veNEAR in existence</span>
-                      </HoverCardContent>
-                    </HoverCard>
-                  )}
                 </div>
               </div>
               <div className="block bg-line w-full sm:w-[1px] h-[1px] sm:h-10"></div>

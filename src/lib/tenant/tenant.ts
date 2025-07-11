@@ -1,10 +1,5 @@
 import { TenantUI } from "@/lib/tenant/tenantUI";
-import {
-  type TenantContracts,
-  type TenantNamespace,
-  type TenantToken,
-} from "../types";
-import { demoTenantConfig } from "./configs/contracts/demo";
+import { type TenantNamespace, type TenantToken } from "../types";
 import { nearTenantUIConfig } from "./configs/ui/near";
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 
@@ -19,13 +14,6 @@ export default class Tenant {
 
   private constructor() {
     this._isProd = process.env.NEXT_PUBLIC_AGORA_ENV === "prod";
-  }
-
-  public get contracts(): TenantContracts {
-    return demoTenantConfig({
-      isProd: this._isProd,
-      alchemyId: process.env.NEXT_PUBLIC_ALCHEMY_ID as string,
-    });
   }
 
   public get isProd(): boolean {

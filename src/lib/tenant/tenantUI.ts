@@ -1,11 +1,10 @@
 import { StaticImageData } from "next/image";
 import { icons } from "@/icons/icons";
-import { PLMConfig } from "@/app/proposals/draft/types";
 
 type UIToggle = {
   name: string;
   enabled: boolean;
-  config?: UIConfig | UIEndorsedConfig | UIGasRelayConfig;
+  config?: UIEndorsedConfig | UIGasRelayConfig;
 };
 
 export type UIEndorsedConfig = {
@@ -23,11 +22,6 @@ export type UIGasRelayConfig = {
   sponsorAddress: `0x${string}`;
   minVPToUseGasRelay: string;
 };
-
-// UI config exists to give tenant specifc config options to a UI toggle
-// the canonical example is wanting to allow tenants to customize
-// their proposal lifecycle feature
-type UIConfig = PLMConfig;
 
 // Note: Modular accounts are not yet supported
 // https://accountkit.alchemy.com/smart-contracts/light-account

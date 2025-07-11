@@ -67,7 +67,6 @@ export default function DelegateVotes({
                       </h2>
                     </VStack>
                     <DelegateVoteIcon
-                      proposalType="STANDARD"
                       support={
                         vote.voteOption === "0"
                           ? "FOR"

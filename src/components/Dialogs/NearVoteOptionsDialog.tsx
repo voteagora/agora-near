@@ -7,7 +7,7 @@ import { useVotingPower } from "@/hooks/useVotingPower";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { LoadingVote } from "../Proposals/ProposalPage/CastVoteDialog/CastVoteDialog";
+import { LoadingVote } from "./NearVoteDialog";
 import NearTokenAmount from "../shared/NearTokenAmount";
 import { RadioButton } from "../ui/radio-button";
 import { Skeleton } from "../ui/skeleton";

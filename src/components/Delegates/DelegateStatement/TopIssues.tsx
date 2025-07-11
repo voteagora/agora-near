@@ -1,4 +1,3 @@
-import { DelegateStatement as DelegateStatementType } from "@/app/api/common/delegateStatement/delegateStatement";
 import { icons } from "@/icons/icons";
 import Image from "next/image";
 import Tenant from "@/lib/tenant/tenant";

@@ -37,19 +37,7 @@ export enum DELEGATION_MODEL {
 }
 
 export const TENANT_NAMESPACES = {
-  ENS: "ens",
-  ETHERFI: "etherfi",
-  OPTIMISM: "optimism",
   NEAR: "near",
-  UNISWAP: "uniswap",
-  CYBER: "cyber",
-  SCROLL: "scroll",
-  DERIVE: "derive",
-  PGUILD: "pguild",
-  BOOST: "boost",
-  XAI: "xai",
-  B3: "b3",
-  DEMO: "demo",
 } as const;
 
 export const proposalsFilterOptions = {

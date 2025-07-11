@@ -1,7 +1,6 @@
 import "@/styles/globals.scss";
 import ClientLayout from "./Web3Provider";
 import Header from "@/components/Header/Header";
-import { fetchMetrics } from "@/app/api/common/metrics/getMetrics";
 import DAOMetricsHeader from "@/components/Metrics/DAOMetricsHeader";
 import Tenant from "@/lib/tenant/tenant";
 import { fontMapper, inter } from "@/styles/fonts";
@@ -17,11 +16,6 @@ declare global {
 BigInt.prototype.toJSON = function (): string {
   return this.toString();
 };
-
-async function fetchDaoMetrics() {
-  "use server";
-  return fetchMetrics();
-}
 
 const defaults = {
   primary: "23 23 23",

@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import Tenant from "@/lib/tenant/tenant";
 import { rgbStringToHex } from "@/app/lib/utils/color";
 import { Plus, Minus, RotateCcw } from "lucide-react";
-import ENSName from "@/components/shared/ENSName";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
+import { formatNearAccountId } from "@/lib/utils";
 
 //Bubble contransts
 const CHART_DIMENSIONS = {
@@ -119,7 +119,7 @@ const BubbleNode = memo(
               textOverflow: "ellipsis",
             }}
           >
-            <ENSName address={node.address} truncate />
+            {formatNearAccountId(node.address)}
           </div>
         </foreignObject>
       </g>

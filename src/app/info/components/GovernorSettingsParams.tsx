@@ -8,12 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Tenant from "@/lib/tenant/tenant";
-import { cn } from "@/lib/utils";
 
 const GovernorSettingsParams = () => {
-  const { contracts } = Tenant.current();
-
   return (
     <Table>
       <TableHeader>
@@ -36,33 +32,13 @@ const GovernorSettingsParams = () => {
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell
-            className={cn(
-              "text-base font-semibold text-left text-secondary",
-              !contracts.timelock && "rounded-bl-xl"
-            )}
-          >
+          <TableCell className="text-base font-semibold text-left text-secondary rounded-bl-xl">
             Voting Period
           </TableCell>
-          <TableCell
-            className={cn(
-              "text-base font-semibold text-right text-primary",
-              !contracts.timelock && "rounded-br-xl"
-            )}
-          >
+          <TableCell className="text-base font-semibold text-right text-primary rounded-br-xl">
             1d
           </TableCell>
         </TableRow>
-        {contracts.timelock && (
-          <TableRow>
-            <TableCell className="text-base font-semibold text-left text-secondary rounded-bl-xl">
-              Timelock Delay
-            </TableCell>
-            <TableCell className="text-base font-semibold text-right text-primary rounded-br-xl">
-              Signal Only
-            </TableCell>
-          </TableRow>
-        )}
       </TableBody>
     </Table>
   );

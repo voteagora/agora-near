@@ -1,13 +1,5 @@
-import { BaseContract } from "ethers";
-import { IAlligatorContract } from "@/lib/contracts/common/interfaces/IAlligatorContract";
-import { IGovernorContract } from "@/lib/contracts/common/interfaces/IGovernorContract";
-import { IStaker } from "@/lib/contracts/common/interfaces/IStaker";
-import { ITokenContract } from "@/lib/contracts/common/interfaces/ITokenContract";
-import { IMembershipContract } from "@/lib/contracts/common/interfaces/IMembershipContract";
 import { TENANT_NAMESPACES } from "./constants";
-import { TenantContract } from "@/lib/tenant/tenantContract";
 import { DelegateChunk } from "@/app/staking/components/delegates/DelegateCardList";
-import { Chain } from "viem/chains";
 import { StaticImageData } from "next/image";
 export type MetricTimeSeriesValue = {
   day: string;
@@ -37,28 +29,6 @@ export type VoterStats = {
 
 export type TenantNamespace =
   (typeof TENANT_NAMESPACES)[keyof typeof TENANT_NAMESPACES];
-
-export type TenantContracts = {
-  governor: TenantContract<IGovernorContract>;
-  proposalTypesConfigurator?: TenantContract<BaseContract>;
-  token: TenantContract<ITokenContract | IMembershipContract> & {
-    isERC20: () => this is TenantContract<ITokenContract>;
-    isERC721: () => this is TenantContract<IMembershipContract>;
-  };
-
-  votableSupplyOracle?: TenantContract<IVotableSupplyOracleContract>;
-  staker?: TenantContract<IStaker>;
-  timelock?: TenantContract<BaseContract>;
-  alligator?: TenantContract<IAlligatorContract>;
-  treasury?: string[]; // We don't interact with them, but maybe one day we will.
-  governorApprovalModule?: string;
-  delegationModel?: DELEGATION_MODEL;
-  governorType?: GOVERNOR_TYPE;
-  timelockType?: TIMELOCK_TYPE;
-  chainForTime?: Chain;
-  providerForTime?: AlchemyProvider;
-  supportScopes?: boolean;
-};
 
 export type TenantToken = {
   name: string;

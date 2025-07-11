@@ -2,32 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useMemo } from "react";
 import Tenant from "./tenant/tenant";
-import { NANO_SECONDS_IN_DAY, TENANT_NAMESPACES } from "./constants";
-import { http, fallback } from "wagmi";
-import {
-  DERIVE_MAINNET_RPC,
-  DERIVE_TESTNET_RPC,
-} from "@/lib/tenant/configs/contracts/derive";
-import { ProposalType } from "../app/proposals/draft/types";
-import { AlchemyProvider } from "ethers";
-import {
-  Address,
-  hexToBigInt,
-  WaitForTransactionReceiptParameters,
-  WaitForTransactionReceiptReturnType,
-} from "viem";
-import { unstable_cache } from "next/cache";
-import { getPublicClient } from "./viem";
-import {
-  arbitrum,
-  base,
-  goerli,
-  mainnet,
-  optimism,
-  polygon,
-  sepolia,
-  scroll,
-} from "viem/chains";
+import { NANO_SECONDS_IN_DAY } from "./constants";
 import Big from "big.js";
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 import { utils } from "near-api-js";
@@ -48,22 +23,6 @@ export function shortAddress(address: string) {
 export function bpsToString(bps: number) {
   return `${(Math.round(bps * 100) / 100).toFixed(2)}%`;
 }
-
-export const getProposalTypeText = (proposalType: string) => {
-  if (Tenant.current().namespace === TENANT_NAMESPACES.OPTIMISM) {
-    switch (proposalType) {
-      case "OPTIMISTIC":
-        return "Optimistic Proposal";
-      case "STANDARD":
-        return "Standard Proposal";
-      case "APPROVAL":
-        return "Approval Vote Proposal";
-      default:
-        return "Proposal";
-    }
-  }
-  return "Proposal";
-};
 
 const format = new Intl.NumberFormat("en", {
   style: "decimal",
@@ -363,24 +322,6 @@ export async function fetchAndSetAll<
   values.forEach((value, index) => setters[index](value));
 }
 
-export function getBlockScanAddress(address: string) {
-  const { contracts } = Tenant.current();
-  const url = contracts.token.chain.blockExplorers?.default.url;
-  return `https://testnet.nearblocks.io/address/${address}`;
-}
-
-export function getBlockScanUrl(hash: string | `0x${string}`) {
-  const { contracts } = Tenant.current();
-  const url = contracts.token.chain.blockExplorers?.default.url;
-  return `${url}/tx/${hash}`;
-}
-
-export function getBlockScanRawUrl() {
-  const { contracts } = Tenant.current();
-  const url = contracts.token.chain.blockExplorers?.default.url;
-  return url;
-}
-
 export const getTextWidth = (text: string, font = "14px inter") => {
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
@@ -401,216 +342,11 @@ export const isURL = (value: string) => {
   return value === "" || urlRegExp.test(value);
 };
 
-const FORK_NODE_URL = process.env.NEXT_PUBLIC_FORK_NODE_URL!;
-
-export const getTransportForChain = (chainId: number) => {
-  switch (chainId) {
-    // mainnet
-    case 1:
-      return http(
-        FORK_NODE_URL ||
-          `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // optimism
-    case 10:
-      return http(
-        FORK_NODE_URL ||
-          `https://opt-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // base
-    case 8453:
-      return http(
-        FORK_NODE_URL ||
-          `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // arbitrum one
-    case 42161:
-      return http(
-        FORK_NODE_URL ||
-          `https://arb-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // arbitrum sepolia
-    case 421614:
-      return http(
-        FORK_NODE_URL ||
-          `https://arb-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // sepolia
-    case 11155111:
-      return http(
-        FORK_NODE_URL ||
-          `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      );
-    // cyber
-    case 7560:
-      return fallback([
-        http(FORK_NODE_URL || "https://rpc.cyber.co"),
-        http(FORK_NODE_URL || "https://cyber.alt.technology"),
-      ]);
-
-    // scroll
-    case 534_352:
-      return fallback([
-        http(
-          FORK_NODE_URL ||
-            "https://scroll-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}"
-        ),
-        http(FORK_NODE_URL || "https://rpc.scroll.io"),
-      ]);
-
-    // derive mainnet
-    case 957:
-      return http(FORK_NODE_URL || DERIVE_MAINNET_RPC);
-
-    // derive testnet
-    case 901:
-      return http(FORK_NODE_URL || DERIVE_TESTNET_RPC);
-
-    // for each new dao with a new chainId add them here
-    default:
-      return null;
-  }
-};
-
-export const getVotingModuleTypeForProposalType = (proposalType: {
-  quorum: number;
-  approval_threshold: number;
-  name: string;
-}) => {
-  if (proposalType.name.toLowerCase().includes("approval")) {
-    return ProposalType.APPROVAL;
-  } else if (proposalType.name.toLowerCase().includes("optimistic")) {
-    return ProposalType.OPTIMISTIC;
-  } else {
-    return ProposalType.BASIC;
-  }
-};
-
-export const mapArbitrumBlockToMainnetBlock = unstable_cache(
-  async (blockNumber: bigint) => {
-    const { contracts } = Tenant.current();
-    try {
-      const block = await (contracts.governor.provider as AlchemyProvider).send(
-        "eth_getBlockByNumber",
-        [`0x${blockNumber.toString(16)}`, false]
-      );
-
-      const l1BlockNumber = hexToBigInt(block.l1BlockNumber);
-
-      return l1BlockNumber;
-    } catch (error) {
-      return blockNumber;
-    }
-  },
-  ["mapArbitrumBlockToMainnetBlock"],
-  {
-    revalidate: 60 * 60 * 24 * 365, // 1 year cache
-  }
-);
-
-const isContractWallet = async (address: Address) => {
-  const publicClient = getPublicClient();
-  const bytecode = await publicClient.getCode({ address });
-
-  return bytecode && bytecode !== "0x" ? true : false;
-};
-
 export function delay(milliseconds: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, milliseconds);
   });
 }
-
-type TxServiceApiTransactionResponse = {
-  safe: Address;
-  to: Address;
-  data: `0x${string}`;
-  blockNumber: number;
-  transactionHash: `0x${string}`;
-  safeTxHash: `0x${string}`;
-  executor: Address;
-  isExecuted: boolean;
-  isSuccessful: boolean;
-  confirmations: Array<{
-    owner: Address;
-  }>;
-};
-
-const apiNetworkName: Record<number, string> = {
-  [mainnet.id]: "mainnet",
-  [optimism.id]: "optimism",
-  [polygon.id]: "polygon",
-  [base.id]: "base",
-  [arbitrum.id]: "arbitrum",
-  [goerli.id]: "goerli",
-  [sepolia.id]: "sepolia",
-  [scroll.id]: "scroll",
-};
-
-export const resolveSafeTx = async (
-  networkId: number,
-  safeTxHash: `0x${string}`,
-  attempt = 1,
-  maxAttempts = 10
-): Promise<`0x${string}` | undefined> => {
-  const networkName = apiNetworkName[networkId];
-  if (attempt >= maxAttempts) {
-    throw new Error(
-      `timeout: couldn't find safeTx [${safeTxHash}] on [${networkName}]`
-    );
-  }
-
-  const endpoint = `https://safe-transaction-${networkName}.safe.global`;
-  const url = `${endpoint}/api/v1/multisig-transactions/${safeTxHash}`;
-
-  const response = await fetch(url);
-
-  const responseJson = <TxServiceApiTransactionResponse>await response.json();
-
-  console.debug(
-    `[${attempt}] looking up [${safeTxHash}] on [${networkName}]`,
-    response
-  );
-  if (response.status == 404) {
-    console.warn(
-      `didn't find safe tx [${safeTxHash}], assuming it's already the real one`
-    );
-    return safeTxHash;
-  }
-
-  if (responseJson.isSuccessful === null) {
-    await delay(1000 * attempt ** 1.75);
-    return resolveSafeTx(networkId, safeTxHash, attempt + 1, maxAttempts);
-  }
-
-  if (!responseJson.isSuccessful) {
-    return undefined;
-  }
-  return responseJson.transactionHash;
-};
-
-export const wrappedWaitForTransactionReceipt = async (
-  params: WaitForTransactionReceiptParameters & {
-    address: Address;
-  }
-): Promise<WaitForTransactionReceiptReturnType> => {
-  const publicClient = getPublicClient();
-  if (!publicClient.chain) {
-    throw new Error("no chain on public client");
-  }
-
-  const isSafe = await isContractWallet(params.address);
-
-  if (isSafe) {
-    //try to resolve the underlying transaction
-    const resolvedTx = await resolveSafeTx(publicClient.chain.id, params.hash);
-    if (!resolvedTx) throw new Error("couldn't resolve safe tx");
-
-    return publicClient.waitForTransactionReceipt({ hash: resolvedTx });
-  } else {
-    return publicClient.waitForTransactionReceipt(params);
-  }
-};
 
 export function getFunctionSignature(decodedData: any): string | null {
   if (
