@@ -6,6 +6,7 @@ import { NANO_SECONDS_IN_DAY } from "./constants";
 import Big from "big.js";
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 import { utils } from "near-api-js";
+import { baseApiUrl } from "./api/constants";
 
 const { token } = Tenant.current();
 
@@ -377,7 +378,7 @@ export const getRpcUrl = (
   networkId: string,
   params: { useArchivalNode: boolean }
 ) => {
-  const url = `${process.env.NEXT_PUBLIC_NEAR_API_ENDPOINT}/${params.useArchivalNode ? "archival-rpc" : "rpc"}/${networkId}`;
+  const url = `${baseApiUrl}/${params.useArchivalNode ? "archival-rpc" : "rpc"}/${networkId}`;
   return url;
 };
 

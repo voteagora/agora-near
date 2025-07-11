@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "start": "NEXT_PUBLIC_AGORA_ENV=prod next dev",
+    "start:dev": "NEXT_PUBLIC_AGORA_ENV=dev next dev",
     "build": "next build",
-    "start": "next start",
+    "next:start": "next start",
     "lint": "next lint",
     "cypress": "cypress open",
     "typecheck": "tsc --pretty --noEmit",
