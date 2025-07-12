@@ -1,35 +1,52 @@
-import { formatNumber } from "@/lib/utils";
-import React, { useMemo } from "react";
-import Tenant from "@/lib/tenant/tenant";
-const { token } = Tenant.current();
+import { NEAR_TOKEN } from "@/lib/constants";
+import { cn, formatNumber } from "@/lib/utils";
+import { useMemo } from "react";
 
 type Props = {
   amount: string | bigint;
-  decimals?: number;
-  currency?: string;
   maximumSignificantDigits?: number;
   hideCurrency?: boolean;
-  specialFormatting?: boolean;
+  currency?: string;
+  compact?: boolean;
+  minimumFractionDigits?: number;
+  className?: string;
 };
+
+const DEFAULT_MIN_DIGITS = 4;
 
 export default function TokenAmount({
   amount,
-  decimals = token.decimals,
-  currency = token.symbol,
-  maximumSignificantDigits = 2,
+  maximumSignificantDigits,
   hideCurrency = false,
-  specialFormatting = false,
+  compact = true,
+  currency = NEAR_TOKEN.symbol,
+  minimumFractionDigits,
+  className,
 }: Props) {
-  const formattedNumber = useMemo(() => {
-    return formatNumber(
-      amount,
-      decimals,
-      maximumSignificantDigits,
-      specialFormatting
+  const minDigits = useMemo(() => {
+    return Math.min(
+      minimumFractionDigits ?? DEFAULT_MIN_DIGITS,
+      maximumSignificantDigits ?? DEFAULT_MIN_DIGITS
     );
-  }, [amount, decimals, maximumSignificantDigits, specialFormatting]);
+  }, [minimumFractionDigits, maximumSignificantDigits]);
+
+  const formattedNumber = useMemo(() => {
+    const formattedNearAmount = formatNumber(
+      amount,
+      NEAR_TOKEN.decimals,
+      maximumSignificantDigits,
+      false,
+      compact,
+      minDigits,
+      "stripIfInteger"
+    );
+
+    return formattedNearAmount;
+  }, [amount, compact, maximumSignificantDigits, minDigits]);
 
   return (
-    <span>{`${formattedNumber}${hideCurrency ? "" : ` ${currency}`}`} </span>
+    <span className={cn(className)}>
+      {`${formattedNumber}${hideCurrency ? "" : ` ${currency}`} `}
+    </span>
   );
 }

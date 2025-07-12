@@ -4,7 +4,6 @@ import Header from "@/components/Header/Header";
 import DAOMetricsHeader from "@/components/Metrics/DAOMetricsHeader";
 import Tenant from "@/lib/tenant/tenant";
 import { fontMapper, inter } from "@/styles/fonts";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 declare global {
@@ -130,7 +129,6 @@ export default async function RootLayout({
           <DAOMetricsHeader />
         </ClientLayout>
       </NuqsAdapter>
-      {ui.googleAnalytics && <GoogleAnalytics gaId={ui.googleAnalytics} />}
     </html>
   );
 }

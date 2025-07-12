@@ -1,6 +1,6 @@
 "use client";
 
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import TokenAmount from "@/components/shared/TokenAmount";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { DelegateProfile } from "@/lib/api/delegates/types";
 import { useRouter } from "next/navigation";
@@ -28,7 +28,7 @@ export default function DelegateTableRow({
       </TableCell>
       <TableCell>
         {delegate.votingPower ? (
-          <NearTokenAmount
+          <TokenAmount
             amount={delegate.votingPower ?? "0"}
             minimumFractionDigits={1}
             maximumSignificantDigits={1}

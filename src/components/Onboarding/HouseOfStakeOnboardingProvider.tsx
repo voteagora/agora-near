@@ -1,6 +1,6 @@
 import { useNear } from "@/contexts/NearContext";
 import { useFungibleTokens } from "@/hooks/useFungibleTokens";
-import { useNearBalance } from "@/hooks/useNearBalance";
+import { useBalance } from "@/hooks/useBalance";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useStakingPool } from "@/hooks/useStakingPool";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
@@ -105,7 +105,7 @@ export const HouseOfStakeOnboardingProvider = ({
   } = useFungibleTokens(signedAccountId);
 
   const { nearBalance, isLoadingNearBalance, nearBalanceError } =
-    useNearBalance(signedAccountId);
+    useBalance(signedAccountId);
 
   const {
     venearStorageCost,

@@ -5,7 +5,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { memo, useCallback, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
-import NearTokenAmount from "../shared/NearTokenAmount";
+import TokenAmount from "../shared/TokenAmount";
 import { TooltipWithTap } from "../ui/tooltip-with-tap";
 import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
 
@@ -82,7 +82,7 @@ export const VeNearAssetRow = memo<VeNearAssetRowProps>(
           </>
         ),
         subtitle: (
-          <NearTokenAmount
+          <TokenAmount
             amount={pendingBalance ?? "0"}
             maximumSignificantDigits={4}
             minimumFractionDigits={4}
@@ -101,7 +101,7 @@ export const VeNearAssetRow = memo<VeNearAssetRowProps>(
         {
           title: "Locked",
           subtitle: (
-            <NearTokenAmount
+            <TokenAmount
               amount={balanceWithRewards}
               maximumSignificantDigits={4}
               minimumFractionDigits={4}

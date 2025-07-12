@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import VeNearDebugCards from "./VeNearDebugCards";
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import TokenAmount from "@/components/shared/TokenAmount";
 import { useFungibleTokens } from "@/hooks/useFungibleTokens";
 import { FungibleToken } from "@/lib/api/fungibleTokens";
 
@@ -86,7 +86,7 @@ export default function NearDebug() {
                     {isLoading ? (
                       <p className="text-lg">Loading...</p>
                     ) : (
-                      <NearTokenAmount
+                      <TokenAmount
                         amount={balance ?? "0"}
                         maximumSignificantDigits={24}
                       />
@@ -112,7 +112,7 @@ export default function NearDebug() {
                                   ? "liNEAR"
                                   : "stNEAR"}
                               </span>
-                              <NearTokenAmount
+                              <TokenAmount
                                 amount={token.balance}
                                 currency={
                                   token.contract_id ===

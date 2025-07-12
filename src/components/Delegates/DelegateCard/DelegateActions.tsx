@@ -4,34 +4,29 @@ import { UpdatedButton } from "@/components/Button";
 import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
+import { DelegateProfile } from "@/lib/api/delegates/types";
 import Tenant from "@/lib/tenant/tenant";
 import { type SyntheticEvent } from "react";
 import { DelegateSocialLinks } from "./DelegateSocialLinks";
 
-export function DelegateActions({
-  address,
-  twitter,
-  discord,
-  warpcast,
-}: {
-  address: string;
-  twitter?: string | null;
-  discord?: string | null;
-  warpcast?: string | null;
-}) {
+type DelegateActionsProps = {
+  delegate: DelegateProfile;
+};
+
+export function DelegateActions({ delegate }: DelegateActionsProps) {
   const { signedAccountId, signIn } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
 
   const openDialog = useOpenDialog();
 
-  const isDelegated = accountInfo?.delegation?.delegatee === address;
+  const isDelegated = accountInfo?.delegation?.delegatee === delegate.address;
 
-  const isOwnAccount = address === signedAccountId;
+  const isOwnAccount = delegate.address === signedAccountId;
 
   const { ui } = Tenant.current();
 
   const isRetired = ui.delegates?.retired.includes(
-    address.toLowerCase() as `0x${string}`
+    delegate.address.toLowerCase() as `0x${string}`
   );
 
   const handleDelegate = (e: SyntheticEvent) => {
@@ -43,7 +38,7 @@ export function DelegateActions({
       openDialog({
         type: isDelegated ? "NEAR_UNDELEGATE" : "NEAR_DELEGATE",
         params: {
-          delegateAddress: address,
+          delegateAddress: delegate.address,
         },
       });
     }
@@ -61,9 +56,9 @@ export function DelegateActions({
   return (
     <div className="flex flex-row items-stretch justify-between">
       <DelegateSocialLinks
-        discord={discord}
-        twitter={twitter}
-        warpcast={warpcast}
+        discord={delegate.discord}
+        twitter={delegate.twitter}
+        warpcast={delegate.warpcast}
       />
       {!isOwnAccount && (
         <UpdatedButton type="secondary" onClick={handleDelegate}>

@@ -1,7 +1,7 @@
 import { DelegateCardHeader } from "@/components/Delegates/DelegateCard/DelegateCardHeader";
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import TokenAmount from "@/components/shared/TokenAmount";
 import React from "react";
-import { DelegateActions } from "../DelegateCard/DelegateActions";
+import { DelegateActions } from "./DelegateActions";
 import { DelegateAddress } from "../DelegateCard/DelegateAddress";
 import { DelegateCardEditProfile } from "../DelegateCard/DelegateCardEditProfile";
 
@@ -52,7 +52,7 @@ export default function DelegateProfile({
               <PanelRow
                 title="Voting power"
                 detail={
-                  <NearTokenAmount
+                  <TokenAmount
                     amount={stats?.votingPower ?? "0"}
                     currency="veNEAR"
                   />

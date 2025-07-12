@@ -1,4 +1,4 @@
-import NearProposalHome from "@/components/Proposals/NearProposal/NearProposalHome";
+import ProposalHome from "@/components/Proposals/Proposal/ProposalHome";
 import React from "react";
 
 export const dynamic = "force-dynamic";
@@ -9,5 +9,5 @@ export default async function Page({
 }: {
   params: { proposal_id: string };
 }) {
-  return <NearProposalHome proposalId={proposal_id} />;
+  return <ProposalHome proposalId={proposal_id} />;
 }

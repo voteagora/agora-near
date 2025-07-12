@@ -1,5 +1,5 @@
 import Tenant from "@/lib/tenant/tenant";
-import NearProposalsHome from "@/components/Proposals/NearProposals/NearProposalsHome";
+import ProposalsHome from "@/components/Proposals/Proposals/ProposalsHome";
 
 // Revalidate cache every 60 seconds
 export const revalidate = 60;
@@ -35,5 +35,5 @@ export async function generateMetadata() {
 }
 
 export default async function Home() {
-  return <NearProposalsHome />;
+  return <ProposalsHome />;
 }

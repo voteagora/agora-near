@@ -1,7 +1,7 @@
 import Image from "next/image";
-import discordIcon from "@/icons/discord.svg";
-import xIcon from "@/icons/x.svg";
-import warpcastIcon from "@/icons/warpcast.svg";
+import discordIcon from "@/assets/discord.svg";
+import xIcon from "@/assets/x.svg";
+import warpcastIcon from "@/assets/warpcast.svg";
 import toast from "react-hot-toast";
 
 const ICON_HEIGHT = 24;

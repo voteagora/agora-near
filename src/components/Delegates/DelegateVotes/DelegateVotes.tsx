@@ -6,7 +6,7 @@ import InfiniteScroll from "react-infinite-scroller";
 import VoteDetailsContainer from "./DelegateVotesDetailsContainer";
 import DelegateVoteIcon from "./DelegateVoteIcon";
 import { VoteHistory } from "@/lib/api/delegates/types";
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import TokenAmount from "@/components/shared/TokenAmount";
 
 export default function DelegateVotes({
   votingHistory,
@@ -57,7 +57,7 @@ export default function DelegateVotes({
                         on this proposal{" "}
                         {formatDistanceToNow(new Date(vote.votedAt ?? 0))} ago
                         with{" "}
-                        <NearTokenAmount
+                        <TokenAmount
                           amount={vote.votingPower}
                           currency="veNEAR"
                         />

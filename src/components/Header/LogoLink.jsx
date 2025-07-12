@@ -1,5 +1,5 @@
-import { rgbStringToHex } from "@/app/lib/utils/color";
-import { AgoraIcon } from "@/icons/AgoraIcon";
+import { rgbStringToHex } from "@/lib/color";
+import { AgoraIcon } from "@/assets/AgoraIcon";
 import Tenant from "@/lib/tenant/tenant";
 import Image from "next/image";
 import Link from "next/link";

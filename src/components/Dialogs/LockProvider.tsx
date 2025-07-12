@@ -3,7 +3,7 @@ import { useAvailableToLock } from "@/hooks/useAvailableToLock";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useFungibleTokens } from "@/hooks/useFungibleTokens";
 import { useLockNear } from "@/hooks/useLockNear";
-import { useNearBalance } from "@/hooks/useNearBalance";
+import { useBalance } from "@/hooks/useBalance";
 import { useStakingPool } from "@/hooks/useStakingPool";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
 import {
@@ -31,7 +31,7 @@ import toast from "react-hot-toast";
 import { useLockupAccount } from "../../hooks/useLockupAccount";
 import { useVenearAccountInfo } from "../../hooks/useVenearAccountInfo";
 import { useVenearConfig } from "../../hooks/useVenearConfig";
-import { LockDialogSource } from "./NearLockDialog/index";
+import { LockDialogSource } from "./LockDialog/index";
 
 export type LockTransaction =
   | "deploy_lockup"
@@ -152,7 +152,7 @@ export const LockProvider = ({
   } = useFungibleTokens(signedAccountId);
 
   const { nearBalance, isLoadingNearBalance, nearBalanceError } =
-    useNearBalance(signedAccountId);
+    useBalance(signedAccountId);
 
   const {
     venearStorageCost,

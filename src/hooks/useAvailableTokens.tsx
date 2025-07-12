@@ -12,13 +12,13 @@ import { useMemo } from "react";
 import { useAvailableToLock } from "./useAvailableToLock";
 import { useFungibleTokens } from "./useFungibleTokens";
 import { useLockupAccount } from "./useLockupAccount";
-import { useNearBalance } from "./useNearBalance";
+import { useBalance } from "./useBalance";
 
 export const useAvailableTokens = () => {
   const { signedAccountId, networkId } = useNear();
   const { data: fungibleTokensResponse, isLoading: isLoadingFungibleTokens } =
     useFungibleTokens(signedAccountId);
-  const { nearBalance, isLoadingNearBalance } = useNearBalance(signedAccountId);
+  const { nearBalance, isLoadingNearBalance } = useBalance(signedAccountId);
 
   const { lockupAccountId, isLoading: isLoadingLockupAccountId } =
     useLockupAccount();

@@ -1,6 +1,6 @@
-import NearProposalsHome from "@/components/Proposals/NearProposals/NearProposalsHome";
+import ProposalsHome from "@/components/Proposals/Proposals/ProposalsHome";
 
 export const revalidate = 60;
 
 export { generateMetadata } from "../page";
-export default NearProposalsHome;
+export default ProposalsHome;

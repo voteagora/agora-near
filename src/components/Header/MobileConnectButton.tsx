@@ -1,6 +1,6 @@
 "use client";
 
-import walletIcon from "@/icons/wallet.svg";
+import walletIcon from "@/assets/wallet.svg";
 import Image from "next/image";
 import { MobileProfileDropDown } from "./MobileProfileDropDown";
 

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useMemo, memo } from "react";
 import * as d3 from "d3";
 import { useRouter } from "next/navigation";
 import Tenant from "@/lib/tenant/tenant";
-import { rgbStringToHex } from "@/app/lib/utils/color";
+import { rgbStringToHex } from "@/lib/color";
 import { Plus, Minus, RotateCcw } from "lucide-react";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";

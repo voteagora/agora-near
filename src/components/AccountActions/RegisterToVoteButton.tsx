@@ -1,5 +1,5 @@
 import { Button } from "../ui/button";
-import NearTokenAmount from "../shared/NearTokenAmount";
+import TokenAmount from "../shared/TokenAmount";
 import { InfoIcon } from "lucide-react";
 import { useVenearConfig } from "@/hooks/useVenearConfig";
 import { useRegisterLockup } from "@/hooks/useRegisterLockup";
@@ -42,7 +42,7 @@ export const RegisterToVoteButton = () => {
         ) : (
           <div className="flex flex-row items-center gap-2 justify-center">
             <p className="text-sm">
-              Deposit <NearTokenAmount amount={totalRegistrationCost} />{" "}
+              Deposit <TokenAmount amount={totalRegistrationCost} />{" "}
               {" to vote"}
             </p>
             <TooltipWithTap
@@ -60,7 +60,7 @@ export const RegisterToVoteButton = () => {
                     <div className="border-b border-neutral-200 pb-2">
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Account Deposit:</span>
-                        <NearTokenAmount amount={venearStorageCost} />
+                        <TokenAmount amount={venearStorageCost} />
                       </div>
                       <p className="text-sm mt-1 text-neutral-600">
                         This covers your account storage in the veNEAR contract.
@@ -72,7 +72,7 @@ export const RegisterToVoteButton = () => {
                     <div className="border-b border-neutral-200 pb-2">
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">Lockup Deposit:</span>
-                        <NearTokenAmount amount={lockupStorageCost} />
+                        <TokenAmount amount={lockupStorageCost} />
                       </div>
                       <p className="text-sm mt-1 text-neutral-600">
                         This covers your lockup contract&apos;s deployment and
@@ -84,7 +84,7 @@ export const RegisterToVoteButton = () => {
                     <div className="pt-2 font-bold">
                       <div className="flex justify-between items-center">
                         <span>Total Required:</span>
-                        <NearTokenAmount amount={totalRegistrationCost} />
+                        <TokenAmount amount={totalRegistrationCost} />
                       </div>
                     </div>
                   </div>

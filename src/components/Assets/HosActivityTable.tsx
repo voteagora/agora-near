@@ -3,7 +3,7 @@ import { HosActivity } from "@/lib/api/delegates/types";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { memo, useCallback, useEffect, useRef } from "react";
-import NearTokenAmount from "../shared/NearTokenAmount";
+import TokenAmount from "../shared/TokenAmount";
 import { Skeleton } from "../ui/skeleton";
 
 type Props = {
@@ -91,7 +91,7 @@ const HosActivityRow = memo(({ activity }: HosActivityRowProps) => {
         {activity.nearAmount ? (
           <span>
             {getAmountPrefix(activity.transactionType)}
-            <NearTokenAmount amount={activity.nearAmount} currency="veNEAR" />
+            <TokenAmount amount={activity.nearAmount} currency="veNEAR" />
           </span>
         ) : (
           "-"
@@ -99,7 +99,7 @@ const HosActivityRow = memo(({ activity }: HosActivityRowProps) => {
       </td>
       <td className="hidden md:table-cell py-4 text-sm text-gray-900">
         {activity.lockedNearBalance ? (
-          <NearTokenAmount amount={activity.lockedNearBalance} />
+          <TokenAmount amount={activity.lockedNearBalance} />
         ) : (
           "No change"
         )}

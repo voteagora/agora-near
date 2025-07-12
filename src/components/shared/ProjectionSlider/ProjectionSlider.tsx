@@ -2,7 +2,7 @@
 
 import { memo, useCallback, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
-import NearTokenAmount from "../NearTokenAmount";
+import TokenAmount from "../TokenAmount";
 import { utils } from "near-api-js";
 
 interface ProjectionSliderProps {
@@ -76,7 +76,7 @@ export const ProjectionSlider = memo(
             {(apy * 100).toFixed(2)}% APY
           </h3>
           <div className="text-6xl font-bold text-primary mb-8 tabular-nums">
-            <NearTokenAmount
+            <TokenAmount
               amount={
                 utils.format.parseNearAmount(currentProjection.toString()) ??
                 "0"

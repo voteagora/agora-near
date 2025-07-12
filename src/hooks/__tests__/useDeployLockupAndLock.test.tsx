@@ -12,7 +12,7 @@ import {
   useLockProviderContext,
 } from "../../components/Dialogs/LockProvider";
 import { FUNGIBLE_TOKEN_QK } from "../useFungibleTokens";
-import { NEAR_BALANCE_QK } from "../useNearBalance";
+import { NEAR_BALANCE_QK } from "../useBalance";
 import { READ_NEAR_CONTRACT_QK } from "../useReadHOSContract";
 import { TESTNET_CONTRACTS } from "../../lib/contractConstants";
 

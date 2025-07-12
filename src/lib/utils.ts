@@ -1,14 +1,11 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { useMemo } from "react";
 import Tenant from "./tenant/tenant";
 import { NANO_SECONDS_IN_DAY } from "./constants";
 import Big from "big.js";
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 import { utils } from "near-api-js";
 import { baseApiUrl } from "./api/constants";
-
-const { token } = Tenant.current();
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -197,85 +194,6 @@ export function formatNumber(
   return numberFormat.format(standardUnitAmount);
 }
 
-export function TokenAmountDisplay({
-  amount,
-  decimals = token.decimals,
-  currency = token.symbol,
-  maximumSignificantDigits = 2,
-}: {
-  amount: string | bigint;
-  decimals?: number;
-  currency?: string;
-  maximumSignificantDigits?: number;
-}) {
-  const formattedNumber = useMemo(() => {
-    return formatNumber(amount, decimals, maximumSignificantDigits);
-  }, [amount, decimals, maximumSignificantDigits]);
-
-  return `${formattedNumber} ${currency}`;
-}
-
-export function generateBarsForVote(
-  forVotes: bigint,
-  abstainVotes: bigint,
-  againstVotes: bigint
-) {
-  const sections = [
-    {
-      amount: forVotes,
-      value: "for",
-      threshold: BigInt(0),
-    },
-    {
-      amount: abstainVotes,
-      value: "abstain",
-      threshold: BigInt(0),
-    },
-    {
-      amount: againstVotes,
-      value: "against",
-      threshold: BigInt(0),
-    },
-  ];
-
-  const bars = 57;
-  const result = new Array(bars).fill(""); // Initialize the result array with empty strings
-
-  // Sum of all votes using BigInt
-  const totalVotes = sections.reduce(
-    (acc, section) => BigInt(acc) + BigInt(section.amount),
-    BigInt(0)
-  );
-
-  if (totalVotes === BigInt(0)) {
-    // If no votes, optionally fill the array with 'abstain' or keep empty
-    return result.fill("abstain"); // Default to 'abstain' if no votes are cast
-  }
-
-  let accumulatedVotes = BigInt(0);
-
-  // Accumulate votes and calculate the threshold for each section
-  sections.forEach((section) => {
-    accumulatedVotes += BigInt(section.amount);
-    section.threshold = (accumulatedVotes * BigInt(bars)) / totalVotes;
-  });
-
-  let currentSection = 0;
-
-  for (let index = 0; index < bars; index++) {
-    // Update current section based on index threshold
-    while (
-      currentSection < sections.length - 1 &&
-      BigInt(index) >= sections[currentSection].threshold
-    ) {
-      currentSection++;
-    }
-    result[index] = sections[currentSection].value;
-  }
-
-  return result;
-}
-
 export function formatFullDate(date: Date): string {
   const getOrdinalSuffix = (day: number) => {
     const j = day % 10,
@@ -305,73 +223,14 @@ export function formatFullDate(date: Date): string {
   return formattedDate;
 }
 
-export async function fetchAndSet<T>(
-  fetcher: () => Promise<T>,
-  setter: (value: T) => void
-) {
-  const value = await fetcher();
-  setter(value);
-}
-
-export async function fetchAndSetAll<
-  Fetchers extends [() => Promise<any>, ...Array<() => Promise<any>>],
-  Setters extends {
-    [K in keyof Fetchers]: (value: Awaited<ReturnType<Fetchers[K]>>) => void;
-  },
->(fetchers: Fetchers, setters: Setters) {
-  const values = await Promise.all(fetchers.map((fetcher) => fetcher()));
-  values.forEach((value, index) => setters[index](value));
-}
-
-export const getTextWidth = (text: string, font = "14px inter") => {
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  if (context) {
-    context.font = font;
-    return context.measureText(text).width;
-  }
-  return 0;
-};
-
 export function timeout(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-export const isURL = (value: string) => {
-  // Regular expression for URL validation
-  const urlRegExp = /^(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+$/i;
-  return value === "" || urlRegExp.test(value);
-};
 
 export function delay(milliseconds: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, milliseconds);
   });
-}
-
-export function getFunctionSignature(decodedData: any): string | null {
-  if (
-    !decodedData ||
-    !decodedData.function ||
-    decodedData.function === "unknown"
-  ) {
-    return null;
-  }
-
-  try {
-    let signature = `${decodedData.function}(`;
-    const paramTypes = Object.entries(decodedData.parameters).map(
-      ([_, param]: [string, any]) => {
-        return param.type || "unknown";
-      }
-    );
-    signature += paramTypes.join(",");
-    signature += ")";
-
-    return signature;
-  } catch (error) {
-    return null;
-  }
 }
 
 export const getRpcUrl = (

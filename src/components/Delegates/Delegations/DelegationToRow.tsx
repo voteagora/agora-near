@@ -1,6 +1,6 @@
 "use client";
 
-import NearTokenAmount from "@/components/shared/NearTokenAmount";
+import TokenAmount from "@/components/shared/TokenAmount";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useBlockExplorerUrl } from "@/hooks/useBlockExplorerUrl";
 import { DelegationEvent } from "@/lib/api/delegates/types";
@@ -19,10 +19,7 @@ export default function DelegationToRow({
   return (
     <TableRow>
       <TableCell>
-        <NearTokenAmount
-          amount={delegation.nearAmount ?? "0"}
-          currency="veNEAR"
-        />
+        <TokenAmount amount={delegation.nearAmount ?? "0"} currency="veNEAR" />
       </TableCell>
       <TableCell>{format(delegation.eventDate, "MM/dd/yyyy")}</TableCell>
       <TableCell>

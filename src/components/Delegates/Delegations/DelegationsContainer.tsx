@@ -10,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useNearDelegatedFrom } from "@/hooks/useNearDelegatedFrom";
-import { useNearDelegatedTo } from "@/hooks/useNearDelegatedTo";
+import { useDelegatedFrom } from "@/hooks/useDelegatedFrom";
+import { useDelegatedTo } from "@/hooks/useDelegatedTo";
 
 function DelegationsContainer({ address }: { address: string }) {
   const {
@@ -20,16 +20,17 @@ function DelegationsContainer({ address }: { address: string }) {
     isFetchingNextPage,
     isLoading: isLoadingDelegatedFrom,
     fetchNextPage,
-  } = useNearDelegatedFrom({
+  } = useDelegatedFrom({
     pageSize: 20,
     address,
   });
 
-  const { data: delegatedTo, isLoading: isLoadingDelegatedTo } =
-    useNearDelegatedTo({
+  const { data: delegatedTo, isLoading: isLoadingDelegatedTo } = useDelegatedTo(
+    {
       pageSize: 20,
       address,
-    });
+    }
+  );
 
   const isLoading =
     isLoadingDelegatedFrom || isLoadingDelegatedTo || isFetchingNextPage;

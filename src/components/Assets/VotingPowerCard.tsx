@@ -1,6 +1,6 @@
 import { TrendingUp } from "lucide-react";
 import { memo, useCallback } from "react";
-import NearTokenAmount from "../shared/NearTokenAmount";
+import TokenAmount from "../shared/TokenAmount";
 import { useVotingPower } from "@/hooks/useVotingPower";
 import { useNear } from "@/contexts/NearContext";
 import { Skeleton } from "../ui/skeleton";
@@ -32,7 +32,7 @@ export const VotingPowerCard = memo(() => {
             {isLoading ? (
               <Skeleton className="w-24 h-10" />
             ) : (
-              <NearTokenAmount
+              <TokenAmount
                 amount={votingPower ?? "0"}
                 hideCurrency={true}
                 minimumFractionDigits={4}

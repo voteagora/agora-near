@@ -1,10 +1,10 @@
 import React from "react";
 import Image from "next/image";
 import Tenant from "@/lib/tenant/tenant";
-import { CoinsIcon } from "@/icons/CoinsIcon";
-import { rgbStringToHex } from "@/app/lib/utils/color";
-import { NotificationIcon } from "@/icons/NotificationIcon";
-import { CheckCircleBrokenIcon } from "@/icons/CheckCircleBrokenIcon";
+import { CoinsIcon } from "@/assets/CoinsIcon";
+import { rgbStringToHex } from "@/lib/color";
+import { NotificationIcon } from "@/assets/NotificationIcon";
+import { CheckCircleBrokenIcon } from "@/assets/CheckCircleBrokenIcon";
 
 const { ui } = Tenant.current();
 

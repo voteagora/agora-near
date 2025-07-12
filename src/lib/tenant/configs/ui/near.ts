@@ -1,7 +1,7 @@
-import nearLogo from "@/assets/tenant/near_logo.svg";
-import infoPageCard00 from "@/assets/tenant/ens_info_0.png";
-import infoPageCard01 from "@/assets/tenant/ens_info_1.png";
-import infoPageCard02 from "@/assets/tenant/ens_info_2.png";
+import nearLogo from "@/assets/near_logo.svg";
+import infoPageCard00 from "@/assets/info_0.png";
+import infoPageCard01 from "@/assets/info_1.png";
+import infoPageCard02 from "@/assets/info_2.png";
 import { TenantUI } from "@/lib/tenant/tenantUI";
 
 export const nearTenantUIConfig = new TenantUI({

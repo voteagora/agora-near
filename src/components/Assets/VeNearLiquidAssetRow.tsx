@@ -1,7 +1,7 @@
 import { useReadHOSContract } from "@/hooks/useReadHOSContract";
 import Big from "big.js";
 import { useCallback, useMemo } from "react";
-import NearTokenAmount from "../shared/NearTokenAmount";
+import TokenAmount from "../shared/TokenAmount";
 import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
 import { TokenWithBalance } from "@/lib/types";
 import { Skeleton } from "../ui/skeleton";
@@ -92,7 +92,7 @@ export const VeNearLiquidAssetRow = ({
       subtitle: isLoadingAvailableToTransfer ? (
         <Skeleton className="w-16 h-4" />
       ) : (
-        <NearTokenAmount
+        <TokenAmount
           amount={availableToTransfer ?? "0"}
           maximumSignificantDigits={4}
           minimumFractionDigits={4}
@@ -106,7 +106,7 @@ export const VeNearLiquidAssetRow = ({
       {
         title: "Lockable",
         subtitle: (
-          <NearTokenAmount
+          <TokenAmount
             amount={token.balance}
             currency={token.metadata?.symbol}
             maximumSignificantDigits={4}

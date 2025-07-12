@@ -1,55 +1,16 @@
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 import { StakingPool, TenantToken, TokenMetadata } from "./types";
-import nearAssetIcon from "@/assets/icons/near_icon.jpg";
-import linearAssetIcon from "@/assets/icons/linear.svg";
-import stnearAssetIcon from "@/assets/icons/stnear.svg";
-import veNearAssetIcon from "@/assets/icons/venear.svg";
-
-export const INDEXER_DELAY = 3000;
+import nearAssetIcon from "@/assets/near_icon.jpg";
+import linearAssetIcon from "@/assets/linear.svg";
+import stnearAssetIcon from "@/assets/stnear.svg";
+import veNearAssetIcon from "@/assets/venear.svg";
 
 export const SECONDS_IN_HOUR = 3600;
-
-export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-
-export enum FREQUENCY_FILTERS {
-  DAY = "24h",
-  WEEK = "7d",
-  MONTH = "1m",
-  QUARTER = "3m",
-  YEAR = "1y",
-}
-
-export enum PROPOSAL_STATUS {
-  ACTIVE = "ACTIVE",
-  CANCELLED = "CANCELLED",
-  CLOSED = "CLOSED",
-  DEFEATED = "DEFEATED",
-  EXECUTED = "EXECUTED",
-  PENDING = "PENDING",
-  QUEUED = "QUEUED",
-  SUCCEEDED = "SUCCEEDED",
-}
-
-export enum DELEGATION_MODEL {
-  FULL = "FULL",
-  ADVANCED = "ADVANCED",
-  PARTIAL = "PARTIAL",
-}
 
 export const TENANT_NAMESPACES = {
   NEAR: "near",
 } as const;
 
-export const proposalsFilterOptions = {
-  relevant: {
-    value: "Relevant",
-    filter: "relevant",
-  },
-  everything: {
-    value: "Everything",
-    filter: "everything",
-  },
-};
 export const delegatesFilterOptions = {
   weightedRandom: {
     sort: "weighted_random",
@@ -64,73 +25,6 @@ export const delegatesFilterOptions = {
     value: "Least voting power",
   },
 };
-
-export const citizensFilterOptions = {
-  mostVotingPower: {
-    value: "Most voting power",
-    sort: "most_voting_power",
-  },
-  shuffle: {
-    sort: "shuffle",
-    value: "Shuffle",
-  },
-};
-export const delegatesVotesSortOptions = {
-  newest: {
-    sortOrder: "desc",
-    value: "Newest",
-  },
-  oldest: {
-    sortOrder: "asc",
-    value: "Oldest",
-  },
-};
-
-export const retroPGFCategories = {
-  ALL: {
-    filter: "All projects",
-  },
-  COLLECTIVE_GOVERNANCE: {
-    text: "Collective Governance",
-    filter: "Collective Governance (104)",
-  },
-  DEVELOPER_ECOSYSTEM: {
-    text: "Developer Ecosystem",
-    filter: "Developer Ecosystem (304)",
-  },
-  END_USER_EXPERIENCE_AND_ADOPTION: {
-    text: "End UX & Adoption",
-    filter: "End User Experience & Adoption (472)",
-  },
-  OP_STACK: {
-    text: "OP Stack",
-    filter: "OP Stack (165)",
-  },
-};
-
-export const retroPGFSort = {
-  mostAwarded: "by most RPGF received",
-  alphabeticalAZ: "Alphabetical (A-Z)",
-  alphabeticalZA: "Alphabetical (Z-A)",
-  shuffle: "Shuffle",
-  byIncludedInBallots: "Least in ballots",
-  mostInBallots: "Most in ballots",
-};
-
-export const disapprovalThreshold = 12;
-
-export enum GOVERNOR_TYPE {
-  AGORA = "AGORA",
-  ALLIGATOR = "ALLIGATOR",
-  BRAVO = "BRAVO",
-  ENS = "ENS",
-}
-
-export enum TIMELOCK_TYPE {
-  TIMELOCK_NO_ACCESS_CONTROL = "TIMELOCK_NO_ACCESS_CONTROL",
-  TIMELOCKCONTROLLER_WITH_ACCESS_CONTROL = "TIMELOCKCONTROLLER_WITH_ACCESS_CONTROL",
-  TIMELOCKCONTROLLER_WITH_ACCESS_CONTROL_ERC721_ERC115 = "TIMELOCKCONTROLLER_WITH_ACCESS_CONTROL_ERC721_ERC115",
-}
 
 export const NEAR_VOTING_OPTIONS = ["For", "Against", "Abstain"];
 
