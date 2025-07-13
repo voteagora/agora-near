@@ -26,12 +26,21 @@ export default function ProposalStatusDetail({
   proposal: ProposalInfo;
   className?: string;
 }) {
-  const status = getProposalStatus(proposal);
+  const status = getProposalStatus({
+    status: proposal.status,
+    totalVotingPower: proposal.snapshot_and_state?.total_venear ?? "0",
+    forVotingPower: proposal.votes[0].total_venear,
+    againstVotingPower: proposal.votes[1].total_venear,
+  });
   const isDefeated = status === ProposalDisplayStatus.Defeated;
 
   const { text, bg } = getProposalStatusColor(status);
 
-  const quorumFulfilled = isQuorumFulfilled(proposal);
+  const quorumFulfilled = isQuorumFulfilled({
+    totalVotingPower: proposal.snapshot_and_state?.total_venear ?? "0",
+    forVotingPower: proposal.votes[0].total_venear,
+    againstVotingPower: proposal.votes[1].total_venear,
+  });
 
   return (
     <div
@@ -68,7 +77,12 @@ export default function ProposalStatusDetail({
         </p>
       </div>
       <div className="font-normal">
-        <ProposalTimeStatus proposal={proposal} />
+        <ProposalTimeStatus
+          votingDurationNs={proposal.voting_duration_ns}
+          votingStartTimeNs={proposal.voting_start_time_ns ?? ""}
+          votingCreationTimeNs={proposal.creation_time_ns ?? ""}
+          status={proposal.status}
+        />
       </div>
     </div>
   );

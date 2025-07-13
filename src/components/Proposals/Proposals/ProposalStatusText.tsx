@@ -1,16 +1,22 @@
-import { ProposalInfo } from "@/lib/contracts/types/voting";
-
+import { Proposal } from "@/lib/api/proposal/types";
+import { getProposalStatus, getProposalStatusColor } from "@/lib/proposalUtils";
 import { cn } from "@/lib/utils";
 import { memo } from "react";
-import { getProposalStatus, getProposalStatusColor } from "@/lib/proposalUtils";
 
 export const ProposalStatusText = memo(
-  ({ proposal }: { proposal: ProposalInfo }) => {
-    const status = getProposalStatus(proposal);
+  ({ proposal }: { proposal: Proposal }) => {
+    const status = getProposalStatus({
+      status: proposal.status ?? "",
+      totalVotingPower: proposal.totalVotingPower ?? "0",
+      forVotingPower: proposal.forVotingPower ?? "0",
+      againstVotingPower: proposal.againstVotingPower ?? "0",
+    });
 
     const { text } = getProposalStatusColor(status);
 
-    return <div className={cn(text, "capitalize")}>{status.toLowerCase()}</div>;
+    return (
+      <div className={cn(text, "capitalize")}>{status?.toLowerCase()}</div>
+    );
   }
 );
 

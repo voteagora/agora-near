@@ -18,7 +18,9 @@ export default function ProposalVoteSummary({
   proposal: ProposalInfo;
 }) {
   const [showDetails, setShowDetails] = useState(false);
-  const quorum = getVenearForQuorum(proposal);
+  const quorum = getVenearForQuorum(
+    proposal.snapshot_and_state?.total_venear ?? "0"
+  );
 
   return (
     <HoverCard

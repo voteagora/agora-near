@@ -109,9 +109,11 @@ export const PendingProposal = ({ proposal }: { proposal: Proposal }) => {
         </div>
         <div className="flex-col whitespace-nowrap py-4 px-6 w-fit flex-start justify-center hidden sm:block">
           <div className="text-xs text-secondary">Submitted on</div>
-          <div className="overflow-ellipsis overflow-visible whitespace-normal break-words text-primary">
-            {format(new Date(proposal.createdAt), "MM/dd/yyyy")}
-          </div>
+          {proposal.createdAt && (
+            <div className="overflow-ellipsis overflow-visible whitespace-normal break-words text-primary">
+              {format(new Date(proposal.createdAt), "MM/dd/yyyy")}
+            </div>
+          )}
         </div>
         <div className="flex-col whitespace-nowrap py-4 px-6 w-fit flex-start justify-center hidden sm:block">
           <div className="text-xs text-secondary">Status</div>
