@@ -50,7 +50,9 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
       Number(proposal.voting_duration_ns)
     ).toString()
   );
-  const quorum = getVenearForQuorum(proposal);
+  const quorum = getVenearForQuorum(
+    proposal.snapshot_and_state?.total_venear ?? "0"
+  );
 
   const stackIds: { [key: string]: string } = {
     for: "1",

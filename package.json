@@ -5,6 +5,7 @@
   "scripts": {
     "start": "NEXT_PUBLIC_AGORA_ENV=prod next dev",
     "start:dev": "NEXT_PUBLIC_AGORA_ENV=dev next dev",
+    "start:local": "NEXT_PUBLIC_AGORA_ENV=local next dev",
     "build": "next build",
     "next:start": "next start",
     "lint": "next lint",

@@ -2,23 +2,31 @@
 "use client";
 
 import { HStack } from "@/components/Layout/Stack";
-import { ProposalInfo, ProposalStatus } from "@/lib/contracts/types/voting";
-import { getNearProposalTimes } from "@/lib/proposalUtils";
+import { ProposalStatus } from "@/lib/contracts/types/voting";
+import { getProposalTimes } from "@/lib/proposalUtils";
 
 export default function ProposalTimeStatus({
-  proposal,
+  votingDurationNs,
+  votingStartTimeNs,
+  votingCreationTimeNs,
+  status,
 }: {
-  proposal: ProposalInfo;
+  votingDurationNs: string;
+  votingStartTimeNs: string;
+  votingCreationTimeNs: string;
+  status: string;
 }) {
   const {
     createdTime: proposalCreateTimeDisplay,
     startTime: proposalStartTimeDisplay,
     endTime: proposalEndTimeDisplay,
-  } = getNearProposalTimes(proposal);
+  } = getProposalTimes({
+    votingDurationNs,
+    votingStartTimeNs,
+    votingCreationTimeNs,
+  });
 
-  const { status: proposalStatus } = proposal;
-
-  switch (proposalStatus) {
+  switch (status) {
     case ProposalStatus.Created:
       return <HStack gap={1}>Created {proposalCreateTimeDisplay}</HStack>;
 

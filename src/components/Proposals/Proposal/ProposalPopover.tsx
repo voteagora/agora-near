@@ -2,7 +2,7 @@ import TokenAmount from "@/components/shared/TokenAmount";
 import checkIcon from "@/assets/check.svg";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import {
-  getNearProposalTimes,
+  getProposalTimes,
   getTotalForAgainstVotes,
   getVenearForQuorum,
   isQuorumFulfilled,
@@ -13,7 +13,11 @@ import { useMemo } from "react";
 import ProposalVoteBar from "./ProposalVoteBar";
 
 const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
-  const { createdTime, startTime, endTime } = getNearProposalTimes(proposal);
+  const { createdTime, startTime, endTime } = getProposalTimes({
+    votingDurationNs: proposal.voting_duration_ns,
+    votingStartTimeNs: proposal.voting_start_time_ns,
+    votingCreationTimeNs: proposal.creation_time_ns,
+  });
 
   const totalRows = useMemo(() => {
     let row = 0;
@@ -23,9 +27,18 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
     return row;
   }, [createdTime, startTime, endTime]);
 
-  const quorum = getVenearForQuorum(proposal);
-  const hasMetQuorum = isQuorumFulfilled(proposal);
-  const totalForAgainstVotes = getTotalForAgainstVotes(proposal);
+  const quorum = getVenearForQuorum(
+    proposal.snapshot_and_state?.total_venear ?? "0"
+  );
+  const hasMetQuorum = isQuorumFulfilled({
+    totalVotingPower: proposal.snapshot_and_state?.total_venear ?? "0",
+    forVotingPower: proposal.votes[0].total_venear,
+    againstVotingPower: proposal.votes[1].total_venear,
+  });
+  const totalForAgainstVotes = getTotalForAgainstVotes(
+    proposal.votes[0].total_venear,
+    proposal.votes[1].total_venear
+  );
 
   return (
     <div className="flex flex-col font-inter font-semibold text-xs w-full max-w-[317px] sm:min-w-[317px] bg-wash">

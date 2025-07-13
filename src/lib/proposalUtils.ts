@@ -1,24 +1,46 @@
+import { convertNanoSecondsToDays } from "@/lib/utils";
+import Big from "big.js";
+import { format } from "date-fns";
 import {
-  ProposalInfo,
-  ProposalStatus,
   ProposalDisplayStatus,
+  ProposalStatus,
   VotingConfig,
 } from "./contracts/types/voting";
-import { format } from "date-fns";
-import Big from "big.js";
-import { convertNanoSecondsToDays } from "@/lib/utils";
 
-export const isForGreaterThanAgainst = (proposal: ProposalInfo) => {
-  const votedFor = Big(proposal.votes[0].total_venear);
-  const votedAgainst = Big(proposal.votes[1].total_venear);
+export const isForGreaterThanAgainst = ({
+  forVotingPower,
+  againstVotingPower,
+}: {
+  forVotingPower: string;
+  againstVotingPower: string;
+}) => {
+  const votedFor = Big(forVotingPower ?? 0);
+  const votedAgainst = Big(againstVotingPower ?? 0);
   return votedFor.gt(votedAgainst);
 };
 
-export function getProposalStatus(proposal: ProposalInfo) {
-  switch (proposal.status) {
+export function getProposalStatus({
+  status,
+  totalVotingPower,
+  forVotingPower,
+  againstVotingPower,
+}: {
+  status: string;
+  totalVotingPower: string;
+  forVotingPower: string;
+  againstVotingPower: string;
+}) {
+  switch (status) {
     case ProposalStatus.Finished: {
-      const quorumFulfilled = isQuorumFulfilled(proposal);
-      const forGreaterThanAgainst = isForGreaterThanAgainst(proposal);
+      const quorumFulfilled = isQuorumFulfilled({
+        totalVotingPower,
+        forVotingPower,
+        againstVotingPower,
+      });
+      const forGreaterThanAgainst = isForGreaterThanAgainst({
+        forVotingPower,
+        againstVotingPower,
+      });
       return quorumFulfilled && forGreaterThanAgainst
         ? ProposalDisplayStatus.Succeeded
         : ProposalDisplayStatus.Defeated;
@@ -28,7 +50,7 @@ export function getProposalStatus(proposal: ProposalInfo) {
     case ProposalStatus.Voting:
       return ProposalDisplayStatus.Active;
     default:
-      return proposal.status;
+      return status;
   }
 }
 
@@ -62,42 +84,59 @@ export const formatNearTime = (time: string | null | undefined) => {
   return time ? format(Number(time) / 1000000, "h:mm aaa MMM dd, yyyy") : null;
 };
 
-export const getNearProposalTimes = (proposal: ProposalInfo) => {
-  const endTime =
-    proposal.voting_start_time_ns && proposal.voting_duration_ns
-      ? Number(proposal.voting_start_time_ns) +
-        Number(proposal.voting_duration_ns)
+export const getProposalTimes = ({
+  votingDurationNs,
+  votingStartTimeNs,
+  votingCreationTimeNs,
+}: {
+  votingDurationNs?: string | null;
+  votingStartTimeNs?: string | null;
+  votingCreationTimeNs?: string | null;
+}) => {
+  const endTimeNs =
+    votingStartTimeNs && votingDurationNs
+      ? Number(votingStartTimeNs) + Number(votingDurationNs)
       : null;
 
   return {
-    createdTime: formatNearTime(proposal.creation_time_ns),
-    startTime: formatNearTime(proposal.voting_start_time_ns),
-    endTime: formatNearTime(endTime?.toString()),
+    createdTime: formatNearTime(votingCreationTimeNs),
+    startTime: formatNearTime(votingStartTimeNs),
+    endTime: formatNearTime(endTimeNs?.toString()),
   };
 };
 
-export const getVenearForQuorum = (proposal: ProposalInfo) => {
+export const getVenearForQuorum = (totalVotingPower: string) => {
   const quorumPercentage = Big(
     process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.30"
   );
-  return Big(proposal.snapshot_and_state?.total_venear ?? 0).mul(
-    quorumPercentage
-  );
+  return Big(totalVotingPower).mul(quorumPercentage);
 };
 
 export const getQuorumPercentage = () =>
   Number(process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.30") *
   100;
 
-export const getTotalForAgainstVotes = (proposal: ProposalInfo) => {
-  return Big(proposal.votes[0].total_venear).plus(
-    proposal.votes[1].total_venear
-  );
+export const getTotalForAgainstVotes = (
+  forVotingPower: string,
+  againstVotingPower: string
+) => {
+  return Big(forVotingPower).plus(againstVotingPower);
 };
 
-export const isQuorumFulfilled = (proposal: ProposalInfo) => {
-  const quorum = getVenearForQuorum(proposal);
-  const totalForAgainstVotes = getTotalForAgainstVotes(proposal);
+export const isQuorumFulfilled = ({
+  totalVotingPower,
+  forVotingPower,
+  againstVotingPower,
+}: {
+  totalVotingPower: string;
+  forVotingPower: string;
+  againstVotingPower: string;
+}) => {
+  const quorum = getVenearForQuorum(totalVotingPower);
+  const totalForAgainstVotes = getTotalForAgainstVotes(
+    forVotingPower,
+    againstVotingPower
+  );
   return totalForAgainstVotes.gte(quorum);
 };
 
