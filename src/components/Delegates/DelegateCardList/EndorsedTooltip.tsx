@@ -4,7 +4,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { icons } from "@/icons/icons";
+import { icons } from "@/assets/icons";
 import Image from "next/image";
 
 export const EndorsedTooltip = () => {

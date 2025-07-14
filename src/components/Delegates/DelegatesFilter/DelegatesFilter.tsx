@@ -4,7 +4,7 @@ import FilterResetListbox from "@/components/common/FilterResetListbox";
 import { delegatesFilterOptions } from "@/lib/constants";
 import { useDelegatesFilter } from "./useDelegatesFilter";
 import { CheckmarkIcon } from "react-hot-toast";
-import { FilterIcon } from "@/icons/filter";
+import { FilterIcon } from "@/assets/filter";
 
 type FilterButtonProps = {
   label: string;
