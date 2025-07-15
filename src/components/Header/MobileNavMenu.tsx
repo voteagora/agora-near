@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import Tenant from "@/lib/tenant/tenant";
-import { useNear } from "@/contexts/NearContext";
 import Image from "next/image";
 
 import { useTotalSupply } from "@/hooks/useTotalNearSupply";
@@ -20,7 +19,8 @@ interface MobileNavMenuProps {
 export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
   const pathname = usePathname() || "";
   const { ui } = Tenant.current();
-  const { totalSupply: totalSupplyFromNear, isLoading: isLoadingSupply } = useTotalSupply();
+  const { totalSupply: totalSupplyFromNear, isLoading: isLoadingSupply } =
+    useTotalSupply();
 
   // Links
   const governanceForumLink = ui.link("governance-forum");
@@ -112,7 +112,12 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
           {totalSupplyFromNear && parseFloat(totalSupplyFromNear) > 0 && (
             <div className="px-8 py-6 border-t border-line">
               <div className="text-tertiary text-sm font-semibold">
-                {isLoadingSupply ? "-" : <TokenAmount amount={totalSupplyFromNear} />}Total Supply
+                {isLoadingSupply ? (
+                  "-"
+                ) : (
+                  <TokenAmount amount={totalSupplyFromNear} />
+                )}
+                Total Supply
               </div>
             </div>
           )}
@@ -155,7 +160,13 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                     className="flex items-center gap-2 text-tertiary"
                   >
                     {discordLink.title}
-                    <Image src={discordIcon} alt="Discord" width={20} height={20} className="opacity-70" />
+                    <Image
+                      src={discordIcon}
+                      alt="Discord"
+                      width={20}
+                      height={20}
+                      className="opacity-70"
+                    />
                   </a>
                 )}
               </div>

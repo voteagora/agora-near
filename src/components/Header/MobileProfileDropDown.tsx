@@ -80,9 +80,9 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
                       transition={{ duration: 0.2 }}
                     >
                       <div className="flex flex-col min-h-[280px]">
-                        <div className="flex flex-col px-6 py-[30px] border-b border-line">
+                        <div className="flex flex-col px-6 py-5 border-b border-line">
                           <div className="flex flex-row items-center gap-2 text-primary">
-                            <NearAvatar accountId={accountId} size={50} />
+                            <NearAvatar accountId={accountId} size={40} />
                             <div className="flex flex-col flex-1">
                               <span className="text-primary font-bold">
                                 {formatNearAccountId(accountId)}

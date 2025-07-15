@@ -73,9 +73,9 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                 {({ close }) => (
                   <div className="bg-wash border border-line rounded-[16px] w-[376px] shadow-newPopover">
                     <div className="flex flex-col min-h-[250px]">
-                      <div className="flex flex-col px-6 py-[30px] border-b border-line">
+                      <div className="flex flex-col px-6 py-5 border-b border-line">
                         <div className="flex flex-row items-center gap-2 text-primary">
-                          <NearAvatar accountId={accountId} size={50} />
+                          <NearAvatar accountId={accountId} size={40} />
                           <div className="flex flex-col flex-1">
                             <span className="text-primary font-bold">
                               {formatNearAccountId(accountId)}

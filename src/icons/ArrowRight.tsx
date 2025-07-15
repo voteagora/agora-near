@@ -17,4 +17,4 @@ export const ArrowRight = ({ className }: { className?: string }) => {
       />
     </svg>
   );
-}; 
+};

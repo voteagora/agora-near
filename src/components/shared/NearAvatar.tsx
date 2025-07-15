@@ -1,6 +1,5 @@
 "use client";
 
-import Tenant from "@/lib/tenant/tenant";
 import Image from "next/image";
 
 interface NearAvatarProps {
@@ -14,8 +13,6 @@ export default function NearAvatar({
   className = "",
   size = 44,
 }: NearAvatarProps) {
-  const { ui } = Tenant.current();
-
   return (
     <div
       className={`overflow-hidden rounded-full flex justify-center items-center ${className}`}
@@ -29,4 +26,4 @@ export default function NearAvatar({
       />
     </div>
   );
-} 
+}
