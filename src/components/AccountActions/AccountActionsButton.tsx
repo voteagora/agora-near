@@ -4,7 +4,6 @@ import { memo, useCallback } from "react";
 import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
 import { UpdatedButton } from "../Button";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
-import { Skeleton } from "../ui/skeleton";
 import { useDelegateProfile } from "@/hooks/useDelegateProfile";
 
 type AccountActionsProps = {
@@ -39,16 +38,16 @@ export const AccountActions = memo(({ close }: AccountActionsProps) => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-2">
-        <Skeleton className="w-full h-12" />
-        <Skeleton className="w-full h-12" />
+      <div className="flex flex-col">
+        <div className="self-stretch h-12 pl-6 flex items-center animate-pulse bg-tertiary/10 rounded-lg"></div>
+        <div className="self-stretch h-12 pl-6 flex items-center animate-pulse bg-tertiary/10 rounded-lg mt-2"></div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col sm:px-4">
-      <div className="py-2">
+    <div className="flex flex-col">
+      <div className="mb-4">
         <UpdatedButton
           onClick={onLockAndStakePress}
           className="w-full"
@@ -57,17 +56,18 @@ export const AccountActions = memo(({ close }: AccountActionsProps) => {
           Lock & Stake
         </UpdatedButton>
       </div>
+      <div className="border-b border-line -mx-6 mb-4"></div>
       <Link
         href={`/delegates/${signedAccountId}`}
         onClick={close}
-        className="mt-2 self-stretch h-12 pl-4 text-secondary flex items-center hover:bg-primary/5 hover:font-bold hover:rounded-md"
+        className="self-stretch h-12 pl-4 text-secondary flex items-center hover:bg-neutral hover:font-bold hover:rounded-md"
       >
         View my profile
       </Link>
       <Link
         href={`/delegates/create`}
         onClick={close}
-        className="self-stretch h-12 pl-4 text-secondary flex items-center hover:bg-primary/5 hover:font-bold hover:rounded-md"
+        className="self-stretch h-12 pl-4 text-secondary flex items-center hover:bg-neutral hover:font-bold hover:rounded-md"
       >
         {hasStatement ? "Edit delegate statement" : "Create delegate statement"}
       </Link>

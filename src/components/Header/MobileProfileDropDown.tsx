@@ -4,17 +4,18 @@ import { rgbStringToHex } from "@/lib/color";
 import { useTokenBalance } from "@/hooks/useTokenBalance";
 import { useVotingPower } from "@/hooks/useVotingPower";
 import { Logout } from "@/assets/logout";
-import walletIcon from "@/assets/wallet.svg";
+
 import Tenant from "@/lib/tenant/tenant";
 import { Popover, Transition } from "@headlessui/react";
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
+
 import { ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
 import { AccountActions } from "../AccountActions/AccountActionsButton";
 import { PanelRow } from "../Delegates/DelegateProfile/DelegateProfile";
 import TokenAmount from "../shared/TokenAmount";
 import { formatNearAccountId } from "@/lib/utils";
+import NearAvatar from "../shared/NearAvatar";
 
 type Props = {
   accountId: string | undefined;
@@ -50,14 +51,7 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
               className="mt-1 outline-none"
               onClick={() => setShouldHydrate(true)}
             >
-              <div className="w-6 h-6 shadow-newDefault rounded-full">
-                <Image
-                  height={walletIcon.height}
-                  width={walletIcon.width}
-                  src={walletIcon.src}
-                  alt="Wallet"
-                />
-              </div>
+              <NearAvatar accountId={accountId} size={24} />
             </Popover.Button>
 
             {open && (
@@ -78,54 +72,66 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
                 {({ close }) =>
                   createPortal(
                     <motion.div
-                      className="bg-neutral py-8 px-6 rounded-t-lg w-full fixed z-[70] bottom-0 left-0"
+                      className="bg-wash rounded-t-2xl w-full fixed z-[70] bottom-0 left-0"
                       initial="hidden"
                       animate="show"
                       exit="exit"
                       variants={variants}
                       transition={{ duration: 0.2 }}
                     >
-                      <div className="flex flex-col gap-3 min-h-[280px] justify-center">
-                        <div className="mb-1">
-                          <span className="text-primary">
-                            {formatNearAccountId(accountId)}
-                          </span>
+                      <div className="flex flex-col min-h-[280px]">
+                        <div className="flex flex-col px-6 py-[30px] border-b border-line">
+                          <div className="flex flex-row items-center gap-2 text-primary">
+                            <NearAvatar accountId={accountId} size={50} />
+                            <div className="flex flex-col flex-1">
+                              <span className="text-primary font-bold">
+                                {formatNearAccountId(accountId)}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="self-stretch py-8 flex flex-col gap-6">
-                          <PanelRow
-                            title={
-                              ui.tacticalStrings?.myBalance ||
-                              "My token balance"
-                            }
-                            detail={
-                              <RowSkeletonWrapper
-                                isLoading={isFetchingTokenBalance}
-                              >
-                                <TokenAmount
-                                  amount={tokenBalance || BigInt(0)}
-                                />
-                              </RowSkeletonWrapper>
-                            }
-                          />
-                          <PanelRow
-                            title="My voting power"
-                            detail={
-                              <RowSkeletonWrapper
-                                isLoading={isLoadingVotingPower}
-                              >
-                                <TokenAmount
-                                  amount={votingPower || BigInt(0)}
-                                  currency="veNEAR"
-                                />
-                              </RowSkeletonWrapper>
-                            }
-                          />
-                          <AccountActions close={close} />
+
+                        <div className="self-stretch flex flex-col font-medium bg-neutral">
+                          <div className="py-4 px-6 flex gap-4 flex-col">
+                            <PanelRow
+                              title={
+                                ui.tacticalStrings?.myBalance ||
+                                "My token balance"
+                              }
+                              detail={
+                                <RowSkeletonWrapper
+                                  isLoading={isFetchingTokenBalance}
+                                >
+                                  <TokenAmount
+                                    amount={tokenBalance || BigInt(0)}
+                                  />
+                                </RowSkeletonWrapper>
+                              }
+                            />
+                            <PanelRow
+                              title="My voting power"
+                              detail={
+                                <RowSkeletonWrapper
+                                  isLoading={isLoadingVotingPower}
+                                >
+                                  <TokenAmount
+                                    amount={votingPower || BigInt(0)}
+                                    currency="veNEAR"
+                                  />
+                                </RowSkeletonWrapper>
+                              }
+                            />
+                          </div>
+
+                          <div className="flex flex-col p-6 font-medium">
+                            <AccountActions close={close} />
+                          </div>
                         </div>
-                        <div className="py-4 border-t border-line bg-neutral rounded-[0px_0px_12px_12px]">
+
+                        <div className="p-6 py-[30px] border-t border-line bg-wash rounded-bl-[16px] rounded-br-[16px]">
                           <div
-                            onClick={() => signOut()}
-                            className="cursor-pointer flex"
+                            onClick={signOut}
+                            className="cursor-pointer flex font-bold"
                           >
                             <Logout
                               fill={rgbStringToHex(ui?.customization?.primary)}
