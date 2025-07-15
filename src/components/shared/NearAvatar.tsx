@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import nearDelegateAvatar from "@/assets/icons/nearDelegateAvatar.svg";
 
 interface NearAvatarProps {
   accountId?: string;
@@ -20,9 +21,10 @@ export default function NearAvatar({
       <Image
         alt="NEAR Avatar"
         className="animate-in"
-        src="/assets/icons/nearDelegateAvatar.svg"
+        src={nearDelegateAvatar}
         width={size}
         height={size}
+        priority
       />
     </div>
   );
