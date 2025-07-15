@@ -1,15 +1,20 @@
 import { useQueryState } from "nuqs";
-import { delegatesFilterOptions } from "@/lib/constants";
+import { delegatesSortOptions } from "@/lib/constants";
 
-export const useDelegatesSort = () => {
+export const useDelegatesSort = ({
+  startTransition,
+}: {
+  startTransition: (callback: () => void) => void;
+}) => {
   const [orderByParam, setOrderByParam] = useQueryState("order_by", {
-    defaultValue: delegatesFilterOptions.weightedRandom.sort,
+    defaultValue: delegatesSortOptions.weightedRandom.sort,
     clearOnDefault: true,
+    startTransition,
   });
 
   const handleSortChange = (value: string) => {
     setOrderByParam(
-      value === delegatesFilterOptions.weightedRandom.sort ? null : value,
+      value === delegatesSortOptions.weightedRandom.sort ? null : value,
       { scroll: false, shallow: false }
     );
   };

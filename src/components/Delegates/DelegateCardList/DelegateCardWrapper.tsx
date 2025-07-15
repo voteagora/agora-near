@@ -1,12 +1,22 @@
 "use client";
 
+import { useTransition } from "react";
 import DelegateTabs from "../DelegatesTabs/DelegatesTabs";
 import DelegateContent from "./DelegateContent";
 
 const DelegateCardWrapper = () => {
+  const [isPendingFilter, startTransitionFilter] = useTransition();
+  const [isPendingSort, startTransitionSort] = useTransition();
+
   return (
-    <DelegateTabs>
-      <DelegateContent />
+    <DelegateTabs
+      startTransitionFilter={startTransitionFilter}
+      startTransitionSort={startTransitionSort}
+    >
+      <DelegateContent
+        isPendingFilter={isPendingFilter}
+        isPendingSort={isPendingSort}
+      />
     </DelegateTabs>
   );
 };

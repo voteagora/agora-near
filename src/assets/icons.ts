@@ -6,6 +6,7 @@ import piggyBank from "./piggyBank.svg";
 import lockClosed from "./lockClosed.svg";
 import northEast from "./northEast.svg";
 import expand from "./expand.svg";
+import endorsed from "./endorsed.svg";
 
 export const icons = {
   ballot,
@@ -16,4 +17,5 @@ export const icons = {
   lockClosed,
   northEast,
   expand,
+  endorsed,
 };

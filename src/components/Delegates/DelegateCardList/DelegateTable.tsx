@@ -11,21 +11,33 @@ import {
 } from "@/components/ui/table";
 import DelegateTableRow from "./DelegateTableRow";
 import { DelegateProfile } from "@/lib/api/delegates/types";
+import { cn } from "@/lib/utils";
 
 interface Props {
   delegates?: DelegateProfile[];
   hasMore: boolean;
   onLoadMore: () => void;
+  isDelegatesFiltering: boolean;
+  orderByParam: string | null;
+  filterParam: string | null;
 }
 
 export default function DelegateTable({
   delegates,
   hasMore,
   onLoadMore,
+  isDelegatesFiltering,
+  orderByParam,
+  filterParam,
 }: Props) {
   return (
     <DialogProvider>
-      <div className="overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg mt-6">
+      <div
+        className={cn(
+          "overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg mt-6",
+          isDelegatesFiltering && "animate-pulse"
+        )}
+      >
         <Table className="min-w-full">
           <TableHeader className="text-sm text-secondary sticky top-0 bg-neutral z-10 rounded-t-lg">
             <TableRow className="bg-tertiary/5">
@@ -36,6 +48,7 @@ export default function DelegateTable({
             </TableRow>
           </TableHeader>
           <InfiniteScroll
+            key={`${orderByParam}-${filterParam}`}
             hasMore={hasMore}
             pageStart={1}
             loadMore={onLoadMore}
@@ -52,7 +65,6 @@ export default function DelegateTable({
             // References styles of TableBody
             className="[&_tr:last-child]:border-0"
             element="tbody"
-            useWindow={false}
           >
             {delegates?.length === 0 ? (
               <td

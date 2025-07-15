@@ -11,7 +11,7 @@ export const TENANT_NAMESPACES = {
   NEAR: "near",
 } as const;
 
-export const delegatesFilterOptions = {
+export const delegatesSortOptions = {
   weightedRandom: {
     sort: "weighted_random",
     value: "Random (default)",
@@ -23,6 +23,17 @@ export const delegatesFilterOptions = {
   mostDelegators: {
     sort: "least_voting_power",
     value: "Least voting power",
+  },
+};
+
+export const delegatesFilterOptions = {
+  all: {
+    value: "All (default)",
+    filter: "all",
+  },
+  endorsed: {
+    value: "Endorsed",
+    filter: "endorsed",
   },
 };
 

@@ -4,7 +4,7 @@ import { Fragment } from "react";
 import { cn } from "@/lib/utils";
 export interface FilterOption {
   value: string;
-  sort: string;
+  filter: string;
 }
 
 interface FilterListboxProps {
@@ -28,11 +28,11 @@ export default function FilterListbox({
 
   const getCurrentLabel = () => {
     if (Array.isArray(options)) {
-      return options.find((opt) => opt.sort === value)?.value;
+      return options.find((opt) => opt.filter === value)?.value;
     }
     return (
       options[value]?.value ||
-      Object.values(options).find((opt) => opt.sort === value)?.value
+      Object.values(options).find((opt) => opt.filter === value)?.value
     );
   };
 
@@ -49,7 +49,11 @@ export default function FilterListbox({
       </Listbox.Button>
       <Listbox.Options className="mt-3 absolute bg-wash border border-line p-2 rounded-2xl flex flex-col gap-1 z-20 w-max">
         {optionsArray.map((option) => (
-          <Listbox.Option key={option.sort} value={option.sort} as={Fragment}>
+          <Listbox.Option
+            key={option.filter}
+            value={option.filter}
+            as={Fragment}
+          >
             {({ selected }) => (
               <li
                 className={`cursor-pointer text-base py-2 px-3 rounded-xl font-medium hover:text-primary hover:bg-tertiary/20 ${
