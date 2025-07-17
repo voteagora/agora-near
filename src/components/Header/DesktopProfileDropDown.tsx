@@ -11,7 +11,9 @@ import { ReactNode, useState } from "react";
 import { AccountActions } from "../AccountActions/AccountActionsButton";
 import { PanelRow } from "../Delegates/DelegateProfile/DelegateProfile";
 import TokenAmount from "../shared/TokenAmount";
+
 import { formatNearAccountId } from "@/lib/utils";
+import NearAvatar from "../shared/NearAvatar";
 
 type Props = {
   accountId?: string;
@@ -40,7 +42,10 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
               onClick={() => setShouldHydrate(true)}
             >
               <div className="text-primary flex items-center gap-3">
-                {formatNearAccountId(accountId)}
+                <NearAvatar accountId={accountId} size={28} />
+                <div className="hidden lg:inline">
+                  {accountId && <span>{formatNearAccountId(accountId)}</span>}
+                </div>
               </div>
             </Popover.Button>
 
@@ -66,22 +71,25 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
             >
               <Popover.Panel>
                 {({ close }) => (
-                  <div className="bg-wash border border-line rounded-xl w-[350px]">
+                  <div className="bg-wash border border-line rounded-[16px] w-[376px] shadow-newPopover">
                     <div className="flex flex-col min-h-[250px]">
-                      <div className="flex flex-col">
-                        <div className="p-4 border-b border-line">
-                          <div className="flex flex-row items-center px-4 py-3">
-                            <div className="flex flex-col justify-center">
+                      <div className="flex flex-col px-6 py-5 border-b border-line">
+                        <div className="flex flex-row items-center gap-2 text-primary">
+                          <NearAvatar accountId={accountId} size={40} />
+                          <div className="flex flex-col flex-1">
+                            <span className="text-primary font-bold">
                               {formatNearAccountId(accountId)}
-                            </div>
+                            </span>
                           </div>
                         </div>
                       </div>
-                      <div className="self-stretch py-8 flex flex-col gap-6">
-                        <div className="flex flex-col gap-4 px-4">
+
+                      <div className="self-stretch flex flex-col font-medium bg-neutral">
+                        <div className="py-4 px-6 flex gap-4 flex-col">
                           <PanelRow
                             title={
-                              ui.tacticalStrings?.myBalance || "My balance"
+                              ui.tacticalStrings?.myBalance ||
+                              "My token balance"
                             }
                             detail={
                               <RowSkeletonWrapper
@@ -92,9 +100,7 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                                 />
                               </RowSkeletonWrapper>
                             }
-                            className="w-[300px] justify-between"
                           />
-
                           <PanelRow
                             title="My voting power"
                             detail={
@@ -107,20 +113,24 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                                 />
                               </RowSkeletonWrapper>
                             }
-                            className="w-[300px] justify-between"
                           />
                         </div>
-                        <div className="border-t border-line pt-4">
+
+                        <div className="flex flex-col p-6 font-medium">
                           <AccountActions close={close} />
                         </div>
                       </div>
-                      <div className="p-4 border-t border-line bg-neutral rounded-[0px_0px_12px_12px]">
-                        <div onClick={signOut} className="cursor-pointer flex">
+
+                      <div className="p-6 py-[30px] border-t border-line bg-wash sm:rounded-bl-[16px] sm:rounded-br-[16px]">
+                        <div
+                          onClick={signOut}
+                          className="cursor-pointer flex font-bold"
+                        >
                           <Logout
                             fill={rgbStringToHex(ui?.customization?.primary)}
-                            className={"mr-[10px] self-center cursor-pointer"}
+                            className={"mr-[10px] self-center"}
                           />
-                          <span>Logout</span>
+                          <span className="text-primary">Logout</span>
                         </div>
                       </div>
                     </div>

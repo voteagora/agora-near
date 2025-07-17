@@ -1,5 +1,4 @@
-import { rgbStringToHex } from "@/lib/color";
-import { AgoraIcon } from "@/assets/AgoraIcon";
+// import { AgoraIcon } from "@/assets/AgoraIcon";
 import Tenant from "@/lib/tenant/tenant";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,17 +12,16 @@ export default function LogoLink() {
       className="flex flex-row justify-between w-full"
     >
       <div className="gap-2 h-full flex flex-row items-center w-full">
-        <AgoraIcon
-          fill={rgbStringToHex(ui.customization.primary)}
+        {/* <AgoraIcon
           className="hidden sm:block w-[20px] h-[20px]"
-        />
-        <div className="h-3 w-[2px] bg-line rounded-full hidden sm:block"></div>
+        /> */}
+        {/* <div className="h-3 w-[2px] bg-line rounded-full hidden sm:block"></div> */}
         <Image
           src={ui.logo}
           alt="logo"
           width="24"
           height="24"
-          className="h-[24px] w-auto"
+          className="h-[24px] w-auto ml-1"
         />
         <span className="hidden sm:block font-medium text-primary">{`${ui.title}`}</span>
         {!isProd && (

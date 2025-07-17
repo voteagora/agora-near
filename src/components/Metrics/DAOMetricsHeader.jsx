@@ -19,6 +19,7 @@ import { useTotalSupply } from "@/hooks/useTotalNearSupply";
 export default function DAOMetricsHeader() {
   const { ui } = Tenant.current();
   const [isClient, setIsClient] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const { totalSupply: totalSupplyFromNear, isLoading: isLoadingSupply } =
     useTotalSupply();
@@ -37,9 +38,19 @@ export default function DAOMetricsHeader() {
 
   useEffect(() => {
     setIsClient(true);
+
+    // Check if mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640); // sm breakpoint
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  if (!isClient) {
+  if (!isClient || isMobile) {
     return null;
   } else {
     return (

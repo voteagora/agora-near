@@ -124,9 +124,13 @@ export default async function RootLayout({
 
       <NuqsAdapter>
         <ClientLayout>
-          <Header />
-          {children}
-          <DAOMetricsHeader />
+          <div className="mx-auto max-w-[1280px] my-3 sm:my-4 px-3 sm:px-8">
+            <Header />
+            {children}
+          </div>
+          <div className="hidden sm:block">
+            <DAOMetricsHeader />
+          </div>
         </ClientLayout>
       </NuqsAdapter>
     </html>
