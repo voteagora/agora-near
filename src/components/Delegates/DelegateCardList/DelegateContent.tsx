@@ -2,10 +2,13 @@
 
 import { useDelegates } from "@/hooks/useDelegates";
 import { useQueryState } from "nuqs";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DelegateCardList from "./DelegateCardList";
 import DelegateTable from "./DelegateTable";
 import { DelegateCardLoadingState } from "./DelegateCardWrapper";
+import { useNear } from "@/contexts/NearContext";
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
+import Tenant from "@/lib/tenant/tenant";
 
 export default function DelegateContent({
   isPendingFilter,
@@ -27,6 +30,32 @@ export default function DelegateContent({
       orderBy: orderByParam,
       filter: filterParam,
     });
+
+  const { signedAccountId } = useNear();
+  const [showDialog, setShowDialog] = useState(false);
+  const openDialog = useOpenDialog();
+  const { ui } = Tenant.current();
+  const isDelegationEncouragementEnabled = ui.toggle(
+    "delegation-encouragement"
+  )?.enabled;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!signedAccountId && !showDialog && isDelegationEncouragementEnabled) {
+        openDialog({
+          type: "ENCOURAGE_CONNECT_WALLET",
+          params: {},
+        });
+        setShowDialog(true);
+      }
+    }, 900);
+    return () => clearTimeout(timer);
+  }, [
+    signedAccountId,
+    showDialog,
+    openDialog,
+    isDelegationEncouragementEnabled,
+  ]);
 
   const onLoadMore = useCallback(() => {
     if (!hasNextPage || isLoading || isFetchingNextPage) {

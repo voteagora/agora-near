@@ -213,5 +213,9 @@ export const nearTenantUIConfig = new TenantUI({
       name: "assets",
       enabled: true,
     },
+    {
+      name: "delegation-encouragement",
+      enabled: true,
+    },
   ],
 });

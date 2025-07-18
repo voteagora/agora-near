@@ -1,5 +1,7 @@
 import { DesktopProfileDropDown } from "./DesktopProfileDropDown";
 import { ArrowRight } from "@/icons/ArrowRight";
+import EncourageDelegationDot from "./EncourageDelegationDot";
+import Tenant from "@/lib/tenant/tenant";
 
 type DesktopConnectButtonProps = {
   isConnected: boolean;
@@ -14,13 +16,22 @@ export function DesktopConnectButton({
   accountId,
   signOut,
 }: DesktopConnectButtonProps) {
+  const { ui } = Tenant.current();
+  const isDelegationEncouragementEnabled = ui.toggle(
+    "delegation-encouragement"
+  )?.enabled;
   return (
     <div
       onClick={!isConnected ? () => show?.() : undefined}
       className="border border-line text-primary font-medium bg-wash py-2 px-4 rounded-full cursor-pointer hidden sm:flex items-center transition-all hover:shadow-newDefault h-[48px]"
     >
       {isConnected ? (
-        <DesktopProfileDropDown accountId={accountId} signOut={signOut} />
+        <>
+          <DesktopProfileDropDown accountId={accountId} signOut={signOut} />
+          {isDelegationEncouragementEnabled && (
+            <EncourageDelegationDot className="left-8 top-[10px]" />
+          )}
+        </>
       ) : (
         <>
           Connect{"\u00A0"}Wallet

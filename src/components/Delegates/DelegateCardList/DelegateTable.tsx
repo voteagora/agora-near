@@ -12,6 +12,8 @@ import {
 import DelegateTableRow from "./DelegateTableRow";
 import { DelegateProfile } from "@/lib/api/delegates/types";
 import { cn } from "@/lib/utils";
+import { DelegateToSelfBanner } from "./DelegateToSelfBanner";
+import Tenant from "@/lib/tenant/tenant";
 
 interface Props {
   delegates?: DelegateProfile[];
@@ -30,8 +32,14 @@ export default function DelegateTable({
   orderByParam,
   filterParam,
 }: Props) {
+  const { ui } = Tenant.current();
+  const isDelegationEncouragementEnabled = ui.toggle(
+    "delegation-encouragement"
+  )?.enabled;
+
   return (
     <DialogProvider>
+      {isDelegationEncouragementEnabled && <DelegateToSelfBanner />}
       <div
         className={cn(
           "overflow-hidden shadow ring-1 ring-black/5 sm:rounded-lg mt-6",

@@ -16,6 +16,7 @@ import { PanelRow } from "../Delegates/DelegateProfile/DelegateProfile";
 import TokenAmount from "../shared/TokenAmount";
 import { formatNearAccountId } from "@/lib/utils";
 import NearAvatar from "../shared/NearAvatar";
+import EncourageDelegationDot from "./EncourageDelegationDot";
 
 type Props = {
   accountId: string | undefined;
@@ -31,7 +32,9 @@ const variants = {
 
 export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
   const { ui } = Tenant.current();
-
+  const isDelegationEncouragementEnabled = ui.toggle(
+    "delegation-encouragement"
+  )?.enabled;
   // Don't hydrate the component until the user clicks on the profile dropdown
   const [shouldHydrate, setShouldHydrate] = useState(false);
 
@@ -51,6 +54,9 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
               className="mt-1 outline-none"
               onClick={() => setShouldHydrate(true)}
             >
+              {isDelegationEncouragementEnabled && (
+                <EncourageDelegationDot className="right-[-3px]" />
+              )}
               <NearAvatar accountId={accountId} size={24} />
             </Popover.Button>
 
