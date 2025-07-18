@@ -8,6 +8,7 @@ import {
   GetVoteHistoryResponse,
   GetDelegationEventsResponse,
   GetHosActivityResponse,
+  SetDelegateEndorsedResponse,
 } from "./types";
 
 export const createDelegateStatement = async (
@@ -92,4 +93,16 @@ export const fetchHosActivity = async (
   );
 
   return data;
+};
+
+export const setDelegateEndorsed = async (
+  address: string,
+  endorsed: boolean
+) => {
+  const response = await axios.post<SetDelegateEndorsedResponse>(
+    `${Endpoint.Delegates}/${address}/endorse`,
+    { endorsed }
+  );
+
+  return response.data;
 };

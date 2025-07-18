@@ -38,6 +38,11 @@ export type CreateDelegateStatementResponse = {
   success: boolean;
 };
 
+export type SetDelegateEndorsedResponse = {
+  delegateStatement: DelegateStatement;
+  success: boolean;
+};
+
 export type DelegateProfile = {
   address: string;
   twitter?: string | null;

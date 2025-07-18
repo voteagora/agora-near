@@ -8,8 +8,12 @@ import VotesContainerWrapper from "@/components/Delegates/DelegateVotes/VotesCon
 import DelegationsContainerWrapper from "@/components/Delegates/Delegations/DelegationsContainerWrapper";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { useDelegateProfile } from "@/hooks/useDelegateProfile";
 import { useVotingPower } from "@/hooks/useVotingPower";
+import { useNear } from "@/contexts/NearContext";
+import { useProposalConfig } from "@/hooks/useProposalConfig";
+import { useDelegateEndorsement } from "@/hooks/useDelegateEndorsement";
 
 export const DelegateProfileContent = ({ address }: { address: string }) => {
   const {
@@ -22,6 +26,22 @@ export const DelegateProfileContent = ({ address }: { address: string }) => {
 
   const { data: votingPower, isLoading: isLoadingVotingPower } =
     useVotingPower(address);
+
+  const { signedAccountId } = useNear();
+  const { config } = useProposalConfig();
+  const { toggleEndorsement, isToggling } = useDelegateEndorsement();
+
+  const isReviewer =
+    signedAccountId && config?.reviewer_ids.includes(signedAccountId);
+
+  const handleToggleEndorsement = () => {
+    if (delegate) {
+      toggleEndorsement({
+        address,
+        endorsed: !delegate.endorsed,
+      });
+    }
+  };
 
   if (isLoadingProfile || isLoadingVotingPower) {
     return (
@@ -41,6 +61,20 @@ export const DelegateProfileContent = ({ address }: { address: string }) => {
   return (
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 justify-between mt-12 w-full max-w-full">
       <div className="flex flex-col static sm:sticky top-16 shrink-0 w-full sm:max-w-[350px]">
+        {isReviewer && (
+          <Button
+            onClick={handleToggleEndorsement}
+            disabled={isToggling}
+            variant={delegate.endorsed ? "destructive" : "default"}
+            className="mb-4 rounded-full"
+          >
+            {isToggling
+              ? "Updating..."
+              : delegate.endorsed
+                ? "Remove Endorsement"
+                : "Endorse Delegate"}
+          </Button>
+        )}
         <DelegateProfile
           profile={{
             address: address,
