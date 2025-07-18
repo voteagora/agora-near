@@ -11,6 +11,7 @@ import { StakingDialog, StakingSource } from "../StakingDialog/StakingDialog";
 import { VotingPowerProjectionsDialog } from "../VotingPowerProjectionsDialog";
 import { UnlockDialog } from "../UnlockDialog";
 import { EncourageConnectWalletDialog } from "@/components/Delegates/Delegations/EncourageConnectWalletDialog";
+import SubscribeDialog from "@/components/Notifications/SubscribeDialog";
 
 export type DialogType =
   | DelegateDialogType
@@ -23,7 +24,8 @@ export type DialogType =
   | StakingDialogType
   | VotingPowerProjectionsDialogType
   | UnlockDialogType
-  | EncourageConnectWalletDialogType;
+  | EncourageConnectWalletDialogType
+  | SubscribeDialogType;
 
 export type DelegateDialogType = {
   type: "NEAR_DELEGATE";
@@ -103,6 +105,11 @@ export type EncourageConnectWalletDialogType = {
   params: {};
 };
 
+export type SubscribeDialogType = {
+  type: "NEAR_SUBSCRIBE";
+  params: { type: "root" | "vote" };
+};
+
 export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_DELEGATE: ({ delegateAddress }, closeDialog) => {
     return (
@@ -165,4 +172,7 @@ export const dialogs: DialogDefinitions<DialogType> = {
   ENCOURAGE_CONNECT_WALLET: ({}, closeDialog) => (
     <EncourageConnectWalletDialog closeDialog={closeDialog} />
   ),
+  NEAR_SUBSCRIBE: ({ type }, closeDialog) => {
+    return <SubscribeDialog closeDialog={closeDialog} type={type} />;
+  },
 };
