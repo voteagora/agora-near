@@ -1992,14 +1992,9 @@
   dependencies:
     "@opentelemetry/api" "^1.0.0"
 
-"@opentelemetry/api@1.7.0":
-  version "1.7.0"
-  resolved "https://registry.npmjs.org/@opentelemetry/api/-/api-1.7.0.tgz"
-  integrity sha512-AdY5wvN0P2vXBi3b29hxZgSFvdhdxPB9+f0B6s//P9Q8nibRWeA3cHm8UmLpio9ABigkVHJ5NMPk+Mz8VCCyrw==
-
-"@opentelemetry/api@^1.0.0":
+"@opentelemetry/api@^1.0.0", "@opentelemetry/api@^1.9.0":
   version "1.9.0"
-  resolved "https://registry.npmjs.org/@opentelemetry/api/-/api-1.9.0.tgz"
+  resolved "https://registry.yarnpkg.com/@opentelemetry/api/-/api-1.9.0.tgz#d03eba68273dc0f7509e2a3d5cba21eae10379fe"
   integrity sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==
 
 "@opentelemetry/auto-instrumentations-node@^0.43.0":
@@ -4705,10 +4700,10 @@
   dependencies:
     server-only "^0.0.1"
 
-"@vercel/otel@^1.5.0":
-  version "1.10.0"
-  resolved "https://registry.npmjs.org/@vercel/otel/-/otel-1.10.0.tgz"
-  integrity sha512-bv1FXbFZlFbB89vyA2P9/kr6eZ42bMtXgqBJpgi+8yOrZU8rkg9wMi0TL//AgAf/qKtaryDm1sbCnkLHgCI3PQ==
+"@vercel/otel@^1.13.0":
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@vercel/otel/-/otel-1.13.0.tgz#7b7dd737b7b1ba0895fcb36673416b31b99e7ea9"
+  integrity sha512-esRkt470Y2jRK1B1g7S1vkt4Csu44gp83Zpu8rIyPoqy2BKgk4z7ik1uSMswzi45UogLHFl6yR5TauDurBQi4Q==
 
 "@vercel/speed-insights@^1.0.2":
   version "1.0.12"
