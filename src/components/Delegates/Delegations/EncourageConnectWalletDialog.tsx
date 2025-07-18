@@ -23,7 +23,8 @@ export const EncourageConnectWalletDialog = ({
         </div>
         <div className="justify-start text-neutral-700 text-base font-medium leading-normal">
           Your tokens matter— connect your wallet to delegate your voting power
-          and shape the future of the NEAR ecosystem.
+          to trusted community members and shape the future of the NEAR
+          ecosystem.
         </div>
       </div>
       <UpdatedButton

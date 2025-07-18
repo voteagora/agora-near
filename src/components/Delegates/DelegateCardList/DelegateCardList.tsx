@@ -4,7 +4,7 @@ import { DialogProvider } from "@/components/Dialogs/DialogProvider/DialogProvid
 import { DelegateProfile } from "@/lib/api/delegates/types";
 import InfiniteScroll from "react-infinite-scroller";
 import DelegateCard from "./DelegateCard";
-import { DelegateToSelfBanner } from "./DelegateToSelfBanner";
+import { EncourageDelegationBanner } from "./EncourageDelegationBanner";
 import Tenant from "@/lib/tenant/tenant";
 
 interface Props {
@@ -31,7 +31,9 @@ export default function DelegateCardList({
 
   return (
     <DialogProvider>
-      {isDelegationEncouragementEnabled && <DelegateToSelfBanner />}
+      {isDelegationEncouragementEnabled && (
+        <EncourageDelegationBanner filterParam={filterParam} />
+      )}
       <InfiniteScroll
         key={`${orderByParam}-${filterParam}`}
         className="grid grid-flow-row grid-cols-1 sm:grid-cols-3 justify-around sm:justify-between py-4 gap-4 sm:gap-8"

@@ -1,17 +1,24 @@
 import { useMemo } from "react";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import { DelegateToSelf } from "../Delegations/DelegateToSelf";
+import { UpdatedButton } from "@/components/Button";
 import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
-import { DelegateProfile } from "@/lib/api/delegates/types";
 import Big from "big.js";
+import Link from "next/link";
 
-export const DelegateToSelfBanner = () => {
+export const EncourageDelegationBanner = ({
+  filterParam,
+}: {
+  filterParam: string | null;
+}) => {
   const { signedAccountId } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
 
   const shouldShowBanner = useMemo(() => {
     if (!accountInfo || !signedAccountId) return false;
+
+    // Don't show banner if already viewing endorsed delegates
+    if (filterParam === "endorsed") return false;
 
     // Check if user has any tokens (total balance > 0)
     const totalBalance = Big(accountInfo.totalBalance.near || "0").plus(
@@ -19,20 +26,17 @@ export const DelegateToSelfBanner = () => {
     );
 
     // Check if user has delegated
-    const hasDelegated = !!accountInfo.delegation?.delegatee;
+    const delegatee = accountInfo.delegation?.delegatee;
+    const hasDelegated = !!delegatee;
+    const isDelegatedToSelf = delegatee === signedAccountId;
 
-    // Show banner if user has tokens but hasn't delegated
-    return totalBalance.gt(0) && !hasDelegated;
-  }, [accountInfo, signedAccountId]);
+    // Show banner if user has tokens and (hasn't delegated OR is delegated to themselves)
+    return totalBalance.gt(0) && (!hasDelegated || isDelegatedToSelf);
+  }, [accountInfo, signedAccountId, filterParam]);
 
   if (!shouldShowBanner || !signedAccountId) {
     return null;
   }
-
-  // Create a mock delegate object for the self-delegation
-  const mockDelegate: DelegateProfile = {
-    address: signedAccountId,
-  };
 
   return (
     <div className="w-full p-4 rounded-lg border border-negative inline-flex justify-start items-start gap-4 mt-3 mb-1">
@@ -42,14 +46,17 @@ export const DelegateToSelfBanner = () => {
           Your tokens can&#39;t be voted with!
         </div>
         <div className="text-sm font-medium leading-[21px]">
-          Make your vote count, delegate to yourself or someone else in the
-          community.
+          Make your vote count by delegating to trusted community members.
         </div>
       </div>
-      <DelegateToSelf
-        delegate={mockDelegate}
-        className="font-medium px-[20px] py-3 h-full"
-      />
+      <Link href="/delegates?filter=endorsed">
+        <UpdatedButton
+          type="primary"
+          className="font-medium px-[20px] py-3 h-full"
+        >
+          View endorsed delegates
+        </UpdatedButton>
+      </Link>
     </div>
   );
 };
