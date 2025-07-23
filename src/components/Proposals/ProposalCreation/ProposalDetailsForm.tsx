@@ -127,7 +127,7 @@ export default function ProposalDetailsForm() {
         <div className="flex items-center justify-between">
           <h4 className="text-xs font-semibold mb-1 text-secondary">Link</h4>
           <Link
-            href="/info#proposal-process"
+            href="/info?item=proposal-process"
             target="_blank"
             className="text-xs text-primary hover:text-secondary underline flex items-center gap-1"
           >
@@ -148,7 +148,7 @@ export default function ProposalDetailsForm() {
             {errors.link.message?.includes("https://gov.near.org/") && (
               <div className="mt-1">
                 <Link
-                  href="/info#proposal-process"
+                  href="/info?item=proposal-process"
                   target="_blank"
                   className="text-primary hover:text-secondary underline flex items-center gap-1"
                 >

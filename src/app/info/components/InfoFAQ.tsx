@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, ReactNode } from "react";
+import React, { useEffect, ReactNode, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -396,31 +396,164 @@ const faqs: FAQ[] = [
     answer:
       "The choice depends on your level of engagement and expertise. If you have the time and knowledge to research proposals thoroughly, direct voting gives you full control. If you prefer to entrust your voting power to someone who actively participates in governance, delegation is a great option.",
   },
+  {
+    id: "rewards-distribution",
+    question: "How will rewards be calculated and distributed?",
+    answer: (
+      <div className="space-y-4">
+        <p>
+          The formula to calculate the annual total NEAR rewards paid to veNEAR
+          holders is as follows:
+        </p>
+        <div className="p-4 text-center my-4">
+          <span className="font-mono text-lg">
+            NEAR<sub>rewards</sub> = NEAR<sub>locked</sub> × veNEAR
+            <sub>rewardsApy</sub>
+          </span>
+        </div>
+        <ul className="list-disc list-inside space-y-2 ml-4">
+          <li>
+            <strong>
+              veNEAR<sub>rewardsApy</sub>
+            </strong>{" "}
+            will be set by the Screening Committee.
+          </li>
+          <li>
+            The above formula assumes the distribution of{" "}
+            <strong>
+              NEAR<sub>rewards</sub>
+            </strong>{" "}
+            to be annual.
+          </li>
+        </ul>
+        <p>
+          Given the above estimate for{" "}
+          <strong>
+            NEAR<sub>rewards</sub>
+          </strong>{" "}
+          in a given month/epoch, a given user is awarded based on their veNEAR
+          holdings as a ratio to{" "}
+          <strong>
+            veNEAR<sub>supply</sub>
+          </strong>
+          :
+        </p>
+        <div className="p-4 text-center my-4">
+          <span className="font-mono text-lg">
+            NEAR<sub>userA</sub> = NEAR<sub>rewards</sub> × (veNEAR
+            <sub>userA</sub> / veNEAR<sub>supply</sub>)
+          </span>
+        </div>
+        <ul className="list-disc list-inside space-y-2 ml-4">
+          <li>
+            Users need to claim rewards based on their percentage ownership of
+            the veNEAR supply, as per the above formula.
+          </li>
+        </ul>
+        <p>
+          Based on the current capital cost (5.8%), the annual spending on NEAR
+          rewards will be as per the table below.
+        </p>
+        <div className="overflow-x-auto mt-4">
+          <table className="w-full border-collapse border border-gray-300 text-sm">
+            <thead>
+              <tr className="bg-primary text-white">
+                <th className="border border-gray-300 px-4 py-3 text-left font-semibold">
+                  NEAR Locked
+                </th>
+                <th className="border border-gray-300 px-4 py-3 text-left font-semibold">
+                  Required Annual NEAR Rewards*
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="bg-blue-50">
+                <td className="border border-gray-300 px-4 py-3 font-medium">
+                  1,000,000
+                </td>
+                <td className="border border-gray-300 px-4 py-3 font-medium">
+                  58,000
+                </td>
+              </tr>
+              <tr className="bg-blue-50">
+                <td className="border border-gray-300 px-4 py-3 font-medium">
+                  10,000,000
+                </td>
+                <td className="border border-gray-300 px-4 py-3 font-medium">
+                  580,000
+                </td>
+              </tr>
+              <tr className="bg-blue-50">
+                <td className="border border-gray-300 px-4 py-3 font-medium">
+                  100,000,000
+                </td>
+                <td className="border border-gray-300 px-4 py-3 font-medium">
+                  5,800,000
+                </td>
+              </tr>
+              <tr className="bg-blue-50">
+                <td className="border border-gray-300 px-4 py-3 font-medium">
+                  500,000,000
+                </td>
+                <td className="border border-gray-300 px-4 py-3 font-medium">
+                  29,000,000
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          The rewards can be funded from multiple sources, where Treasury and
+          0.5% annual token inflation are the main sources of funds.
+        </p>
+        <div className="mt-4">
+          <a
+            href="https://www.gauntlet.xyz/resources/near-house-of-stake-governance-proposal"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline hover:text-secondary"
+          >
+            Learn more
+          </a>
+        </div>
+      </div>
+    ),
+  },
 ];
 
 const InfoFAQ = () => {
   const searchParams = useSearchParams();
+  const faqId = searchParams?.get("item");
+  const isValidFaqId = faqId && faqs.some((faq) => faq.id === faqId);
+  const [openItem, setOpenItem] = useState<string | undefined>(
+    isValidFaqId ? faqId : undefined
+  );
 
   useEffect(() => {
-    // Check if there's a hash in the URL for deep linking
-    const hash = window.location.hash.replace("#", "");
-    if (hash && faqs.some((faq) => faq.id === hash)) {
-      // Small delay to ensure the DOM is ready
+    // Check if there's a valid FAQ ID in the query params
+    if (isValidFaqId && faqId) {
+      setOpenItem(faqId);
       setTimeout(() => {
-        const element = document.getElementById(hash);
+        const element = document.getElementById(faqId);
         if (element) {
           element.scrollIntoView({ behavior: "smooth", block: "center" });
         }
       }, 100);
     }
-  }, [searchParams]);
+  }, [faqId, isValidFaqId]);
 
   return (
     <div className="mt-12">
       <h3 className="text-2xl font-black text-primary mb-6">
         Frequently Asked Questions
       </h3>
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion
+        type="single"
+        collapsible
+        className="w-full"
+        value={openItem}
+        onValueChange={setOpenItem}
+      >
         {faqs.map((faq) => (
           <AccordionItem key={faq.id} value={faq.id} id={faq.id}>
             <AccordionTrigger className="text-left text-primary hover:text-secondary">
