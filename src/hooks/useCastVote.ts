@@ -60,7 +60,7 @@ export function useCastVote({ onSuccess }: { onSuccess?: () => void }) {
       const [merkleProof, vAccount] = proof;
 
       return mutateVote({
-        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID ?? "",
         methodCalls: [
           {
             methodName: "vote",
