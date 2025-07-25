@@ -14,11 +14,11 @@ const ContractList = () => {
   const list = [
     {
       title: "veNEAR",
-      address: "v.r-1748895584.testnet",
+      address: process.env.NEXT_PUBLIC_NEAR_CONTRACT_ID,
     },
     {
       title: "Governor",
-      address: "vote.r-1748895584.testnet",
+      address: process.env.NEXT_PUBLIC_NEAR_VOTING_CONTRACT_ID,
     },
   ];
 
