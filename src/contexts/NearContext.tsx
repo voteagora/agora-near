@@ -169,7 +169,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
   const signIn = useCallback(async () => {
     if (!selector) return;
     const modal = setupModal(selector, {
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID ?? "",
     });
     modal.show();
   }, [selector]);
