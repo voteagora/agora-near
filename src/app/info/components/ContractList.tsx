@@ -10,9 +10,10 @@ import Image from "next/image";
 import linkIcon from "@/assets/link.svg";
 import Link from "next/link";
 
-const nearUrl = process.env.NEXT_PUBLIC_AGORA_ENV === 'prod'
-  ? 'https://nearblocks.io'
-  : 'https://testnet.nearblocks.io'
+const nearUrl =
+  process.env.NEXT_PUBLIC_AGORA_ENV === "prod"
+    ? "https://nearblocks.io"
+    : "https://testnet.nearblocks.io";
 
 const ContractList = () => {
   const list = [
@@ -54,7 +55,10 @@ const ContractList = () => {
             <TableCell
               className={`px-1 ${index === list.length - 1 && "rounded-br-lg"}`}
             >
-              <Link href={`${nearUrl}/address/${contract.address}`} target="_blank">
+              <Link
+                href={`${nearUrl}/address/${contract.address}`}
+                target="_blank"
+              >
                 <Image
                   alt={contract.title}
                   width={20}
