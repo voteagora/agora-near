@@ -127,6 +127,10 @@ const ProposalVoteResult = ({
                                     <p className="text-primary">(you)</p>
                                   )}
                                 </HStack>
+                                <TokenAmount
+                                  amount={nonVoter.votingPower}
+                                  hideCurrency
+                                />
                               </HStack>
                             </HoverCardTrigger>
                           </HoverCard>

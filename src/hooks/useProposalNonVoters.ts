@@ -31,6 +31,7 @@ export const useProposalNonVoters = ({
       return pageParam + 1;
     },
     initialPageParam: 1,
+    refetchOnWindowFocus: false,
   });
 
   const flatData = useMemo(() => {
