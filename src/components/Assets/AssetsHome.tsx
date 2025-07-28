@@ -2,7 +2,10 @@
 
 import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
-import { memo } from "react";
+import { useVenearConfig } from "@/hooks/useVenearConfig";
+import { MIN_VERSION_FOR_LST_LOCKUP } from "@/lib/constants";
+import { memo, useCallback, useMemo } from "react";
+import { LiquidStakingTokenLockWarning } from "../Dialogs/LockDialog/LiquidStakingTokenLockWarning";
 import AgoraLoader from "../shared/AgoraLoader/AgoraLoader";
 import { AssetsLandingPage } from "./AssetsLandingPage";
 import { GovernanceRewardsCard } from "./GovernanceRewardsCard";
@@ -14,7 +17,22 @@ export const AssetsHome = memo(() => {
   const { data: accountInfo, isLoading: isLoadingAccount } =
     useVenearAccountInfo(signedAccountId);
 
-  if (isLoadingAccount) {
+  const { lockupVersion, isLoading: isLoadingVenearConfig } = useVenearConfig({
+    enabled: true,
+  });
+
+  const shouldShowLSTWarning = useMemo(() => {
+    // Your lockup version takes precedence if you have onboarded, otherwise use global lockup version
+    const lockupVersionToCheck = accountInfo?.lockupVersion ?? lockupVersion;
+
+    return lockupVersionToCheck < MIN_VERSION_FOR_LST_LOCKUP;
+  }, [accountInfo?.lockupVersion, lockupVersion]);
+
+  const handleLearnMore = useCallback(() => {
+    window.open("/info?item=fungible-token-withdrawal", "_blank");
+  }, []);
+
+  if (isLoadingAccount || isLoadingVenearConfig) {
     return (
       <div className="flex flex-col w-full h-full justify-center items-center">
         <AgoraLoader />
@@ -23,11 +41,21 @@ export const AssetsHome = memo(() => {
   }
 
   if (!accountInfo) {
-    return <AssetsLandingPage />;
+    return <AssetsLandingPage shouldShowLSTWarning={shouldShowLSTWarning} />;
   }
 
   return (
     <div className="flex flex-col w-full min-h-screen">
+      {shouldShowLSTWarning && (
+        <div className="w-full bg-[#F9F8F7] border-b border-gray-200 px-4 py-3 mt-4 rounded-2xl">
+          <div className="mx-auto">
+            <LiquidStakingTokenLockWarning
+              symbol="liquid staking tokens"
+              onLearnMorePressed={handleLearnMore}
+            />
+          </div>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row gap-6 sm:px-6 py-6">
         <div className="w-full sm:w-[70%] flex">
           <VotingPowerCard />

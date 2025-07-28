@@ -48,8 +48,8 @@ export const ReviewStep = memo(
       lockupAccountId,
       venearStorageCost,
       lockupStorageCost,
-      lockupVersion,
-      veNearLockupVersion,
+      venearAccountLockupVersion,
+      venearGlobalLockupVersion,
     } = useLockProviderContext();
 
     const {
@@ -88,10 +88,19 @@ export const ReviewStep = memo(
       });
     }, [executeTransactions, requiredTransactions.length]);
 
-    const shouldShowLSTWarning =
-      selectedToken?.type === "lst" &&
-      ((lockupVersion ?? 1) < MIN_VERSION_FOR_LST_LOCKUP ||
-        (veNearLockupVersion ?? 1) < MIN_VERSION_FOR_LST_LOCKUP);
+    const shouldShowLSTWarning = useMemo(() => {
+      const versionToCheck =
+        venearAccountLockupVersion ?? venearGlobalLockupVersion ?? 1;
+
+      return (
+        selectedToken?.type === "lst" &&
+        versionToCheck < MIN_VERSION_FOR_LST_LOCKUP
+      );
+    }, [
+      selectedToken?.type,
+      venearAccountLockupVersion,
+      venearGlobalLockupVersion,
+    ]);
 
     if (showDisclosures) {
       return <DisclosuresContent onBack={handleHideDisclosures} />;

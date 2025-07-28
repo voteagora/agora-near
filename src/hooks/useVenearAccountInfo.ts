@@ -38,8 +38,15 @@ export function useVenearAccountInfo(accountId: string | undefined | null) {
             delegatee: account.delegation.account_id,
           }
         : undefined,
+      lockupVersion: accountData?.internal?.lockup_version,
     };
-  }, [accountId, error, isLoading, accountData?.account]);
+  }, [
+    accountId,
+    error,
+    isLoading,
+    accountData?.account,
+    accountData?.internal?.lockup_version,
+  ]);
 
   return {
     data,

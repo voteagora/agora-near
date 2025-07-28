@@ -1,9 +1,9 @@
 import { useNear } from "@/contexts/NearContext";
 import { useAvailableToLock } from "@/hooks/useAvailableToLock";
+import { useBalance } from "@/hooks/useBalance";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useFungibleTokens } from "@/hooks/useFungibleTokens";
 import { useLockNear } from "@/hooks/useLockNear";
-import { useBalance } from "@/hooks/useBalance";
 import { useStakingPool } from "@/hooks/useStakingPool";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
 import {
@@ -32,7 +32,6 @@ import { useLockupAccount } from "../../hooks/useLockupAccount";
 import { useVenearAccountInfo } from "../../hooks/useVenearAccountInfo";
 import { useVenearConfig } from "../../hooks/useVenearConfig";
 import { LockDialogSource } from "./LockDialog/index";
-import { useLockupVersion } from "@/hooks/useLockupVersion";
 
 export type LockTransaction =
   | "deploy_lockup"
@@ -73,8 +72,8 @@ type LockProviderContextType = {
   source: LockDialogSource;
   venearStorageCost: string;
   lockupStorageCost: string;
-  lockupVersion: number | undefined;
-  veNearLockupVersion: number | undefined;
+  venearAccountLockupVersion: number | undefined;
+  venearGlobalLockupVersion: number | undefined;
 };
 
 export const LockProviderContext = createContext<LockProviderContextType>({
@@ -107,8 +106,8 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   source: "onboarding",
   venearStorageCost: "0",
   lockupStorageCost: "0",
-  lockupVersion: undefined,
-  veNearLockupVersion: undefined,
+  venearAccountLockupVersion: undefined,
+  venearGlobalLockupVersion: undefined,
 });
 
 export const useLockProviderContext = () => {
@@ -179,12 +178,6 @@ export const LockProvider = ({
     isLoading: isLoadingLockupAccount,
     error: lockupAccountError,
   } = useLockupAccount();
-
-  const { lockupVersion, isLoading: isLoadingLockupVersion } = useLockupVersion(
-    {
-      lockupAccountId,
-    }
-  );
 
   const { lockNearAsync, isLockingNear, lockingNearError } = useLockNear({
     lockupAccountId: lockupAccountId || "",
@@ -290,8 +283,7 @@ export const LockProvider = ({
     isLoadingLockupAccount ||
     isLoadingFungibleTokens ||
     isLoadingNearBalance ||
-    isLoadingStakingPools ||
-    isLoadingLockupVersion;
+    isLoadingStakingPools;
 
   const availableTokens = useMemo(() => {
     if (
@@ -599,8 +591,9 @@ export const LockProvider = ({
         source,
         venearStorageCost: venearStorageCost.toString(),
         lockupStorageCost: lockupStorageCost.toString(),
-        lockupVersion,
-        veNearLockupVersion,
+        venearAccountLockupVersion:
+          venearAccountInfo?.lockupVersion ?? undefined,
+        venearGlobalLockupVersion: veNearLockupVersion,
       }}
     >
       {children}
