@@ -32,6 +32,7 @@ import { useLockupAccount } from "../../hooks/useLockupAccount";
 import { useVenearAccountInfo } from "../../hooks/useVenearAccountInfo";
 import { useVenearConfig } from "../../hooks/useVenearConfig";
 import { LockDialogSource } from "./LockDialog/index";
+import { useLockupVersion } from "@/hooks/useLockupVersion";
 
 export type LockTransaction =
   | "deploy_lockup"
@@ -72,6 +73,8 @@ type LockProviderContextType = {
   source: LockDialogSource;
   venearStorageCost: string;
   lockupStorageCost: string;
+  lockupVersion: number | undefined;
+  veNearLockupVersion: number | undefined;
 };
 
 export const LockProviderContext = createContext<LockProviderContextType>({
@@ -104,6 +107,8 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   source: "onboarding",
   venearStorageCost: "0",
   lockupStorageCost: "0",
+  lockupVersion: undefined,
+  veNearLockupVersion: undefined,
 });
 
 export const useLockProviderContext = () => {
@@ -158,6 +163,7 @@ export const LockProvider = ({
     venearStorageCost,
     lockupStorageCost,
     totalRegistrationCost,
+    lockupVersion: veNearLockupVersion,
     isLoading: isLoadingVenearConfig,
     error: venearConfigError,
   } = useVenearConfig({ enabled: !!signedAccountId });
@@ -173,6 +179,12 @@ export const LockProvider = ({
     isLoading: isLoadingLockupAccount,
     error: lockupAccountError,
   } = useLockupAccount();
+
+  const { lockupVersion, isLoading: isLoadingLockupVersion } = useLockupVersion(
+    {
+      lockupAccountId,
+    }
+  );
 
   const { lockNearAsync, isLockingNear, lockingNearError } = useLockNear({
     lockupAccountId: lockupAccountId || "",
@@ -278,7 +290,8 @@ export const LockProvider = ({
     isLoadingLockupAccount ||
     isLoadingFungibleTokens ||
     isLoadingNearBalance ||
-    isLoadingStakingPools;
+    isLoadingStakingPools ||
+    isLoadingLockupVersion;
 
   const availableTokens = useMemo(() => {
     if (
@@ -586,6 +599,8 @@ export const LockProvider = ({
         source,
         venearStorageCost: venearStorageCost.toString(),
         lockupStorageCost: lockupStorageCost.toString(),
+        lockupVersion,
+        veNearLockupVersion,
       }}
     >
       {children}

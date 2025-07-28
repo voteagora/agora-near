@@ -16,12 +16,15 @@ import TokenAmount from "../../shared/TokenAmount";
 import { useLockProviderContext } from "../LockProvider";
 import { DepositTooltip } from "./DepositTooltip";
 import { DisclosuresContent } from "./DisclosuresContent";
+import { LiquidStakingTokenLockWarning } from "./LiquidStakingTokenLockWarning";
+import { MIN_VERSION_FOR_LST_LOCKUP } from "@/lib/constants";
 
 type ReviewStepProps = {
   handleEdit: () => void;
   handleLockMore: () => void;
   handleProceedToStaking: () => void;
   handleViewDashboard: () => void;
+  closeDialog: () => void;
 };
 
 export const ReviewStep = memo(
@@ -30,6 +33,7 @@ export const ReviewStep = memo(
     handleLockMore,
     handleProceedToStaking,
     handleViewDashboard,
+    closeDialog,
   }: ReviewStepProps) => {
     const [showDisclosures, setShowDisclosures] = useState(false);
 
@@ -44,6 +48,8 @@ export const ReviewStep = memo(
       lockupAccountId,
       venearStorageCost,
       lockupStorageCost,
+      lockupVersion,
+      veNearLockupVersion,
     } = useLockProviderContext();
 
     const {
@@ -81,6 +87,11 @@ export const ReviewStep = memo(
         numTransactions: requiredTransactions.length,
       });
     }, [executeTransactions, requiredTransactions.length]);
+
+    const shouldShowLSTWarning =
+      selectedToken?.type === "lst" &&
+      ((lockupVersion ?? 1) < MIN_VERSION_FOR_LST_LOCKUP ||
+        (veNearLockupVersion ?? 1) < MIN_VERSION_FOR_LST_LOCKUP);
 
     if (showDisclosures) {
       return <DisclosuresContent onBack={handleHideDisclosures} />;
@@ -301,8 +312,13 @@ export const ReviewStep = memo(
           <span>Total est. veNEAR</span>
           {formattedVeNearAmount}
         </div>
-
         <div className="flex-1 flex flex-col justify-end pb-4">
+          {shouldShowLSTWarning && (
+            <LiquidStakingTokenLockWarning
+              symbol={selectedToken?.metadata?.name}
+              onLearnMorePressed={closeDialog}
+            />
+          )}
           <div className="flex flex-col gap-2">
             <UpdatedButton
               type="primary"

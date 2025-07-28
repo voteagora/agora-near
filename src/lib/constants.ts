@@ -117,3 +117,8 @@ export const STNEAR_POOL: StakingPool = {
   priceMethod: "get_st_near_price",
   metadata: STNEAR_TOKEN_METADATA,
 };
+
+// Represents the version where the lockup contract was updated to support locking LST tokens
+export const MIN_VERSION_FOR_LST_LOCKUP = process.env.MIN_VERSION_FOR_LST_LOCKUP
+  ? Number(process.env.MIN_VERSION_FOR_LST_LOCKUP)
+  : Number.MAX_SAFE_INTEGER;
