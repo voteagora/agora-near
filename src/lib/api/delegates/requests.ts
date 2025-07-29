@@ -33,12 +33,14 @@ export const fetchDelegates = async (
   pageSize: number,
   page: number,
   orderBy: string | null,
-  filter: string | null
+  filter: string | null,
+  issues?: string | null
 ) => {
   const orderByParam = orderBy ? `&order_by=${orderBy}` : "";
   const filterParam = filter ? `&filter_by=${filter}` : "";
+  const issuesParam = issues ? `&issue_type=${issues}` : "";
   const { data } = await axios.get<GetDelegatesResponse>(
-    `${Endpoint.Delegates}?page_size=${pageSize}&page=${page}${orderByParam}${filterParam}`
+    `${Endpoint.Delegates}?page_size=${pageSize}&page=${page}${orderByParam}${filterParam}${issuesParam}`
   );
 
   return data;

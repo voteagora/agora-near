@@ -2,6 +2,7 @@ import { Endpoint } from "@/lib/api/constants";
 import { fetchDelegates } from "@/lib/api/delegates/requests";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { useQueryState } from "nuqs";
 
 const DELEGATES_QK = `${Endpoint.Delegates}`;
 
@@ -14,6 +15,11 @@ export const useDelegates = ({
   orderBy: string | null;
   filter: string | null;
 }) => {
+  const [issuesParam] = useQueryState("issues", {
+    defaultValue: "",
+    clearOnDefault: true,
+  });
+
   const {
     data,
     error,
@@ -23,9 +29,15 @@ export const useDelegates = ({
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: [`${DELEGATES_QK}-${orderBy}-${filter}`],
+    queryKey: [`${DELEGATES_QK}-${orderBy}-${filter}-${issuesParam}`],
     queryFn: ({ pageParam = 1 }) => {
-      return fetchDelegates(pageSize, pageParam, orderBy, filter);
+      return fetchDelegates(
+        pageSize,
+        pageParam,
+        orderBy,
+        filter,
+        issuesParam || null
+      );
     },
     getNextPageParam: (currentPage, _, pageParam) => {
       if (currentPage.count <= pageParam * pageSize) return undefined;

@@ -5,6 +5,8 @@ import { delegatesFilterOptions } from "@/lib/constants";
 import { useDelegatesFilter } from "./useDelegatesFilter";
 import { CheckmarkIcon } from "react-hot-toast";
 import { FilterIcon } from "@/assets/filter";
+import DelegatesIssuesFilter from "./DelegatesIssuesFilter";
+import { useQueryState } from "nuqs";
 
 type FilterButtonProps = {
   label: string;
@@ -44,9 +46,20 @@ export const DelegatesFilter = ({
     startTransition: startTransitionFilter,
   });
 
+  // Get issues parameter for active count
+  const [issuesParam] = useQueryState("issues", {
+    defaultValue: "",
+    clearOnDefault: true,
+  });
+
   const onFilterClose = (status: boolean) => {
     setIsOpen(status);
   };
+
+  // Calculate active filters count
+  const hasActiveFilter = filterParam !== delegatesFilterOptions.all.filter;
+  const hasActiveIssues = issuesParam && issuesParam.length > 0;
+  const activeCount = (hasActiveFilter ? 1 : 0) + (hasActiveIssues ? 1 : 0);
 
   return (
     <FilterResetListbox
@@ -54,13 +67,13 @@ export const DelegatesFilter = ({
       triggerIcon={
         <FilterIcon
           className={
-            filterParam !== delegatesFilterOptions.all.filter
+            activeCount > 0
               ? "stroke-primary sm:stroke-neutral"
               : "stroke-primary"
           }
         />
       }
-      activeCount={filterParam !== delegatesFilterOptions.all.filter ? 1 : 0}
+      activeCount={activeCount}
       onReset={resetFilter}
       isOpen={isOpen}
       onOpenChange={onFilterClose}
@@ -91,6 +104,9 @@ export const DelegatesFilter = ({
             }
           />
         </div>
+      </div>
+      <div className="border-t border-line px-2.5 py-6">
+        <DelegatesIssuesFilter startTransition={startTransitionFilter} />
       </div>
     </FilterResetListbox>
   );
