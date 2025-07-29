@@ -10,6 +10,7 @@ import { VeNearOnboardingModal } from "@/app/near/VeNearOnboardingModal";
 import { StakingDialog, StakingSource } from "../StakingDialog/StakingDialog";
 import { VotingPowerProjectionsDialog } from "../VotingPowerProjectionsDialog";
 import { UnlockDialog } from "../UnlockDialog";
+import { EncourageConnectWalletDialog } from "@/components/Delegates/Delegations/EncourageConnectWalletDialog";
 
 export type DialogType =
   | DelegateDialogType
@@ -21,7 +22,8 @@ export type DialogType =
   | VeNearOnboardingDialogType
   | StakingDialogType
   | VotingPowerProjectionsDialogType
-  | UnlockDialogType;
+  | UnlockDialogType
+  | EncourageConnectWalletDialogType;
 
 export type DelegateDialogType = {
   type: "NEAR_DELEGATE";
@@ -96,6 +98,11 @@ export type UnlockDialogType = {
   params: Record<string, never>;
 };
 
+export type EncourageConnectWalletDialogType = {
+  type: "ENCOURAGE_CONNECT_WALLET";
+  params: {};
+};
+
 export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_DELEGATE: ({ delegateAddress }, closeDialog) => {
     return (
@@ -155,4 +162,7 @@ export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_UNLOCK: (_, closeDialog) => {
     return <UnlockDialog closeDialog={closeDialog} />;
   },
+  ENCOURAGE_CONNECT_WALLET: ({}, closeDialog) => (
+    <EncourageConnectWalletDialog closeDialog={closeDialog} />
+  ),
 };
