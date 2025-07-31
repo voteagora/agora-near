@@ -7,6 +7,7 @@ import LockClosedIcon from "@/assets/lock_closed.svg";
 
 import Image from "next/image";
 import { ArrowRightIcon } from "lucide-react";
+import Link from "next/link";
 
 interface LockTokensCardProps {
   apy: string;
@@ -45,10 +46,13 @@ export const LockTokensCard = memo(
               </span>
               <span className="text-xs sm:text-sm lg:text-lg">APY</span>
             </div>
-            <button className="flex items-center text-black font-medium hover:opacity-80 transition-opacity gap-2">
+            <Link
+              href="/info"
+              className="flex items-center text-black font-medium hover:opacity-80 transition-opacity gap-2"
+            >
               Learn More
               <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
-            </button>
+            </Link>
           </div>
         </CardContent>
       </Card>

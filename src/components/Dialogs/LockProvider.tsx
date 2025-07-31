@@ -1,9 +1,9 @@
 import { useNear } from "@/contexts/NearContext";
 import { useAvailableToLock } from "@/hooks/useAvailableToLock";
+import { useBalance } from "@/hooks/useBalance";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useFungibleTokens } from "@/hooks/useFungibleTokens";
 import { useLockNear } from "@/hooks/useLockNear";
-import { useBalance } from "@/hooks/useBalance";
 import { useStakingPool } from "@/hooks/useStakingPool";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
 import {
@@ -72,6 +72,8 @@ type LockProviderContextType = {
   source: LockDialogSource;
   venearStorageCost: string;
   lockupStorageCost: string;
+  venearAccountLockupVersion: number | undefined;
+  venearGlobalLockupVersion: number | undefined;
 };
 
 export const LockProviderContext = createContext<LockProviderContextType>({
@@ -104,6 +106,8 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   source: "onboarding",
   venearStorageCost: "0",
   lockupStorageCost: "0",
+  venearAccountLockupVersion: undefined,
+  venearGlobalLockupVersion: undefined,
 });
 
 export const useLockProviderContext = () => {
@@ -158,6 +162,7 @@ export const LockProvider = ({
     venearStorageCost,
     lockupStorageCost,
     totalRegistrationCost,
+    lockupVersion: veNearLockupVersion,
     isLoading: isLoadingVenearConfig,
     error: venearConfigError,
   } = useVenearConfig({ enabled: !!signedAccountId });
@@ -586,6 +591,9 @@ export const LockProvider = ({
         source,
         venearStorageCost: venearStorageCost.toString(),
         lockupStorageCost: lockupStorageCost.toString(),
+        venearAccountLockupVersion:
+          venearAccountInfo?.lockupVersion ?? undefined,
+        venearGlobalLockupVersion: veNearLockupVersion,
       }}
     >
       {children}

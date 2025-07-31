@@ -30,6 +30,7 @@ export const useVenearConfig = ({ enabled }: { enabled: boolean }) => {
       lockupStorageCost: BigInt(data?.min_lockup_deposit || "0"),
       stakingPoolWhitelistId: data?.staking_pool_whitelist_account_id,
       unlockDuration: BigInt(data?.unlock_duration_ns || "0"),
+      lockupVersion: data?.lockup_contract_config?.contract_version || 0,
       isLoading,
       error,
     };

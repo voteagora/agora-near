@@ -327,6 +327,12 @@ const faqs: FAQ[] = [
     ),
   },
   {
+    id: "fungible-token-withdrawal",
+    question: "Why do I need to unstake my liNEAR and stNEAR to withdraw?",
+    answer:
+      "In the current House of Stake contracts, users can deposit liNEAR or stNEAR into the lockup contract, but the design does not support direct transfers of these tokens out of the contract. Instead, users must unstake the tokens back to native NEAR before withdrawal as a workaround. This stems from an initial focus on staking functionality rather than full transferability, with fungible token transfers complicated by pricing dependencies not denominated in NEAR. The lockup contract is non-upgradable, making this behavior fixed for the lifetime of the V1 lockup contract. This will be addressed in a future version of House of Stake.",
+  },
+  {
     id: "how-to-participate",
     question: "How can I participate in NEAR governance?",
     answer:
