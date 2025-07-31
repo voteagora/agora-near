@@ -37,3 +37,48 @@ export type ProposalNonVotersRecord = {
   registeredVoterId: string;
   votingPower: string;
 };
+
+export enum DraftProposalStage {
+  DRAFT = "DRAFT",
+  AWAITING_SUBMISSION = "AWAITING_SUBMISSION",
+  SUBMITTED = "SUBMITTED",
+}
+
+export type DraftProposal = {
+  id: string;
+  title: string;
+  description: string;
+  proposalUrl?: string;
+  author: string;
+  stage: DraftProposalStage;
+  votingOptions?: { options: string[] };
+  receiptId?: string | null;
+  submittedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type CreateDraftProposalRequest = {
+  title: string;
+  description: string;
+  author: string;
+  proposalUrl?: string;
+  votingOptions?: { options: string[] };
+};
+
+export type UpdateDraftProposalRequest = {
+  title?: string;
+  description?: string;
+  proposalUrl?: string;
+  stage?: DraftProposalStage;
+  receiptId?: string;
+  votingOptions?: { options: string[] };
+};
+
+export type GetDraftProposalsResponse = {
+  draftProposals: DraftProposal[];
+  count: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};

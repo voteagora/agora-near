@@ -3,6 +3,12 @@
 import { UpdatedButton } from "@/components/Button";
 import PageHeader from "@/components/Layout/PageHeader/PageHeader";
 import { useApprovedProposals } from "@/hooks/useApprovedProposals";
+import {
+  useCreateDraftProposal,
+  useDraftProposals,
+} from "@/hooks/useDraftProposals";
+import { usePendingProposals } from "@/hooks/usePendingProposals";
+import { useNear } from "@/contexts/NearContext";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import InfiniteScroll from "react-infinite-scroller";
@@ -10,6 +16,10 @@ import { Proposal } from "./Proposal";
 import { PendingProposalsList } from "./PendingProposals";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DraftProposalsList } from "./DraftProposalsList";
+import { toast } from "react-hot-toast";
+import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
+import { useProposalConfig } from "@/hooks/useProposalConfig";
 
 const Loader = () => {
   return (
@@ -78,15 +88,69 @@ function NearProposalsList() {
 enum Tab {
   All = "All",
   Pending = "Pending Proposals",
+  Drafts = "Drafts",
 }
 
 export default function NearProposals() {
   const router = useRouter();
+  const { signedAccountId, signIn } = useNear();
 
   const [activeTab, setActiveTab] = useState(Tab.All);
 
+  const { mutate: createDraft, isPending: isCreatingDraft } =
+    useCreateDraftProposal();
+
+  const { config } = useProposalConfig();
+  const isReviewer =
+    signedAccountId && config?.reviewer_ids.includes(signedAccountId);
+
+  const { data: pendingProposals } = usePendingProposals({
+    enabled: !!signedAccountId,
+    pageSize: 10,
+    createdBy: isReviewer ? undefined : signedAccountId,
+  });
+
+  const { data: draftProposals } = useDraftProposals({
+    author: signedAccountId || undefined,
+  });
+
+  const hasPendingProposals =
+    isReviewer || (pendingProposals && pendingProposals.length > 0);
+  const hasDraftProposals =
+    draftProposals?.draftProposals && draftProposals.draftProposals.length > 0;
+
+  const availableTabs = [
+    Tab.All,
+    ...(hasPendingProposals ? [Tab.Pending] : []),
+    ...(hasDraftProposals ? [Tab.Drafts] : []),
+  ];
+
+  const shouldShowTabs = availableTabs.length > 1;
+
   const onCreateProposalClicked = () => {
-    router.push("/proposals/create");
+    if (!signedAccountId) {
+      signIn();
+      return;
+    }
+
+    createDraft(
+      {
+        title: "",
+        description: "",
+        author: signedAccountId,
+        proposalUrl: "",
+        votingOptions: { options: NEAR_VOTING_OPTIONS },
+      },
+      {
+        onSuccess: (draft) => {
+          router.push(`/proposals/drafts/${draft.id}`);
+        },
+        onError: (error) => {
+          toast.error("Failed to create draft proposal");
+          console.error(error);
+        },
+      }
+    );
   };
 
   return (
@@ -94,28 +158,38 @@ export default function NearProposals() {
       <div className="flex flex-col sm:flex-row justify-between items-baseline gap-2 mb-4 sm:mb-auto">
         <div className="flex flex-row justify-between w-full gap-4 items-center mb-4">
           <PageHeader headerText="Proposals" />
-          <UpdatedButton onClick={onCreateProposalClicked}>
-            Create Proposal
+          <UpdatedButton
+            onClick={onCreateProposalClicked}
+            disabled={isCreatingDraft}
+          >
+            {isCreatingDraft ? "Creating..." : "Create Proposal"}
           </UpdatedButton>
         </div>
       </div>
       <div className="flex flex-col bg-neutral border border-line rounded-lg shadow-newDefault overflow-hidden">
-        <div className="border-b border-line items-center flex flex-row bg-neutral px-6">
-          {[Tab.All, Tab.Pending].map((tab) => (
-            <button
-              key={tab}
-              className={cn(
-                "text-sm text-secondary px-4 py-4",
-                activeTab === tab && "border-primary border-b"
-              )}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-        {activeTab === Tab.All && <NearProposalsList />}
-        {activeTab === Tab.Pending && <PendingProposalsList />}
+        {shouldShowTabs && (
+          <div className="border-b border-line items-center flex flex-row bg-neutral px-6">
+            {availableTabs.map((tab) => (
+              <button
+                key={tab}
+                className={cn(
+                  "text-sm text-secondary px-4 py-4",
+                  activeTab === tab && "border-primary border-b"
+                )}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+        )}
+        {(!shouldShowTabs || activeTab === Tab.All) && <NearProposalsList />}
+        {hasPendingProposals && activeTab === Tab.Pending && (
+          <PendingProposalsList />
+        )}
+        {hasDraftProposals && activeTab === Tab.Drafts && (
+          <DraftProposalsList />
+        )}
       </div>
     </div>
   );
