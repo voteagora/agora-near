@@ -11,6 +11,7 @@ import { StakingDialog, StakingSource } from "../StakingDialog/StakingDialog";
 import { VotingPowerProjectionsDialog } from "../VotingPowerProjectionsDialog";
 import { UnlockDialog } from "../UnlockDialog";
 import { EncourageConnectWalletDialog } from "@/components/Delegates/Delegations/EncourageConnectWalletDialog";
+import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
 
 export type DialogType =
   | DelegateDialogType
@@ -23,7 +24,8 @@ export type DialogType =
   | StakingDialogType
   | VotingPowerProjectionsDialogType
   | UnlockDialogType
-  | EncourageConnectWalletDialogType;
+  | EncourageConnectWalletDialogType
+  | ConfirmDialogType;
 
 export type DelegateDialogType = {
   type: "NEAR_DELEGATE";
@@ -103,6 +105,18 @@ export type EncourageConnectWalletDialogType = {
   params: {};
 };
 
+export type ConfirmDialogType = {
+  type: "CONFIRM";
+  params: {
+    title: string;
+    message: string;
+    confirmText?: string;
+    cancelText?: string;
+    variant?: "danger" | "default";
+    onConfirm: () => void;
+  };
+};
+
 export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_DELEGATE: ({ delegateAddress }, closeDialog) => {
     return (
@@ -164,5 +178,8 @@ export const dialogs: DialogDefinitions<DialogType> = {
   },
   ENCOURAGE_CONNECT_WALLET: ({}, closeDialog) => (
     <EncourageConnectWalletDialog closeDialog={closeDialog} />
+  ),
+  CONFIRM: (params, closeDialog) => (
+    <ConfirmDialog {...params} closeDialog={closeDialog} />
   ),
 };
