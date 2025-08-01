@@ -89,7 +89,7 @@ export const ProjectionSlider = memo(
           </div>
         </div>
 
-        <div className="relative">
+        <div className="relative py-4">
           <div className="relative h-2 bg-gray-200 rounded-full mb-6">
             <div
               className={cn(
@@ -136,7 +136,7 @@ export const ProjectionSlider = memo(
           <div className="flex justify-between text-sm text-primary font-medium">
             {timeLabels.map((label, index) => {
               const isActive =
-                selectedValue - index >= 0 && selectedValue <= index + 0.1;
+                Math.abs(selectedValue - index) < 0.1;
 
               return (
                 <div
