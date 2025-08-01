@@ -65,7 +65,10 @@ const SubscribeDialog = ({
   const existingEmail = data?.email;
   const hasEmail = existingEmail && existingEmail !== "";
 
-  if (!signedAccountId) return null;
+  if (!signedAccountId) {
+    closeDialog();
+    return null;
+  }
 
   const updateNotificationPreferences = async (
     wantsNotifications: "true" | "prompt"
