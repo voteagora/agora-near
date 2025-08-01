@@ -57,8 +57,10 @@ export default function NearDebug() {
   const liquidStakingTokens =
     fungibleTokens?.tokens?.filter(
       (token: FungibleToken) =>
-        token.contract_id === "linear-protocol.testnet" ||
-        token.contract_id === "meta-v2.pool.testnet"
+        token.contract_id ===
+          process.env.NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID ||
+        token.contract_id ===
+          process.env.NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID
     ) || [];
 
   return (
@@ -108,7 +110,9 @@ export default function NearDebug() {
                               className="flex justify-between items-center"
                             >
                               <span className="font-medium">
-                                {token.contract_id === "linear-protocol.testnet"
+                                {token.contract_id ===
+                                process.env
+                                  .NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID
                                   ? "liNEAR"
                                   : "stNEAR"}
                               </span>
@@ -116,7 +120,8 @@ export default function NearDebug() {
                                 amount={token.balance}
                                 currency={
                                   token.contract_id ===
-                                  "linear-protocol.testnet"
+                                  process.env
+                                    .NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID
                                     ? "liNEAR"
                                     : "stNEAR"
                                 }

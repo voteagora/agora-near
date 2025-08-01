@@ -25,8 +25,10 @@ type TokenBalance = {
   balance: string;
 };
 
-export const LINEAR_TOKEN_CONTRACT_ID = "linear-protocol.testnet";
-export const STNEAR_TOKEN_CONTRACT_ID = "meta-v2.pool.testnet";
+export const LINEAR_TOKEN_CONTRACT_ID =
+  process.env.NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID ?? "";
+export const STNEAR_TOKEN_CONTRACT_ID =
+  process.env.NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID ?? "";
 
 const ONBOARDING_POOLS: string[] = [
   LINEAR_TOKEN_CONTRACT_ID,

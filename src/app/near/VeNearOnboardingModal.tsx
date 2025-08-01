@@ -37,13 +37,13 @@ type StakingPool = {
 
 // Mapping of contract IDs to human-readable names
 const STAKING_POOL_MAPPING: Record<string, StakingPool> = {
-  "linear-protocol.testnet": {
-    stakingPoolId: "linear-protocol.testnet",
+  [process.env.NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID ?? ""]: {
+    stakingPoolId: process.env.NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID ?? "",
     name: "liNEAR",
     description: "5.99% APY",
   },
-  "meta-v2.pool.testnet": {
-    stakingPoolId: "meta-v2.pool.testnet",
+  [process.env.NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID ?? ""]: {
+    stakingPoolId: process.env.NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID ?? "",
     name: "MetaPool",
     description: "5.98% APY",
   },
