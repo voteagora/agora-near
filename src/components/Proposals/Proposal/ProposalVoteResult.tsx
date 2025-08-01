@@ -46,7 +46,7 @@ const ProposalVoteResult = ({
 
   const {
     data: nonVoters,
-    isFetching: isNonVotersFetching,
+    isLoading: isNonVotersLoading,
     hasNextPage: hasNextNonVotersPage,
     fetchNextPage: fetchNextNonVotersPage,
   } = useProposalNonVoters({
@@ -86,7 +86,7 @@ const ProposalVoteResult = ({
             />
           </div>
           <div className="px-4 pb-4 overflow-y-auto max-h-[calc(100vh-580px)]">
-            {!showVoters && !isNonVotersFetching && nonVoters && (
+            {!showVoters && !isNonVotersLoading && nonVoters && (
               <InfiniteScroll
                 hasMore={hasNextNonVotersPage}
                 pageStart={0}
@@ -127,6 +127,10 @@ const ProposalVoteResult = ({
                                     <p className="text-primary">(you)</p>
                                   )}
                                 </HStack>
+                                <TokenAmount
+                                  amount={nonVoter.votingPower}
+                                  hideCurrency
+                                />
                               </HStack>
                             </HoverCardTrigger>
                           </HoverCard>
@@ -241,7 +245,7 @@ const ProposalVoteResult = ({
               </InfiniteScroll>
             )}
 
-            {(isVotingHistoryFetching || isNonVotersFetching) && (
+            {(isVotingHistoryFetching || isNonVotersLoading) && (
               <div className="text-secondary text-xs">Loading...</div>
             )}
           </div>

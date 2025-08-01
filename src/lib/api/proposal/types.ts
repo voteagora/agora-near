@@ -35,4 +35,5 @@ export type ProposalNonVotersRecord = {
   id: string;
   proposalId: number;
   registeredVoterId: string;
+  votingPower: string;
 };
