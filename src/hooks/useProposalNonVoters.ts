@@ -17,7 +17,7 @@ export const useProposalNonVoters = ({
     error,
     fetchNextPage,
     hasNextPage,
-    isFetching,
+    isLoading,
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
@@ -31,7 +31,6 @@ export const useProposalNonVoters = ({
       return pageParam + 1;
     },
     initialPageParam: 1,
-    refetchOnWindowFocus: false,
   });
 
   const flatData = useMemo(() => {
@@ -42,7 +41,7 @@ export const useProposalNonVoters = ({
   return {
     data: flatData,
     error,
-    isFetching,
+    isLoading,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
