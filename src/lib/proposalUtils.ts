@@ -107,14 +107,25 @@ export const getProposalTimes = ({
 
 export const getVenearForQuorum = (totalVotingPower: string) => {
   const quorumPercentage = Big(
-    process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.30"
+    process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.35"
   );
-  return Big(totalVotingPower).mul(quorumPercentage);
+  const quorumFloor = Big(
+    process.env.NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR ?? "7000000"
+  );
+
+  const percentageBasedQuorum = Big(totalVotingPower).mul(quorumPercentage);
+
+  return percentageBasedQuorum.gt(quorumFloor)
+    ? percentageBasedQuorum
+    : quorumFloor;
 };
 
 export const getQuorumPercentage = () =>
-  Number(process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.30") *
+  Number(process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.35") *
   100;
+
+export const getQuorumFloor = () =>
+  Big(process.env.NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR ?? "7000000");
 
 export const getTotalForAgainstVotes = (
   forVotingPower: string,

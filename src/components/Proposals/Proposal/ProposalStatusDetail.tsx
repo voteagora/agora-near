@@ -65,8 +65,9 @@ export default function ProposalStatusDetail({
                   <InfoIcon size={14} />
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[400px]">
-                  {`Even though quorum is not modeled onchain in House of Stake v1, the community has decided that
-                  if ${getQuorumPercentage()}% of the voting power does not participate, the proposal will not be considered passed.`}{" "}
+                  {`Even though quorum is not modeled onchain in House of Stake v1, the community has decided that 
+                  proposals must meet a minimum quorum requirement to be considered passed. The quorum is calculated as 
+                  the higher of either ${getQuorumPercentage()}% of total veNEAR supply or an absolute floor of 7M veNEAR.`}{" "}
                   <a className="text-blue-500" href="">
                     Learn more here
                   </a>
