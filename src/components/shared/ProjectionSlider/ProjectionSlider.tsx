@@ -64,6 +64,37 @@ export const ProjectionSlider = memo(
       setIsDragging(false);
     }, []);
 
+    const handleSetValueFromPosition = useCallback(
+      (clientX: number) => {
+        if (!sliderRef.current) return;
+        const rect = sliderRef.current.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const ratio = x / rect.width;
+        const newValue = Math.min(Math.max(ratio * MAX_YEARS, 0), MAX_YEARS);
+        setSelectedValue(newValue);
+        const projection = {
+          amount: calculateProjection(newValue),
+          years: newValue,
+        };
+        onProjectionChange?.(projection);
+      },
+      [calculateProjection, onProjectionChange]
+    );
+
+    const handleClick = useCallback(
+      (event: React.MouseEvent<HTMLInputElement>) => {
+        handleSetValueFromPosition(event.clientX);
+      },
+      [handleSetValueFromPosition]
+    );
+
+    const handleTouch = useCallback(
+      (event: React.TouchEvent<HTMLInputElement>) => {
+        handleSetValueFromPosition(event.touches[0].clientX);
+      },
+      [handleSetValueFromPosition]
+    );
+
     const currentProjection = calculateProjection(selectedValue);
     const progressPercentage = (selectedValue / MAX_YEARS) * 100;
     const shouldShowDecimals = startingAmount < 100;
@@ -129,7 +160,9 @@ export const ProjectionSlider = memo(
             onMouseUp={handleMouseUp}
             onTouchStart={handleMouseDown}
             onTouchEnd={handleMouseUp}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            onClick={handleClick}
+            onTouchStartCapture={handleTouch}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer touch-none"
           />
 
           {/* Time Labels */}
