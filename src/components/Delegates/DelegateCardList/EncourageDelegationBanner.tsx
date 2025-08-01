@@ -43,7 +43,7 @@ export const EncourageDelegationBanner = ({
       <ExclamationCircleIcon className="w-6 h-6 stroke-negative" />
       <div className="flex-1 flex-col justify-start items-start gap-1 text-neutral-900">
         <div className="text-base font-bold leading-normal">
-          Your tokens can&#39;t be voted with!
+          Vote through endorsed delegates!
         </div>
         <div className="text-sm font-medium leading-[21px]">
           Make your vote count by delegating to trusted community members.

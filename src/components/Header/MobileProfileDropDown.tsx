@@ -45,7 +45,7 @@ const RenderEncourageDelegation = () => {
           <div className="flex-1 inline-flex flex-col justify-start items-start gap-4">
             <div className="flex flex-col justify-start items-start gap-1">
               <div className="text-base font-bold">
-                Your tokens can&apos;t be voted with!
+                Vote through endorsed delegates!
               </div>
               <div className="text-sm font-medium leading-[21px]">
                 Make your vote count by delegating to trusted community members.
