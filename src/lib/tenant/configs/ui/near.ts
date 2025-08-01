@@ -65,7 +65,7 @@ export const nearTenantUIConfig = new TenantUI({
     {
       name: "bugs",
       title: "Report bugs & feedback",
-      url: "https://app.deform.cc/form/7180b273-7662-4f96-9e66-1eae240a52bc",
+      url: "https://app.deform.cc/form/037da05f-7045-41be-be0c-c8e07d5858f0",
     },
     {
       name: "governance-forum",
