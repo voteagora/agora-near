@@ -9,5 +9,9 @@ export default async function Page({
 }: {
   params: { proposal_id: string };
 }) {
-  return <ProposalHome proposalId={proposal_id} />;
+  return (
+    <div className="min-h-[calc(100vh-240px)]">
+      <ProposalHome proposalId={proposal_id} />
+    </div>
+  );
 }
