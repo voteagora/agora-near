@@ -10,6 +10,7 @@ type Props = {
   compact?: boolean;
   minimumFractionDigits?: number;
   className?: string;
+  trailingSpace?: boolean;
 };
 
 const DEFAULT_MIN_DIGITS = 4;
@@ -22,6 +23,7 @@ export default function TokenAmount({
   currency = NEAR_TOKEN.symbol,
   minimumFractionDigits,
   className,
+  trailingSpace = true,
 }: Props) {
   const minDigits = useMemo(() => {
     return Math.min(
@@ -46,7 +48,7 @@ export default function TokenAmount({
 
   return (
     <span className={cn(className)}>
-      {`${formattedNumber}${hideCurrency ? "" : ` ${currency}`} `}
+      {`${formattedNumber}${hideCurrency ? "" : ` ${currency}`}${trailingSpace ? " " : ""}`}
     </span>
   );
 }

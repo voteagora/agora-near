@@ -1,6 +1,7 @@
 import { convertNanoSecondsToDays } from "@/lib/utils";
 import Big from "big.js";
 import { format } from "date-fns";
+import { parseNearAmount } from "near-api-js/lib/utils/format";
 import {
   ProposalDisplayStatus,
   ProposalStatus,
@@ -125,7 +126,8 @@ export const getQuorumPercentage = () =>
   100;
 
 export const getQuorumFloor = () =>
-  Big(process.env.NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR ?? "7000000");
+  parseNearAmount(process.env.NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR) ??
+  "7000000000000000000000000000000"; // 7M NEAR
 
 export const getTotalForAgainstVotes = (
   forVotingPower: string,
