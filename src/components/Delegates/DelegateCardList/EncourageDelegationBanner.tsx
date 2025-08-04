@@ -39,20 +39,24 @@ export const EncourageDelegationBanner = ({
   }
 
   return (
-    <div className="w-full p-4 rounded-lg border border-negative inline-flex justify-start items-start gap-4 mt-3 mb-1">
-      <ExclamationCircleIcon className="w-6 h-6 stroke-negative" />
+    <div className="w-full p-4 rounded-lg border border-negative flex flex-col sm:flex-row justify-start items-start gap-4 mt-3 mb-1">
       <div className="flex-1 flex-col justify-start items-start gap-1 text-neutral-900">
-        <div className="text-base font-bold leading-normal">
-          Vote through endorsed delegates!
-        </div>
-        <div className="text-sm font-medium leading-[21px]">
-          Make your vote count by delegating to trusted community members.
+        <div className="flex items-start gap-2">
+          <ExclamationCircleIcon className="w-6 h-6 stroke-negative flex-shrink-0 mt-0.5" />
+          <div className="flex flex-col gap-1">
+            <div className="text-base font-bold leading-normal">
+              Vote through endorsed delegates!
+            </div>
+            <div className="text-sm font-medium leading-[21px]">
+              Make your vote count by delegating to trusted community members.
+            </div>
+          </div>
         </div>
       </div>
-      <Link href="/delegates?filter=endorsed">
+      <Link href="/delegates?filter=endorsed" className="w-full sm:w-auto">
         <UpdatedButton
           type="primary"
-          className="font-medium px-[20px] py-3 h-full"
+          className="font-medium px-[20px] py-3 w-full sm:w-auto"
         >
           View endorsed delegates
         </UpdatedButton>
