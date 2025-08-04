@@ -1,15 +1,17 @@
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
+import { useCallback } from "react";
 
 type LiquidStakingTokenLockWarningProps = {
   symbol?: string;
-  onLearnMorePressed: () => void;
 };
 
 export const LiquidStakingTokenLockWarning = ({
   symbol,
-  onLearnMorePressed,
 }: LiquidStakingTokenLockWarningProps) => {
+  const onLearnMorePressed = useCallback(() => {
+    window.open("/info?item=fungible-token-withdrawal", "_blank");
+  }, []);
+
   return (
     <div className="flex flex-row items-start bg-[#F9F8F7] p-2 rounded-lg">
       <div>
@@ -20,15 +22,11 @@ export const LiquidStakingTokenLockWarning = ({
         />
       </div>
       <p className="text-sm ml-2">
-        Once you transfer your {symbol || "tokens"}, you will not be able to
-        withdraw without unstaking first.{" "}
-        <Link
-          onClick={onLearnMorePressed}
-          href="/info?item=fungible-token-withdrawal"
-          className="underline"
-        >
+        Once you transfer your {symbol || "liquid staking tokens"}, you will not
+        be able to withdraw without unstaking first.{" "}
+        <button onClick={onLearnMorePressed} className="underline">
           Learn more
-        </Link>
+        </button>
       </p>
     </div>
   );

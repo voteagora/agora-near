@@ -68,11 +68,6 @@ export const AssetsLandingPage = memo(
       []
     );
 
-    const handleLearnMore = useCallback(() => {
-      // Close any dialogs and navigate to info page
-      window.open("/info?item=fungible-token-withdrawal", "_blank");
-    }, []);
-
     if (isLoadingAccount || isLoadingVenearSnapshot) {
       return (
         <div className="flex flex-col w-full h-full justify-center items-center">
@@ -86,10 +81,7 @@ export const AssetsLandingPage = memo(
         {shouldShowLSTWarning && (
           <div className="w-full bg-[#F9F8F7] border-b border-gray-200 rounded-2xl px-4 py-3 mt-4">
             <div className="max-w-6xl mx-auto">
-              <LiquidStakingTokenLockWarning
-                symbol="liquid staking tokens"
-                onLearnMorePressed={handleLearnMore}
-              />
+              <LiquidStakingTokenLockWarning />
             </div>
           </div>
         )}
