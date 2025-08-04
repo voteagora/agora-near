@@ -1,6 +1,7 @@
 import { convertNanoSecondsToDays } from "@/lib/utils";
 import Big from "big.js";
 import { format } from "date-fns";
+import { parseNearAmount } from "near-api-js/lib/utils/format";
 import {
   ProposalDisplayStatus,
   ProposalStatus,
@@ -107,14 +108,26 @@ export const getProposalTimes = ({
 
 export const getVenearForQuorum = (totalVotingPower: string) => {
   const quorumPercentage = Big(
-    process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.30"
+    process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.35"
   );
-  return Big(totalVotingPower).mul(quorumPercentage);
+  const quorumFloor = Big(
+    process.env.NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR ?? "7000000"
+  );
+
+  const percentageBasedQuorum = Big(totalVotingPower).mul(quorumPercentage);
+
+  return percentageBasedQuorum.gt(quorumFloor)
+    ? percentageBasedQuorum
+    : quorumFloor;
 };
 
 export const getQuorumPercentage = () =>
-  Number(process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.30") *
+  Number(process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.35") *
   100;
+
+export const getQuorumFloor = () =>
+  parseNearAmount(process.env.NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR) ??
+  "7000000000000000000000000000000"; // 7M NEAR
 
 export const getTotalForAgainstVotes = (
   forVotingPower: string,

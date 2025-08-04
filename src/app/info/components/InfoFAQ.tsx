@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/accordion";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { getQuorumFloor, getQuorumPercentage } from "@/lib/proposalUtils";
+import TokenAmount from "@/components/shared/TokenAmount";
 
 interface FAQ {
   id: string;
@@ -387,6 +389,23 @@ const faqs: FAQ[] = [
             <li>Submit on-chain using your forum post URL</li>
           </ol>
         </div>
+      </div>
+    ),
+  },
+  {
+    id: "quorum-requirements",
+    question: "What are the quorum requirements?",
+    answer: (
+      <div>
+        {`Quorum is not modeled onchain in House of Stake v1, but the community has decided that proposals must meet a minimum quorum requirement to be considered passed. The quorum is calculated as the higher of either ${getQuorumPercentage()}% of total veNEAR supply or an absolute floor of `}
+        <TokenAmount
+          amount={getQuorumFloor()}
+          currency="veNEAR"
+          trailingSpace={false}
+          maximumSignificantDigits={0}
+          minimumFractionDigits={0}
+        />
+        {`. In House of Stake v1.5, the quorum requirement will be enforced onchain.`}
       </div>
     ),
   },
