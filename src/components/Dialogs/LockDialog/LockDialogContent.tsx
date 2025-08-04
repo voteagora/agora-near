@@ -102,14 +102,12 @@ export function LockDialogContent({ closeDialog }: DialogContentProps) {
           handleLockMore={handleLockMore}
           handleProceedToStaking={proceedToStaking}
           handleViewDashboard={handleViewDashboard}
-          closeDialog={closeDialog}
         />
       );
     }
 
     return null;
   }, [
-    closeDialog,
     currentStep,
     handleTokenSelect,
     handleViewDashboard,

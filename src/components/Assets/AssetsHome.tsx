@@ -4,7 +4,7 @@ import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 import { useVenearConfig } from "@/hooks/useVenearConfig";
 import { MIN_VERSION_FOR_LST_LOCKUP } from "@/lib/constants";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { LiquidStakingTokenLockWarning } from "../Dialogs/LockDialog/LiquidStakingTokenLockWarning";
 import AgoraLoader from "../shared/AgoraLoader/AgoraLoader";
 import { AssetsLandingPage } from "./AssetsLandingPage";
@@ -28,10 +28,6 @@ export const AssetsHome = memo(() => {
     return lockupVersionToCheck < MIN_VERSION_FOR_LST_LOCKUP;
   }, [accountInfo?.lockupVersion, lockupVersion]);
 
-  const handleLearnMore = useCallback(() => {
-    window.open("/info?item=fungible-token-withdrawal", "_blank");
-  }, []);
-
   if (isLoadingAccount || isLoadingVenearConfig) {
     return (
       <div className="flex flex-col w-full h-full justify-center items-center">
@@ -49,10 +45,7 @@ export const AssetsHome = memo(() => {
       {shouldShowLSTWarning && (
         <div className="w-full bg-[#F9F8F7] border-b border-gray-200 px-4 py-3 mt-4 rounded-2xl">
           <div className="mx-auto">
-            <LiquidStakingTokenLockWarning
-              symbol="liquid staking tokens"
-              onLearnMorePressed={handleLearnMore}
-            />
+            <LiquidStakingTokenLockWarning />
           </div>
         </div>
       )}

@@ -7,6 +7,7 @@ import { UpdatedButton } from "@/components/Button";
 import { TransactionError } from "@/components/TransactionError";
 import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
 import { useDeployLockupAndLock } from "@/hooks/useDeployLockupAndLock";
+import { MIN_VERSION_FOR_LST_LOCKUP } from "@/lib/constants";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Big from "big.js";
 import { utils } from "near-api-js";
@@ -17,14 +18,12 @@ import { useLockProviderContext } from "../LockProvider";
 import { DepositTooltip } from "./DepositTooltip";
 import { DisclosuresContent } from "./DisclosuresContent";
 import { LiquidStakingTokenLockWarning } from "./LiquidStakingTokenLockWarning";
-import { MIN_VERSION_FOR_LST_LOCKUP } from "@/lib/constants";
 
 type ReviewStepProps = {
   handleEdit: () => void;
   handleLockMore: () => void;
   handleProceedToStaking: () => void;
   handleViewDashboard: () => void;
-  closeDialog: () => void;
 };
 
 export const ReviewStep = memo(
@@ -33,7 +32,6 @@ export const ReviewStep = memo(
     handleLockMore,
     handleProceedToStaking,
     handleViewDashboard,
-    closeDialog,
   }: ReviewStepProps) => {
     const [showDisclosures, setShowDisclosures] = useState(false);
 
@@ -325,7 +323,6 @@ export const ReviewStep = memo(
           {shouldShowLSTWarning && (
             <LiquidStakingTokenLockWarning
               symbol={selectedToken?.metadata?.name}
-              onLearnMorePressed={closeDialog}
             />
           )}
           <div className="flex flex-col gap-2">
