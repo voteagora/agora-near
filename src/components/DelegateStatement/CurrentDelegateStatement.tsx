@@ -11,7 +11,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import ResourceNotFound from "../shared/ResourceNotFound/ResourceNotFound";
-import { DelegateProfile } from "@/lib/api/delegates/types";
+import {
+  DelegateProfile,
+  defaultNotificationPreferences,
+} from "@/lib/api/delegates/types";
 
 export type DelegateStatementFormValues = z.infer<typeof formSchema>;
 
@@ -30,6 +33,10 @@ const formSchema = z.object({
       })
       .strict()
   ),
+  notificationPreferences: z.object({
+    wants_proposal_created_email: z.enum(["true", "false", "prompt"]),
+    wants_proposal_ending_soon_email: z.enum(["true", "false", "prompt"]),
+  }),
 });
 
 export default function CurrentDelegateStatement() {
@@ -59,6 +66,7 @@ export default function CurrentDelegateStatement() {
 
   const getDefaultValues = useCallback(
     (delegateProfile: DelegateProfile | undefined) => {
+      const defaultPrefs = defaultNotificationPreferences();
       return {
         agreeCodeConduct: !requireCodeOfConduct,
         discord: delegateProfile?.discord || "",
@@ -70,6 +78,16 @@ export default function CurrentDelegateStatement() {
           (delegateProfile?.topIssues ?? []).length > 0
             ? (delegateProfile?.topIssues ?? defaultIssues)
             : defaultIssues,
+        notificationPreferences: {
+          wants_proposal_created_email:
+            delegateProfile?.notificationPreferences
+              ?.wants_proposal_created_email ||
+            defaultPrefs.wants_proposal_created_email,
+          wants_proposal_ending_soon_email:
+            delegateProfile?.notificationPreferences
+              ?.wants_proposal_ending_soon_email ||
+            defaultPrefs.wants_proposal_ending_soon_email,
+        },
       };
     },
     [requireCodeOfConduct, defaultIssues]
