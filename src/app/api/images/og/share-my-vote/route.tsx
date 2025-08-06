@@ -20,15 +20,14 @@ const deriveBrandName = (namespace: TenantNamespace): string => {
 function generateVoteBars(
   forPercentage: number,
   againstPercentage: number,
-  namespace: TenantNamespace,
+  namespace: TenantNamespace
 ) {
   const tenantUI: TenantUI = TenantUIFactory.create(
     TENANT_NAMESPACES[namespace as keyof typeof TENANT_NAMESPACES]
   );
   const totalBars = 114;
   const bars = [];
-  const forBars =
-    Math.round((totalBars * forPercentage) / 100);
+  const forBars = Math.round((totalBars * forPercentage) / 100);
   const againstBars = Math.round((totalBars * againstPercentage) / 100);
   const abstainBars = totalBars - forBars - againstBars;
 
@@ -139,7 +138,7 @@ const SuccessMessageCard = ({
                 <span
                   style={{
                     color: primary,
-                    fontSize: "48px"
+                    fontSize: "48px",
                   }}
                   tw="font-bold"
                 >
@@ -215,11 +214,7 @@ const SuccessMessageCard = ({
 
               {/* Progress Bar */}
               <div tw="w-full relative flex">
-                {generateVoteBars(
-                  forPercentage,
-                  againstPercentage,
-                  namespace,
-                )}
+                {generateVoteBars(forPercentage, againstPercentage, namespace)}
               </div>
             </div>
 
@@ -364,8 +359,7 @@ export async function GET(req: NextRequest) {
   const voteDate = searchParams.get("voteDate");
   const options = JSON.parse(searchParams.get("options") || "[]");
   const totalOptions = Number(searchParams.get("totalOptions"));
-  const proposalType = searchParams.get("proposalType") as
-    | "STANDARD"
+  const proposalType = searchParams.get("proposalType") as "STANDARD";
   const supportType = searchParams.get("supportType") as
     | "FOR"
     | "AGAINST"
