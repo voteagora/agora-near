@@ -8,7 +8,7 @@ export const runtime = "edge";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
-  const address = searchParams.get("address") || "voter.eth";
+  const address = searchParams.get("address");
 
   const avatar = searchParams.get("avatar") || null;
   const votes = searchParams.get("votes") || null;
