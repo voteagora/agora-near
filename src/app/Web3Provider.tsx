@@ -14,6 +14,7 @@ const queryClient = new QueryClient();
 
 const { ui } = Tenant.current();
 const shouldHideAgoraBranding = ui.hideAgoraBranding;
+const shouldHideAgoraFooter = ui.hideAgoraFooter;
 
 const Web3Provider: FC<PropsWithChildren<{}>> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
@@ -24,7 +25,7 @@ const Web3Provider: FC<PropsWithChildren<{}>> = ({ children }) => (
           <Toaster />
           {children}
         </PageContainer>
-        {!shouldHideAgoraBranding && <Footer />}
+        {!shouldHideAgoraFooter && <Footer />}
         <SpeedInsights />
       </body>
     </NearProvider>
