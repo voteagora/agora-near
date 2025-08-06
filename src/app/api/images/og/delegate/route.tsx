@@ -105,7 +105,7 @@ export async function GET(req: NextRequest) {
                   </div>
                   <div tw="flex flex-col justify-center ml-[16px]">
                     <div tw="flex text-2xl mb-[4px]">
-                      {truncateString(address, 30)}
+                      {truncateString(address || "", 30)}
                     </div>
                     {votes && (
                       <div tw="flex text-[17px] text-primary">{votes}</div>
