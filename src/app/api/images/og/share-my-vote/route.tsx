@@ -1,8 +1,5 @@
-import { rgbStringToHex } from "@/app/lib/utils/color";
-import { TENANT_NAMESPACES } from "@/lib/constants";
+import { rgbStringToHex } from "@/lib/color";
 import { BRAND_NAME_MAPPINGS } from "@/lib/tenant/tenant";
-import { TenantUI } from "@/lib/tenant/tenantUI";
-import TenantUIFactory from "@/lib/tenant/tenantUIFactory";
 import { TenantNamespace } from "@/lib/types";
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
@@ -17,29 +14,16 @@ const deriveBrandName = (namespace: TenantNamespace): string => {
   return namespace.charAt(0).toUpperCase() + namespace.slice(1).toLowerCase();
 };
 
-function generateVoteBars(
-  forPercentage: number,
-  againstPercentage: number,
-  namespace: TenantNamespace
-) {
-  const tenantUI: TenantUI = TenantUIFactory.create(
-    TENANT_NAMESPACES[namespace as keyof typeof TENANT_NAMESPACES]
-  );
+function generateVoteBars(forPercentage: number, againstPercentage: number) {
   const totalBars = 114;
   const bars = [];
   const forBars = Math.round((totalBars * forPercentage) / 100);
   const againstBars = Math.round((totalBars * againstPercentage) / 100);
   const abstainBars = totalBars - forBars - againstBars;
 
-  const positiveColor = tenantUI.customization?.positive
-    ? rgbStringToHex(tenantUI.customization?.positive)
-    : rgbStringToHex("97 209 97");
-  const abstainColor = tenantUI.customization?.tertiary
-    ? rgbStringToHex(tenantUI.customization?.tertiary)
-    : rgbStringToHex("115 115 115");
-  const againstColor = tenantUI.customization?.negative
-    ? rgbStringToHex(tenantUI.customization?.negative)
-    : rgbStringToHex("226 54 54");
+  const positiveColor = rgbStringToHex("97 209 97");
+  const abstainColor = rgbStringToHex("115 115 115");
+  const againstColor = rgbStringToHex("226 54 54");
 
   const className = "flex h-6 w-[6px] rounded-full shrink-0";
 
@@ -107,24 +91,11 @@ const SuccessMessageCard = ({
   supportType: "FOR" | "AGAINST" | "ABSTAIN";
   proposalType: "STANDARD";
 }) => {
-  const tenantUI: TenantUI = TenantUIFactory.create(
-    TENANT_NAMESPACES[namespace as keyof typeof TENANT_NAMESPACES]
-  );
-  const positive = tenantUI.customization?.positive
-    ? rgbStringToHex(tenantUI.customization?.positive)
-    : rgbStringToHex("97 209 97");
-  const primary = tenantUI.customization?.primary
-    ? rgbStringToHex(tenantUI.customization?.primary)
-    : rgbStringToHex("0 0 0");
-  const secondary = tenantUI.customization?.secondary
-    ? rgbStringToHex(tenantUI.customization?.secondary)
-    : rgbStringToHex("64 64 64");
-  const line = tenantUI.customization?.line
-    ? rgbStringToHex(tenantUI.customization?.line)
-    : rgbStringToHex("229 229 229");
-  const negative = tenantUI.customization?.negative
-    ? rgbStringToHex(tenantUI.customization?.negative)
-    : rgbStringToHex("226 54 54");
+  const positive = rgbStringToHex("97 209 97");
+  const primary = rgbStringToHex("0 0 0");
+  const secondary = rgbStringToHex("64 64 64");
+  const line = rgbStringToHex("229 229 229");
+  const negative = rgbStringToHex("226 54 54");
 
   return (
     <div tw="h-full w-full flex flex-col p-4 relative rounded-lg">
@@ -214,7 +185,7 @@ const SuccessMessageCard = ({
 
               {/* Progress Bar */}
               <div tw="w-full relative flex">
-                {generateVoteBars(forPercentage, againstPercentage, namespace)}
+                {generateVoteBars(forPercentage, againstPercentage)}
               </div>
             </div>
 
@@ -357,8 +328,6 @@ export async function GET(req: NextRequest) {
   const blockNumber = searchParams.get("blockNumber");
   const endsIn = searchParams.get("endsIn");
   const voteDate = searchParams.get("voteDate");
-  const options = JSON.parse(searchParams.get("options") || "[]");
-  const totalOptions = Number(searchParams.get("totalOptions"));
   const proposalType = searchParams.get("proposalType") as "STANDARD";
   const supportType = searchParams.get("supportType") as
     | "FOR"

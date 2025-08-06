@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { ImageResponse } from "next/og";
-import { truncateString } from "@/app/lib/utils/text";
+import { truncateString } from "@/lib/text";
 import { LogoPill } from "@/app/api/images/og/assets/shared";
 
 export const runtime = "edge";
