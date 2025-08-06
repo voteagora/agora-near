@@ -8,8 +8,10 @@ export default function LogoLink() {
 
   return (
     <Link
-      href={isProd ? "/" : "/near"}
+      href="https://houseofstake.org/"
       className="flex flex-row justify-between w-full"
+      target="_blank"
+      rel="noopener noreferrer"
     >
       <div className="gap-2 h-full flex flex-row items-center w-full">
         {/* <AgoraIcon
