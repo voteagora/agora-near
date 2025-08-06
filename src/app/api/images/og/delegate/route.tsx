@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
             <LogoPill />
             <div tw="flex flex-col">
               <div tw="font-bold text-5xl w-1/2">
-                {truncateString(address, 20)}
+                {truncateString(address || "", 20)}
               </div>
               <div tw="font-normal mt-[30px] text-4xl text-secondary">
                 {description}
