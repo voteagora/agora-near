@@ -155,6 +155,10 @@ export default function DAOMetricsHeader() {
                     {agoraLink.title}
                   </a>
                 )}
+
+                <a href="/terms-of-service" className="text-center">
+                  Terms of Service
+                </a>
               </div>
             </div>
           </div>,
