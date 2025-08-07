@@ -160,7 +160,7 @@ export const nearTenantUIConfig = new TenantUI({
       route: "info",
       title: "Welcome to the House of Stake",
       description:
-        "Agora is the home of NEAR House of Stake governance, where NEAR token holders lock tokens for voting rights, delegate votes to trusted representatives, and participate in shaping the future of the NEAR ecosystem.",
+        "House of Stake is the home of NEAR governance, powered by Agora. NEAR token holders lock tokens for voting rights, delegate votes to trusted representatives, and participate in shaping the future of the NEAR ecosystem.",
       meta: {
         title: "NEAR Agora",
         description: "Home of NEAR House of Stake governance",
