@@ -122,14 +122,7 @@ export const EnterAmountStep = ({ handleReview }: EnterAmountStepProps) => {
               <Input
                 type="text"
                 placeholder="0"
-                value={
-                  // Override value for display purposes when unlocking max
-                  isUnlockingMax
-                    ? Big(
-                        utils.format.formatNearAmount(maxAmountToUnlock ?? "0")
-                      ).toFixed(4)
-                    : enteredAmount
-                }
+                value={enteredAmount}
                 onChange={handleAmountChange}
                 className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
               />

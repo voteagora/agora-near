@@ -306,11 +306,14 @@ export const isValidNearAmount = (amount?: string) => {
     return false;
   }
 
-  if (isNaN(Number(amount))) {
+  // Remove commas from the amount before validation
+  const cleanAmount = amount.replace(/,/g, "");
+
+  if (isNaN(Number(cleanAmount))) {
     return false;
   }
 
-  const decimalParts = amount.split(".");
+  const decimalParts = cleanAmount.split(".");
   if (decimalParts.length > 1 && decimalParts[1].length > NEAR_NOMINATION_EXP) {
     return false;
   }

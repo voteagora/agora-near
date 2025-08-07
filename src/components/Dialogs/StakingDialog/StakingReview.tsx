@@ -12,6 +12,8 @@ import { useStakingProviderContext } from "../StakingProvider";
 import { StakingSubmitting } from "./StakingSubmitting";
 import { StakingSuccess } from "./StakingSuccess";
 import { StakingDisclosures } from "./StakingDisclosures";
+import Big from "big.js";
+import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 
 export type StakingStep = "select_pool" | "stake";
 
@@ -48,11 +50,21 @@ export const StakingReview = ({
   const selectedStats = poolStats[selectedPool.id];
   const selectedTokenMetadata = selectedPool.metadata;
 
-  const totalUsd = useMemo(
-    () =>
-      yoctoNearToUsdFormatted(enteredAmountYoctoNear, price?.toString() ?? "0"),
-    [enteredAmountYoctoNear, price]
-  );
+  const totalUsd = useMemo(() => {
+    if (!price || !enteredAmountYoctoNear) return "0";
+    const nearInUsd = Big(enteredAmountYoctoNear)
+      .div(10 ** NEAR_NOMINATION_EXP)
+      .mul(price);
+
+    const formattedUsdAmount = new Intl.NumberFormat("en", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(nearInUsd.toNumber());
+
+    return formattedUsdAmount;
+  }, [enteredAmountYoctoNear, price]);
 
   const { stakeNear, isStakingNear, stakingNearError } = useStakeNear({
     lockupAccountId: lockupAccountId ?? "",
