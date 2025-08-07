@@ -1,10 +1,10 @@
 import { UpdatedButton } from "@/components/Button";
 import TokenAmount from "@/components/shared/TokenAmount";
 import { Input } from "@/components/ui/input";
-import { NEAR_TOKEN_METADATA } from "@/lib/constants";
+import { NEAR_TOKEN, NEAR_TOKEN_METADATA } from "@/lib/constants";
 import { StakingPool } from "@/lib/types";
+import { formatNumber } from "@/lib/utils";
 import Big from "big.js";
-import { utils } from "near-api-js";
 import Image from "next/image";
 import { useCallback } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
@@ -88,9 +88,10 @@ export const EnterStakingAmount = ({
                   value={
                     // Override value for display purposes when staking max
                     isStakingMax
-                      ? Big(
-                          utils.format.formatNearAmount(maxStakingAmount ?? "0")
-                        ).toFixed(4)
+                      ? formatNumber(
+                          maxStakingAmount ?? "0",
+                          NEAR_TOKEN.decimals
+                        )
                       : enteredAmount
                   }
                   onChange={(e) => setEnteredAmount(e.target.value)}

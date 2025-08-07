@@ -1,7 +1,11 @@
 import { useAvailableToUnlock } from "@/hooks/useAvailableToUnlock";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useVenearConfig } from "@/hooks/useVenearConfig";
-import { formatNanoSecondsToTimeUnit, isValidNearAmount } from "@/lib/utils";
+import {
+  convertYoctoToNear,
+  formatNanoSecondsToTimeUnit,
+  isValidNearAmount,
+} from "@/lib/utils";
 import Big from "big.js";
 import { utils } from "near-api-js";
 import {
@@ -76,10 +80,6 @@ export const UnlockProvider = ({ children }: UnlockProviderProps) => {
     return availableToUnlock || "0";
   }, [availableToUnlock]);
 
-  const maxAmountToUnlockFormatted = useMemo(() => {
-    return utils.format.formatNearAmount(maxAmountToUnlock);
-  }, [maxAmountToUnlock]);
-
   // 1:1 conversion - unlocking veNEAR gives you NEAR
   const nearAmount = useMemo(() => {
     if (!isValidNearAmount(enteredAmount)) {
@@ -93,7 +93,11 @@ export const UnlockProvider = ({ children }: UnlockProviderProps) => {
       try {
         if (!isValidNearAmount(amount)) {
           setAmountError("Please enter a valid amount");
-        } else if (Big(amount).gt(Big(maxAmountToUnlockFormatted))) {
+        } else if (
+          Big(utils.format.parseNearAmount(amount) ?? "0").gt(
+            Big(maxAmountToUnlock)
+          )
+        ) {
           setAmountError("Not enough veNEAR available to unlock");
         } else if (Big(amount).lte(0)) {
           setAmountError("Amount must be greater than 0");
@@ -104,7 +108,7 @@ export const UnlockProvider = ({ children }: UnlockProviderProps) => {
         setAmountError("Invalid amount");
       }
     },
-    [maxAmountToUnlockFormatted]
+    [maxAmountToUnlock]
   );
 
   const resetForm = useCallback(() => {
@@ -114,10 +118,10 @@ export const UnlockProvider = ({ children }: UnlockProviderProps) => {
   }, []);
 
   const onUnlockMax = useCallback(() => {
-    setEnteredAmount(maxAmountToUnlockFormatted);
+    setEnteredAmount(convertYoctoToNear(maxAmountToUnlock ?? "0"));
     setIsUnlockingMax(true);
-    validateAmount(maxAmountToUnlockFormatted);
-  }, [maxAmountToUnlockFormatted, validateAmount]);
+    setAmountError(null);
+  }, [maxAmountToUnlock]);
 
   const onEnteredAmountUpdated = useCallback(
     (amount: string) => {

@@ -16,7 +16,7 @@ import {
 } from "@/lib/constants";
 import { getAPYFromGrowthRate } from "@/lib/lockUtils";
 import { TokenWithBalance } from "@/lib/types";
-import { isValidNearAmount } from "@/lib/utils";
+import { convertYoctoToNear, isValidNearAmount } from "@/lib/utils";
 import Big from "big.js";
 import { utils } from "near-api-js";
 import {
@@ -412,16 +412,16 @@ export const LockProvider = ({
     venearAccountInfo,
   ]);
 
-  const maxAmountToLockNear = useMemo(() => {
-    return utils.format.formatNearAmount(maxAmountToLock ?? "0");
-  }, [maxAmountToLock]);
-
   const validateAmount = useCallback(
     (amount: string) => {
       try {
         if (!isValidNearAmount(amount)) {
           setAmountError("Please enter a valid amount");
-        } else if (Big(amount).gt(Big(maxAmountToLockNear))) {
+        } else if (
+          Big(utils.format.parseNearAmount(amount) ?? "0").gt(
+            Big(maxAmountToLock ?? "0")
+          )
+        ) {
           setAmountError("Not enough funds in this account");
         } else if (
           selectedToken?.type === "near" &&
@@ -437,7 +437,7 @@ export const LockProvider = ({
         setAmountError("Invalid amount");
       }
     },
-    [depositTotal, maxAmountToLockNear, selectedToken?.type]
+    [depositTotal, maxAmountToLock, selectedToken?.type]
   );
 
   const resetForm = useCallback(() => {
@@ -447,10 +447,10 @@ export const LockProvider = ({
   }, []);
 
   const onLockMax = useCallback(() => {
-    setEnteredAmount(maxAmountToLockNear);
+    setEnteredAmount(convertYoctoToNear(maxAmountToLock ?? "0"));
     setIsLockingMax(true);
-    validateAmount(maxAmountToLockNear);
-  }, [maxAmountToLockNear, validateAmount]);
+    setAmountError(null);
+  }, [maxAmountToLock]);
 
   const onEnteredAmountUpdated = useCallback(
     (amount: string) => {

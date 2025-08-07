@@ -8,6 +8,7 @@ import { StakingPool } from "@/lib/types";
 import {
   convertNearToStakingToken,
   convertStakingTokenToNear,
+  convertYoctoToNear,
   isValidNearAmount,
 } from "@/lib/utils";
 import Big from "big.js";
@@ -186,7 +187,7 @@ export const StakingProvider = ({
 
   const onStakeMax = useCallback(() => {
     if (maxStakingAmount) {
-      setEnteredAmount(utils.format.formatNearAmount(maxStakingAmount));
+      setEnteredAmount(convertYoctoToNear(maxStakingAmount));
       setIsStakingMax(true);
     }
   }, [maxStakingAmount]);

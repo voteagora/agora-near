@@ -409,3 +409,9 @@ export const getPopupHelpLink = (browserType: string | null) => {
       return "https://support.google.com/chrome/answer/95472"; // Default to Chrome instructions
   }
 };
+
+export const convertYoctoToNear = (yocto: string) => {
+  return Big(yocto)
+    .div(10 ** NEAR_NOMINATION_EXP)
+    .toFixed();
+};
