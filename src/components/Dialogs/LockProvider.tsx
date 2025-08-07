@@ -16,7 +16,7 @@ import {
 } from "@/lib/constants";
 import { getAPYFromGrowthRate } from "@/lib/lockUtils";
 import { TokenWithBalance } from "@/lib/types";
-import { isValidNearAmount } from "@/lib/utils";
+import { convertYoctoToNear, isValidNearAmount } from "@/lib/utils";
 import Big from "big.js";
 import { utils } from "near-api-js";
 import {
@@ -362,7 +362,7 @@ export const LockProvider = ({
       return "0";
     }
 
-    return Big(nearBalance).minus(Big(DEFAULT_GAS_RESERVE)).toFixed(0);
+    return Big(nearBalance).minus(Big(DEFAULT_GAS_RESERVE)).toFixed();
   }, [nearBalance]);
 
   const maxAmountToLock = useMemo(
@@ -412,10 +412,6 @@ export const LockProvider = ({
     venearAccountInfo,
   ]);
 
-  const maxAmountToLockNear = useMemo(() => {
-    return utils.format.formatNearAmount(maxAmountToLock ?? "0");
-  }, [maxAmountToLock]);
-
   const validateAmount = useCallback(
     (amount: string) => {
       try {
@@ -451,10 +447,10 @@ export const LockProvider = ({
   }, []);
 
   const onLockMax = useCallback(() => {
-    setEnteredAmount(maxAmountToLockNear);
+    setEnteredAmount(convertYoctoToNear(maxAmountToLock ?? "0"));
     setIsLockingMax(true);
-    validateAmount(maxAmountToLockNear);
-  }, [maxAmountToLockNear, validateAmount]);
+    setAmountError(null);
+  }, [maxAmountToLock]);
 
   const onEnteredAmountUpdated = useCallback(
     (amount: string) => {
@@ -466,12 +462,17 @@ export const LockProvider = ({
   );
 
   const enteredAmountYocto = useMemo(() => {
+    if (isLockingMax) {
+      // More robust to use the direct yocto amount rather than converting back and forth
+      return maxAmountToLock ?? "0";
+    }
+
     if (!isValidNearAmount(enteredAmount)) {
       return "0";
     }
 
     return utils.format.parseNearAmount(enteredAmount) || "0";
-  }, [enteredAmount]);
+  }, [enteredAmount, isLockingMax, maxAmountToLock]);
 
   const requiredTransactions = useMemo(() => {
     const transactions: LockTransaction[] = [];

@@ -8,6 +8,7 @@ import { StakingPool } from "@/lib/types";
 import {
   convertNearToStakingToken,
   convertStakingTokenToNear,
+  convertYoctoToNear,
   isValidNearAmount,
 } from "@/lib/utils";
 import Big from "big.js";
@@ -149,12 +150,17 @@ export const StakingProvider = ({
   }, [stats, exchangeRateMap]);
 
   const enteredAmountYoctoNear = useMemo(() => {
+    if (isStakingMax) {
+      // More robust to use the direct yocto amount rather than converting back and forth
+      return maxStakingAmount ?? "0";
+    }
+
     if (!isValidNearAmount(enteredAmount)) {
       return "0";
     }
 
     return utils.format.parseNearAmount(enteredAmount) || "0";
-  }, [enteredAmount]);
+  }, [enteredAmount, isStakingMax, maxStakingAmount]);
 
   const amountInStakingToken = useMemo(() => {
     return convertNearToStakingToken(
@@ -186,7 +192,7 @@ export const StakingProvider = ({
 
   const onStakeMax = useCallback(() => {
     if (maxStakingAmount) {
-      setEnteredAmount(utils.format.formatNearAmount(maxStakingAmount));
+      setEnteredAmount(convertYoctoToNear(maxStakingAmount));
       setIsStakingMax(true);
     }
   }, [maxStakingAmount]);

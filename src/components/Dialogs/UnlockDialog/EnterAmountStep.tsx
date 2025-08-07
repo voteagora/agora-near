@@ -1,11 +1,15 @@
 import { UpdatedButton } from "@/components/Button";
 import { Input } from "@/components/ui/input";
 import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
-import { NEAR_TOKEN_METADATA, VENEAR_TOKEN_METADATA } from "@/lib/constants";
+import {
+  NEAR_TOKEN,
+  NEAR_TOKEN_METADATA,
+  VENEAR_TOKEN_METADATA,
+} from "@/lib/constants";
+import { formatNumber } from "@/lib/utils";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Big from "big.js";
-import { utils } from "near-api-js";
 import { useCallback, useMemo } from "react";
 import { AssetIcon } from "../../common/AssetIcon";
 import TokenAmount from "../../shared/TokenAmount";
@@ -122,7 +126,15 @@ export const EnterAmountStep = ({ handleReview }: EnterAmountStepProps) => {
               <Input
                 type="text"
                 placeholder="0"
-                value={enteredAmount}
+                value={
+                  // Override value for display purposes when unlocking max
+                  isUnlockingMax
+                    ? formatNumber(
+                        maxAmountToUnlock ?? "0",
+                        NEAR_TOKEN.decimals
+                      )
+                    : enteredAmount
+                }
                 onChange={handleAmountChange}
                 className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
               />

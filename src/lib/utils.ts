@@ -306,14 +306,11 @@ export const isValidNearAmount = (amount?: string) => {
     return false;
   }
 
-  // Remove commas from the amount before validation
-  const cleanAmount = amount.replace(/,/g, "");
-
-  if (isNaN(Number(cleanAmount))) {
+  if (isNaN(Number(amount))) {
     return false;
   }
 
-  const decimalParts = cleanAmount.split(".");
+  const decimalParts = amount.split(".");
   if (decimalParts.length > 1 && decimalParts[1].length > NEAR_NOMINATION_EXP) {
     return false;
   }
@@ -325,9 +322,7 @@ export const yoctoNearToUsdFormatted = (
   yoctoNearAmount: string,
   nearPrice: string
 ) => {
-  const nearInUsd = Big(utils.format.formatNearAmount(yoctoNearAmount)).mul(
-    nearPrice
-  );
+  const nearInUsd = Big(convertYoctoToNear(yoctoNearAmount)).mul(nearPrice);
 
   const formattedUsdAmount = new Intl.NumberFormat("en", {
     style: "currency",
@@ -411,4 +406,10 @@ export const getPopupHelpLink = (browserType: string | null) => {
     default:
       return "https://support.google.com/chrome/answer/95472"; // Default to Chrome instructions
   }
+};
+
+export const convertYoctoToNear = (yocto: string) => {
+  return Big(yocto)
+    .div(10 ** NEAR_NOMINATION_EXP)
+    .toFixed();
 };

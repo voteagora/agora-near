@@ -1,7 +1,12 @@
 import { UpdatedButton } from "@/components/Button";
 import { Input } from "@/components/ui/input";
 import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
-import { DEFAULT_GAS_RESERVE, VENEAR_TOKEN_METADATA } from "@/lib/constants";
+import {
+  DEFAULT_GAS_RESERVE,
+  NEAR_TOKEN,
+  VENEAR_TOKEN_METADATA,
+} from "@/lib/constants";
+import { formatNumber } from "@/lib/utils";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import {
   ChevronDownIcon,
@@ -117,7 +122,12 @@ export const EnterAmountStep = ({
               <Input
                 type="text"
                 placeholder="0"
-                value={enteredAmount}
+                value={
+                  // Override value for display purposes when locking max
+                  isLockingMax
+                    ? formatNumber(maxAmountToLock ?? "0", NEAR_TOKEN.decimals)
+                    : enteredAmount
+                }
                 onChange={handleAmountChange}
                 className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
               />
