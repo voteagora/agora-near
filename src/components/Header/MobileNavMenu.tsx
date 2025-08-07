@@ -10,6 +10,9 @@ import { useTotalSupply } from "@/hooks/useTotalNearSupply";
 import TokenAmount from "@/components/shared/TokenAmount";
 import agoraIconWithText from "@/assets/agoraIconWithText.svg";
 import discordIcon from "@/assets/discord.svg";
+import githubIcon from "@/assets/github.svg";
+import twitterIcon from "@/assets/x.svg";
+import telegramIcon from "@/assets/telegram.svg";
 
 interface MobileNavMenuProps {
   isOpen: boolean;
@@ -26,6 +29,10 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
   const governanceForumLink = ui.link("governance-forum");
   const bugsLink = ui.link("bugs");
   const discordLink = ui.link("discord");
+  const githubLink = ui.link("github");
+  const twitterLink = ui.link("twitter");
+  const telegramLink = ui.link("telegram");
+  const blogLink = ui.link("blog");
 
   const proposalsToggle = ui.toggle("proposals");
   const hasProposals = proposalsToggle !== undefined && proposalsToggle.enabled;
@@ -123,7 +130,7 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
           )}
 
           {/* Links Section */}
-          {(governanceForumLink || bugsLink || discordLink) && (
+          {(governanceForumLink || bugsLink || discordLink || githubLink || twitterLink || telegramLink || blogLink) && (
             <div className="px-8 py-6 border-t border-line">
               <div className="flex flex-col space-y-4">
                 {governanceForumLink && (
@@ -168,6 +175,79 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                         height={20}
                         className="opacity-70"
                       />
+                    </a>
+                    <div className="border-b border-line w-full"></div>
+                  </>
+                )}
+                {githubLink && (
+                  <>
+                    <a
+                      href={githubLink.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 text-tertiary"
+                    >
+                      {githubLink.title}
+                      <Image
+                        src={githubIcon}
+                        alt="GitHub"
+                        width={20}
+                        height={20}
+                        className="opacity-70"
+                      />
+                    </a>
+                    <div className="border-b border-line w-full"></div>
+                  </>
+                )}
+                {twitterLink && (
+                  <>
+                    <a
+                      href={twitterLink.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 text-tertiary"
+                    >
+                      {twitterLink.title}
+                      <Image
+                        src={twitterIcon}
+                        alt="Twitter"
+                        width={20}
+                        height={20}
+                        className="opacity-70"
+                      />
+                    </a>
+                    <div className="border-b border-line w-full"></div>
+                  </>
+                )}
+                {telegramLink && (
+                  <>
+                    <a
+                      href={telegramLink.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 text-tertiary"
+                    >
+                      {telegramLink.title}
+                      <Image
+                        src={telegramIcon}
+                        alt="Telegram"
+                        width={20}
+                        height={20}
+                        className="opacity-70"
+                      />
+                    </a>
+                    <div className="border-b border-line w-full"></div>
+                  </>
+                )}
+                {blogLink && (
+                  <>
+                    <a
+                      href={blogLink.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-tertiary"
+                    >
+                      Blog
                     </a>
                     <div className="border-b border-line w-full"></div>
                   </>

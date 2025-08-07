@@ -1,6 +1,9 @@
 "use client";
 
 import discord from "@/assets/discord.svg";
+import github from "@/assets/github.svg";
+import twitter from "@/assets/x.svg";
+import telegram from "@/assets/telegram.svg";
 import Tenant from "@/lib/tenant/tenant";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -29,12 +32,16 @@ export default function DAOMetricsHeader() {
   const changeLogLink = ui.link("changelog");
   const faqLink = ui.link("faq");
   const discordLink = ui.link("discord");
+  const githubLink = ui.link("github");
+  const twitterLink = ui.link("twitter");
+  const telegramLink = ui.link("telegram");
+  const blogLink = ui.link("blog");
   const agoraLink = ui.link("agora");
 
-  // discord + agora are hidden on mobile
+  // social links + agora are hidden on mobile
   const hasLinksMobile =
-    !!governanceForumLink || !!bugsLink || !!changeLogLink || !!faqLink;
-  const hasLinksDesktop = hasLinksMobile || !!discordLink || !!agoraLink;
+    !!governanceForumLink || !!bugsLink || !!changeLogLink || !!faqLink || !!blogLink;
+  const hasLinksDesktop = hasLinksMobile || !!discordLink || !!githubLink || !!twitterLink || !!telegramLink || !!agoraLink;
 
   useEffect(() => {
     setIsClient(true);
@@ -134,6 +141,17 @@ export default function DAOMetricsHeader() {
                   </a>
                 )}
 
+                {blogLink && (
+                  <a
+                    href={blogLink.url}
+                    rel="noreferrer nonopener"
+                    target="_blank"
+                    className="text-center"
+                  >
+                    Blog
+                  </a>
+                )}
+
                 {discordLink && (
                   <a
                     href={discordLink.url}
@@ -142,6 +160,39 @@ export default function DAOMetricsHeader() {
                     className="hidden sm:inline"
                   >
                     <Image src={discord} alt={discordLink.title} />
+                  </a>
+                )}
+
+                {githubLink && (
+                  <a
+                    href={githubLink.url}
+                    rel="noreferrer nonopener"
+                    target="_blank"
+                    className="hidden sm:inline"
+                  >
+                    <Image src={github} alt={githubLink.title} />
+                  </a>
+                )}
+
+                {twitterLink && (
+                  <a
+                    href={twitterLink.url}
+                    rel="noreferrer nonopener"
+                    target="_blank"
+                    className="hidden sm:inline"
+                  >
+                    <Image src={twitter} alt={twitterLink.title} />
+                  </a>
+                )}
+
+                {telegramLink && (
+                  <a
+                    href={telegramLink.url}
+                    rel="noreferrer nonopener"
+                    target="_blank"
+                    className="hidden sm:inline"
+                  >
+                    <Image src={telegram} alt={telegramLink.title} />
                   </a>
                 )}
 
