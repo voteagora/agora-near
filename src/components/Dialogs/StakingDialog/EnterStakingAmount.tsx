@@ -85,14 +85,7 @@ export const EnterStakingAmount = ({
                 <Input
                   type="text"
                   placeholder="0"
-                  value={
-                    // Override value for display purposes when staking max
-                    isStakingMax
-                      ? Big(
-                          utils.format.formatNearAmount(maxStakingAmount ?? "0")
-                        ).toFixed(4)
-                      : enteredAmount
-                  }
+                  value={enteredAmount}
                   onChange={(e) => setEnteredAmount(e.target.value)}
                   className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
