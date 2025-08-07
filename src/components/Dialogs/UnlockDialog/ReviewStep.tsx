@@ -225,7 +225,7 @@ export const ReviewStep = memo(
             {isLoadingNearPrice ? (
               <Skeleton className="w-16 h-4" />
             ) : (
-              <div className="text-sm text-[#9D9FA1]">${usdAmount}</div>
+              <div className="text-sm text-[#9D9FA1]">{usdAmount}</div>
             )}
           </div>
         </div>

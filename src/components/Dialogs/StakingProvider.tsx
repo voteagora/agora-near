@@ -150,12 +150,17 @@ export const StakingProvider = ({
   }, [stats, exchangeRateMap]);
 
   const enteredAmountYoctoNear = useMemo(() => {
+    if (isStakingMax) {
+      // More robust to use the direct yocto amount rather than converting back and forth
+      return maxStakingAmount ?? "0";
+    }
+
     if (!isValidNearAmount(enteredAmount)) {
       return "0";
     }
 
     return utils.format.parseNearAmount(enteredAmount) || "0";
-  }, [enteredAmount]);
+  }, [enteredAmount, isStakingMax, maxStakingAmount]);
 
   const amountInStakingToken = useMemo(() => {
     return convertNearToStakingToken(

@@ -82,11 +82,17 @@ export const UnlockProvider = ({ children }: UnlockProviderProps) => {
 
   // 1:1 conversion - unlocking veNEAR gives you NEAR
   const nearAmount = useMemo(() => {
+    if (isUnlockingMax) {
+      // More robust to use the direct yocto amount rather than converting back and forth
+      return maxAmountToUnlock ?? "0";
+    }
+
     if (!isValidNearAmount(enteredAmount)) {
       return "0";
     }
+
     return utils.format.parseNearAmount(enteredAmount) || "0";
-  }, [enteredAmount]);
+  }, [enteredAmount, isUnlockingMax, maxAmountToUnlock]);
 
   const validateAmount = useCallback(
     (amount: string) => {

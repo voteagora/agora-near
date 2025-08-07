@@ -362,7 +362,7 @@ export const LockProvider = ({
       return "0";
     }
 
-    return Big(nearBalance).minus(Big(DEFAULT_GAS_RESERVE)).toFixed(0);
+    return Big(nearBalance).minus(Big(DEFAULT_GAS_RESERVE)).toFixed();
   }, [nearBalance]);
 
   const maxAmountToLock = useMemo(
@@ -462,12 +462,17 @@ export const LockProvider = ({
   );
 
   const enteredAmountYocto = useMemo(() => {
+    if (isLockingMax) {
+      // More robust to use the direct yocto amount rather than converting back and forth
+      return maxAmountToLock ?? "0";
+    }
+
     if (!isValidNearAmount(enteredAmount)) {
       return "0";
     }
 
     return utils.format.parseNearAmount(enteredAmount) || "0";
-  }, [enteredAmount]);
+  }, [enteredAmount, isLockingMax, maxAmountToLock]);
 
   const requiredTransactions = useMemo(() => {
     const transactions: LockTransaction[] = [];
