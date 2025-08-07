@@ -1,7 +1,6 @@
 "use client";
 
 import { FC, PropsWithChildren } from "react";
-import { inter } from "@/styles/fonts";
 import Footer from "@/components/Footer";
 import { PageContainer } from "@/components/Layout/PageContainer";
 import { Toaster } from "react-hot-toast";
@@ -9,6 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Tenant from "@/lib/tenant/tenant";
 import { NearProvider } from "@/contexts/NearContext";
+import InfoBanner from "@/components/InfoBanner";
 
 const queryClient = new QueryClient();
 
@@ -19,10 +19,11 @@ const shouldHideAgoraFooter = ui.hideAgoraFooter;
 const networkId =
   process.env.NEXT_PUBLIC_AGORA_ENV === "prod" ? "mainnet" : "testnet";
 
-const Web3Provider: FC<PropsWithChildren<{}>> = ({ children }) => (
+const Web3Provider: FC<PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <NearProvider networkId={networkId}>
-      <body className={inter.variable}>
+      <>
+        <InfoBanner />
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <PageContainer>
           <Toaster />
@@ -30,7 +31,7 @@ const Web3Provider: FC<PropsWithChildren<{}>> = ({ children }) => (
         </PageContainer>
         {!shouldHideAgoraFooter && <Footer />}
         <SpeedInsights />
-      </body>
+      </>
     </NearProvider>
   </QueryClientProvider>
 );

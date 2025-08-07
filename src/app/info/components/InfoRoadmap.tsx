@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 interface RoadmapItem {
   title: string;
@@ -95,11 +95,49 @@ const difficultyColors = {
 };
 
 const InfoRoadmap = () => {
+  useEffect(() => {
+    // Check if the URL hash is #roadmap and scroll to it
+    if (window.location.hash === "#roadmap") {
+      setTimeout(() => {
+        const element = document.getElementById("roadmap");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 100); // Small delay to ensure DOM is ready
+    }
+  }, []);
+
   return (
     <div className="mt-12">
-      <h3 className="text-2xl font-black text-primary mb-6">
+      <h3
+        id="roadmap"
+        className="text-2xl font-black text-primary mb-6 scroll-mt-32"
+      >
         House of Stake Development Roadmap
       </h3>
+      <div className="mb-8 p-6 bg-wash border border-line rounded-lg">
+        <h4 className="text-lg font-semibold text-primary mb-3">
+          Alpha Launch: August 7, 2025
+        </h4>
+        <p className="text-secondary mb-3">
+          House of Stake is now live on the NEAR blockchain! During this Alpha
+          release, we will be focusing on getting feedback from the community on
+          core workflows and feature requests that we can prioritize for the
+          next release.
+        </p>
+        <p className="text-secondary mb-3">
+          Please submit bug reports and feature requests on our{" "}
+          <a
+            href="https://agora.ducalis.io/nearhos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline hover:text-secondary"
+          >
+            feedback board
+          </a>
+          .
+        </p>
+      </div>
 
       <div className="mb-8 p-6 bg-wash border border-line rounded-lg">
         <h4 className="text-lg font-semibold text-primary mb-3">
