@@ -172,10 +172,7 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                     <div className="border-b border-line w-full"></div>
                   </>
                 )}
-                <a
-                  href="/terms-of-service"
-                  className="text-tertiary"
-                >
+                <a href="/terms-of-service" className="text-tertiary">
                   Terms of Service
                 </a>
               </div>
