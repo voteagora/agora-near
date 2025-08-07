@@ -110,7 +110,7 @@ export const useNear = () => useContext(NearContext);
 
 interface NearProviderProps {
   children: ReactNode;
-  networkId?: NetworkId;
+  networkId: NetworkId;
   createAccessKeyFor?: string;
 }
 
@@ -122,7 +122,7 @@ const debugLog = (message: string) => {
 
 export const NearProvider: React.FC<NearProviderProps> = ({
   children,
-  networkId = "testnet" as NetworkId,
+  networkId,
 }) => {
   const [selector, setSelector] = useState<WalletSelector | undefined>();
   const [signedAccountId, setSignedAccountId] = useState<string | undefined>();

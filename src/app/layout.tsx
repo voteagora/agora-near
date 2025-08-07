@@ -87,7 +87,7 @@ export default async function RootLayout({
   } as React.CSSProperties;
 
   return (
-    <html lang="en" style={style}>
+    <html lang="en" className="scroll-smooth" style={style}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
@@ -121,18 +121,19 @@ export default async function RootLayout({
         />
         <meta name="theme-color" content="#000" />
       </head>
-
-      <NuqsAdapter>
-        <ClientLayout>
-          <div className="mx-auto max-w-[1280px] my-3 sm:my-4 px-3 sm:px-8">
-            <Header />
-            {children}
-          </div>
-          <div className="hidden sm:block">
-            <DAOMetricsHeader />
-          </div>
-        </ClientLayout>
-      </NuqsAdapter>
+      <body className={`${inter.className}`} style={{ fontFamily: font }}>
+        <NuqsAdapter>
+          <ClientLayout>
+            <div className="mx-auto max-w-[1280px] my-3 sm:my-4 px-3 sm:px-8">
+              <Header />
+              {children}
+            </div>
+            <div className="hidden sm:block">
+              <DAOMetricsHeader />
+            </div>
+          </ClientLayout>
+        </NuqsAdapter>
+      </body>
     </html>
   );
 }
