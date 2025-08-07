@@ -27,6 +27,7 @@
     "@near-wallet-selector/meteor-wallet": "^8.10.2",
     "@near-wallet-selector/modal-ui": "^8.10.2",
     "@near-wallet-selector/react-hook": "^8.10.2",
+    "@next/third-parties": "^15.4.6",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/api-logs": "^0.46.0",
     "@opentelemetry/auto-instrumentations-node": "^0.43.0",

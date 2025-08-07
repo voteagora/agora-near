@@ -5,6 +5,7 @@ import DAOMetricsHeader from "@/components/Metrics/DAOMetricsHeader";
 import Tenant from "@/lib/tenant/tenant";
 import { fontMapper, inter } from "@/styles/fonts";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { GoogleAnalytics } from "@/components/Analytics/GoogleAnalytics";
 
 declare global {
   interface BigInt {
@@ -122,6 +123,7 @@ export default async function RootLayout({
         <meta name="theme-color" content="#000" />
       </head>
       <body className={`${inter.className}`} style={{ fontFamily: font }}>
+        <GoogleAnalytics />
         <NuqsAdapter>
           <ClientLayout>
             <div className="mx-auto max-w-[1280px] my-3 sm:my-4 px-3 sm:px-8">
