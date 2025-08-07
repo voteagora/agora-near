@@ -82,7 +82,7 @@ export default function DAOMetricsHeader() {
                 `transition-all duration-200 ease-in-out transform sm:transition-none sm:translate-y-0`
               )}
             >
-              <div className="w-full sm:w-3/5 flex items-center px-6 sm:px-8 gap-8 justify-between sm:justify-start h-10">
+              <div className="w-full sm:w-2/5 flex items-center px-6 sm:px-8 gap-8 justify-between sm:justify-start h-10">
                 <div className="flex gap-6 sm:gap-8">
                   <HoverCard openDelay={100} closeDelay={100}>
                     <HoverCardTrigger>
@@ -107,7 +107,7 @@ export default function DAOMetricsHeader() {
               </div>
               <div className="block bg-line w-full sm:w-[1px] h-[1px] sm:h-10"></div>
               <div
-                className={`w-full sm:w-2/5 justify-end items-center px-6 sm:px-8 gap-4 h-10 ${
+                className={`w-full sm:w-3/5 justify-end items-center px-6 sm:px-8 gap-4 h-10 ${
                   hasLinksMobile
                     ? "flex"
                     : hasLinksDesktop
