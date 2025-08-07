@@ -93,13 +93,9 @@ export const UnlockProvider = ({ children }: UnlockProviderProps) => {
       try {
         if (!isValidNearAmount(amount)) {
           setAmountError("Please enter a valid amount");
-        } else if (
-          Big(utils.format.parseNearAmount(amount) ?? "0").gt(
-            Big(maxAmountToUnlock ?? "0")
-          )
-        ) {
+        } else if (Big(amount).gt(Big(maxAmountToUnlockFormatted))) {
           setAmountError("Not enough veNEAR available to unlock");
-        } else if (Big(utils.format.parseNearAmount(amount) ?? "0").lte(0)) {
+        } else if (Big(amount).lte(0)) {
           setAmountError("Amount must be greater than 0");
         } else {
           setAmountError(null);
@@ -108,7 +104,7 @@ export const UnlockProvider = ({ children }: UnlockProviderProps) => {
         setAmountError("Invalid amount");
       }
     },
-    [maxAmountToUnlock]
+    [maxAmountToUnlockFormatted]
   );
 
   const resetForm = useCallback(() => {

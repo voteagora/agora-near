@@ -16,7 +16,6 @@ import { useUnlockNear } from "@/hooks/useUnlockNear";
 import { useQueryClient } from "@tanstack/react-query";
 import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
-import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
 
 type ReviewStepProps = {
   handleEdit: () => void;
@@ -79,8 +78,7 @@ export const ReviewStep = memo(
 
     const usdAmount = useMemo(() => {
       if (!price) return "0";
-      return Big(nearAmount ?? "0")
-        .div(10 ** NEAR_NOMINATION_EXP)
+      return Big(utils.format.formatNearAmount(nearAmount ?? "0"))
         .mul(price)
         .toFixed(2);
     }, [nearAmount, price]);

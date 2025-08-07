@@ -421,11 +421,7 @@ export const LockProvider = ({
       try {
         if (!isValidNearAmount(amount)) {
           setAmountError("Please enter a valid amount");
-        } else if (
-          Big(utils.format.parseNearAmount(amount) ?? "0").gt(
-            Big(maxAmountToLock ?? "0")
-          )
-        ) {
+        } else if (Big(amount).gt(Big(maxAmountToLockNear))) {
           setAmountError("Not enough funds in this account");
         } else if (
           selectedToken?.type === "near" &&
@@ -441,7 +437,7 @@ export const LockProvider = ({
         setAmountError("Invalid amount");
       }
     },
-    [depositTotal, maxAmountToLock, selectedToken?.type]
+    [depositTotal, maxAmountToLockNear, selectedToken?.type]
   );
 
   const resetForm = useCallback(() => {

@@ -117,7 +117,14 @@ export const EnterAmountStep = ({
               <Input
                 type="text"
                 placeholder="0"
-                value={enteredAmount}
+                value={
+                  // Override value for display purposes when locking max
+                  isLockingMax
+                    ? Big(
+                        utils.format.formatNearAmount(maxAmountToLock ?? "0")
+                      ).toFixed(4)
+                    : enteredAmount
+                }
                 onChange={handleAmountChange}
                 className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
               />
