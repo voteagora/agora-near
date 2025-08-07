@@ -7,6 +7,8 @@ import { TenantUI } from "@/lib/tenant/tenantUI";
 export const nearTenantUIConfig = new TenantUI({
   title: "",
   logo: nearLogo,
+  hideAgoraBranding: false,
+  hideAgoraFooter: true,
 
   assets: {
     success: nearLogo,

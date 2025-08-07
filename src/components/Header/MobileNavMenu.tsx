@@ -153,22 +153,31 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                   </>
                 )}
                 {discordLink && (
-                  <a
-                    href={discordLink.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 text-tertiary"
-                  >
-                    {discordLink.title}
-                    <Image
-                      src={discordIcon}
-                      alt="Discord"
-                      width={20}
-                      height={20}
-                      className="opacity-70"
-                    />
-                  </a>
+                  <>
+                    <a
+                      href={discordLink.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 text-tertiary"
+                    >
+                      {discordLink.title}
+                      <Image
+                        src={discordIcon}
+                        alt="Discord"
+                        width={20}
+                        height={20}
+                        className="opacity-70"
+                      />
+                    </a>
+                    <div className="border-b border-line w-full"></div>
+                  </>
                 )}
+                <a
+                  href="/terms-of-service"
+                  className="text-tertiary"
+                >
+                  Terms of Service
+                </a>
               </div>
             </div>
           )}

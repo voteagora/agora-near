@@ -52,6 +52,7 @@ type TenantUIParams = {
   delegates?: UIDelegates;
   governanceIssues?: UIGovernanceIssue[];
   hideAgoraBranding?: boolean;
+  hideAgoraFooter?: boolean;
   links?: UILink[];
   logo: string;
   pages?: UIPage[];
@@ -89,6 +90,7 @@ export class TenantUI {
   private _delegates?: UIDelegates;
   private _governanceIssues?: UIGovernanceIssue[];
   private _hideAgoraBranding?: boolean;
+  private _hideAgoraFooter?: boolean;
   private _links?: UILink[];
   private _logo: string;
   private _pages?: UIPage[];
@@ -131,6 +133,7 @@ export class TenantUI {
     favicon,
     governanceIssues,
     hideAgoraBranding,
+    hideAgoraFooter,
     links,
     logo,
     pages,
@@ -145,6 +148,7 @@ export class TenantUI {
     this._favicon = favicon;
     this._governanceIssues = governanceIssues;
     this._hideAgoraBranding = hideAgoraBranding;
+    this._hideAgoraFooter = hideAgoraFooter;
     this._links = links;
     this._logo = logo;
     this._pages = pages;
@@ -168,6 +172,10 @@ export class TenantUI {
 
   public get hideAgoraBranding(): boolean {
     return this._hideAgoraBranding || false;
+  }
+
+  public get hideAgoraFooter(): boolean {
+    return this._hideAgoraFooter || false;
   }
 
   public get title(): string {

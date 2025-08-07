@@ -8,7 +8,7 @@ export default function LogoLink() {
 
   return (
     <Link
-      href={isProd ? "/" : "/near"}
+      href="https://houseofstake.org/"
       className="flex flex-row justify-between w-full"
     >
       <div className="gap-2 h-full flex flex-row items-center w-full">
@@ -17,11 +17,11 @@ export default function LogoLink() {
         /> */}
         {/* <div className="h-3 w-[2px] bg-line rounded-full hidden sm:block"></div> */}
         <Image
-          src={ui.logo}
+          src="/assets/icons/nearDelegateAvatar.svg"
           alt="logo"
-          width="24"
-          height="24"
-          className="h-[24px] w-auto ml-1"
+          width="40"
+          height="40"
+          className="h-[40px] w-auto ml-1"
         />
         <span className="hidden sm:block font-medium text-primary">{`${ui.title}`}</span>
         {!isProd && (
