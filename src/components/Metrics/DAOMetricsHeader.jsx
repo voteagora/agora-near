@@ -220,7 +220,6 @@ export default function DAOMetricsHeader() {
                     {agoraLink.title}
                   </a>
                 )}
-
               </div>
             </div>
           </div>,
