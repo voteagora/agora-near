@@ -74,11 +74,11 @@ export const nearTenantUIConfig = new TenantUI({
       title: "Telegram",
       url: "https://t.me/NEAR_HouseOfStake",
     },
-    {
-      name: "blog",
-      title: "Blog",
-      url: "https://houseofstake.org/blog#",
-    },
+    // {
+    //   name: "blog",
+    //   title: "Blog",
+    //   url: "https://houseofstake.org/blog#",
+    // },
     {
       name: "discord",
       title: "Discord",

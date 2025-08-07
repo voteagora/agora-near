@@ -7,10 +7,7 @@ export default function LogoLink() {
   const { ui, isProd } = Tenant.current();
 
   return (
-    <Link
-      href="https://houseofstake.org/"
-      className="flex flex-row justify-between w-full"
-    >
+    <Link href="/" className="flex flex-row justify-between w-full">
       <div className="gap-2 h-full flex flex-row items-center w-full">
         {/* <AgoraIcon
           className="hidden sm:block w-[20px] h-[20px]"
