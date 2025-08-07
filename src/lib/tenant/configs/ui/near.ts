@@ -60,6 +60,26 @@ export const nearTenantUIConfig = new TenantUI({
 
   links: [
     {
+      name: "github",
+      title: "GitHub",
+      url: "https://github.com/houseofstake",
+    },
+    {
+      name: "twitter",
+      title: "Twitter",
+      url: "https://x.com/NEARGovernance",
+    },
+    {
+      name: "telegram",
+      title: "Telegram",
+      url: "https://t.me/NEAR_HouseOfStake",
+    },
+    {
+      name: "blog",
+      title: "Blog",
+      url: "https://houseofstake.org/blog#",
+    },
+    {
       name: "discord",
       title: "Discord",
       url: "https://discord.gg/nearprotocol",
