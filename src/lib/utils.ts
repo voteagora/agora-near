@@ -322,9 +322,7 @@ export const yoctoNearToUsdFormatted = (
   yoctoNearAmount: string,
   nearPrice: string
 ) => {
-  const nearInUsd = Big(utils.format.formatNearAmount(yoctoNearAmount)).mul(
-    nearPrice
-  );
+  const nearInUsd = Big(convertYoctoToNear(yoctoNearAmount)).mul(nearPrice);
 
   const formattedUsdAmount = new Intl.NumberFormat("en", {
     style: "currency",

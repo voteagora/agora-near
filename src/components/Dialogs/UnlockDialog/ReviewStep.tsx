@@ -1,21 +1,21 @@
 import UnlockIcon from "@/assets/Locking.png";
 import { UpdatedButton } from "@/components/Button";
 import { TransactionError } from "@/components/TransactionError";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
+import { usePrice } from "@/hooks/usePrice";
+import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
+import { useUnlockNear } from "@/hooks/useUnlockNear";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { yoctoNearToUsdFormatted } from "@/lib/utils";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { useQueryClient } from "@tanstack/react-query";
 import { utils } from "near-api-js";
 import Image from "next/image";
 import { memo, useCallback, useMemo, useState } from "react";
 import TokenAmount from "../../shared/TokenAmount";
 import { useUnlockProviderContext } from "../UnlockProvider";
 import { UnlockWarning } from "./UnlockWarning";
-import { usePrice } from "@/hooks/usePrice";
-import Big from "big.js";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useUnlockNear } from "@/hooks/useUnlockNear";
-import { useQueryClient } from "@tanstack/react-query";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
-import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
 
 type ReviewStepProps = {
   handleEdit: () => void;
@@ -77,10 +77,8 @@ export const ReviewStep = memo(
     const { price, isLoading: isLoadingNearPrice } = usePrice();
 
     const usdAmount = useMemo(() => {
-      if (!price) return "0";
-      return Big(utils.format.formatNearAmount(nearAmount ?? "0"))
-        .mul(price)
-        .toFixed(2);
+      if (!price || !nearAmount) return "0";
+      return yoctoNearToUsdFormatted(nearAmount, String(price));
     }, [nearAmount, price]);
 
     const retryTransaction = useCallback(() => {

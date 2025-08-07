@@ -48,11 +48,10 @@ export const StakingReview = ({
   const selectedStats = poolStats[selectedPool.id];
   const selectedTokenMetadata = selectedPool.metadata;
 
-  const totalUsd = useMemo(
-    () =>
-      yoctoNearToUsdFormatted(enteredAmountYoctoNear, price?.toString() ?? "0"),
-    [enteredAmountYoctoNear, price]
-  );
+  const totalUsd = useMemo(() => {
+    if (!price || !enteredAmountYoctoNear) return "0";
+    return yoctoNearToUsdFormatted(enteredAmountYoctoNear, String(price));
+  }, [enteredAmountYoctoNear, price]);
 
   const { stakeNear, isStakingNear, stakingNearError } = useStakeNear({
     lockupAccountId: lockupAccountId ?? "",
