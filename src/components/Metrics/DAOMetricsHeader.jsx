@@ -40,8 +40,18 @@ export default function DAOMetricsHeader() {
 
   // social links + agora are hidden on mobile
   const hasLinksMobile =
-    !!governanceForumLink || !!bugsLink || !!changeLogLink || !!faqLink || !!blogLink;
-  const hasLinksDesktop = hasLinksMobile || !!discordLink || !!githubLink || !!twitterLink || !!telegramLink || !!agoraLink;
+    !!governanceForumLink ||
+    !!bugsLink ||
+    !!changeLogLink ||
+    !!faqLink ||
+    !!blogLink;
+  const hasLinksDesktop =
+    hasLinksMobile ||
+    !!discordLink ||
+    !!githubLink ||
+    !!twitterLink ||
+    !!telegramLink ||
+    !!agoraLink;
 
   useEffect(() => {
     setIsClient(true);
