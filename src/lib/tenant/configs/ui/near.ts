@@ -109,7 +109,7 @@ export const nearTenantUIConfig = new TenantUI({
   pages: [
     {
       route: "/",
-      title: "Agora is the home of NEAR voters",
+      title: "House of Stake is the home of NEAR voters",
       description:
         "NEAR House of Stake governance empowers token holders to lock NEAR for voting rights, delegate votes to trusted representatives, and earn rewards for active participation.",
       meta: {
@@ -121,7 +121,7 @@ export const nearTenantUIConfig = new TenantUI({
     },
     {
       route: "proposals",
-      title: "Agora is the home of NEAR voters",
+      title: "House of Stake is the home of NEAR voters",
       description:
         "NEAR House of Stake governance empowers token holders to lock NEAR for voting rights, delegate votes to trusted representatives, and earn rewards for active participation.",
       meta: {
@@ -133,7 +133,7 @@ export const nearTenantUIConfig = new TenantUI({
     },
     {
       route: "delegates",
-      title: "Agora is the home of NEAR voters",
+      title: "House of Stake is the home of NEAR voters",
       description:
         "NEAR House of Stake governance empowers token holders to lock NEAR for voting rights, delegate votes to trusted representatives, and earn rewards for active participation.",
       meta: {
@@ -146,7 +146,7 @@ export const nearTenantUIConfig = new TenantUI({
     },
     {
       route: "assets",
-      title: "Agora is the home of NEAR voters",
+      title: "House of Stake is the home of NEAR voters",
       description:
         "NEAR House of Stake governance empowers token holders to lock NEAR for voting rights, delegate votes to trusted representatives, and earn rewards for active participation.",
       meta: {
