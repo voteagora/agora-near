@@ -115,6 +115,10 @@ export default function DAOMetricsHeader() {
                       : "hidden"
                 }`}
               >
+                <a href="/terms-of-service" className="text-center">
+                  Terms of Service
+                </a>
+
                 {governanceForumLink && (
                   <a
                     href={governanceForumLink.url}
@@ -217,9 +221,6 @@ export default function DAOMetricsHeader() {
                   </a>
                 )}
 
-                <a href="/terms-of-service" className="text-center">
-                  Terms of Service
-                </a>
               </div>
             </div>
           </div>,

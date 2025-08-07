@@ -139,6 +139,9 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
             blogLink) && (
             <div className="px-8 py-6 border-t border-line">
               <div className="flex flex-col space-y-4">
+                <a href="/terms-of-service" className="text-tertiary">
+                  Terms of Service
+                </a>
                 {governanceForumLink && (
                   <>
                     <a
@@ -258,9 +261,6 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                     <div className="border-b border-line w-full"></div>
                   </>
                 )}
-                <a href="/terms-of-service" className="text-tertiary">
-                  Terms of Service
-                </a>
               </div>
             </div>
           )}
