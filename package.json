@@ -24,9 +24,14 @@
     "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.3.4",
     "@near-wallet-selector/core": "^8.10.2",
+    "@near-wallet-selector/hot-wallet": "^9.3.0",
+    "@near-wallet-selector/intear-wallet": "^9.3.0",
     "@near-wallet-selector/meteor-wallet": "^8.10.2",
     "@near-wallet-selector/modal-ui": "^8.10.2",
+    "@near-wallet-selector/near-snap": "^9.3.0",
     "@near-wallet-selector/react-hook": "^8.10.2",
+    "@near-wallet-selector/unity-wallet": "^9.3.0",
+    "@near-wallet-selector/wallet-connect": "^9.3.0",
     "@next/third-parties": "^15.4.6",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/api-logs": "^0.46.0",
@@ -111,7 +116,7 @@
     "@testing-library/react": "^16.2.0",
     "@types/d3": "^7.4.3",
     "@types/dompurify": "^3.2.0",
-    "@types/node": "^22.7.5",
+    "@types/node": "^24.2.0",
     "@types/react": "^18.2.8",
     "@types/react-dom": "^18.2.25",
     "@types/react-infinite-scroller": "^1.2.5",
@@ -125,6 +130,7 @@
     "csv-parser": "^3.0.0",
     "cypress": "^12.11.0",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "ethers": "^6",
     "jsdom": "^26.0.0",
     "prettier": "^3.2.5",
     "sass": "^1.62.1",
@@ -134,5 +140,11 @@
     "typescript": "^5.4.5",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.5"
+  },
+  "resolutions": {
+    "@noble/hashes": "1.8.0",
+    "@noble/curves": "1.9.1",
+    "viem/@noble/hashes": "1.8.0",
+    "@walletconnect/*/@noble/hashes": "1.8.0"
   }
 }
