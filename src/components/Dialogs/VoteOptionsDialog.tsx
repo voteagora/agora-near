@@ -87,7 +87,12 @@ export function VoteOptionsDialog({
                 )} with`}
                 {"\u00A0"}
                 {votingPower ? (
-                  <TokenAmount amount={votingPower} currency="veNEAR" />
+                  <TokenAmount
+                    amount={votingPower}
+                    currency="veNEAR"
+                    minimumFractionDigits={1}
+                    maximumSignificantDigits={3}
+                  />
                 ) : (
                   <Skeleton className="w-4 h-4" />
                 )}
