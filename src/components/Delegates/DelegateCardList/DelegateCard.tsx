@@ -43,7 +43,7 @@ const DelegateCard = ({
                 <TokenAmount
                   amount={delegate.votingPower ?? "0"}
                   minimumFractionDigits={1}
-                  maximumSignificantDigits={1}
+                  maximumSignificantDigits={3}
                   currency="veNEAR"
                 />
               </span>

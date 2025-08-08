@@ -19,7 +19,12 @@ export default function DelegationFromRow({
   return (
     <TableRow>
       <TableCell>
-        <TokenAmount amount={delegation.nearAmount ?? "0"} currency="veNEAR" />
+        <TokenAmount
+          amount={delegation.nearAmount ?? "0"}
+          currency="veNEAR"
+          minimumFractionDigits={1}
+          maximumSignificantDigits={3}
+        />
       </TableCell>
       <TableCell>{format(delegation.eventDate, "MM/dd/yyyy")}</TableCell>
       <TableCell>

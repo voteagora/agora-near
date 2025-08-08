@@ -60,6 +60,8 @@ export default function DelegateProfile({
                   <TokenAmount
                     amount={stats?.votingPower ?? "0"}
                     currency="veNEAR"
+                    minimumFractionDigits={1}
+                    maximumSignificantDigits={3}
                   />
                 }
               />

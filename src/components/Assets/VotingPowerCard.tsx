@@ -35,7 +35,8 @@ export const VotingPowerCard = memo(() => {
               <TokenAmount
                 amount={votingPower ?? "0"}
                 hideCurrency={true}
-                minimumFractionDigits={4}
+                maximumSignificantDigits={1}
+                minimumFractionDigits={3}
               />
             )}
           </span>

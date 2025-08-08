@@ -60,6 +60,8 @@ export default function DelegateVotes({
                         <TokenAmount
                           amount={vote.votingPower}
                           currency="veNEAR"
+                          minimumFractionDigits={1}
+                          maximumSignificantDigits={3}
                         />
                       </span>
                       <h2 className="px-0 pt-1 overflow-hidden text-base text-primary text-ellipsis">
