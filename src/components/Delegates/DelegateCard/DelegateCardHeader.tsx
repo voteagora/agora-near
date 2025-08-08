@@ -1,5 +1,7 @@
 "use client";
 
+import { useApprovedProposals } from "@/hooks/useApprovedProposals";
+
 interface Props {
   participationRate?: string | null;
 }
@@ -7,6 +9,10 @@ interface Props {
 export const DelegateCardHeader = ({ participationRate }: Props) => {
   const percentParticipation = Number(participationRate) * 100;
   const numProposalsOutOfTen = Number(participationRate) * 10;
+
+  const { totalProposals } = useApprovedProposals({ pageSize: 10 });
+
+  if (!totalProposals || totalProposals < 10) return null;
 
   return Number(participationRate) > 0.5 ? (
     <ActiveHeader
