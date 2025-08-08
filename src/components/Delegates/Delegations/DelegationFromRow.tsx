@@ -21,7 +21,7 @@ export default function DelegationFromRow({
       <TableCell>
         <TokenAmount amount={delegation.nearAmount ?? "0"} currency="veNEAR" />
       </TableCell>
-      <TableCell>{format(delegation.eventDate, "MM/dd/yyyy")}</TableCell>
+      <TableCell>{format(delegation.eventTimestamp, "MM/dd/yyyy")}</TableCell>
       <TableCell>
         <Link
           href={`/delegates/${delegation.delegatorId}`}
