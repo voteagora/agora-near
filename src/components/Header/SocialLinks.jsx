@@ -1,6 +1,8 @@
 import { HStack } from "../Layout/Stack";
 import * as theme from "@/styles/theme";
 import Image from "next/image";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { icons } from "@/assets/icons";
 
 export const SocialLinks = () => {
   const isMobile = useMediaQuery({
@@ -11,12 +13,12 @@ export const SocialLinks = () => {
     {
       icon: icons.discord,
       alt: "discord",
-      url: "https://discord.gg/FaRy8AMy3Z", // Replace with your Discord URL
+      url: "https://discord.gg/FaRy8AMy3Z",
     },
     {
       icon: icons.twitter,
       alt: "twitter",
-      url: "https://twitter.com/AgoraGovernance", // Replace with your Twitter URL
+      url: "https://twitter.com/AgoraGovernance",
     },
   ];
 

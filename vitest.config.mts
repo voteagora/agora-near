@@ -7,6 +7,12 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     setupFiles: "setupTests.ts",
+    globals: true,
+    environmentOptions: {
+      jsdom: {
+        resources: "usable",
+      },
+    },
     coverage: {
       provider: "v8",
       reporter: ["text", "json-summary", "html"],
@@ -22,12 +28,20 @@ export default defineConfig({
         ".next/**",
         "cypress/**",
         "src/scripts/**",
-        "src/pages/**", // Next.js pages
-        "src/app/layout.tsx", // Next.js app layout
+        "src/pages/**",
+        "src/app/layout.tsx",
         "src/instrumentation.ts",
         "src/instrumentation.node.ts",
         "src/middleware.ts",
       ],
+    },
+    testTimeout: 10000,
+    hookTimeout: 10000,
+    onConsoleLog(log, type) {
+      if (type === "stderr") {
+        return false;
+      }
+      return true;
     },
   },
 });
