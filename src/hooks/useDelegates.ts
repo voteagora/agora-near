@@ -49,7 +49,17 @@ export const useDelegates = ({
 
   const flatData = useMemo(() => {
     const records = data?.pages.map((page) => page.delegates).flat();
-    return records?.flat();
+
+    // If sorting by random, there is a known API issue where the same delegate
+    // can get returned across multiple pages. This is a hacky workaround until we
+    // can implement a better random sorting solution that works for pagination.
+    // See https://voteagora.atlassian.net/browse/AXB-238
+    const uniqueDelegatesMap = new Map();
+    records?.forEach((delegate) => {
+      uniqueDelegatesMap.set(delegate.address, delegate);
+    });
+
+    return Array.from(uniqueDelegatesMap.values());
   }, [data]);
 
   return {
