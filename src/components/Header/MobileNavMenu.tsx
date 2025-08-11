@@ -1,18 +1,17 @@
-import React from "react";
-import { Drawer } from "../ui/Drawer";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
 import Tenant from "@/lib/tenant/tenant";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Drawer } from "../ui/Drawer";
 
-import { useTotalSupply } from "@/hooks/useTotalNearSupply";
-import TokenAmount from "@/components/shared/TokenAmount";
 import agoraIconWithText from "@/assets/agoraIconWithText.svg";
 import discordIcon from "@/assets/discord.svg";
 import githubIcon from "@/assets/github.svg";
-import twitterIcon from "@/assets/x.svg";
 import telegramIcon from "@/assets/telegram.svg";
+import twitterIcon from "@/assets/x.svg";
+import TokenAmount from "@/components/shared/TokenAmount";
+import { useTotalSupply } from "@/hooks/useTotalNearSupply";
 
 interface MobileNavMenuProps {
   isOpen: boolean;
@@ -22,8 +21,12 @@ interface MobileNavMenuProps {
 export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
   const pathname = usePathname() || "";
   const { ui } = Tenant.current();
-  const { totalSupply: totalSupplyFromNear, isLoading: isLoadingSupply } =
-    useTotalSupply();
+  const {
+    totalSupply: totalSupplyFromNear,
+    isLoadingTotalSupply,
+    isLoadingVotableSupply,
+    votableSupply,
+  } = useTotalSupply();
 
   // Links
   const governanceForumLink = ui.link("governance-forum");
@@ -114,17 +117,25 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
         </div>
 
         {/* Bottom Sections - Fixed to bottom */}
-        <div className="mt-auto">
+        <div className="mt-auto text-tertiary text-base font-semibold leading-normal">
           {/* Metrics Section */}
-          {totalSupplyFromNear && parseFloat(totalSupplyFromNear) > 0 && (
-            <div className="px-8 py-6 border-t border-line">
-              <div className="text-tertiary text-sm font-semibold">
-                {isLoadingSupply ? (
+          {(totalSupplyFromNear || votableSupply) && (
+            <div className="p-8 flex flex-col justify-center border-b border-t border-line items-start gap-3">
+              <div className="">
+                {isLoadingTotalSupply || !totalSupplyFromNear ? (
                   "-"
                 ) : (
                   <TokenAmount amount={totalSupplyFromNear} />
                 )}
-                Total Supply
+                total supply
+              </div>
+              <div>
+                {isLoadingVotableSupply || !votableSupply ? (
+                  "-"
+                ) : (
+                  <TokenAmount amount={votableSupply} currency="veNEAR" />
+                )}
+                votable supply
               </div>
             </div>
           )}
@@ -137,7 +148,7 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
             twitterLink ||
             telegramLink ||
             blogLink) && (
-            <div className="px-8 py-6 border-t border-line">
+            <div className="px-8 py-6 border-t border-line font-medium">
               <div className="flex flex-col space-y-4">
                 <a href="/terms-of-service" className="text-tertiary">
                   Terms of Service
@@ -152,7 +163,6 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                     >
                       {governanceForumLink.title}
                     </a>
-                    <div className="border-b border-line w-full"></div>
                   </>
                 )}
                 {bugsLink && (
@@ -165,7 +175,6 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                     >
                       {bugsLink.title}
                     </a>
-                    <div className="border-b border-line w-full"></div>
                   </>
                 )}
                 {discordLink && (
@@ -185,7 +194,6 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                         className="opacity-70"
                       />
                     </a>
-                    <div className="border-b border-line w-full"></div>
                   </>
                 )}
                 {githubLink && (
@@ -205,7 +213,6 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                         className="opacity-70"
                       />
                     </a>
-                    <div className="border-b border-line w-full"></div>
                   </>
                 )}
                 {twitterLink && (
@@ -225,7 +232,6 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                         className="opacity-70"
                       />
                     </a>
-                    <div className="border-b border-line w-full"></div>
                   </>
                 )}
                 {telegramLink && (
@@ -245,7 +251,6 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                         className="opacity-70"
                       />
                     </a>
-                    <div className="border-b border-line w-full"></div>
                   </>
                 )}
                 {blogLink && (
@@ -258,7 +263,6 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
                     >
                       Blog
                     </a>
-                    <div className="border-b border-line w-full"></div>
                   </>
                 )}
               </div>

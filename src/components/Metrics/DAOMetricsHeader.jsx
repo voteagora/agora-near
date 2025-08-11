@@ -24,8 +24,12 @@ export default function DAOMetricsHeader() {
   const [isClient, setIsClient] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  const { totalSupply: totalSupplyFromNear, isLoading: isLoadingSupply } =
-    useTotalSupply();
+  const {
+    totalSupply: totalSupplyFromNear,
+    isLoadingTotalSupply,
+    isLoadingVotableSupply,
+    votableSupply,
+  } = useTotalSupply();
 
   const governanceForumLink = ui.link("governance-forum");
   const bugsLink = ui.link("bugs");
@@ -87,7 +91,7 @@ export default function DAOMetricsHeader() {
                   <HoverCard openDelay={100} closeDelay={100}>
                     <HoverCardTrigger>
                       <span className="cursor-default">
-                        {isLoadingSupply || !totalSupplyFromNear ? (
+                        {isLoadingTotalSupply || !totalSupplyFromNear ? (
                           "-"
                         ) : (
                           <TokenAmount amount={totalSupplyFromNear} />
@@ -101,6 +105,28 @@ export default function DAOMetricsHeader() {
                       sideOffset={3}
                     >
                       <span>Total amount of NEAR in existence</span>
+                    </HoverCardContent>
+                  </HoverCard>
+                  <HoverCard openDelay={100} closeDelay={100}>
+                    <HoverCardTrigger>
+                      <span className="cursor-default">
+                        {isLoadingVotableSupply || !votableSupply ? (
+                          "-"
+                        ) : (
+                          <TokenAmount
+                            amount={votableSupply}
+                            currency="veNEAR"
+                          />
+                        )}
+                        <span className="hidden sm:inline">supply</span>
+                      </span>
+                    </HoverCardTrigger>
+                    <HoverCardContent
+                      className="w-full shadow text-primary"
+                      side="bottom"
+                      sideOffset={3}
+                    >
+                      <span>Total amount of veNEAR in existence</span>
                     </HoverCardContent>
                   </HoverCard>
                 </div>

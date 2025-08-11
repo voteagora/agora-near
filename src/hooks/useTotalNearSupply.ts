@@ -32,8 +32,9 @@ export const useTotalSupply = () => {
   }, [init]);
 
   return {
-    totalSupply,
-    votableSupply,
-    isLoading: isLoadingTotalSupply || isLoadingVotableSupply,
+    totalSupply: totalSupply,
+    votableSupply: votableSupply,
+    isLoadingTotalSupply,
+    isLoadingVotableSupply,
   };
 };
