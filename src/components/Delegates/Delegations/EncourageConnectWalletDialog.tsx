@@ -1,6 +1,7 @@
 import { UpdatedButton } from "@/components/Button";
 import { useNear } from "@/contexts/NearContext";
 import { useEffect } from "react";
+import { useWalletPopup } from "@/hooks/useWalletPopup";
 
 export const EncourageConnectWalletDialog = ({
   closeDialog,
@@ -8,12 +9,25 @@ export const EncourageConnectWalletDialog = ({
   closeDialog: () => void;
 }) => {
   const { signedAccountId, signIn } = useNear();
+  const { dismissPopup } = useWalletPopup();
 
   useEffect(() => {
     if (signedAccountId) {
       closeDialog();
     }
   }, [signedAccountId, closeDialog]);
+
+  useEffect(() => {
+    return () => {
+      dismissPopup();
+    };
+  }, [dismissPopup]);
+
+  const handleConnectWallet = () => {
+    dismissPopup();
+    signIn();
+    closeDialog();
+  };
 
   return (
     <div className="flex flex-col gap-7 justify-center ">
@@ -30,10 +44,7 @@ export const EncourageConnectWalletDialog = ({
       <UpdatedButton
         type="primary"
         className="w-full px-[20px] py-3 font-medium text-[16px] leading-[24px]"
-        onClick={() => {
-          signIn();
-          closeDialog();
-        }}
+        onClick={handleConnectWallet}
       >
         Connect wallet
       </UpdatedButton>

@@ -1,5 +1,5 @@
 import { TokenWithBalance } from "@/lib/types";
-import { formatNearAccountId, yoctoNearToUsdFormatted } from "@/lib/utils";
+import { yoctoNearToUsdFormatted } from "@/lib/utils";
 import { usePrice } from "@/hooks/usePrice";
 import { useLockProviderContext } from "../LockProvider";
 import Image from "next/image";
@@ -48,9 +48,16 @@ export const AssetSelector = ({ handleTokenSelect }: AssetSelectorProps) => {
                     {token.metadata?.symbol}
                   </p>
                   <p className="text-xs text-secondary text-[#676767]">
-                    {token.type === "lockup"
-                      ? "Lockup Contract"
-                      : formatNearAccountId(token.accountId)}
+                    {token.type === "lockup" ? (
+                      "Lockup Contract"
+                    ) : (
+                      <span
+                        className="truncate max-w-[120px]"
+                        title={token.accountId}
+                      >
+                        {token.accountId}
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>

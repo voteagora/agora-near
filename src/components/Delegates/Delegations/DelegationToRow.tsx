@@ -4,7 +4,7 @@ import TokenAmount from "@/components/shared/TokenAmount";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useBlockExplorerUrl } from "@/hooks/useBlockExplorerUrl";
 import { DelegationEvent } from "@/lib/api/delegates/types";
-import { formatNearAccountId } from "@/lib/utils";
+
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 import { format } from "date-fns";
 import Link from "next/link";
@@ -27,7 +27,12 @@ export default function DelegationToRow({
           href={`/delegates/${delegation.delegateeId}`}
           title={`Address ${delegation.delegateeId}`}
         >
-          {formatNearAccountId(delegation.delegateeId)}
+          <span
+            className="truncate max-w-[120px]"
+            title={delegation.delegateeId}
+          >
+            {delegation.delegateeId}
+          </span>
         </Link>
       </TableCell>
       <TableCell>

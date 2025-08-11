@@ -11,13 +11,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function shortAddress(address: string) {
-  return (
-    address &&
-    [address.substring(0, 4), address.substring(address.length - 4)].join("...")
-  );
-}
-
 export function bpsToString(bps: number) {
   return `${(Math.round(bps * 100) / 100).toFixed(2)}%`;
 }
@@ -283,18 +276,6 @@ export const formatNanoSecondsToTimeUnit = (nanoSeconds: string | number) => {
   }
 
   return roundedSeconds === 1 ? "1 second" : `${roundedSeconds} seconds`;
-};
-
-export const formatNearAccountId = (address?: string) => {
-  if (!address) {
-    return "";
-  }
-
-  if (address.length <= 15) {
-    return address;
-  }
-
-  return `${address.slice(0, 6)}...${address.slice(-6)}`;
 };
 
 export const convertYoctoToTGas = (yocto: string) => {
