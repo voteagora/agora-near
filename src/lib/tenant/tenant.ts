@@ -44,6 +44,10 @@ export default class Tenant {
     return "NEAR";
   }
 
+  public get isMaintenanceMode(): boolean {
+    return process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true";
+  }
+
   public static current(): Tenant {
     if (!Tenant.instance) {
       Tenant.instance = new Tenant();
