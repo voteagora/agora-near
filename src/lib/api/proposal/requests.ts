@@ -4,6 +4,10 @@ import {
   Proposal,
   ProposalVotingHistoryRecord,
   ProposalNonVotersRecord,
+  DraftProposal,
+  CreateDraftProposalRequest,
+  UpdateDraftProposalRequest,
+  GetDraftProposalsResponse,
 } from "./types";
 import { getRpcUrl } from "@/lib/utils";
 import { JsonRpcProvider } from "near-api-js/lib/providers";
@@ -102,4 +106,53 @@ export const fetchProposal = async (proposalId: string) => {
     : null;
 
   return proposal as ProposalInfo | null;
+};
+
+export const createDraftProposal = async (data: CreateDraftProposalRequest) => {
+  const response = await axios.post<DraftProposal>(
+    Endpoint.DraftProposals,
+    data
+  );
+  return response.data;
+};
+
+export const fetchDraftProposals = async (params?: {
+  author?: string;
+  stage?: string;
+  page?: number;
+  pageSize?: number;
+}) => {
+  const searchParams = new URLSearchParams();
+  if (params?.author) searchParams.set("author", params.author);
+  if (params?.stage) searchParams.set("stage", params.stage);
+  if (params?.page) searchParams.set("page", params.page.toString());
+  if (params?.pageSize)
+    searchParams.set("page_size", params.pageSize.toString());
+
+  const response = await axios.get<GetDraftProposalsResponse>(
+    `${Endpoint.DraftProposals}?${searchParams}`
+  );
+  return response.data;
+};
+
+export const fetchDraftProposal = async (id: string) => {
+  const response = await axios.get<DraftProposal>(
+    `${Endpoint.DraftProposals}/${id}`
+  );
+  return response.data;
+};
+
+export const updateDraftProposal = async (
+  id: string,
+  data: UpdateDraftProposalRequest
+) => {
+  const response = await axios.put<DraftProposal>(
+    `${Endpoint.DraftProposals}/${id}`,
+    data
+  );
+  return response.data;
+};
+
+export const deleteDraftProposal = async (id: string) => {
+  await axios.delete(`${Endpoint.DraftProposals}/${id}`);
 };
