@@ -17,6 +17,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { useQueryState } from "nuqs";
 import Big from "big.js";
 import Link from "next/link";
+import CopyableHumanAddress from "../shared/CopyableHumanAddress";
 
 import NearAvatar from "../shared/NearAvatar";
 
@@ -109,9 +110,10 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                 <NearAvatar accountId={accountId} size={28} />
                 <div className="hidden lg:inline">
                   {accountId && (
-                    <span className="truncate max-w-[120px]" title={accountId}>
-                      {accountId}
-                    </span>
+                    <CopyableHumanAddress
+                      address={accountId}
+                      shouldTruncate={true}
+                    />
                   )}
                 </div>
               </div>
@@ -146,12 +148,12 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                           <NearAvatar accountId={accountId} size={40} />
                           <div className="flex flex-col flex-1">
                             <span className="text-primary font-bold">
-                              <span
-                                className="truncate max-w-[120px]"
-                                title={accountId}
-                              >
-                                {accountId}
-                              </span>
+                              {accountId && (
+                                <CopyableHumanAddress
+                                  address={accountId}
+                                  shouldTruncate={true}
+                                />
+                              )}
                             </span>
                           </div>
                         </div>
