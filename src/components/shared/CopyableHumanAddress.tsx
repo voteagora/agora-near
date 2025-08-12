@@ -41,7 +41,7 @@ function CopyableHumanAddress({
         setIsInCopiedState(true);
       }}
     >
-      <span className={cn(shouldTruncate && "truncate max-w-[120px]")}>
+      <span className={cn(shouldTruncate && "truncate max-w-[140px]")}>
         {address}
       </span>
       <div className="flex flex-shrink">

@@ -23,7 +23,7 @@ export default function DelegateTableRow({
       }}
     >
       <TableCell className="hidden sm:flex gap-2 items-center">
-        <DelegateAddress address={delegate.address} shouldTruncate={false} />
+        <DelegateAddress address={delegate.address} shouldTruncate={true} />
         {endorsed && <EndorsedTooltip />}
       </TableCell>
       <TableCell className="flex sm:hidden gap-2 items-center">

@@ -47,7 +47,7 @@ export default function DelegateProfile({
       <div className="flex flex-col bg-wash border border-line shadow-newDefault rounded-xl">
         <div className="flex flex-col items-stretch p-7">
           <div className="flex flex-row items-center gap-2">
-            <DelegateAddress address={profile.address} shouldTruncate={false} />
+            <DelegateAddress address={profile.address} shouldTruncate={true} />
             {profile.endorsed && <EndorsedTooltip />}
           </div>
         </div>
