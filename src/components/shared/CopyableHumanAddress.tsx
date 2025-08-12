@@ -1,6 +1,6 @@
 "use client";
 
-import { cn, formatNearAccountId } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { Copy } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -41,7 +41,9 @@ function CopyableHumanAddress({
         setIsInCopiedState(true);
       }}
     >
-      {shouldTruncate ? formatNearAccountId(address) : address}
+      <span className={cn(shouldTruncate && "truncate max-w-[120px]")}>
+        {address}
+      </span>
       <div className="flex flex-shrink">
         {isInCopiedState ? (
           <CheckCircleIcon className="text-green-600 w-3 h-3" />

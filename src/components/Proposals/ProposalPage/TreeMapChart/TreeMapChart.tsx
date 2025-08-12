@@ -8,7 +8,6 @@ import { rgbStringToHex } from "@/lib/color";
 import { Plus, Minus, RotateCcw } from "lucide-react";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
-import { formatNearAccountId } from "@/lib/utils";
 
 // TreeMap constants
 const CHART_DIMENSIONS = {
@@ -115,7 +114,12 @@ const TreeMapNode = memo(
               minHeight: "100%",
             }}
           >
-            {formatNearAccountId(node.data.address || "")}
+            <span
+              className="truncate max-w-[120px]"
+              title={node.data.address || ""}
+            >
+              {node.data.address || ""}
+            </span>
           </div>
         </foreignObject>
       </g>

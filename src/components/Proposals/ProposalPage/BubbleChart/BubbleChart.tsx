@@ -6,7 +6,6 @@ import { rgbStringToHex } from "@/lib/color";
 import { Plus, Minus, RotateCcw } from "lucide-react";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
-import { formatNearAccountId } from "@/lib/utils";
 
 //Bubble contransts
 const CHART_DIMENSIONS = {
@@ -119,7 +118,9 @@ const BubbleNode = memo(
               textOverflow: "ellipsis",
             }}
           >
-            {formatNearAccountId(node.address)}
+            <span className="truncate max-w-[120px]" title={node.address}>
+              {node.address}
+            </span>
           </div>
         </foreignObject>
       </g>

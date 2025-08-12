@@ -9,6 +9,7 @@ import { DelegateCardLoadingState } from "./DelegateCardWrapper";
 import { useNear } from "@/contexts/NearContext";
 import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import Tenant from "@/lib/tenant/tenant";
+import { useWalletPopup } from "@/hooks/useWalletPopup";
 
 export default function DelegateContent({
   isPendingFilter,
@@ -38,15 +39,18 @@ export default function DelegateContent({
   const isDelegationEncouragementEnabled = ui.toggle(
     "delegation-encouragement"
   )?.enabled;
+  const { hasDismissedPopup } = useWalletPopup();
 
   useEffect(() => {
     const timer = setTimeout(() => {
       if (!signedAccountId && !showDialog && isDelegationEncouragementEnabled) {
-        openDialog({
-          type: "ENCOURAGE_CONNECT_WALLET",
-          params: {},
-        });
-        setShowDialog(true);
+        if (!hasDismissedPopup) {
+          openDialog({
+            type: "ENCOURAGE_CONNECT_WALLET",
+            params: {},
+          });
+          setShowDialog(true);
+        }
       }
     }, 900);
     return () => clearTimeout(timer);
@@ -55,6 +59,7 @@ export default function DelegateContent({
     showDialog,
     openDialog,
     isDelegationEncouragementEnabled,
+    hasDismissedPopup,
   ]);
 
   const onLoadMore = useCallback(() => {

@@ -20,7 +20,7 @@ import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { useQueryState } from "nuqs";
 import Big from "big.js";
 import Link from "next/link";
-import { formatNearAccountId } from "@/lib/utils";
+
 import NearAvatar from "../shared/NearAvatar";
 import EncourageDelegationDot from "./EncourageDelegationDot";
 
@@ -152,7 +152,12 @@ export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
                             <NearAvatar accountId={accountId} size={40} />
                             <div className="flex flex-col flex-1">
                               <span className="text-primary font-bold">
-                                {formatNearAccountId(accountId)}
+                                <span
+                                  className="truncate max-w-[120px]"
+                                  title={accountId}
+                                >
+                                  {accountId}
+                                </span>
                               </span>
                             </div>
                           </div>

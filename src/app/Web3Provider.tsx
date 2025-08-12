@@ -10,7 +10,13 @@ import Tenant from "@/lib/tenant/tenant";
 import { NearProvider } from "@/contexts/NearContext";
 import InfoBanner from "@/components/InfoBanner";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const { ui } = Tenant.current();
 const shouldHideAgoraBranding = ui.hideAgoraBranding;
