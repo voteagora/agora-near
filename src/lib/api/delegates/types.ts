@@ -97,7 +97,7 @@ export type DelegationEvent = {
   delegateeId?: string;
   delegatorId: string;
   eventDate: string;
-  eventTimestamp: number;
+  eventTimestamp: string;
   nearAmount?: string;
 };
 
