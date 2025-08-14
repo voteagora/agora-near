@@ -7,6 +7,7 @@ import { DraftProposal, DraftProposalStage } from "@/lib/api/proposal/types";
 import { formatDistanceToNow } from "date-fns";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 
 function DraftProposalCard({ draft }: { draft: DraftProposal }) {
   const router = useRouter();
@@ -74,8 +75,15 @@ export function DraftProposalsList() {
 
   const { data, isLoading, error } = useDraftProposals({
     author: signedAccountId || undefined,
-    stage: DraftProposalStage.DRAFT,
   });
+
+  const filteredDrafts = useMemo(
+    () =>
+      data?.draftProposals.filter(
+        (draft) => draft.stage !== DraftProposalStage.SUBMITTED
+      ),
+    [data]
+  );
 
   if (isLoading) {
     return (
@@ -103,7 +111,7 @@ export function DraftProposalsList() {
     );
   }
 
-  if (!data?.draftProposals.length) {
+  if (!filteredDrafts?.length) {
     return (
       <div className="p-6 text-center text-secondary">
         <p>No draft proposals found</p>
@@ -116,7 +124,7 @@ export function DraftProposalsList() {
 
   return (
     <div>
-      {data.draftProposals.map((draft) => (
+      {filteredDrafts?.map((draft) => (
         <DraftProposalCard key={draft.id} draft={draft} />
       ))}
     </div>
