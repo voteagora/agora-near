@@ -43,6 +43,7 @@ export const useApprovedProposals = ({
 
   return {
     proposals: flatData,
+    totalProposals: data?.pages[0]?.count,
     error,
     isFetching,
     fetchNextPage,
