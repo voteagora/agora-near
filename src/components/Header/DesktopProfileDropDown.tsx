@@ -110,10 +110,7 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                 <NearAvatar accountId={accountId} size={28} />
                 <div className="hidden lg:inline">
                   {accountId && (
-                    <CopyableHumanAddress
-                      address={accountId}
-                      shouldTruncate={true}
-                    />
+                    <span className="truncate max-w-[140px]">{accountId}</span>
                   )}
                 </div>
               </div>
