@@ -8,6 +8,7 @@ import {
   CreateDraftProposalRequest,
   UpdateDraftProposalRequest,
   GetDraftProposalsResponse,
+  UpdateDraftProposalStageRequest,
 } from "./types";
 import { getRpcUrl } from "@/lib/utils";
 import { JsonRpcProvider } from "near-api-js/lib/providers";
@@ -144,7 +145,10 @@ export const fetchDraftProposal = async (id: string) => {
 
 export const updateDraftProposal = async (
   id: string,
-  data: UpdateDraftProposalRequest
+  data: UpdateDraftProposalRequest & {
+    signature: string;
+    publicKey: string;
+  }
 ) => {
   const response = await axios.put<DraftProposal>(
     `${Endpoint.DraftProposals}/${id}`,
@@ -153,6 +157,28 @@ export const updateDraftProposal = async (
   return response.data;
 };
 
-export const deleteDraftProposal = async (id: string) => {
-  await axios.delete(`${Endpoint.DraftProposals}/${id}`);
+export const updateDraftProposalStage = async (
+  id: string,
+  data: UpdateDraftProposalStageRequest
+) => {
+  const response = await axios.put<DraftProposal>(
+    `${Endpoint.DraftProposals}/${id}/stage`,
+    data
+  );
+  return response.data;
+};
+
+export const deleteDraftProposal = async (data: {
+  id: string;
+  action: "delete";
+  signature: string;
+  publicKey: string;
+}) => {
+  await axios.delete(`${Endpoint.DraftProposals}/${data.id}`, {
+    data: {
+      action: data.action,
+      signature: data.signature,
+      publicKey: data.publicKey,
+    },
+  });
 };

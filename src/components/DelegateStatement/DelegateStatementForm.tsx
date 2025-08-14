@@ -57,13 +57,14 @@ export default function DelegateStatementForm({
 
     // User will only sign what they are seeing on the frontend
     const body = {
-      agreeCodeConduct: values.agreeCodeConduct,
-      discord,
-      delegateStatement,
-      email,
+      address: signedAccountId,
       twitter,
+      discord,
+      email,
       warpcast,
+      statement: delegateStatement,
       topIssues,
+      agreeCodeConduct: values.agreeCodeConduct,
     };
 
     const serializedBody = JSON.stringify(body, undefined, "\t");

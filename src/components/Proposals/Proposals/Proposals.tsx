@@ -135,11 +135,7 @@ export default function NearProposals() {
 
     createDraft(
       {
-        title: "",
-        description: "",
         author: signedAccountId,
-        proposalUrl: "",
-        votingOptions: { options: NEAR_VOTING_OPTIONS },
       },
       {
         onSuccess: (draft) => {
