@@ -59,11 +59,7 @@ export type DraftProposal = {
 };
 
 export type CreateDraftProposalRequest = {
-  title: string;
-  description: string;
   author: string;
-  proposalUrl?: string;
-  votingOptions?: { options: string[] };
 };
 
 export type UpdateDraftProposalRequest = {
@@ -73,6 +69,11 @@ export type UpdateDraftProposalRequest = {
   stage?: DraftProposalStage;
   receiptId?: string;
   votingOptions?: { options: string[] };
+};
+
+export type UpdateDraftProposalStageRequest = {
+  stage: DraftProposalStage;
+  receiptId?: string;
 };
 
 export type GetDraftProposalsResponse = {

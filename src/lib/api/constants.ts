@@ -7,7 +7,7 @@ export const baseApiUrl =
 
 export const Endpoint = Object.freeze({
   Proposals: `${baseApiUrl}/proposal`,
-  DraftProposals: `${baseApiUrl}/draft-proposal`,
+  DraftProposals: `${baseApiUrl}/proposal/draft`,
   DelegateStatement: `${baseApiUrl}/delegates/statement`,
   Delegates: `${baseApiUrl}/delegates`,
   Near: `${baseApiUrl}/near`,

@@ -2,8 +2,8 @@
 
 import {
   useDraftProposal,
-  useUpdateDraftProposal,
   useDeleteDraftProposal,
+  useUpdateDraftProposalStage,
 } from "@/hooks/useDraftProposals";
 import { useCreateProposal } from "@/hooks/useCreateProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
@@ -68,7 +68,7 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
     error,
   } = useDraftProposal(draftId);
   const { mutate: updateDraft, isPending: isUpdating } =
-    useUpdateDraftProposal();
+    useUpdateDraftProposalStage();
   const { mutate: deleteDraft, isPending: isDeleting } =
     useDeleteDraftProposal();
 
