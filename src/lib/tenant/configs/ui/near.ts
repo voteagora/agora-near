@@ -225,7 +225,7 @@ export const nearTenantUIConfig = new TenantUI({
     },
     {
       name: "email-subscriptions",
-      enabled: false,
+      enabled: true,
     },
     {
       name: "proposal-lifecycle",

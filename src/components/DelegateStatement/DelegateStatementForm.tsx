@@ -52,8 +52,15 @@ export default function DelegateStatementForm({
 
     values.topIssues = values.topIssues.filter((issue) => issue.value !== "");
 
-    const { discord, delegateStatement, email, twitter, warpcast, topIssues } =
-      values;
+    const {
+      discord,
+      delegateStatement,
+      email,
+      twitter,
+      warpcast,
+      topIssues,
+      notificationPreferences,
+    } = values;
 
     // User will only sign what they are seeing on the frontend
     const body = {
@@ -64,6 +71,7 @@ export default function DelegateStatementForm({
       twitter,
       warpcast,
       topIssues,
+      notificationPreferences,
     };
 
     const serializedBody = JSON.stringify(body, undefined, "\t");
@@ -87,6 +95,12 @@ export default function DelegateStatementForm({
       topIssues,
       agreeCodeConduct: agreeCodeConduct,
       statement: delegateStatement,
+      notification_preferences: {
+        wants_proposal_created_email:
+          notificationPreferences.wants_proposal_created_email,
+        wants_proposal_ending_soon_email:
+          notificationPreferences.wants_proposal_ending_soon_email,
+      },
     });
 
     if (!response) {
