@@ -6,6 +6,8 @@ import { useQueryState } from "nuqs";
 
 const DELEGATES_QK = `${Endpoint.Delegates}`;
 
+const sortingSeed = Math.random();
+
 export const useDelegates = ({
   pageSize,
   orderBy,
@@ -35,6 +37,7 @@ export const useDelegates = ({
         pageSize,
         pageParam,
         orderBy,
+        sortingSeed,
         filter,
         issuesParam || null
       );
