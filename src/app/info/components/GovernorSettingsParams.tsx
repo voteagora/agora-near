@@ -25,7 +25,9 @@ const GovernorSettingsParams = () => {
     },
   ]);
 
-  const votingDuration = getVotingDays({ voting_duration_ns: config?.voting_duration_ns ?? "" });
+  const votingDuration = getVotingDays({
+    voting_duration_ns: config?.voting_duration_ns ?? "",
+  });
 
   return (
     <Table>
