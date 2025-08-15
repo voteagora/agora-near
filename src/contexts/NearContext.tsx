@@ -13,7 +13,6 @@ import { SignedMessage } from "@near-wallet-selector/core/src/lib/wallet";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupHotWallet } from "@near-wallet-selector/hot-wallet";
 import { setupUnityWallet } from "@near-wallet-selector/unity-wallet";
-import { setupNearSnap } from "@near-wallet-selector/near-snap";
 import { setupWalletConnect } from "@near-wallet-selector/wallet-connect";
 import { setupIntearWallet } from "@near-wallet-selector/intear-wallet";
 import { setupModal } from "@near-wallet-selector/modal-ui";
@@ -156,7 +155,6 @@ export const NearProvider: React.FC<NearProviderProps> = ({
               icons: ["https://avatars.githubusercontent.com/u/37784886"],
             },
           }) as WalletModuleFactory,
-          setupNearSnap() as WalletModuleFactory,
           setupWalletConnect({
             projectId: process.env
               .NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
