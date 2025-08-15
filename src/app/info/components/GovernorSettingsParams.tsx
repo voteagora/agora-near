@@ -8,8 +8,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useReadHOSContract } from "@/hooks/useReadHOSContract";
+import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { getVotingDays } from "@/lib/proposalUtils";
 
 const GovernorSettingsParams = () => {
+  const [{ data: config }] = useReadHOSContract([
+    {
+      contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+      methodName: "get_config",
+      config: {
+        args: {},
+        staleTime: Infinity,
+        gcTime: 0,
+      },
+    },
+  ]);
+
+  const votingDuration = getVotingDays({ voting_duration_ns: config?.voting_duration_ns ?? "" });
+
   return (
     <Table>
       <TableHeader>
@@ -36,7 +53,7 @@ const GovernorSettingsParams = () => {
             Voting Period
           </TableCell>
           <TableCell className="text-base font-semibold text-right text-primary rounded-br-xl">
-            1d
+            {votingDuration}
           </TableCell>
         </TableRow>
       </TableBody>

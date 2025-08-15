@@ -153,8 +153,8 @@ export const isQuorumFulfilled = ({
   return totalForAgainstVotes.gte(quorum);
 };
 
-export const getVotingDays = (votingConfig: VotingConfig) => {
-  const votingDays = convertNanoSecondsToDays(votingConfig.voting_duration_ns);
+export const getVotingDays = ({ voting_duration_ns }: { voting_duration_ns: string }) => {
+  const votingDays = convertNanoSecondsToDays(voting_duration_ns);
   const votingDuration = `${votingDays} ${votingDays === 1 ? "day" : "days"}`;
   return votingDuration;
 };
