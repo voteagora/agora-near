@@ -13,7 +13,7 @@ import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { getVotingDays } from "@/lib/proposalUtils";
 
 const GovernorSettingsParams = () => {
-  const [{ data: config }] = useReadHOSContract([
+  const [{ data: config, isLoading }] = useReadHOSContract([
     {
       contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
       methodName: "get_config",
@@ -55,7 +55,7 @@ const GovernorSettingsParams = () => {
             Voting Period
           </TableCell>
           <TableCell className="text-base font-semibold text-right text-primary rounded-br-xl">
-            {votingDuration}
+            {isLoading ? "-" : votingDuration}
           </TableCell>
         </TableRow>
       </TableBody>
