@@ -11,4 +11,5 @@ export const Endpoint = Object.freeze({
   Delegates: `${baseApiUrl}/delegates`,
   Near: `${baseApiUrl}/near`,
   Staking: `${baseApiUrl}/staking`,
+  Nonce: `${baseApiUrl}/nonce`,
 });

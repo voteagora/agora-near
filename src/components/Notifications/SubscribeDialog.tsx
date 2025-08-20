@@ -56,7 +56,7 @@ const SubscribeDialog = ({
   closeDialog: () => void;
   type: "root" | "vote";
 }) => {
-  const { signedAccountId, signMessage } = useNear();
+  const { signedAccountId, signMessage, networkId } = useNear();
   const [isHovering, setIsHovering] = useState(false);
   const [email, setEmail] = useState<string | undefined>(undefined);
   const { data, refetch } = useDelegateProfile({
@@ -97,23 +97,26 @@ const SubscribeDialog = ({
       throw new Error("Signature failed");
     }
 
-    await createDelegateStatement({
-      address: signedAccountId,
-      message: serializedBody,
-      signature: signature.signature,
-      publicKey: signature.publicKey,
-      email: emailToUse,
-      twitter: data?.twitter || "",
-      discord: data?.discord || "",
-      warpcast: data?.warpcast || "",
-      topIssues: data?.topIssues || [],
-      agreeCodeConduct: true,
-      statement: data?.statement || "",
-      notification_preferences: {
-        wants_proposal_created_email: wantsNotifications,
-        wants_proposal_ending_soon_email: wantsNotifications,
+    await createDelegateStatement(
+      {
+        address: signedAccountId,
+        message: serializedBody,
+        signature: signature.signature,
+        publicKey: signature.publicKey,
+        email: emailToUse,
+        twitter: data?.twitter || "",
+        discord: data?.discord || "",
+        warpcast: data?.warpcast || "",
+        topIssues: data?.topIssues || [],
+        agreeCodeConduct: true,
+        statement: data?.statement || "",
+        notification_preferences: {
+          wants_proposal_created_email: wantsNotifications,
+          wants_proposal_ending_soon_email: wantsNotifications,
+        },
       },
-    });
+      networkId
+    );
   };
 
   return (

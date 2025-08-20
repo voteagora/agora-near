@@ -27,6 +27,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { generateNonce } from "@/lib/api/nonce/requests";
 
 // Default to max Tgas since it gets refunded if not used
 const DEFAULT_GAS = convertUnit("30 Tgas");
@@ -452,13 +453,18 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     async ({
       message,
       recipient = "agora-near-be",
-      nonce = Buffer.from(Array.from(Array(32).keys())),
     }: {
       message: string;
       recipient?: string;
-      nonce?: Buffer;
     }) => {
       if (!selector) return;
+
+      const nonceResponse = await generateNonce({
+        account_id: signedAccountId ?? "",
+      });
+
+      const nonce = Buffer.from(nonceResponse.nonce, "hex");
+
       const selectedWallet = await selector.wallet();
       return selectedWallet.signMessage({
         message,
@@ -466,7 +472,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         nonce,
       });
     },
-    [selector]
+    [selector, signedAccountId]
   );
 
   /**
