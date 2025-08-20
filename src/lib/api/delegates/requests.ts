@@ -11,10 +11,11 @@ import {
 } from "./types";
 
 export const createDelegateStatement = async (
-  input: CreateDelegateStatementInput
+  input: CreateDelegateStatementInput,
+  networkId: string
 ) => {
   const response = await axios.post<CreateDelegateStatementResponse>(
-    Endpoint.DelegateStatement,
+    `${Endpoint.DelegateStatement}?network_id=${networkId}`,
     input
   );
 
