@@ -18,6 +18,7 @@ import { setupWalletSelector } from "@near-wallet-selector/core";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupModal } from "@near-wallet-selector/modal-ui";
 import { providers } from "near-api-js";
+import { generateNonce } from "@/lib/api/nonce/requests";
 
 // Mock all the dependencies
 vi.mock("@near-wallet-selector/core");
@@ -29,6 +30,7 @@ vi.mock("@near-wallet-selector/bitte-wallet");
 vi.mock("near-api-js");
 vi.mock("@/lib/contractConstants");
 vi.mock("@/lib/utils");
+vi.mock("@/lib/api/nonce/requests");
 
 // Mock implementations
 const mockWalletSelector = {
@@ -78,6 +80,8 @@ const mockGetTransactionLastResult =
     typeof providers.getTransactionLastResult
   >;
 
+const mockGenerateNonce = generateNonce as MockedFunction<typeof generateNonce>;
+
 // Test wrapper component
 const TestWrapper = ({
   children,
@@ -97,6 +101,7 @@ describe("NearContext", () => {
     mockSetupMeteorWallet.mockReturnValue({} as any);
     mockGetRpcUrl.mockReturnValue("https://rpc.testnet.near.org");
     mockGetTransactionLastResult.mockReturnValue("mock-result");
+    mockGenerateNonce.mockResolvedValue({ nonce: "mock-nonce-hex" });
 
     mockWalletSelector.isSignedIn.mockReturnValue(false);
     mockWalletSelector.store.getState.mockReturnValue({ accounts: [] });
@@ -624,6 +629,12 @@ describe("NearContext", () => {
       const mockSignedMessage = { signature: "test-signature" };
       mockWallet.signMessage.mockResolvedValue(mockSignedMessage);
 
+      // Set up a signed account for the nonce generation
+      mockWalletSelector.isSignedIn.mockReturnValue(true);
+      mockWalletSelector.store.getState.mockReturnValue({
+        accounts: [{ accountId: "test-account.testnet", active: true }],
+      });
+
       const { result } = renderHook(() => useNear(), { wrapper: TestWrapper });
 
       await waitFor(() => {
@@ -634,18 +645,26 @@ describe("NearContext", () => {
         return result.current.signMessage({ message: "test-message" });
       });
 
+      expect(mockGenerateNonce).toHaveBeenCalledWith({
+        account_id: "test-account.testnet",
+      });
       expect(mockWallet.signMessage).toHaveBeenCalledWith({
         message: "test-message",
         recipient: "agora-near-be",
-        nonce: expect.any(Buffer),
+        nonce: Buffer.from("mock-nonce-hex", "hex"),
       });
       expect(signedMessage).toBe(mockSignedMessage);
     });
 
-    it("should sign message with custom parameters", async () => {
+    it("should sign message with custom recipient", async () => {
       const mockSignedMessage = { signature: "test-signature" };
       mockWallet.signMessage.mockResolvedValue(mockSignedMessage);
-      const customNonce = Buffer.from("custom-nonce");
+
+      // Set up a signed account for the nonce generation
+      mockWalletSelector.isSignedIn.mockReturnValue(true);
+      mockWalletSelector.store.getState.mockReturnValue({
+        accounts: [{ accountId: "test-account.testnet", active: true }],
+      });
 
       const { result } = renderHook(() => useNear(), { wrapper: TestWrapper });
 
@@ -653,19 +672,40 @@ describe("NearContext", () => {
         expect(result.current.isInitialized).toBe(true);
       });
 
-      await act(async () => {
-        await result.current.signMessage({
+      const signedMessage = await act(async () => {
+        return result.current.signMessage({
           message: "test-message",
           recipient: "custom-recipient",
-          nonce: customNonce,
         });
       });
 
+      expect(mockGenerateNonce).toHaveBeenCalledWith({
+        account_id: "test-account.testnet",
+      });
       expect(mockWallet.signMessage).toHaveBeenCalledWith({
         message: "test-message",
         recipient: "custom-recipient",
-        nonce: customNonce,
+        nonce: Buffer.from("mock-nonce-hex", "hex"),
       });
+      expect(signedMessage).toBe(mockSignedMessage);
+    });
+
+    it("should return early when selector is not initialized", async () => {
+      mockSetupWalletSelector.mockResolvedValue(undefined as any);
+
+      const { result } = renderHook(() => useNear(), { wrapper: TestWrapper });
+
+      await waitFor(() => {
+        expect(result.current.isInitialized).toBe(true);
+      });
+
+      const signedMessage = await act(async () => {
+        return result.current.signMessage({ message: "test-message" });
+      });
+
+      expect(mockGenerateNonce).not.toHaveBeenCalled();
+      expect(mockWallet.signMessage).not.toHaveBeenCalled();
+      expect(signedMessage).toBeUndefined();
     });
   });
 
