@@ -151,7 +151,7 @@ export function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
             <div className="px-8 py-6 border-t border-line font-medium">
               <div className="flex flex-col space-y-4">
                 <a href="/terms-of-service" className="text-tertiary">
-                  Terms of Service
+                  Terms of Use
                 </a>
                 {governanceForumLink && (
                   <>
