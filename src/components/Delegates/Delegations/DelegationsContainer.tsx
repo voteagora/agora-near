@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { useDelegatedFrom } from "@/hooks/useDelegatedFrom";
 import { useDelegatedTo } from "@/hooks/useDelegatedTo";
+import { DelegationsContainerSkeleton } from "./DelegationsContainerWrapper";
 
 function DelegationsContainer({ address }: { address: string }) {
   const {
@@ -38,6 +39,10 @@ function DelegationsContainer({ address }: { address: string }) {
   const loadMore = async () => {
     fetchNextPage();
   };
+
+  if (isLoading) {
+    return <DelegationsContainerSkeleton />;
+  }
 
   if (delegatedTo?.length === 0 && delegatedFrom?.length === 0) {
     return (

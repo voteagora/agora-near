@@ -6,6 +6,7 @@ import ProposalDescription from "./ProposalDescription";
 import ProposalVoteResult from "./ProposalVoteResult";
 import { PendingProposal } from "./PendingProposal";
 import { ProposalStatus } from "@/lib/contracts/types/voting";
+import AgoraLoader from "@/components/shared/AgoraLoader/AgoraLoader";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -15,14 +16,7 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
   const { config, isLoading: isConfigLoading } = useProposalConfig();
 
   if (isLoading || isConfigLoading) {
-    return (
-      <div
-        className="flex flex-row gl_loader justify-center py-6 text-sm text-secondary"
-        key="loader"
-      >
-        Loading...
-      </div>
-    );
+    return <AgoraLoader />;
   }
 
   if (!proposal || !config) {
