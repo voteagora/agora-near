@@ -142,7 +142,7 @@ export default function DAOMetricsHeader() {
                 }`}
               >
                 <a href="/terms-of-service" className="text-center">
-                  Terms of Service
+                  Terms of Use
                 </a>
 
                 {governanceForumLink && (
