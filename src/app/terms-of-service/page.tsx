@@ -862,11 +862,11 @@ export default function TermsOfServicePage() {
               Each User shall defend, indemnify, compensate, reimburse and hold
               harmless the Interface maintainers from any claim, demand, action,
               damage, loss, cost or expense, including without limitation
-              reasonable attorneys’ fees, arising out or relating to (a) User&#39;s
-              use of, or conduct in connection with, the Interface; (b) User&#39;s
-              violation of these Terms or any other applicable policy or
-              contract of Interface maintainers; or (c) User&#39;s violation of any
-              rights of any other person or entity.
+              reasonable attorneys’ fees, arising out or relating to (a)
+              User&#39;s use of, or conduct in connection with, the Interface;
+              (b) User&#39;s violation of these Terms or any other applicable
+              policy or contract of Interface maintainers; or (c) User&#39;s
+              violation of any rights of any other person or entity.
             </p>
           </div>
         </div>
