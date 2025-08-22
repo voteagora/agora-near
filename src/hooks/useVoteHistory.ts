@@ -21,7 +21,7 @@ export const useVoteHistory = ({
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: [VOTE_HISTORY_QK],
+    queryKey: [VOTE_HISTORY_QK, address, pageSize],
     queryFn: ({ pageParam = 1 }) => {
       return fetchVoteHistory(pageSize, pageParam, address);
     },
