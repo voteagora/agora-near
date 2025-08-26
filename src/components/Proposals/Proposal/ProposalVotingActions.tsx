@@ -10,10 +10,11 @@ import { CHART_DATA_QK } from "@/hooks/useProposalChartData";
 import { VOTES_QK } from "@/hooks/useProposalVotes";
 
 import { useProposalVotingPower } from "@/hooks/useProposalVotingPower";
+import { useUserVote } from "@/hooks/useUserVote";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 
 export default function ProposalVotingActions({
   proposal,
@@ -26,6 +27,19 @@ export default function ProposalVotingActions({
   const openDialog = useOpenDialog();
   const { signIn } = useNear();
   const [selectedVote, setSelectedVote] = useState<number>();
+
+  const { voteIndex: userVoteIndex } = useUserVote(proposal.id);
+
+  useEffect(() => {
+    if (
+      userVoteIndex !== undefined &&
+      userVoteIndex !== null &&
+      selectedVote === undefined
+    ) {
+      setSelectedVote(userVoteIndex);
+    }
+  }, [userVoteIndex, selectedVote]);
+
   const { votingPower, isLoading: isLoadingVotingPower } =
     useProposalVotingPower({
       proposal,
@@ -82,15 +96,9 @@ export default function ProposalVotingActions({
     return null;
   }
 
-  const handleOpenMultiOptionVoteDialog = () => {
-    openDialog({
-      type: "NEAR_VOTE_OPTIONS",
-      params: {
-        proposal,
-        config,
-      },
-    });
-  };
+  const hasVoted = userVoteIndex !== null && userVoteIndex !== undefined;
+  const isUpdatingVote =
+    hasVoted && selectedVote !== undefined && selectedVote !== userVoteIndex;
 
   return (
     <div className="flex flex-col gap-3 py-3 px-3 border-t border-line">
@@ -111,10 +119,11 @@ export default function ProposalVotingActions({
           return (
             <button
               key={index}
-              className={`${selectedStyle} rounded-md border border-line text-sm font-medium cursor-pointer py-2 px-3 transition-all hover:bg-wash active:shadow-none disabled:bg-line disabled:text-secondary h-8 capitalize flex items-center justify-center flex-1`}
+              className={`${selectedStyle} rounded-md border border-line text-sm font-medium cursor-pointer py-2 transition-all hover:bg-wash active:shadow-none disabled:bg-line disabled:text-secondary h-8 capitalize flex items-center justify-center flex-1`}
               onClick={() => setSelectedVote(index)}
             >
-              {option.toLowerCase()}
+              {option.toLowerCase()}{" "}
+              {index === userVoteIndex ? "(your vote)" : ""}
             </button>
           );
         })}
@@ -122,11 +131,11 @@ export default function ProposalVotingActions({
       <Button
         onClick={handleOpenTwoOptionVoteDialog}
         className="w-full"
-        disabled={selectedVote === undefined}
+        disabled={hasVoted ? !isUpdatingVote : selectedVote === undefined}
       >
         {selectedVote !== undefined ? (
           <>
-            Vote{" "}
+            {isUpdatingVote ? "Update vote to" : "Vote"}{" "}
             {capitalizeFirstLetter(
               proposal.voting_options[selectedVote].toLowerCase()
             )}{" "}
