@@ -20,7 +20,7 @@ export function useUserVote(proposalId: number) {
   ]);
 
   return {
-    voteIndex: result.data as number | null | undefined,
+    voteIndex: result.data,
     isLoading: result.isLoading,
     error: result.error,
   };
