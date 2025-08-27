@@ -28,7 +28,8 @@ export default function ProposalVotingActions({
   const { signIn } = useNear();
   const [selectedVote, setSelectedVote] = useState<number>();
 
-  const { voteIndex: userVoteIndex, isLoading: isLoadingUserVote } = useUserVote(proposal.id);
+  const { voteIndex: userVoteIndex, isLoading: isLoadingUserVote } =
+    useUserVote(proposal.id);
 
   useEffect(() => {
     if (
