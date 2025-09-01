@@ -319,11 +319,7 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
 
       {step === 1 ? (
         <FormProvider {...methods}>
-          <DraftEditForm
-            ref={draftFormRef}
-            draft={draft}
-            config={config}
-          />
+          <DraftEditForm ref={draftFormRef} draft={draft} config={config} />
         </FormProvider>
       ) : (
         <HStack

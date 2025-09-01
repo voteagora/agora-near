@@ -205,30 +205,33 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
     const handleSave = async () => {
       if (!isDirty) return;
 
-      handleSubmit((formValues) => {
-        updateDraft(
-          {
-            id: draft.id,
-            data: {
-              title: formValues.title.trim(),
-              description: formValues.description.trim(),
-              proposalUrl: formValues.link?.trim() || undefined,
-              votingOptions: { options: NEAR_VOTING_OPTIONS },
+      handleSubmit(
+        (formValues) => {
+          updateDraft(
+            {
+              id: draft.id,
+              data: {
+                title: formValues.title.trim(),
+                description: formValues.description.trim(),
+                proposalUrl: formValues.link?.trim() || undefined,
+                votingOptions: { options: NEAR_VOTING_OPTIONS },
+              },
             },
-          },
-          {
-            onSuccess: () => {
-              toast.success("Draft saved");
-            },
-            onError: (error) => {
-              toast.error("Failed to save draft");
-              console.error(error);
-            },
-          }
-        );
-      }, (errors) => {
-        toast.error("Please fix all validation errors before saving");
-      })();
+            {
+              onSuccess: () => {
+                toast.success("Draft saved");
+              },
+              onError: (error) => {
+                toast.error("Failed to save draft");
+                console.error(error);
+              },
+            }
+          );
+        },
+        (errors) => {
+          toast.error("Please fix all validation errors before saving");
+        }
+      )();
     };
 
     useImperativeHandle(ref, () => ({
