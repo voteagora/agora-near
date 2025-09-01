@@ -29,6 +29,7 @@ const displayModeSelectorSelectedStyles = "bg-wash text-primary rounded-full";
 interface DraftEditFormProps {
   draft: DraftProposal;
   config: VotingConfig;
+  onSaveSuccess?: () => void;
 }
 
 export interface DraftEditFormRef {
@@ -190,7 +191,7 @@ function DraftDetailsForm() {
 }
 
 const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
-  ({ draft, config }, ref) => {
+  ({ draft, config, onSaveSuccess }, ref) => {
     const { mutate: updateDraft, isPending: isUpdating } =
       useUpdateDraftProposal();
     const totalDeposit = Big(config.base_proposal_fee)
@@ -220,6 +221,7 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
             {
               onSuccess: () => {
                 toast.success("Draft saved");
+                onSaveSuccess?.();
               },
               onError: (error) => {
                 toast.error("Failed to save draft");

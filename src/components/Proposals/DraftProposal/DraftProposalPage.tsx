@@ -224,7 +224,7 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
           deleteDraft(draftId, {
             onSuccess: () => {
               toast.success("Draft deleted");
-              router.replace("/proposals");
+              router.push("/");
             },
             onError: (error: any) => {
               toast.error("Failed to delete draft");
@@ -319,7 +319,19 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
 
       {step === 1 ? (
         <FormProvider {...methods}>
-          <DraftEditForm ref={draftFormRef} draft={draft} config={config} />
+          <DraftEditForm
+            ref={draftFormRef}
+            draft={draft}
+            config={config}
+            onSaveSuccess={() => {
+              reset({
+                title: draft.title || "",
+                description: draft.description || "",
+                link: draft.proposalUrl || "",
+                options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
+              });
+            }}
+          />
         </FormProvider>
       ) : (
         <HStack
