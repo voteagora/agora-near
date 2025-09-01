@@ -86,23 +86,10 @@ export default function DelegateStatementForm({
 
     const response = await createDelegateStatement(
       {
-        address: signedAccountId,
+        data: body,
         message: serializedBody,
         signature: signature.signature,
         publicKey: signature.publicKey,
-        twitter,
-        discord,
-        email,
-        warpcast,
-        topIssues,
-        agreeCodeConduct: agreeCodeConduct,
-        statement: delegateStatement,
-        notification_preferences: {
-          wants_proposal_created_email:
-            notificationPreferences.wants_proposal_created_email,
-          wants_proposal_ending_soon_email:
-            notificationPreferences.wants_proposal_ending_soon_email,
-        },
       },
       networkId
     );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useImperativeHandle, forwardRef, useEffect } from "react";
+import { useState, useImperativeHandle, forwardRef } from "react";
 import { VStack, HStack } from "@/components/Layout/Stack";
 import { Tab } from "@headlessui/react";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
@@ -11,34 +11,11 @@ import { useUpdateDraftProposal } from "@/hooks/useDraftProposals";
 import { toast } from "react-hot-toast";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
 import Link from "next/link";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
-import { z } from "zod";
+import { useFormContext } from "react-hook-form";
 import TokenAmount from "@/components/shared/TokenAmount";
 import Big from "big.js";
 import { VotingConfig } from "@/lib/contracts/types/voting";
-
-const formSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  link: z
-    .string()
-    .min(1, "Link is required")
-    .url("Must be a valid URL")
-    .refine((url) => url.includes("https://gov.near.org/"), {
-      message:
-        "Proposal links must be from https://gov.near.org/. Create a forum post first to gather community support.",
-    }),
-  options: z
-    .array(
-      z.object({
-        title: z.string().min(1, "Option title is required"),
-      })
-    )
-    .min(2, "At least two options are required"),
-});
-
-export type FormValues = z.infer<typeof formSchema>;
+import { FormValues } from "./DraftProposalPage";
 
 const errorTextStyle = "text-sm text-negative mt-1";
 
@@ -52,11 +29,6 @@ const displayModeSelectorSelectedStyles = "bg-wash text-primary rounded-full";
 interface DraftEditFormProps {
   draft: DraftProposal;
   config: VotingConfig;
-  onFormStateChange?: (state: {
-    isDirty: boolean;
-    isValid: boolean;
-    isSaving: boolean;
-  }) => void;
 }
 
 export interface DraftEditFormRef {
@@ -218,69 +190,45 @@ function DraftDetailsForm() {
 }
 
 const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
-  ({ draft, config, onFormStateChange }, ref) => {
+  ({ draft, config }, ref) => {
     const { mutate: updateDraft, isPending: isUpdating } =
       useUpdateDraftProposal();
     const totalDeposit = Big(config.base_proposal_fee)
       .plus(Big(config.vote_storage_fee))
       .toFixed();
 
-    const methods = useForm<FormValues>({
-      resolver: zodResolver(formSchema),
-      defaultValues: {
-        title: draft?.title || "",
-        description: draft?.description || "",
-        link: draft?.proposalUrl || "",
-        options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
-      },
-      reValidateMode: "onSubmit",
-      mode: "onSubmit",
-    });
-
     const {
-      trigger,
-      getValues,
+      handleSubmit,
       formState: { isValid, isDirty },
-    } = methods;
-
-    useEffect(() => {
-      onFormStateChange?.({
-        isDirty,
-        isValid,
-        isSaving: isUpdating,
-      });
-    }, [isDirty, isValid, isUpdating, onFormStateChange]);
+    } = useFormContext<FormValues>();
 
     const handleSave = async () => {
       if (!isDirty) return;
 
-      const linkValidation = await trigger("link");
-      if (!linkValidation) {
-        toast.error("Please provide a valid link before saving");
-        return;
-      }
-
-      const formValues = getValues();
-      updateDraft(
-        {
-          id: draft.id,
-          data: {
-            title: formValues.title.trim(),
-            description: formValues.description.trim(),
-            proposalUrl: formValues.link?.trim() || undefined,
-            votingOptions: { options: NEAR_VOTING_OPTIONS },
+      handleSubmit((formValues) => {
+        updateDraft(
+          {
+            id: draft.id,
+            data: {
+              title: formValues.title.trim(),
+              description: formValues.description.trim(),
+              proposalUrl: formValues.link?.trim() || undefined,
+              votingOptions: { options: NEAR_VOTING_OPTIONS },
+            },
           },
-        },
-        {
-          onSuccess: () => {
-            toast.success("Draft saved");
-          },
-          onError: (error) => {
-            toast.error("Failed to save draft");
-            console.error(error);
-          },
-        }
-      );
+          {
+            onSuccess: () => {
+              toast.success("Draft saved");
+            },
+            onError: (error) => {
+              toast.error("Failed to save draft");
+              console.error(error);
+            },
+          }
+        );
+      }, (errors) => {
+        toast.error("Please fix all validation errors before saving");
+      })();
     };
 
     useImperativeHandle(ref, () => ({
@@ -297,13 +245,11 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
         className="w-full flex flex-col-reverse items-center lg:flex-row lg:items-start"
       >
         <VStack className="w-full">
-          <FormProvider {...methods}>
-            <VStack className="bg-neutral rounded-xl border border-line shadow-newDefault">
-              <div className="p-8 border-b border-line">
-                <DraftDetailsForm />
-              </div>
-            </VStack>
-          </FormProvider>
+          <VStack className="bg-neutral rounded-xl border border-line shadow-newDefault">
+            <div className="p-8 border-b border-line">
+              <DraftDetailsForm />
+            </div>
+          </VStack>
         </VStack>
 
         <div className="shrink-0 w-full lg:w-[24rem]">

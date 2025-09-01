@@ -13,13 +13,38 @@ import { Button } from "@/components/ui/button";
 import Markdown from "@/components/shared/Markdown/Markdown";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { DraftProposalStage } from "@/lib/api/proposal/types";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { ChevronLeftIcon, TrashIcon } from "lucide-react";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
 import DraftEditForm, { DraftEditFormRef } from "./DraftEditForm";
 import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  link: z
+    .string()
+    .min(1, "Link is required")
+    .url("Must be a valid URL")
+    .refine((url) => url.includes("https://gov.near.org/"), {
+      message:
+        "Proposal links must be from https://gov.near.org/. Create a forum post first to gather community support.",
+    }),
+  options: z
+    .array(
+      z.object({
+        title: z.string().min(1, "Option title is required"),
+      })
+    )
+    .min(2, "At least two options are required"),
+});
+
+export type FormValues = z.infer<typeof formSchema>;
 
 type DraftProposalPageProps = {
   draftId: string;
@@ -73,11 +98,23 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
     useDeleteDraftProposal();
 
   const [step, setStep] = useState<1 | 2>(1);
-  const [formState, setFormState] = useState({
-    isDirty: false,
-    isValid: false,
-    isSaving: false,
+
+  const methods = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      link: "",
+      options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
+    },
+    reValidateMode: "onSubmit",
+    mode: "onSubmit",
   });
+
+  const {
+    formState: { isValid, isDirty },
+    reset,
+  } = methods;
 
   const { createProposalAsync, isCreatingProposal, createProposalError } =
     useCreateProposal({
@@ -86,6 +123,17 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
     });
 
   const isLoading = draftLoading || configLoading;
+
+  useEffect(() => {
+    if (draft && !methods.formState.isDirty) {
+      reset({
+        title: draft.title || "",
+        description: draft.description || "",
+        link: draft.proposalUrl || "",
+        options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
+      });
+    }
+  }, [draft, reset, methods.formState.isDirty]);
 
   if (isLoading) {
     return (
@@ -239,14 +287,14 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
                 onClick={() => draftFormRef.current?.handleSave()}
                 variant="outline"
                 className="rounded-full"
-                disabled={!formState.isDirty || formState.isSaving}
+                disabled={!isDirty || isUpdating}
               >
-                {formState.isSaving ? "Saving..." : "Save Draft"}
+                {isUpdating ? "Saving..." : "Save Draft"}
               </Button>
               <Button
                 onClick={handleSubmit}
                 className="rounded-full"
-                disabled={!formState.isValid || isUpdating}
+                disabled={!isValid || isUpdating}
               >
                 {buttonText}
               </Button>
@@ -270,12 +318,13 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
       </div>
 
       {step === 1 ? (
-        <DraftEditForm
-          ref={draftFormRef}
-          draft={draft}
-          config={config}
-          onFormStateChange={setFormState}
-        />
+        <FormProvider {...methods}>
+          <DraftEditForm
+            ref={draftFormRef}
+            draft={draft}
+            config={config}
+          />
+        </FormProvider>
       ) : (
         <HStack
           justifyContent="justify-between"

@@ -145,13 +145,16 @@ export const fetchDraftProposal = async (id: string) => {
 
 export const updateDraftProposal = async (
   id: string,
-  data: UpdateDraftProposalRequest & {
+  data: {
+    data: UpdateDraftProposalRequest;
     signature: string;
     publicKey: string;
-  }
+    message: string;
+  },
+  networkId: string
 ) => {
   const response = await axios.put<DraftProposal>(
-    `${Endpoint.DraftProposals}/${id}`,
+    `${Endpoint.DraftProposals}/${id}?network_id=${networkId}`,
     data
   );
   return response.data;
@@ -159,10 +162,11 @@ export const updateDraftProposal = async (
 
 export const updateDraftProposalStage = async (
   id: string,
-  data: UpdateDraftProposalStageRequest
+  data: UpdateDraftProposalStageRequest,
+  networkId: string
 ) => {
   const response = await axios.put<DraftProposal>(
-    `${Endpoint.DraftProposals}/${id}/stage`,
+    `${Endpoint.DraftProposals}/${id}/stage?network_id=${networkId}`,
     data
   );
   return response.data;
@@ -173,12 +177,18 @@ export const deleteDraftProposal = async (data: {
   action: "delete";
   signature: string;
   publicKey: string;
+  message: string;
+  networkId: string;
 }) => {
-  await axios.delete(`${Endpoint.DraftProposals}/${data.id}`, {
-    data: {
-      action: data.action,
-      signature: data.signature,
-      publicKey: data.publicKey,
-    },
-  });
+  await axios.delete(
+    `${Endpoint.DraftProposals}/${data.id}?network_id=${data.networkId}`,
+    {
+      data: {
+        action: data.action,
+        signature: data.signature,
+        publicKey: data.publicKey,
+        message: data.message,
+      },
+    }
+  );
 };

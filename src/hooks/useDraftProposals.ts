@@ -49,7 +49,7 @@ export function useCreateDraftProposal() {
 
 export function useUpdateDraftProposal() {
   const queryClient = useQueryClient();
-  const { signMessage, signedAccountId } = useNear();
+  const { signMessage, signedAccountId, networkId } = useNear();
 
   return useMutation({
     mutationFn: async ({
@@ -64,8 +64,8 @@ export function useUpdateDraftProposal() {
       }
 
       const messageData = {
-        id,
         ...data,
+        id,
       };
 
       const serializedMessage = JSON.stringify(messageData, undefined, "\t");
@@ -75,11 +75,16 @@ export function useUpdateDraftProposal() {
         throw new Error("Signature failed");
       }
 
-      return updateDraftProposal(id, {
-        ...data,
-        signature: signature.signature,
-        publicKey: signature.publicKey,
-      });
+      return updateDraftProposal(
+        id,
+        {
+          data,
+          signature: signature.signature,
+          publicKey: signature.publicKey,
+          message: serializedMessage,
+        },
+        networkId
+      );
     },
     onSuccess: (updatedDraft) => {
       queryClient.invalidateQueries({ queryKey: [DRAFT_PROPOSALS_QK] });
@@ -93,7 +98,7 @@ export function useUpdateDraftProposal() {
 
 export function useUpdateDraftProposalStage() {
   const queryClient = useQueryClient();
-  const { signedAccountId } = useNear();
+  const { signedAccountId, networkId } = useNear();
 
   return useMutation({
     mutationFn: async ({
@@ -107,10 +112,14 @@ export function useUpdateDraftProposalStage() {
         throw new Error("User not signed in");
       }
 
-      return updateDraftProposalStage(id, {
-        stage: data.stage,
-        receiptId: data.receiptId,
-      });
+      return updateDraftProposalStage(
+        id,
+        {
+          stage: data.stage,
+          receiptId: data.receiptId,
+        },
+        networkId
+      );
     },
     onSuccess: (updatedDraft) => {
       queryClient.invalidateQueries({ queryKey: [DRAFT_PROPOSALS_QK] });
@@ -124,7 +133,7 @@ export function useUpdateDraftProposalStage() {
 
 export function useDeleteDraftProposal() {
   const queryClient = useQueryClient();
-  const { signMessage, signedAccountId } = useNear();
+  const { signMessage, signedAccountId, networkId } = useNear();
 
   return useMutation({
     mutationFn: async (id: string) => {
@@ -133,8 +142,8 @@ export function useDeleteDraftProposal() {
       }
 
       const messageData = {
-        id,
         action: "delete" as const,
+        id,
       };
 
       const serializedMessage = JSON.stringify(messageData, undefined, "\t");
@@ -149,6 +158,8 @@ export function useDeleteDraftProposal() {
         action: "delete",
         signature: signature.signature,
         publicKey: signature.publicKey,
+        message: serializedMessage,
+        networkId,
       });
     },
     onSuccess: () => {
