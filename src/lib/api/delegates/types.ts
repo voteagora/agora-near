@@ -43,21 +43,23 @@ export type DelegateStatement = {
 };
 
 export type CreateDelegateStatementInput = {
-  address: string;
+  data: {
+    address: string;
+    twitter: string;
+    discord: string;
+    email: string;
+    warpcast: string;
+    topIssues: {
+      type: string;
+      value: string;
+    }[];
+    agreeCodeConduct: boolean;
+    statement: string;
+    notification_preferences?: NotificationPreferencesInput;
+  };
   message: string;
   signature: string;
   publicKey: string;
-  twitter: string;
-  discord: string;
-  email: string;
-  warpcast: string;
-  topIssues: {
-    type: string;
-    value: string;
-  }[];
-  agreeCodeConduct: boolean;
-  statement: string;
-  notification_preferences?: NotificationPreferencesInput;
 };
 
 export type CreateDelegateStatementResponse = {

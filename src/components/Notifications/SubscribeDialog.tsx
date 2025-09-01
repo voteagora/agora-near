@@ -83,7 +83,14 @@ const SubscribeDialog = ({
     }
 
     const body = {
+      address: signedAccountId,
       email: emailToUse,
+      twitter: data?.twitter || "",
+      discord: data?.discord || "",
+      warpcast: data?.warpcast || "",
+      topIssues: data?.topIssues || [],
+      agreeCodeConduct: true,
+      statement: data?.statement || "",
       notification_preferences: {
         wants_proposal_created_email: wantsNotifications,
         wants_proposal_ending_soon_email: wantsNotifications,
@@ -99,21 +106,10 @@ const SubscribeDialog = ({
 
     await createDelegateStatement(
       {
-        address: signedAccountId,
+        data: body,
         message: serializedBody,
         signature: signature.signature,
         publicKey: signature.publicKey,
-        email: emailToUse,
-        twitter: data?.twitter || "",
-        discord: data?.discord || "",
-        warpcast: data?.warpcast || "",
-        topIssues: data?.topIssues || [],
-        agreeCodeConduct: true,
-        statement: data?.statement || "",
-        notification_preferences: {
-          wants_proposal_created_email: wantsNotifications,
-          wants_proposal_ending_soon_email: wantsNotifications,
-        },
       },
       networkId
     );

@@ -31,6 +31,7 @@ export const useCreateProposal = ({
 
   const {
     mutate: mutateCreateProposal,
+    mutateAsync: mutateCreateProposalAsync,
     isPending: isCreatingProposal,
     error: createProposalError,
   } = useWriteHOSContract({
@@ -63,8 +64,26 @@ export const useCreateProposal = ({
     [mutateCreateProposal, totalDeposit]
   );
 
+  const createProposalAsync = useCallback(
+    (metadata: ProposalMetadata) => {
+      return mutateCreateProposalAsync({
+        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        methodCalls: [
+          {
+            methodName: "create_proposal",
+            args: { metadata },
+            gas: "100 Tgas",
+            deposit: totalDeposit,
+          },
+        ],
+      });
+    },
+    [mutateCreateProposalAsync, totalDeposit]
+  );
+
   return {
     createProposal,
+    createProposalAsync,
     isCreatingProposal,
     createProposalError,
   };

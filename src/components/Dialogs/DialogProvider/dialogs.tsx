@@ -12,6 +12,7 @@ import { VotingPowerProjectionsDialog } from "../VotingPowerProjectionsDialog";
 import { UnlockDialog } from "../UnlockDialog";
 import { EncourageConnectWalletDialog } from "@/components/Delegates/Delegations/EncourageConnectWalletDialog";
 import SubscribeDialog from "@/components/Notifications/SubscribeDialog";
+import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
 
 export type DialogType =
   | DelegateDialogType
@@ -25,7 +26,8 @@ export type DialogType =
   | VotingPowerProjectionsDialogType
   | UnlockDialogType
   | EncourageConnectWalletDialogType
-  | SubscribeDialogType;
+  | SubscribeDialogType
+  | ConfirmDialogType;
 
 export type DelegateDialogType = {
   type: "NEAR_DELEGATE";
@@ -110,6 +112,18 @@ export type SubscribeDialogType = {
   params: { type: "root" | "vote" };
 };
 
+export type ConfirmDialogType = {
+  type: "CONFIRM";
+  params: {
+    title: string;
+    message: string;
+    confirmText?: string;
+    cancelText?: string;
+    variant?: "danger" | "default";
+    onConfirm: () => void;
+  };
+};
+
 export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_DELEGATE: ({ delegateAddress }, closeDialog) => {
     return (
@@ -175,4 +189,7 @@ export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_SUBSCRIBE: ({ type }, closeDialog) => {
     return <SubscribeDialog closeDialog={closeDialog} type={type} />;
   },
+  CONFIRM: (params, closeDialog) => (
+    <ConfirmDialog {...params} closeDialog={closeDialog} />
+  ),
 };
