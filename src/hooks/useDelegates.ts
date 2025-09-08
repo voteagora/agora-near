@@ -4,7 +4,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useQueryState } from "nuqs";
 
-const DELEGATES_QK = `${Endpoint.Delegates}`;
+export const DELEGATES_QK = `${Endpoint.Delegates}`;
 
 const sortingSeed = Math.random();
 
@@ -31,7 +31,7 @@ export const useDelegates = ({
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: [`${DELEGATES_QK}-${orderBy}-${filter}-${issuesParam}`],
+    queryKey: [DELEGATES_QK, orderBy, filter, issuesParam],
     queryFn: ({ pageParam = 1 }) => {
       return fetchDelegates(
         pageSize,

@@ -6,6 +6,7 @@ import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
+import Big from "big.js";
 
 export function DelegateDialog({
   delegateAddress,
@@ -17,11 +18,17 @@ export function DelegateDialog({
   const { signedAccountId } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
 
+  const delegatableVotingPower = Big(
+    accountInfo?.totalBalance?.near || "0"
+  ).plus(accountInfo?.totalBalance?.extraBalance || "0");
+
   const { delegateAll, isDelegating, error } = useDelegateAll({
     onSuccess: () => {
       toast.success("Delegation completed!");
       closeDialog();
     },
+    delegateVotingPower: delegatableVotingPower,
+    currentDelegateeAddress: accountInfo?.delegation?.delegatee,
   });
 
   const handleDelegate = useCallback(() => {
