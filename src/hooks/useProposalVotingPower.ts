@@ -46,8 +46,8 @@ export const useProposalVotingPower = ({
       }
 
       setVotingPower(totalVotingPower);
-    } catch (e) {
-      console.error(e);
+    } catch {
+      // Fetching proof will fail expectedly if the account is not registered to vote
     } finally {
       setIsLoading(false);
     }

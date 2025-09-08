@@ -14,7 +14,109 @@ import { useUserVote } from "@/hooks/useUserVote";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, memo, useMemo } from "react";
+
+const ProposalVotingActionsFallback = memo(() => {
+  return (
+    <div className="flex flex-col gap-2 p-3">
+      <div className="flex-1 w-full flex flex-row gap-2">
+        <Skeleton className="flex-1 h-10" />
+        <Skeleton className="flex-1 h-10" />
+        <Skeleton className="flex-1 h-10" />
+      </div>
+      <Skeleton className="w-full h-10" />
+    </div>
+  );
+});
+
+ProposalVotingActionsFallback.displayName = "ProposalVotingActionsFallback";
+
+type ProposalVotingActionsContentProps = {
+  proposal: ProposalInfo;
+  selectedVote?: number;
+  setSelectedVote: (vote: number) => void;
+  onSubmitPress: () => void;
+  votingPower: string;
+  hasVoted: boolean;
+  isUpdatingVote: boolean;
+};
+
+const ProposalVotingActionsContent = memo(
+  ({
+    proposal,
+    selectedVote,
+    setSelectedVote,
+    onSubmitPress,
+    votingPower,
+    hasVoted,
+    isUpdatingVote,
+  }: ProposalVotingActionsContentProps) => {
+    const submitVotePrefix = useMemo(() => {
+      if (hasVoted && !isUpdatingVote) {
+        return "You voted";
+      }
+
+      if (hasVoted && isUpdatingVote) {
+        return "Update vote to";
+      }
+
+      return "Vote";
+    }, [hasVoted, isUpdatingVote]);
+
+    const votingOptions = useMemo(() => {
+      return proposal.voting_options.map((option, index) => {
+        const isFor = index === 0;
+        const isAgainst = index === 1;
+
+        const isSelected = selectedVote === index;
+        const selectedStyle = isSelected
+          ? isFor
+            ? "border-positive bg-positive/10 text-positive"
+            : isAgainst
+              ? "border-negative bg-negative/10 text-negative"
+              : "border-secondary bg-secondary/10 text-secondary"
+          : "bg-neutral";
+
+        return (
+          <button
+            key={index}
+            className={`${selectedStyle} rounded-md h-8 border border-line text-sm font-medium cursor-pointer py-2 transition-all hover:bg-wash active:shadow-none disabled:bg-line disabled:text-secondary capitalize flex items-center justify-center flex-1`}
+            onClick={() => setSelectedVote(index)}
+          >
+            {option.toLowerCase()}
+          </button>
+        );
+      });
+    }, [proposal.voting_options, selectedVote, setSelectedVote]);
+
+    return (
+      <div className="flex flex-col gap-3 py-3 px-3 border-t border-line">
+        <div className="flex flex-row gap-2">{votingOptions}</div>
+        <Button
+          onClick={onSubmitPress}
+          className="w-full"
+          disabled={hasVoted ? !isUpdatingVote : selectedVote === undefined}
+        >
+          {selectedVote !== undefined ? (
+            <>
+              {submitVotePrefix}{" "}
+              {capitalizeFirstLetter(
+                proposal.voting_options[selectedVote].toLowerCase()
+              )}{" "}
+              with
+              {"\u00A0"}
+              <TokenAmount amount={votingPower} currency="veNEAR" />
+            </>
+          ) : (
+            "Select an option"
+          )}
+        </Button>
+      </div>
+    );
+  }
+);
+
+ProposalVotingActionsContent.displayName = "ProposalVotingActionsContent";
 
 export default function ProposalVotingActions({
   proposal,
@@ -53,7 +155,7 @@ export default function ProposalVotingActions({
 
   const queryClient = useQueryClient();
 
-  const handleOpenTwoOptionVoteDialog = useCallback(() => {
+  const openVoteDialog = useCallback(() => {
     openDialog({
       type: "NEAR_VOTE",
       params: {
@@ -93,8 +195,12 @@ export default function ProposalVotingActions({
     );
   }
 
-  if (!isRegisteredToVote || isLoadingUserVote) {
+  if (!isRegisteredToVote) {
     return null;
+  }
+
+  if (isLoadingUserVote || isLoadingVotingPower) {
+    return <ProposalVotingActionsFallback />;
   }
 
   const hasVoted = userVoteIndex !== null && userVoteIndex !== undefined;
@@ -102,56 +208,14 @@ export default function ProposalVotingActions({
     hasVoted && selectedVote !== undefined && selectedVote !== userVoteIndex;
 
   return (
-    <div className="flex flex-col gap-3 py-3 px-3 border-t border-line">
-      <div className="flex flex-row gap-2">
-        {proposal.voting_options.map((option, index) => {
-          const isFor = index === 0;
-          const isAgainst = index === 1;
-
-          const isSelected = selectedVote === index;
-          const selectedStyle = isSelected
-            ? isFor
-              ? "border-positive bg-positive/10 text-positive"
-              : isAgainst
-                ? "border-negative bg-negative/10 text-negative"
-                : "border-secondary bg-secondary/10 text-secondary"
-            : "bg-neutral";
-
-          return (
-            <button
-              key={index}
-              className={`${selectedStyle} rounded-md border border-line text-sm font-medium cursor-pointer py-2 transition-all hover:bg-wash active:shadow-none disabled:bg-line disabled:text-secondary h-8 capitalize flex items-center justify-center flex-1`}
-              onClick={() => setSelectedVote(index)}
-            >
-              {option.toLowerCase()}{" "}
-              {index === userVoteIndex ? "(your vote)" : ""}
-            </button>
-          );
-        })}
-      </div>
-      <Button
-        onClick={handleOpenTwoOptionVoteDialog}
-        className="w-full"
-        disabled={hasVoted ? !isUpdatingVote : selectedVote === undefined}
-      >
-        {selectedVote !== undefined ? (
-          <>
-            {isUpdatingVote ? "Update vote to" : "Vote"}{" "}
-            {capitalizeFirstLetter(
-              proposal.voting_options[selectedVote].toLowerCase()
-            )}{" "}
-            with
-            {"\u00A0"}
-            {!isLoadingVotingPower ? (
-              <TokenAmount amount={votingPower.toFixed()} currency="veNEAR" />
-            ) : (
-              <Skeleton className="w-8 h-4 inline-block" />
-            )}
-          </>
-        ) : (
-          "Select an option"
-        )}
-      </Button>
-    </div>
+    <ProposalVotingActionsContent
+      proposal={proposal}
+      selectedVote={selectedVote}
+      setSelectedVote={setSelectedVote}
+      onSubmitPress={openVoteDialog}
+      votingPower={votingPower.toFixed()}
+      hasVoted={hasVoted}
+      isUpdatingVote={isUpdatingVote}
+    />
   );
 }
