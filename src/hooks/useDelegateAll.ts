@@ -72,6 +72,11 @@ export function useDelegateAll({
       }
     );
 
+    queryClient.invalidateQueries({
+      queryKey: [DELEGATES_QK, orderByParam, filterParam, issuesParam],
+      refetchType: "none",
+    });
+
     onSuccess?.();
   }, [
     queryClient,
