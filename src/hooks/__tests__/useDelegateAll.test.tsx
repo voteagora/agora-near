@@ -1,11 +1,14 @@
 import { useWriteHOSContract } from "@/hooks/useWriteHOSContract";
 import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
+import { DELEGATES_QK } from "@/hooks/useDelegates";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useDelegateAll } from "../useDelegateAll";
+import { withNuqsTestingAdapter } from "nuqs/adapters/testing";
+import Big from "big.js";
 
 // Mock the hooks
 vi.mock("@/hooks/useWriteHOSContract", () => ({
@@ -31,11 +34,13 @@ describe("useDelegateAll", () => {
   let mockMutateAsync: ReturnType<typeof vi.fn>;
   let mockOnSuccess: ReturnType<typeof vi.fn>;
   let mockInvalidateQueries: ReturnType<typeof vi.fn>;
+  let mockSetQueryData: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
     mockInvalidateQueries = vi.fn();
+    mockSetQueryData = vi.fn();
     queryClient = new QueryClient({
       defaultOptions: {
         queries: {
@@ -50,11 +55,18 @@ describe("useDelegateAll", () => {
       },
     });
 
-    // Mock invalidateQueries
+    // Mock invalidateQueries and setQueryData
     queryClient.invalidateQueries = mockInvalidateQueries;
+    queryClient.setQueryData = mockSetQueryData;
+
+    const TestingAdapter = withNuqsTestingAdapter({
+      searchParams: {},
+    });
 
     wrapper = ({ children }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <TestingAdapter>{children}</TestingAdapter>
+      </QueryClientProvider>
     );
 
     mockMutate = vi.fn();
@@ -86,14 +98,20 @@ describe("useDelegateAll", () => {
 
   describe("Hook Initialization", () => {
     it("should initialize with correct default values", () => {
-      const { result } = renderHook(() => useDelegateAll({}), { wrapper });
+      const { result } = renderHook(
+        () => useDelegateAll({ delegateVotingPower: new Big("100") }),
+        { wrapper }
+      );
 
       expect(result.current.error).toBeNull();
       expect(result.current.isDelegating).toBe(false);
     });
 
     it("should call useWriteHOSContract with correct parameters", () => {
-      renderHook(() => useDelegateAll({}), { wrapper });
+      renderHook(
+        () => useDelegateAll({ delegateVotingPower: new Big("100") }),
+        { wrapper }
+      );
 
       expect(mockUseWriteHOSContract).toHaveBeenCalledWith({
         contractType: "VENEAR",
@@ -111,7 +129,10 @@ describe("useDelegateAll", () => {
         data: undefined,
       } as any);
 
-      const { result } = renderHook(() => useDelegateAll({}), { wrapper });
+      const { result } = renderHook(
+        () => useDelegateAll({ delegateVotingPower: new Big("100") }),
+        { wrapper }
+      );
 
       expect(result.current.error).toBe(mockError);
     });
@@ -125,7 +146,10 @@ describe("useDelegateAll", () => {
         data: undefined,
       } as any);
 
-      const { result } = renderHook(() => useDelegateAll({}), { wrapper });
+      const { result } = renderHook(
+        () => useDelegateAll({ delegateVotingPower: new Big("100") }),
+        { wrapper }
+      );
 
       expect(result.current.isDelegating).toBe(true);
     });
@@ -133,7 +157,10 @@ describe("useDelegateAll", () => {
 
   describe("delegateAll", () => {
     it("should call mutate with correct parameters", () => {
-      const { result } = renderHook(() => useDelegateAll({}), { wrapper });
+      const { result } = renderHook(
+        () => useDelegateAll({ delegateVotingPower: new Big("100") }),
+        { wrapper }
+      );
 
       const receiverId = "delegate.testnet";
 
@@ -158,7 +185,10 @@ describe("useDelegateAll", () => {
       const mockResult = { success: true };
       mockMutate.mockReturnValue(mockResult);
 
-      const { result } = renderHook(() => useDelegateAll({}), { wrapper });
+      const { result } = renderHook(
+        () => useDelegateAll({ delegateVotingPower: new Big("100") }),
+        { wrapper }
+      );
 
       const receiverId = "delegate.testnet";
       const delegateResult = result.current.delegateAll(receiverId);
@@ -169,7 +199,10 @@ describe("useDelegateAll", () => {
 
   describe("Success Callback", () => {
     it("should invalidate queries on success", () => {
-      renderHook(() => useDelegateAll({}), { wrapper });
+      renderHook(
+        () => useDelegateAll({ delegateVotingPower: new Big("100") }),
+        { wrapper }
+      );
 
       // Get the onSuccess callback that was passed to useWriteHOSContract
       const onSuccessCallback =
@@ -185,9 +218,16 @@ describe("useDelegateAll", () => {
     });
 
     it("should call onSuccess callback when provided", () => {
-      renderHook(() => useDelegateAll({ onSuccess: mockOnSuccess }), {
-        wrapper,
-      });
+      renderHook(
+        () =>
+          useDelegateAll({
+            onSuccess: mockOnSuccess,
+            delegateVotingPower: new Big("100"),
+          }),
+        {
+          wrapper,
+        }
+      );
 
       // Get the onSuccess callback that was passed to useWriteHOSContract
       const onSuccessCallback =
@@ -198,6 +238,284 @@ describe("useDelegateAll", () => {
       });
 
       expect(mockOnSuccess).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("Query Data Updates", () => {
+    const mockDelegatesData = {
+      pages: [
+        {
+          delegates: [
+            {
+              address: "delegate1.testnet",
+              votingPower: "1000",
+              name: "Delegate 1",
+            },
+            {
+              address: "delegate2.testnet",
+              votingPower: "2000",
+              name: "Delegate 2",
+            },
+            {
+              address: "current-delegate.testnet",
+              votingPower: "500",
+              name: "Current Delegate",
+            },
+          ],
+        },
+      ],
+      pageParams: [undefined],
+    };
+
+    beforeEach(() => {
+      // Mock the setQueryData to return the mock data when called with a function
+      mockSetQueryData.mockImplementation((queryKey, updaterFn) => {
+        if (typeof updaterFn === "function") {
+          return updaterFn(mockDelegatesData);
+        }
+        return mockDelegatesData;
+      });
+    });
+
+    it("should call setQueryData with correct query key", () => {
+      const TestingAdapter = withNuqsTestingAdapter({
+        searchParams: {
+          order_by: "voting_power",
+          filter: "active",
+          issues: "governance",
+        },
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <QueryClientProvider client={queryClient}>
+          <TestingAdapter>{children}</TestingAdapter>
+        </QueryClientProvider>
+      );
+
+      renderHook(
+        () =>
+          useDelegateAll({
+            delegateVotingPower: new Big("100"),
+            currentDelegateeAddress: "current-delegate.testnet",
+          }),
+        { wrapper }
+      );
+
+      // Get the onSuccess callback and trigger it
+      const onSuccessCallback =
+        mockUseWriteHOSContract.mock.calls[0]?.[0]?.onSuccess;
+
+      act(() => {
+        onSuccessCallback?.();
+      });
+
+      expect(mockSetQueryData).toHaveBeenCalledWith(
+        [DELEGATES_QK, "voting_power", "active", "governance"],
+        expect.any(Function)
+      );
+    });
+
+    it("should update voting power for target delegate (adding voting power)", () => {
+      // Use a single hook instance
+      const { result } = renderHook(
+        () =>
+          useDelegateAll({
+            delegateVotingPower: new Big("100"),
+            currentDelegateeAddress: "current-delegate.testnet",
+          }),
+        { wrapper }
+      );
+
+      // Call delegateAll to set the target delegate
+      act(() => {
+        result.current.delegateAll("delegate1.testnet");
+      });
+
+      // Get the onSuccess callback and trigger it
+      const onSuccessCallback =
+        mockUseWriteHOSContract.mock.calls[0]?.[0]?.onSuccess;
+
+      act(() => {
+        onSuccessCallback?.();
+      });
+
+      // Verify setQueryData was called
+      expect(mockSetQueryData).toHaveBeenCalled();
+
+      // Get the updater function that was passed to setQueryData
+      const updaterFunction = mockSetQueryData.mock.calls[0][1];
+      const updatedData = updaterFunction(mockDelegatesData);
+
+      // Check that the target delegate's voting power was increased
+      const targetDelegate = updatedData.pages[0].delegates.find(
+        (d: any) => d.address === "delegate1.testnet"
+      );
+      expect(targetDelegate.votingPower).toBe("1100"); // 1000 + 100
+    });
+
+    it("should update voting power for current delegatee (subtracting voting power)", () => {
+      // Use a single hook instance
+      const { result } = renderHook(
+        () =>
+          useDelegateAll({
+            delegateVotingPower: new Big("100"),
+            currentDelegateeAddress: "current-delegate.testnet",
+          }),
+        { wrapper }
+      );
+
+      // Call delegateAll to set the target delegate
+      act(() => {
+        result.current.delegateAll("delegate1.testnet");
+      });
+
+      // Get the onSuccess callback and trigger it
+      const onSuccessCallback =
+        mockUseWriteHOSContract.mock.calls[0]?.[0]?.onSuccess;
+
+      act(() => {
+        onSuccessCallback?.();
+      });
+
+      // Get the updater function that was passed to setQueryData
+      const updaterFunction = mockSetQueryData.mock.calls[0][1];
+      const updatedData = updaterFunction(mockDelegatesData);
+
+      // Check that the current delegate's voting power was decreased
+      const currentDelegate = updatedData.pages[0].delegates.find(
+        (d: any) => d.address === "current-delegate.testnet"
+      );
+      expect(currentDelegate.votingPower).toBe("400"); // 500 - 100
+    });
+
+    it("should handle delegates with null voting power", () => {
+      const mockDataWithNullPower = {
+        pages: [
+          {
+            delegates: [
+              {
+                address: "delegate-with-null.testnet",
+                votingPower: null,
+                name: "Delegate With Null",
+              },
+            ],
+          },
+        ],
+        pageParams: [undefined],
+      };
+
+      mockSetQueryData.mockImplementation((queryKey, updaterFn) => {
+        if (typeof updaterFn === "function") {
+          return updaterFn(mockDataWithNullPower);
+        }
+        return mockDataWithNullPower;
+      });
+
+      const { result } = renderHook(
+        () =>
+          useDelegateAll({
+            delegateVotingPower: new Big("100"),
+          }),
+        { wrapper }
+      );
+
+      act(() => {
+        result.current.delegateAll("delegate-with-null.testnet");
+      });
+
+      // Get the onSuccess callback and trigger it
+      const onSuccessCallback =
+        mockUseWriteHOSContract.mock.calls[0]?.[0]?.onSuccess;
+
+      act(() => {
+        onSuccessCallback?.();
+      });
+
+      // Get the updater function that was passed to setQueryData
+      const updaterFunction = mockSetQueryData.mock.calls[0][1];
+      const updatedData = updaterFunction(mockDataWithNullPower);
+
+      // Check that null voting power is treated as "0" and updated correctly
+      const targetDelegate = updatedData.pages[0].delegates.find(
+        (d: any) => d.address === "delegate-with-null.testnet"
+      );
+      expect(targetDelegate.votingPower).toBe("100"); // 0 + 100
+    });
+
+    it("should not modify delegates that are not target or current delegatee", () => {
+      const { result } = renderHook(
+        () =>
+          useDelegateAll({
+            delegateVotingPower: new Big("100"),
+            currentDelegateeAddress: "current-delegate.testnet",
+          }),
+        { wrapper }
+      );
+
+      act(() => {
+        result.current.delegateAll("delegate1.testnet");
+      });
+
+      // Get the onSuccess callback and trigger it
+      const onSuccessCallback =
+        mockUseWriteHOSContract.mock.calls[0]?.[0]?.onSuccess;
+
+      act(() => {
+        onSuccessCallback?.();
+      });
+
+      // Get the updater function that was passed to setQueryData
+      const updaterFunction = mockSetQueryData.mock.calls[0][1];
+      const updatedData = updaterFunction(mockDelegatesData);
+
+      // Check that delegate2 (not involved in delegation) remains unchanged
+      const unchangedDelegate = updatedData.pages[0].delegates.find(
+        (d: any) => d.address === "delegate2.testnet"
+      );
+      expect(unchangedDelegate.votingPower).toBe("2000"); // Unchanged
+    });
+
+    it("should call invalidateQueries for delegates after setQueryData", () => {
+      const TestingAdapter = withNuqsTestingAdapter({
+        searchParams: {
+          order_by: "voting_power",
+          filter: "active",
+          issues: "governance",
+        },
+      });
+
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <QueryClientProvider client={queryClient}>
+          <TestingAdapter>{children}</TestingAdapter>
+        </QueryClientProvider>
+      );
+
+      renderHook(
+        () =>
+          useDelegateAll({
+            delegateVotingPower: new Big("100"),
+          }),
+        { wrapper }
+      );
+
+      // Get the onSuccess callback and trigger it
+      const onSuccessCallback =
+        mockUseWriteHOSContract.mock.calls[0]?.[0]?.onSuccess;
+
+      act(() => {
+        onSuccessCallback?.();
+      });
+
+      // Verify that both setQueryData and invalidateQueries were called for delegates
+      expect(mockSetQueryData).toHaveBeenCalledWith(
+        [DELEGATES_QK, "voting_power", "active", "governance"],
+        expect.any(Function)
+      );
+
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: [DELEGATES_QK, "voting_power", "active", "governance"],
+        refetchType: "none",
+      });
     });
   });
 });
