@@ -105,6 +105,8 @@ describe("useDeployLockupAndLock", () => {
       source: "onboarding" as const,
       venearStorageCost: "1000000000000000000000000",
       lockupStorageCost: "2000000000000000000000000",
+      venearAccountLockupVersion: 1,
+      venearGlobalLockupVersion: 1,
     };
 
     const result = { ...defaults, ...overrides };
