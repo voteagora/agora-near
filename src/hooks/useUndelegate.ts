@@ -42,11 +42,14 @@ export function useUndelegate({
               const delegateeVotingPower = Big(delegate.votingPower ?? "0");
 
               if (delegate.address === delegateeAddress) {
+                const newDelegateeVotingPower =
+                  delegateeVotingPower.minus(delegateVotingPower);
+
                 return {
                   ...delegate,
-                  votingPower: delegateeVotingPower
-                    .minus(delegateVotingPower)
-                    .toFixed(),
+                  votingPower: newDelegateeVotingPower.lt(0)
+                    ? "0"
+                    : newDelegateeVotingPower.toFixed(),
                 };
               }
 

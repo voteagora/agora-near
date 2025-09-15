@@ -414,11 +414,11 @@ describe("useUndelegate", () => {
       const updaterFunction = mockSetQueryData.mock.calls[0][1];
       const updatedData = updaterFunction(mockDataWithNullPower);
 
-      // Check that null voting power is treated as "0" and updated correctly
+      // Check that null voting power is treated as "0" and clamped to 0 (never goes negative)
       const delegatee = updatedData.pages[0].delegates.find(
         (d: any) => d.address === "delegate-with-null.testnet"
       );
-      expect(delegatee.votingPower).toBe("-100"); // 0 - 100
+      expect(delegatee.votingPower).toBe("0"); // 0 - 100 = 0 (clamped to minimum of 0)
     });
 
     it("should not modify delegates that are not the delegatee", () => {

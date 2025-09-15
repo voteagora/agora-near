@@ -442,6 +442,72 @@ describe("useDelegateAll", () => {
       expect(targetDelegate.votingPower).toBe("100"); // 0 + 100
     });
 
+    it("should handle current delegatee with null voting power (clamped to 0)", () => {
+      const mockDataWithNullCurrentDelegatee = {
+        pages: [
+          {
+            delegates: [
+              {
+                address: "target-delegate.testnet",
+                votingPower: "1000",
+                name: "Target Delegate",
+              },
+              {
+                address: "current-delegate.testnet",
+                votingPower: null, // Null voting power
+                name: "Current Delegate With Null Power",
+              },
+            ],
+          },
+        ],
+        pageParams: [undefined],
+      };
+
+      mockSetQueryData.mockImplementation((queryKey, updaterFn) => {
+        if (typeof updaterFn === "function") {
+          return updaterFn(mockDataWithNullCurrentDelegatee);
+        }
+        return mockDataWithNullCurrentDelegatee;
+      });
+
+      const { result } = renderHook(
+        () =>
+          useDelegateAll({
+            delegateVotingPower: new Big("100"),
+            currentDelegateeAddress: "current-delegate.testnet",
+          }),
+        { wrapper }
+      );
+
+      act(() => {
+        result.current.delegateAll("target-delegate.testnet");
+      });
+
+      // Get the onSuccess callback and trigger it
+      const onSuccessCallback =
+        mockUseWriteHOSContract.mock.calls[0]?.[0]?.onSuccess;
+
+      act(() => {
+        onSuccessCallback?.();
+      });
+
+      // Get the updater function that was passed to setQueryData
+      const updaterFunction = mockSetQueryData.mock.calls[0][1];
+      const updatedData = updaterFunction(mockDataWithNullCurrentDelegatee);
+
+      // Check that the target delegate's voting power was increased
+      const targetDelegate = updatedData.pages[0].delegates.find(
+        (d: any) => d.address === "target-delegate.testnet"
+      );
+      expect(targetDelegate.votingPower).toBe("1100"); // 1000 + 100
+
+      // Check that current delegatee's null voting power is treated as 0 and clamped to 0
+      const currentDelegate = updatedData.pages[0].delegates.find(
+        (d: any) => d.address === "current-delegate.testnet"
+      );
+      expect(currentDelegate.votingPower).toBe("0"); // 0 - 100 = 0 (clamped to minimum of 0)
+    });
+
     it("should not modify delegates that are not target or current delegatee", () => {
       const { result } = renderHook(
         () =>

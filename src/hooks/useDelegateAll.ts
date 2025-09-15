@@ -52,11 +52,14 @@ export function useDelegateAll({
               }
 
               if (delegate.address === currentDelegateeAddress) {
+                const newDelegateeVotingPower =
+                  delegateeVotingPower.minus(delegateVotingPower);
+
                 return {
                   ...delegate,
-                  votingPower: delegateeVotingPower
-                    .minus(delegateVotingPower)
-                    .toFixed(),
+                  votingPower: newDelegateeVotingPower.lt(0)
+                    ? "0"
+                    : newDelegateeVotingPower.toFixed(),
                 };
               }
 
