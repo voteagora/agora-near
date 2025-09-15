@@ -6,6 +6,7 @@ import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
+import Big from "big.js";
 
 export function UndelegateDialog({
   delegateAddress,
@@ -16,11 +17,18 @@ export function UndelegateDialog({
 }) {
   const { signedAccountId } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
+
+  const delegatableVotingPower = Big(
+    accountInfo?.totalBalance?.near || "0"
+  ).plus(accountInfo?.totalBalance?.extraBalance || "0");
+
   const { undelegate, isUndelegating, error } = useUndelegate({
     onSuccess: () => {
       toast.success("Undelegation completed!");
       closeDialog();
     },
+    delegateVotingPower: delegatableVotingPower,
+    delegateeAddress: delegateAddress,
   });
 
   const handleUndelegate = useCallback(() => {

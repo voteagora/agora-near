@@ -100,16 +100,28 @@ export default function VeNearDebugCards() {
   const [selectedVotes, setSelectedVotes] = useState<Record<number, number>>(
     {}
   );
+
+  const lockedNear = Big(accountInfo?.totalBalance.near || "0").plus(
+    accountInfo?.totalBalance.extraBalance || "0"
+  );
+
   const {
     delegateAll,
     isDelegating,
     error: delegationError,
-  } = useDelegateAll({});
+  } = useDelegateAll({
+    delegateVotingPower: lockedNear,
+    currentDelegateeAddress: accountInfo?.delegation?.delegatee,
+  });
+
   const {
     undelegate,
     isUndelegating,
     error: undelegationError,
-  } = useUndelegate({});
+  } = useUndelegate({
+    delegateVotingPower: lockedNear,
+    delegateeAddress: accountInfo?.delegation?.delegatee ?? "",
+  });
 
   const lockAllNear = useCallback(() => {
     if (accountInfo?.lockupAccountId) {
