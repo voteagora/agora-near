@@ -32,6 +32,10 @@ export function useUndelegate({
       queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
     });
 
+    // We mutate the client cache directly here instead of invalidating the query since
+    // this would trigger a re-fetch of the delegates, which by default is sorting the delegates
+    // in random order. This would cause the ordering of the delegates to change which
+    // would be jarring to the user.
     queryClient.setQueryData(
       [DELEGATES_QK, orderByParam, filterParam, issuesParam],
       (oldData: InfiniteData<GetDelegatesResponse>) => {
