@@ -128,6 +128,7 @@ export type DelegationEvent = {
   eventDate: string;
   eventTimestamp: string;
   nearAmount?: string;
+  receiptId?: string;
 };
 
 export type HosActivity = {
