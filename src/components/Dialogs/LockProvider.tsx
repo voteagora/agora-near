@@ -535,8 +535,6 @@ export const LockProvider = ({
     venearAccountInfo,
   ]);
 
-  console.log(`requiredTransactions=${requiredTransactions}`);
-
   const getAmountToLock = useCallback(async () => {
     // Lock all when onboarding
     if (source === "onboarding") {
