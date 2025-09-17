@@ -2,7 +2,7 @@
 
 import TokenAmount from "@/components/shared/TokenAmount";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { useBlockExplorerUrl } from "@/hooks/useBlockExplorerUrl";
+import { useNearBlocks } from "@/hooks/useNearBlocks";
 import { DelegationEvent } from "@/lib/api/delegates/types";
 
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
@@ -14,7 +14,7 @@ export default function DelegationFromRow({
 }: {
   delegation: DelegationEvent;
 }) {
-  const getTransactionUrl = useBlockExplorerUrl();
+  const { openTransactionByReceiptId } = useNearBlocks();
 
   return (
     <TableRow>
@@ -36,14 +36,12 @@ export default function DelegationFromRow({
         </Link>
       </TableCell>
       <TableCell>
-        <a
-          href={getTransactionUrl(delegation.blockHash)} // TODO: Pass in txn hash instead of block hash
-          target="_blank"
-          rel="noreferrer noopener"
+        <button
+          onClick={() => openTransactionByReceiptId(delegation.receiptId ?? "")}
         >
           View
           <ArrowTopRightOnSquareIcon className="w-4 h-4 ml-2 inline align-text-bottom" />
-        </a>
+        </button>
       </TableCell>
     </TableRow>
   );
