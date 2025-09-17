@@ -449,8 +449,15 @@ export const LockProvider = ({
   const onLockMax = useCallback(() => {
     setEnteredAmount(convertYoctoToNear(maxAmountToLock ?? "0"));
     setIsLockingMax(true);
-    setAmountError(null);
-  }, [maxAmountToLock]);
+
+    if (Big(maxAmountToLock ?? "0").lt(depositTotal)) {
+      setAmountError(
+        `You must lock at least ${utils.format.formatNearAmount(depositTotal)} NEAR`
+      );
+    } else {
+      setAmountError(null);
+    }
+  }, [depositTotal, maxAmountToLock]);
 
   const onEnteredAmountUpdated = useCallback(
     (amount: string) => {
@@ -474,35 +481,6 @@ export const LockProvider = ({
     return utils.format.parseNearAmount(enteredAmount) || "0";
   }, [enteredAmount, isLockingMax, maxAmountToLock]);
 
-  const requiredTransactions = useMemo(() => {
-    const transactions: LockTransaction[] = [];
-
-    if (!venearAccountInfo) {
-      // Requires deploying lockup
-      transactions.push("deploy_lockup");
-    }
-
-    if (selectedToken?.type === "lst" && !stakingPoolId) {
-      transactions.push("select_staking_pool");
-    }
-
-    if (selectedToken?.type !== "lockup") {
-      // Requires transferring tokens to lockup
-      transactions.push(
-        selectedToken?.type === "near" ? "transfer_near" : "transfer_ft"
-      );
-    }
-
-    if (selectedToken?.type === "lst") {
-      // LST requires refreshing balance
-      transactions.push("refresh_balance");
-    }
-
-    transactions.push("lock_near");
-
-    return transactions;
-  }, [selectedToken?.type, stakingPoolId, venearAccountInfo]);
-
   const transferAmountYocto = useMemo(() => {
     if (selectedToken?.type === "lst") {
       return enteredAmountYocto;
@@ -519,6 +497,45 @@ export const LockProvider = ({
       return amount.lte(0) ? "0" : amount.toFixed(0);
     }
   }, [enteredAmountYocto, selectedToken?.type, source, totalRegistrationCost]);
+
+  const requiredTransactions = useMemo(() => {
+    const transactions: LockTransaction[] = [];
+
+    if (!venearAccountInfo) {
+      // Requires deploying lockup
+      transactions.push("deploy_lockup");
+    }
+
+    if (selectedToken?.type === "lst" && !stakingPoolId) {
+      transactions.push("select_staking_pool");
+    }
+
+    if (
+      selectedToken?.type !== "lockup" &&
+      Big(transferAmountYocto ?? "0").gt(0)
+    ) {
+      // Requires transferring tokens to lockup
+      transactions.push(
+        selectedToken?.type === "near" ? "transfer_near" : "transfer_ft"
+      );
+    }
+
+    if (selectedToken?.type === "lst") {
+      // LST requires refreshing balance
+      transactions.push("refresh_balance");
+    }
+
+    transactions.push("lock_near");
+
+    return transactions;
+  }, [
+    selectedToken?.type,
+    stakingPoolId,
+    transferAmountYocto,
+    venearAccountInfo,
+  ]);
+
+  console.log(`requiredTransactions=${requiredTransactions}`);
 
   const getAmountToLock = useCallback(async () => {
     // Lock all when onboarding
