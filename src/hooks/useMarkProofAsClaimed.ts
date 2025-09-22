@@ -7,27 +7,33 @@ interface MarkProofAsClaimedArgs {
 }
 
 export function useMarkProofAsClaimed() {
-  const { mutateAsync: markProofAsClaimed, isPending: isMarking } = useMutation({
-    mutationFn: async ({ projectId, address, txHash }: MarkProofAsClaimedArgs) => {
-      const response = await fetch(
-        `/api/near/claim/proofs/${projectId}/${address}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ txHash }),
+  const { mutateAsync: markProofAsClaimed, isPending: isMarking } = useMutation(
+    {
+      mutationFn: async ({
+        projectId,
+        address,
+        txHash,
+      }: MarkProofAsClaimedArgs) => {
+        const response = await fetch(
+          `/api/near/claim/proofs/${projectId}/${address}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ txHash }),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to mark proof as claimed");
         }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to mark proof as claimed");
-      }
-
-      return response.json();
-    },
-  });
+        return response.json();
+      },
+    }
+  );
 
   return {
     markProofAsClaimed,
