@@ -9,7 +9,10 @@ import { StakingProvider, useStakingProviderContext } from "../StakingProvider";
 import { EnterStakingAmount } from "./EnterStakingAmount";
 import { StakingReview } from "./StakingReview";
 
-export type StakingSource = "onboarding" | "account_management";
+export type StakingSource =
+  | "onboarding"
+  | "account_management"
+  | "claim_rewards";
 
 type StakingDialogProps = {
   closeDialog: () => void;
