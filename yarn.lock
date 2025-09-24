@@ -1378,14 +1378,23 @@
   dependencies:
     "@lit-labs/ssr-dom-shim" "^1.0.0"
 
-"@meteorwallet/sdk@1.0.9":
-  version "1.0.9"
-  resolved "https://registry.npmjs.org/@meteorwallet/sdk/-/sdk-1.0.9.tgz"
-  integrity sha512-frJM+rwmx18MCVsfHn0O8oaJfB41BqaXW6cyhZ3EtMw3b87DUJyfSuJi9K0HQl7oGG0+wvMZOKRBVVcMiZzoDg==
+"@meteorwallet/sdk@1.0.24":
+  version "1.0.24"
+  resolved "https://registry.yarnpkg.com/@meteorwallet/sdk/-/sdk-1.0.24.tgz#0a273bc40e6252945093fbe01f059542cb5d7101"
+  integrity sha512-fA/D7rTIpe20J/WRGL3I7wr6gFg3GujbYDQ7Y3IIA+O2uAH+hkIzbUpvlqGSZbKT09YpSEhxMcP3W3x5mDox/w==
   dependencies:
-    borsh "^0.7.0"
-    nanoid "3.3.6"
+    "@near-js/accounts" "2.2.5"
+    "@near-js/crypto" "2.2.5"
+    "@near-js/keystores" "2.2.5"
+    "@near-js/keystores-browser" "2.2.5"
+    "@near-js/providers" "2.2.5"
+    "@near-js/signers" "^2.2.5"
+    "@near-js/transactions" "2.2.5"
+    "@near-js/types" "2.2.5"
+    borsh "1.0.0"
+    nanoid "5.1.5"
     query-string "^7.1.3"
+    zod "^4.0.17"
 
 "@motionone/animation@^10.15.1", "@motionone/animation@^10.18.0":
   version "10.18.0"
@@ -1461,23 +1470,6 @@
   resolved "https://registry.yarnpkg.com/@msgpack/msgpack/-/msgpack-3.1.2.tgz#fdd25cc2202297519798bbaf4689152ad9609e19"
   integrity sha512-JEW4DEtBzfe8HvUYecLU9e6+XJnKDlUAIve8FvPzF3Kzs6Xo/KuZkZJsDH0wJXl/qEZbeeE7edxDNY3kMs39hQ==
 
-"@near-js/accounts@1.2.1":
-  version "1.2.1"
-  resolved "https://registry.npmjs.org/@near-js/accounts/-/accounts-1.2.1.tgz"
-  integrity sha512-j6+9n/p0vVLAahmN3YRFve+j0ammOALC9ZUfFhdE3kqtJESbSWMviC5qF/s2m0JQjpJGDtEv/dTADosIJoanWw==
-  dependencies:
-    "@near-js/crypto" "1.2.4"
-    "@near-js/providers" "0.2.2"
-    "@near-js/signers" "0.1.4"
-    "@near-js/transactions" "1.2.2"
-    "@near-js/types" "0.2.1"
-    "@near-js/utils" "0.2.2"
-    borsh "1.0.0"
-    depd "2.0.0"
-    is-my-json-valid "^2.20.6"
-    lru_map "0.4.1"
-    near-abi "0.1.1"
-
 "@near-js/accounts@1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@near-js/accounts/-/accounts-1.3.0.tgz#388761d164c64b03d3e42315d2e5346ee22fbf97"
@@ -1515,16 +1507,24 @@
     lru_map "0.4.1"
     near-abi "0.2.0"
 
-"@near-js/crypto@1.2.4":
-  version "1.2.4"
-  resolved "https://registry.npmjs.org/@near-js/crypto/-/crypto-1.2.4.tgz"
-  integrity sha512-hcSj0ygvTcXlW9ftwEd9dbvQUWBCHNWNDLou9NLfmZERW9dr0gH8kUJPZUWfpJFlUPicb+jTiMpNwDTvP7VW4A==
+"@near-js/accounts@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@near-js/accounts/-/accounts-2.2.5.tgz#df8516cc0b56e66b7b4db52f12f5fa922c640004"
+  integrity sha512-T7AD0B888D0WYSWIB5V0Zb9m2wqsk7DKtwX/4CfYMcJmIZuT7VesKolYHrTQ3zAfqsrJmOTSSH7iz4SIcPYHfw==
   dependencies:
-    "@near-js/types" "0.2.1"
-    "@near-js/utils" "0.2.2"
-    "@noble/curves" "1.2.0"
+    "@near-js/crypto" "2.2.5"
+    "@near-js/providers" "2.2.5"
+    "@near-js/signers" "2.2.5"
+    "@near-js/tokens" "2.2.5"
+    "@near-js/transactions" "2.2.5"
+    "@near-js/types" "2.2.5"
+    "@near-js/utils" "2.2.5"
+    "@noble/hashes" "1.7.1"
     borsh "1.0.0"
-    randombytes "2.1.0"
+    depd "2.0.0"
+    is-my-json-valid "^2.20.6"
+    lru_map "0.4.1"
+    near-abi "0.2.0"
 
 "@near-js/crypto@1.4.0":
   version "1.4.0"
@@ -1562,13 +1562,29 @@
     randombytes "2.1.0"
     secp256k1 "5.0.1"
 
-"@near-js/keystores-browser@0.0.12":
-  version "0.0.12"
-  resolved "https://registry.npmjs.org/@near-js/keystores-browser/-/keystores-browser-0.0.12.tgz"
-  integrity sha512-ptoVfJhMsktYcvY02wD2a8kDDH/E4d+kBfhwKF0H/Qt/w4JVJqEVgCLDBYUespuISTSqLSznNBjTSse+E7pJDQ==
+"@near-js/crypto@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@near-js/crypto/-/crypto-2.2.5.tgz#772637ebc9382abdc1bcc8cfc7e1c04fcadacef7"
+  integrity sha512-zNBYeVvr/9/vp2D4J4tt06uGHUl/XAi+wuzC9/ny7wuql7p+Dnt3iTU1DI4VCmhFod7SmyVfqPoQlNOFprYXTg==
   dependencies:
-    "@near-js/crypto" "1.2.4"
-    "@near-js/keystores" "0.0.12"
+    "@near-js/types" "2.2.5"
+    "@near-js/utils" "2.2.5"
+    "@noble/curves" "1.8.1"
+    borsh "1.0.0"
+    randombytes "2.1.0"
+    secp256k1 "5.0.1"
+
+"@near-js/crypto@2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@near-js/crypto/-/crypto-2.3.1.tgz#54bdb1893a20d3f56c6835bfcb3962a5c216db6f"
+  integrity sha512-lo0qn4mzkf//CU5rEBX7IrBAqGD414Dfcz9nkdG7CH3Z0PtkCEyOHw4DnKdOt3KHO2SJkeRm1mhyIk0g68Xb2w==
+  dependencies:
+    "@near-js/types" "2.3.1"
+    "@near-js/utils" "2.3.1"
+    "@noble/curves" "1.8.1"
+    borsh "1.0.0"
+    randombytes "2.1.0"
+    secp256k1 "5.0.1"
 
 "@near-js/keystores-browser@0.2.0":
   version "0.2.0"
@@ -1586,13 +1602,13 @@
     "@near-js/crypto" "1.4.2"
     "@near-js/keystores" "0.2.2"
 
-"@near-js/keystores-node@0.0.12":
-  version "0.0.12"
-  resolved "https://registry.npmjs.org/@near-js/keystores-node/-/keystores-node-0.0.12.tgz"
-  integrity sha512-LUz1HPXBYoZUaLyS/bEj4yZ4pqD9Hb7XURikh22VYL8mbLcR5VmWYwS7Tmi9aO1vW8M9bPnQs5SROAyA79qQgQ==
+"@near-js/keystores-browser@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@near-js/keystores-browser/-/keystores-browser-2.2.5.tgz#0bb9637e9ccb69049a4387e1e4c59210f3d0cdda"
+  integrity sha512-JFJCt0wXKxp5XdoXetfNAbYeDHldY4+6o81QoyHE61LDSpTAlHHbNo1om0yZa27bJsLoIu8EQoubT5EL9p3S4g==
   dependencies:
-    "@near-js/crypto" "1.2.4"
-    "@near-js/keystores" "0.0.12"
+    "@near-js/crypto" "2.2.5"
+    "@near-js/keystores" "2.2.5"
 
 "@near-js/keystores-node@0.1.0":
   version "0.1.0"
@@ -1609,14 +1625,6 @@
   dependencies:
     "@near-js/crypto" "1.4.2"
     "@near-js/keystores" "0.2.2"
-
-"@near-js/keystores@0.0.12":
-  version "0.0.12"
-  resolved "https://registry.npmjs.org/@near-js/keystores/-/keystores-0.0.12.tgz"
-  integrity sha512-7dqq7XLUSlo26QbaGrS6bmqVL4IfhxJgfIhgKUDfv8FuswrpErBVCAUY6wIbW+mLw0NBoddzPrb5LuLIMfud5Q==
-  dependencies:
-    "@near-js/crypto" "1.2.4"
-    "@near-js/types" "0.2.1"
 
 "@near-js/keystores@0.2.0":
   version "0.2.0"
@@ -1642,18 +1650,21 @@
     "@near-js/crypto" "2.1.0"
     "@near-js/types" "2.1.0"
 
-"@near-js/providers@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.npmjs.org/@near-js/providers/-/providers-0.2.2.tgz"
-  integrity sha512-1V3NhqxfkBvdvq8zhKqbKxsySpIr6PpmlDzkHjDr8uSu6MMvqBgy+1dBvWflEFlN7OlDGx35mVsq/4Xy0wu+KA==
+"@near-js/keystores@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@near-js/keystores/-/keystores-2.2.5.tgz#7154b4fd47db01d0c38edbd7260cbcf7ebbc882b"
+  integrity sha512-hGeWqIcALnqeFjXEGiI3xCO85sdzsWcnwtRC5XGQtYHzi1iVs88Z7vUA1vKisKtDts3lKJY6jjh3vJ3XqmY/vQ==
   dependencies:
-    "@near-js/transactions" "1.2.2"
-    "@near-js/types" "0.2.1"
-    "@near-js/utils" "0.2.2"
-    borsh "1.0.0"
-    http-errors "1.7.2"
-  optionalDependencies:
-    node-fetch "2.6.7"
+    "@near-js/crypto" "2.2.5"
+    "@near-js/types" "2.2.5"
+
+"@near-js/keystores@2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@near-js/keystores/-/keystores-2.3.1.tgz#d2833e5175f701f3f690bf5bccf9f7910abc1df0"
+  integrity sha512-3MFwgOlbM/VaQ+dMxRWim7DmBB4BSQGxhEqiZXWFzWPSVOAbQNEhwuRx6R12xt1wd39SeNh5+n+rrGEQ/RsAfQ==
+  dependencies:
+    "@near-js/crypto" "2.3.1"
+    "@near-js/types" "2.3.1"
 
 "@near-js/providers@1.0.0":
   version "1.0.0"
@@ -1682,14 +1693,19 @@
   optionalDependencies:
     node-fetch "2.6.7"
 
-"@near-js/signers@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.npmjs.org/@near-js/signers/-/signers-0.1.4.tgz"
-  integrity sha512-YgH5X5fDOT/GsEAcyNM3heQWjIIL1MW3P8NtqilMa69HnsvtES9RCwjAXP8d8DZq/dBlI9od+pQ5XhxSFuXKCg==
+"@near-js/providers@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@near-js/providers/-/providers-2.2.5.tgz#9633e1d592660f8d1f266f5701377c91e8afba99"
+  integrity sha512-Di7qsAdjqfe/dB+x2bHJaxl2C3Z2adYBcn8MYvhLX1kiBdRL6to9YTKM4X/hjqTy93MSY5KfRkGGpGYTiTjO5g==
   dependencies:
-    "@near-js/crypto" "1.2.4"
-    "@near-js/keystores" "0.0.12"
-    "@noble/hashes" "1.3.3"
+    "@near-js/crypto" "2.2.5"
+    "@near-js/transactions" "2.2.5"
+    "@near-js/types" "2.2.5"
+    "@near-js/utils" "2.2.5"
+    borsh "1.0.0"
+    exponential-backoff "^3.1.2"
+  optionalDependencies:
+    node-fetch "2.6.7"
 
 "@near-js/signers@0.2.0":
   version "0.2.0"
@@ -1720,17 +1736,32 @@
     "@noble/hashes" "1.7.1"
     borsh "1.0.0"
 
-"@near-js/transactions@1.2.2":
-  version "1.2.2"
-  resolved "https://registry.npmjs.org/@near-js/transactions/-/transactions-1.2.2.tgz"
-  integrity sha512-WZ/Mk0hFvBIYcD6VBwYw4S2mmiKBKz6PT0YEwNzMzbgPZSs2wRVk4r9Tf+ueCJCPUXo5XINkjThCcRqMHQvPtg==
+"@near-js/signers@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@near-js/signers/-/signers-2.2.5.tgz#2285d8865892125ec6570b8c59a0140dc5a64d52"
+  integrity sha512-1Mp/IgJghBx8iIiizSR6dhKZ9agP7y8Tj8a/I+Ha8oFLVWF+6ysEYmVoxKU5bG0ddLZE8L8vT6NbENtDqdCITQ==
   dependencies:
-    "@near-js/crypto" "1.2.4"
-    "@near-js/signers" "0.1.4"
-    "@near-js/types" "0.2.1"
-    "@near-js/utils" "0.2.2"
-    "@noble/hashes" "1.3.3"
+    "@near-js/crypto" "2.2.5"
+    "@near-js/keystores" "2.2.5"
+    "@near-js/transactions" "2.2.5"
+    "@noble/hashes" "1.7.1"
     borsh "1.0.0"
+
+"@near-js/signers@^2.2.5":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@near-js/signers/-/signers-2.3.1.tgz#ea09733a9514779b37ca86a7afb8a83e04b24a2f"
+  integrity sha512-7XQFzV3Vd58Vu0zXNfSLlZgYkfZdfGqzVFR/rByzTm/hoMyfhzKMkRNcxmZc4ePo8u/xIQfx14o2W80fO27DIQ==
+  dependencies:
+    "@near-js/crypto" "2.3.1"
+    "@near-js/keystores" "2.3.1"
+    "@near-js/transactions" "2.3.1"
+    "@noble/hashes" "1.7.1"
+    borsh "1.0.0"
+
+"@near-js/tokens@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@near-js/tokens/-/tokens-2.2.5.tgz#bd4d8a0f9aebeb4581820aa32c4cdd9437cb106f"
+  integrity sha512-naRXn0dBRQR6oM/KWJ5EPPXs6oFx2hcGQnKRvak3e4QxRCOvQqZuxHhV0eD1pvhbZgPyYcw3gr06FKXM9Hx5CQ==
 
 "@near-js/transactions@1.3.0":
   version "1.3.0"
@@ -1767,10 +1798,27 @@
     "@noble/hashes" "1.7.1"
     borsh "1.0.0"
 
-"@near-js/types@0.2.1":
-  version "0.2.1"
-  resolved "https://registry.npmjs.org/@near-js/types/-/types-0.2.1.tgz"
-  integrity sha512-YygQEGMdFe6d2e/6dtNZer9paH396XeAdIKEhY/RPXDUnjDdfiDQ5DK4mM130sEeID2bAH9X1LQ+7vXGRjvyWw==
+"@near-js/transactions@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@near-js/transactions/-/transactions-2.2.5.tgz#e17361d3a95bac844aeb67660c3162bd95a226b2"
+  integrity sha512-EwuAqF3wbwx1ETzxS53bX3XMrTU0DaNGncDPiHGf+h2oDKjKWKAUOD8PZyAjl9I7IOPPigSIpqYMYtSKnU0bUQ==
+  dependencies:
+    "@near-js/crypto" "2.2.5"
+    "@near-js/types" "2.2.5"
+    "@near-js/utils" "2.2.5"
+    "@noble/hashes" "1.7.1"
+    borsh "1.0.0"
+
+"@near-js/transactions@2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@near-js/transactions/-/transactions-2.3.1.tgz#6df07a9a885034e85a43ddac16a64eb89a93233a"
+  integrity sha512-RyFFX7U+S9O9gk5uaonAGnW/z49WE8Z/DHh2x03St+efxNmJwrtzDr+dCjTmdJA9EZuIQIMbTaA7spZAHnFofw==
+  dependencies:
+    "@near-js/crypto" "2.3.1"
+    "@near-js/types" "2.3.1"
+    "@near-js/utils" "2.3.1"
+    "@noble/hashes" "1.7.1"
+    borsh "1.0.0"
 
 "@near-js/types@0.3.0":
   version "0.3.0"
@@ -1787,15 +1835,15 @@
   resolved "https://registry.yarnpkg.com/@near-js/types/-/types-2.1.0.tgz#96e4f3080361a66ecda48db098cfcdf8a4d4895c"
   integrity sha512-sL7r1TgXSLEFXWb5CRc5lkMKfxNyErGLm2HDbMVeNQrIHaXrkosI3GMcY/CnnNhUejsew7CQbY4XaupFqM7n2A==
 
-"@near-js/utils@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.npmjs.org/@near-js/utils/-/utils-0.2.2.tgz"
-  integrity sha512-ZAJo/cN6AHY7/gckf8DLHwjAn0z4UwG6rhLxs+QDyNYMMSx9SBg2pOQtBBv7ORWJaPhWD2q7wFhUz4SdTZi43A==
-  dependencies:
-    "@near-js/types" "0.2.1"
-    bs58 "4.0.0"
-    depd "2.0.0"
-    mustache "4.0.0"
+"@near-js/types@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@near-js/types/-/types-2.2.5.tgz#6c799395f8a8f138c596b51e9d907b0b023f6c5d"
+  integrity sha512-v6YmeeRuRd6HMC4s58tQ3sEAwOQmETXFVu6uF5goJWcLDI63yMPrGDYBgTnrFHpVa5mPuphk0Gi5MvfxbyKhvA==
+
+"@near-js/types@2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@near-js/types/-/types-2.3.1.tgz#ffe1a4036967f84d105c50b5958356a87062bc70"
+  integrity sha512-RFqX2Hs/jGDrOHn2PSw4YBNqCQLEd2QdtL0HZsP5vL3NrHXIv7Fwlvg+zCzdeXPEWK1RRXqkqB6ZvYf00Yp/Sw==
 
 "@near-js/utils@1.0.0":
   version "1.0.0"
@@ -1827,20 +1875,25 @@
     depd "2.0.0"
     mustache "4.0.0"
 
-"@near-js/wallet-account@1.2.2":
-  version "1.2.2"
-  resolved "https://registry.npmjs.org/@near-js/wallet-account/-/wallet-account-1.2.2.tgz"
-  integrity sha512-LaWzqaz2tP1hcToDlmiQnFMGZ1W9dM9i4nFSILe5PLIFLBQmYXdLWc80skGDiTUeihVu6wwtQr6Z2CcG231rWw==
+"@near-js/utils@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@near-js/utils/-/utils-2.2.5.tgz#aa06be71af0314e613a9d78323a115bc5abfbca9"
+  integrity sha512-K1ypG/E6uCeztyB4mJidBnc7AsVRNf+7rdLniLZwrsWmeGcmBAXXlijGN/C/5LEhI8GnLi+oJt+FSQXZ5k2C8A==
   dependencies:
-    "@near-js/accounts" "1.2.1"
-    "@near-js/crypto" "1.2.4"
-    "@near-js/keystores" "0.0.12"
-    "@near-js/providers" "0.2.2"
-    "@near-js/signers" "0.1.4"
-    "@near-js/transactions" "1.2.2"
-    "@near-js/types" "0.2.1"
-    "@near-js/utils" "0.2.2"
-    borsh "1.0.0"
+    "@near-js/types" "2.2.5"
+    "@scure/base" "^1.2.4"
+    depd "2.0.0"
+    mustache "4.0.0"
+
+"@near-js/utils@2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@near-js/utils/-/utils-2.3.1.tgz#4865c6db83bb0a3619010079a48f1904f2a84fd9"
+  integrity sha512-0P9xxv4PADjyhJEmRdMHf3yVlEuCkUYgrXtUJAQr0oXec4XHINjvwkC/XIfEre4Q+maXM9gaxshqqKkyWiTubg==
+  dependencies:
+    "@near-js/types" "2.3.1"
+    "@scure/base" "^1.2.4"
+    depd "2.0.0"
+    mustache "4.0.0"
 
 "@near-js/wallet-account@1.3.0":
   version "1.3.0"
@@ -1879,7 +1932,18 @@
   dependencies:
     "@near-wallet-selector/core" "^8.2.0"
 
-"@near-wallet-selector/core@8.10.2", "@near-wallet-selector/core@^8.10.2", "@near-wallet-selector/core@^8.2.0", "@near-wallet-selector/core@^8.9.13":
+"@near-wallet-selector/core@9.5.4", "@near-wallet-selector/core@^9.5.4":
+  version "9.5.4"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/core/-/core-9.5.4.tgz#96dea8a657ba1a4fdc5afa7da3552d86f44f83dc"
+  integrity sha512-ESnNv4CZ0uyjM08fXevcmU/hYa5fj/bnmkNeI/9YbxhPrDtKOd3+eWaWjIQ2QjwW0i6SB4NGgnVxSxDyz4kb/A==
+  dependencies:
+    "@near-js/signers" "2.1.0"
+    borsh "2.0.0"
+    events "3.3.0"
+    js-sha256 "0.9.0"
+    rxjs "7.8.1"
+
+"@near-wallet-selector/core@^8.2.0", "@near-wallet-selector/core@^8.9.13":
   version "8.10.2"
   resolved "https://registry.npmjs.org/@near-wallet-selector/core/-/core-8.10.2.tgz"
   integrity sha512-MH8sg6XHyylq2ZXxnOjrKHMCmuRgFfpfdC816fW0R8hctZiXZ0lmfLvgG1xfA2BAxrVytiU1g3dcE97/P5cZqg==
@@ -1889,94 +1953,88 @@
     js-sha256 "0.9.0"
     rxjs "7.8.1"
 
-"@near-wallet-selector/core@9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@near-wallet-selector/core/-/core-9.3.0.tgz#f1d3a11d546098edc04f54d5b4f251e908486344"
-  integrity sha512-urGHLFym9l8GnXtdN/SHgNG6XMC0u0Dpuso7j7PkzDZC6Y5Qhtrwe/QLt6nQAsA2RQA5IL3jEoI4/gmF4Axw0w==
-  dependencies:
-    "@near-js/signers" "2.1.0"
-    borsh "2.0.0"
-    events "3.3.0"
-    js-sha256 "0.9.0"
-    rxjs "7.8.1"
-
-"@near-wallet-selector/hot-wallet@^9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@near-wallet-selector/hot-wallet/-/hot-wallet-9.3.0.tgz#07137eb4f2f7834fcdd5c31939a4cd83d7b4c2af"
-  integrity sha512-Wtu0Xzi/jbOlrJjEKAVGftf/X1Vi+tise7s8CGA+9bgLsy6EBvEK774hlIpj7DH79P/U2PLjCwB8VNMP8CGwuQ==
+"@near-wallet-selector/hot-wallet@^9.5.4":
+  version "9.5.4"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/hot-wallet/-/hot-wallet-9.5.4.tgz#29b051386f86f115f5e109c1ddf55452592a6d38"
+  integrity sha512-mSsNffCGAMNXGsq1F4E6WMoioBPyTo9esfwa8Bbv4iDXVK5ieVbeuH/YNINOZy5r1an98attEh9BsSofgQLNaQ==
   dependencies:
     "@hot-wallet/sdk" "1.0.8"
-    "@near-wallet-selector/core" "9.3.0"
+    "@near-wallet-selector/core" "9.5.4"
 
-"@near-wallet-selector/intear-wallet@^9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@near-wallet-selector/intear-wallet/-/intear-wallet-9.3.0.tgz#45779a62c6f5ae14cf56c2ca637f476289f679ed"
-  integrity sha512-VO+SM9Mactw+TDnCC5ufPhYtYPchyjRLTashfRmM2HpFKVhB6d6U5ygyM6beIMc5rxK8m0DD5bbNF1OpUC6IYQ==
+"@near-wallet-selector/intear-wallet@^9.5.4":
+  version "9.5.4"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/intear-wallet/-/intear-wallet-9.5.4.tgz#f529135e528c547657ec6ad16d9ff193761bdd10"
+  integrity sha512-TniZt2BQL8zhBVRX0iw3A1Qhwgc7o9VB4hbfXdI1pb0QiwpwM14jk4AMQHYlF/zrKwlvvncUmpL62fEN9NPWog==
   dependencies:
-    "@near-wallet-selector/core" "9.3.0"
-    "@near-wallet-selector/wallet-utils" "9.3.0"
+    "@near-wallet-selector/core" "9.5.4"
+    "@near-wallet-selector/wallet-utils" "9.5.4"
     near-api-js "5.0.0"
 
-"@near-wallet-selector/meteor-wallet@^8.10.2":
-  version "8.10.2"
-  resolved "https://registry.npmjs.org/@near-wallet-selector/meteor-wallet/-/meteor-wallet-8.10.2.tgz"
-  integrity sha512-n4rqkmuCkLYcB6pu3zIQks+tJ9G7Vl4I7e+FpM9N2CFLUXS+QG39OrAVNpQFdV8FXwN4FIV0/0wHf1usExaRaA==
+"@near-wallet-selector/meteor-wallet@^9.5.4":
+  version "9.5.4"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/meteor-wallet/-/meteor-wallet-9.5.4.tgz#7de81acd1f557b1a55c5b01b0eea05a6811b6c8c"
+  integrity sha512-YiawaSC9jvzwwBd/5oXa+70icQjetmr0KGKu046HRuYrFtdGPxv2j27HNBeD8p0zX41+fgm/kXtDjGkENc3V3A==
   dependencies:
-    "@meteorwallet/sdk" "1.0.9"
-    "@near-wallet-selector/core" "8.10.2"
-    near-api-js "4.0.3"
+    "@meteorwallet/sdk" "1.0.24"
+    "@near-wallet-selector/core" "9.5.4"
+    near-api-js "5.0.0"
 
-"@near-wallet-selector/modal-ui@^8.10.2":
-  version "8.10.2"
-  resolved "https://registry.npmjs.org/@near-wallet-selector/modal-ui/-/modal-ui-8.10.2.tgz"
-  integrity sha512-J8mg89RdK3qFshBzTNumYtt2c/M1uL1lXWBgM0Je69ENjDFezrPh+t3nuFs/DvJXEavb/rNtV/pmPMrwAzMOTw==
+"@near-wallet-selector/modal-ui@9.5.4", "@near-wallet-selector/modal-ui@^9.5.4":
+  version "9.5.4"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/modal-ui/-/modal-ui-9.5.4.tgz#93e7ab3a341f7e82b8ba6dc9d5f2f78df4b02f8e"
+  integrity sha512-iADZKckDLrOJIFF4bRhswkc9hVcHRMRI9Sj1S9vXSBK3KfzyMzGeLSg3E7uOQ7a9OzsfKXL+QhiJCk+jhGQaIw==
   dependencies:
-    "@near-wallet-selector/core" "8.10.2"
+    "@near-wallet-selector/core" "9.5.4"
     copy-to-clipboard "3.3.3"
     qrcode "1.5.4"
-    react "18.2.0"
-    react-dom "18.2.0"
+    react "18.3.1"
+    react-dom "18.3.1"
 
-"@near-wallet-selector/near-snap@^9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@near-wallet-selector/near-snap/-/near-snap-9.3.0.tgz#49021ae836b4299f14e239f9a35794d7af236b44"
-  integrity sha512-3RpznAXNGiJMYcP8P/l9rHPsA+1XtL2MfQJDusnagNKI4v45k2B6uk5WCtEQlQy1gprAJtua31r6wnlKjueK7A==
+"@near-wallet-selector/near-snap@^9.5.4":
+  version "9.5.4"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/near-snap/-/near-snap-9.5.4.tgz#8a5cf501f2fc75d6a68f77f3d30de8525908111b"
+  integrity sha512-8tq9zcBYwroVqj6rQajjYX4kQt/QTR3+wqnISUU1lSsLrJFJd+ngum+qyGlmFKtXJ5gMibHnWiAxSq9ZRUG6uw==
   dependencies:
     "@near-snap/sdk" "0.6.0"
-    "@near-wallet-selector/core" "9.3.0"
+    "@near-wallet-selector/core" "9.5.4"
     is-mobile "4.0.0"
 
-"@near-wallet-selector/react-hook@^8.10.2":
-  version "8.10.2"
-  resolved "https://registry.npmjs.org/@near-wallet-selector/react-hook/-/react-hook-8.10.2.tgz"
-  integrity sha512-m1i0dziN6TwSkzKvyP+gFzGcsf+OC9/RjLfVz4Ia6SO0NV8MusN+kAhuDfGEOz/ixdAA4054tpmAEmwXk98O7A==
-
-"@near-wallet-selector/unity-wallet@^9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@near-wallet-selector/unity-wallet/-/unity-wallet-9.3.0.tgz#5349e9c6972652b100c647852b46f74b8e24b641"
-  integrity sha512-N4LBkxF+oP4yYEFIDxgySsk0Et64z+iC4ePNVvrcTxWq/mDCaqNR5u0xMLKpFQOcSkxItD12z+CjFT3+mfLfNw==
+"@near-wallet-selector/react-hook@^9.5.4":
+  version "9.5.4"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/react-hook/-/react-hook-9.5.4.tgz#eb514348bf943aa5c7b957697f86378a9b4f14ab"
+  integrity sha512-Axr4JtJdzgesitQn2f6jiPCUOeJiulWLT1qioFhkEnBI0OEXV2jaBIFG1RXP4OF3dWGqlDrsMgyuZ5UiPKkiHQ==
   dependencies:
-    "@near-wallet-selector/core" "9.3.0"
-    "@near-wallet-selector/wallet-connect" "*"
+    "@near-wallet-selector/core" "9.5.4"
+    "@near-wallet-selector/modal-ui" "9.5.4"
+    near-api-js "5.0.0"
+    react "18.3.1"
+
+"@near-wallet-selector/unity-wallet@^9.5.4":
+  version "9.5.4"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/unity-wallet/-/unity-wallet-9.5.4.tgz#10ffa15292168d359effa6e81908696bf2342a72"
+  integrity sha512-CvoO+nDeT7SNhsWlIMz3qPc22w88UYq/2dv0RoVhlVW0lUOTXWEzgSbgKFycsk6PQLk88koIC7aDfbJe1c9oMg==
+  dependencies:
+    "@near-wallet-selector/core" "9.5.4"
+    "@near-wallet-selector/wallet-connect" "9.5.4"
     "@walletconnect/types" "2.21.0"
 
-"@near-wallet-selector/wallet-connect@*", "@near-wallet-selector/wallet-connect@^9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@near-wallet-selector/wallet-connect/-/wallet-connect-9.3.0.tgz#b7c93aa189153a1e648abfe1f35f3fce28d7eac5"
-  integrity sha512-laTgsA1PragX/FphZJXC32ecOoDTGp+/g+ie49u2DRosBtcd/QSDf2TohIEAWEUoCbCBsWJantoCpb5jqI/C4w==
+"@near-wallet-selector/wallet-connect@9.5.4", "@near-wallet-selector/wallet-connect@^9.5.4":
+  version "9.5.4"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/wallet-connect/-/wallet-connect-9.5.4.tgz#b354dfb55f71ec3e8a07a56a55cad3eba7d9d4b6"
+  integrity sha512-4X/cJT/tB2MNWNYs9CVQpEzWeLM0SIHaSw9arMIU2GYgekQyKBCYLoMh5UHlbwiJYt8IahzUfmvMrjVNl3HEvg==
   dependencies:
-    "@near-wallet-selector/core" "9.3.0"
-    "@near-wallet-selector/wallet-utils" "9.3.0"
+    "@near-wallet-selector/core" "9.5.4"
+    "@near-wallet-selector/wallet-utils" "9.5.4"
     "@walletconnect/modal" "2.7.0"
     "@walletconnect/sign-client" "2.21.2"
     "@walletconnect/types" "2.21.0"
 
-"@near-wallet-selector/wallet-utils@9.3.0":
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/@near-wallet-selector/wallet-utils/-/wallet-utils-9.3.0.tgz#d3c1d57cd0b71d8ddd35d1447e993109c0dd267b"
-  integrity sha512-YH3ihZd+VRwnwSoIack7dq5GWJCdQyf7wOJNCLE8iVUi8UzYUY8/Owjw7sww03qSGXUX2nox555tZyDTpEPs0w==
+"@near-wallet-selector/wallet-utils@9.5.4":
+  version "9.5.4"
+  resolved "https://registry.yarnpkg.com/@near-wallet-selector/wallet-utils/-/wallet-utils-9.5.4.tgz#63eac4e682d022e69db21d8d7a0c17925d546db9"
+  integrity sha512-9vwAZtSPeEIvmr26L4XhKFw2n6s4xpullLblnA+dD2LxZMKe6PBjrtOs2efPexBp1PiFQBcko3mYWO3Bqr+Ehw==
   dependencies:
-    "@near-wallet-selector/core" "9.3.0"
+    "@near-wallet-selector/core" "9.5.4"
 
 "@next/env@14.1.4":
   version "14.1.4"
@@ -10161,7 +10219,12 @@ mz@^2.7.0:
     object-assign "^4.0.1"
     thenify-all "^1.0.0"
 
-nanoid@3.3.6, nanoid@^3.3.6:
+nanoid@5.1.5:
+  version "5.1.5"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-5.1.5.tgz#f7597f9d9054eb4da9548cdd53ca70f1790e87de"
+  integrity sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw==
+
+nanoid@^3.3.6:
   version "3.3.6"
   resolved "https://registry.npmjs.org/nanoid/-/nanoid-3.3.6.tgz"
   integrity sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==
@@ -10189,29 +10252,6 @@ near-abi@0.2.0, near-abi@^0.2.0:
   integrity sha512-kCwSf/3fraPU2zENK18sh+kKG4uKbEUEQdyWQkmW8ZofmLarObIz2+zAYjA1teDZLeMvEQew3UysnPDXgjneaA==
   dependencies:
     "@types/json-schema" "^7.0.11"
-
-near-api-js@4.0.3:
-  version "4.0.3"
-  resolved "https://registry.npmjs.org/near-api-js/-/near-api-js-4.0.3.tgz"
-  integrity sha512-NNxIUOGjTafDp65WKRmRqjOTdn4gukse5zFzo2YS/1YJMac++WR05mEsiAB2Aj54rDb/PL8TObQZgHtSs/Pjvg==
-  dependencies:
-    "@near-js/accounts" "1.2.1"
-    "@near-js/crypto" "1.2.4"
-    "@near-js/keystores" "0.0.12"
-    "@near-js/keystores-browser" "0.0.12"
-    "@near-js/keystores-node" "0.0.12"
-    "@near-js/providers" "0.2.2"
-    "@near-js/signers" "0.1.4"
-    "@near-js/transactions" "1.2.2"
-    "@near-js/types" "0.2.1"
-    "@near-js/utils" "0.2.2"
-    "@near-js/wallet-account" "1.2.2"
-    "@noble/curves" "1.2.0"
-    borsh "1.0.0"
-    depd "2.0.0"
-    http-errors "1.7.2"
-    near-abi "0.1.1"
-    node-fetch "2.6.7"
 
 near-api-js@5.0.0:
   version "5.0.0"
@@ -11042,6 +11082,14 @@ react-dom@18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
+react-dom@18.3.1:
+  version "18.3.1"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.3.1.tgz#c2265d79511b57d479b3dd3fdfa51536494c5cb4"
+  integrity sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==
+  dependencies:
+    loose-envify "^1.1.0"
+    scheduler "^0.23.2"
+
 react-hook-form@^7.48.2:
   version "7.53.0"
   resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.53.0.tgz"
@@ -11184,6 +11232,13 @@ react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
+  dependencies:
+    loose-envify "^1.1.0"
+
+react@18.3.1:
+  version "18.3.1"
+  resolved "https://registry.yarnpkg.com/react/-/react-18.3.1.tgz#49ab892009c53933625bd16b2533fc754cab2891"
+  integrity sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==
   dependencies:
     loose-envify "^1.1.0"
 
@@ -11692,9 +11747,9 @@ saxes@^6.0.0:
   dependencies:
     xmlchars "^2.2.0"
 
-scheduler@^0.23.0:
+scheduler@^0.23.0, scheduler@^0.23.2:
   version "0.23.2"
-  resolved "https://registry.npmjs.org/scheduler/-/scheduler-0.23.2.tgz"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.23.2.tgz#414ba64a3b282892e944cf2108ecc078d115cdc3"
   integrity sha512-UOShsPwz7NrMUqhR6t0hWjFduvOzbtv7toDH1/hIrfRNIDBnnBWd0CwJTGvTpngVlmwGCdP9/Zl/tVrDqcuYzQ==
   dependencies:
     loose-envify "^1.1.0"
@@ -13389,6 +13444,11 @@ zod@^3.22.4:
   version "3.23.8"
   resolved "https://registry.npmjs.org/zod/-/zod-3.23.8.tgz"
   integrity sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==
+
+zod@^4.0.17:
+  version "4.1.11"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-4.1.11.tgz#4aab62f76cfd45e6c6166519ba31b2ea019f75f5"
+  integrity sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==
 
 zustand@^5.0.3:
   version "5.0.3"
