@@ -23,6 +23,7 @@
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.3.4",
+    "@hot-labs/near-connect": "^0.6.2",
     "@near-wallet-selector/core": "^9.5.4",
     "@near-wallet-selector/hot-wallet": "^9.5.4",
     "@near-wallet-selector/intear-wallet": "^9.5.4",

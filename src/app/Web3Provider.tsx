@@ -8,6 +8,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Tenant from "@/lib/tenant/tenant";
 import { NearProvider } from "@/contexts/NearContext";
+import { HotNearProvider } from "@/contexts/HotNearProvider";
 import InfoBanner from "@/components/InfoBanner";
 
 const queryClient = new QueryClient({
@@ -27,18 +28,33 @@ const networkId =
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
-    <NearProvider networkId={networkId}>
-      <>
-        <InfoBanner />
-        <noscript>You need to enable JavaScript to run this app.</noscript>
-        <PageContainer>
-          <Toaster />
-          {children}
-        </PageContainer>
-        {!shouldHideAgoraFooter && <Footer />}
-        <SpeedInsights />
-      </>
-    </NearProvider>
+    {process.env.NEXT_PUBLIC_NEAR_CONNECT_ENABLED === "true" ? (
+      <HotNearProvider networkId={networkId}>
+        <>
+          <InfoBanner />
+          <noscript>You need to enable JavaScript to run this app.</noscript>
+          <PageContainer>
+            <Toaster />
+            {children}
+          </PageContainer>
+          {!shouldHideAgoraFooter && <Footer />}
+          <SpeedInsights />
+        </>
+      </HotNearProvider>
+    ) : (
+      <NearProvider networkId={networkId}>
+        <>
+          <InfoBanner />
+          <noscript>You need to enable JavaScript to run this app.</noscript>
+          <PageContainer>
+            <Toaster />
+            {children}
+          </PageContainer>
+          {!shouldHideAgoraFooter && <Footer />}
+          <SpeedInsights />
+        </>
+      </NearProvider>
+    )}
   </QueryClientProvider>
 );
 
