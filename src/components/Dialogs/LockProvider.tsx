@@ -13,6 +13,8 @@ import {
   NEAR_TOKEN_METADATA,
   STNEAR_TOKEN_CONTRACTS,
   STNEAR_TOKEN_METADATA,
+  RNEAR_TOKEN_CONTRACTS,
+  RNEAR_TOKEN_METADATA,
 } from "@/lib/constants";
 import { getAPYFromGrowthRate } from "@/lib/lockUtils";
 import { TokenWithBalance } from "@/lib/types";
@@ -141,6 +143,11 @@ export const LockProvider = ({
     [networkId]
   );
 
+  const rNearTokenContractId = useMemo(
+    () => RNEAR_TOKEN_CONTRACTS[networkId],
+    [networkId]
+  );
+
   const [selectedToken, setSelectedToken] = useState<
     TokenWithBalance | undefined
   >();
@@ -215,37 +222,45 @@ export const LockProvider = ({
         return utils.format.parseNearAmount(enteredAmount) || "0";
       }
 
+      // stNEAR → NEAR
       if (
         selectedToken.accountId === stNearTokenContractId &&
         stakingPools.stNear.price
       ) {
-        // Convert stNEAR to NEAR using the rate
         let valueInNear = new Big(enteredAmount).times(
           stakingPools.stNear.price
         );
-
-        // If the user is deploying the lockup, they will also get voting power from the deposit
         if (!venearAccountInfo) {
           valueInNear = valueInNear.plus(Big(totalRegistrationCost.toString()));
         }
-
         return valueInNear.toFixed(0);
       }
 
+      // rNEAR → NEAR
+      if (
+        selectedToken.accountId === rNearTokenContractId &&
+        stakingPools.rNear?.price
+      ) {
+        let valueInNear = new Big(enteredAmount).times(
+          stakingPools.rNear.price
+        );
+        if (!venearAccountInfo) {
+          valueInNear = valueInNear.plus(Big(totalRegistrationCost.toString()));
+        }
+        return valueInNear.toFixed(0);
+      }
+
+      // liNEAR → NEAR
       if (
         selectedToken.accountId === linearTokenContractId &&
         stakingPools.liNear.price
       ) {
-        // Convert liNEAR to NEAR using the rate
         let valueInNear = new Big(enteredAmount).times(
           stakingPools.liNear.price
         );
-
-        // If the user is deploying the lockup, they will also get voting power from the deposit
         if (!venearAccountInfo) {
           valueInNear = valueInNear.plus(Big(totalRegistrationCost.toString()));
         }
-
         return valueInNear.toFixed(0);
       }
     } catch (e) {
@@ -256,10 +271,12 @@ export const LockProvider = ({
   }, [
     enteredAmount,
     selectedToken,
-    stNearTokenContractId,
     stakingPools.stNear.price,
     stakingPools.liNear.price,
+    stakingPools.rNear?.price,
+    stNearTokenContractId,
     linearTokenContractId,
+    rNearTokenContractId,
     venearAccountInfo,
     totalRegistrationCost,
   ]);
@@ -337,6 +354,18 @@ export const LockProvider = ({
               };
             }
 
+            if (
+              rNearTokenContractId &&
+              token.contract_id === rNearTokenContractId
+            ) {
+              return {
+                type: "lst" as const,
+                accountId: rNearTokenContractId,
+                metadata: RNEAR_TOKEN_METADATA,
+                balance: token.balance,
+              };
+            }
+
             return null;
           })
           .filter((token) => token !== null)
@@ -355,6 +384,7 @@ export const LockProvider = ({
     nearBalance,
     signedAccountId,
     stNearTokenContractId,
+    rNearTokenContractId,
   ]);
 
   const maxLiquidNearAvailable = useMemo(() => {
@@ -400,14 +430,25 @@ export const LockProvider = ({
       );
     }
 
+    if (
+      selectedToken?.type === "lst" &&
+      selectedToken.accountId === rNearTokenContractId
+    ) {
+      totalDeposit = totalDeposit.plus(
+        new Big(stakingPools.rNear?.deposit?.min ?? "0")
+      );
+    }
+
     return totalDeposit.toFixed();
   }, [
     linearTokenContractId,
     selectedToken?.accountId,
     selectedToken?.type,
     stNearTokenContractId,
+    rNearTokenContractId,
     stakingPools.liNear.deposit?.min,
     stakingPools.stNear.deposit?.min,
+    stakingPools.rNear?.deposit?.min,
     totalRegistrationCost,
     venearAccountInfo,
   ]);

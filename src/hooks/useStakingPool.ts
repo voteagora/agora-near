@@ -1,6 +1,7 @@
 import {
   LINEAR_TOKEN_CONTRACT_ID,
   STNEAR_TOKEN_CONTRACT_ID,
+  RNEAR_TOKEN_CONTRACT_ID,
 } from "@/components/Onboarding/HouseOfStakeOnboardingProvider";
 import { useNear } from "@/contexts/NearContext";
 import { CACHE_TTL } from "@/lib/constants";
@@ -13,8 +14,10 @@ export const useStakingPool = () => {
   const [
     { data: stNearPrice, isLoading: isLoadingStNearPrice },
     { data: liNearPrice, isLoading: isLoadingLiNearPrice },
+    { data: rNearPrice, isLoading: isLoadingRnearPrice },
     { data: liNearDeposit, isLoading: isLoadingLinearDeposit },
     { data: stNearDeposit, isLoading: isLoadingStnearDeposit },
+    { data: rNearDeposit, isLoading: isLoadingRnearDeposit },
   ] = useQueries({
     queries: [
       {
@@ -33,6 +36,17 @@ export const useStakingPool = () => {
         queryFn: () => {
           return viewMethod({
             contractId: LINEAR_TOKEN_CONTRACT_ID,
+            method: "ft_price",
+            args: {},
+          }) as Promise<string | null>;
+        },
+        staleTime: CACHE_TTL.MEDIUM,
+      },
+      {
+        queryKey: ["rnearPrice"],
+        queryFn: () => {
+          return viewMethod({
+            contractId: RNEAR_TOKEN_CONTRACT_ID,
             method: "ft_price",
             args: {},
           }) as Promise<string | null>;
@@ -75,6 +89,24 @@ export const useStakingPool = () => {
         },
         staleTime: CACHE_TTL.MEDIUM,
       },
+      {
+        queryKey: ["rnearDeposit"],
+        queryFn: () => {
+          return viewMethod({
+            contractId: RNEAR_TOKEN_CONTRACT_ID,
+            method: "storage_balance_bounds",
+            args: {},
+          }) as Promise<
+            | {
+                min?: string;
+                max?: string;
+              }
+            | null
+            | undefined
+          >;
+        },
+        staleTime: CACHE_TTL.MEDIUM,
+      },
     ],
   });
 
@@ -88,8 +120,19 @@ export const useStakingPool = () => {
         price: liNearPrice,
         deposit: liNearDeposit,
       },
+      rNear: {
+        price: rNearPrice,
+        deposit: rNearDeposit,
+      },
     }),
-    [stNearPrice, liNearPrice, stNearDeposit, liNearDeposit]
+    [
+      stNearPrice,
+      liNearPrice,
+      rNearPrice,
+      stNearDeposit,
+      liNearDeposit,
+      rNearDeposit,
+    ]
   );
 
   return {
@@ -97,7 +140,9 @@ export const useStakingPool = () => {
     isLoading:
       isLoadingStNearPrice ||
       isLoadingLiNearPrice ||
+      isLoadingRnearPrice ||
       isLoadingLinearDeposit ||
-      isLoadingStnearDeposit,
+      isLoadingStnearDeposit ||
+      isLoadingRnearDeposit,
   };
 };
