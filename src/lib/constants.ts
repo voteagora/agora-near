@@ -110,7 +110,7 @@ export const RNEAR_TOKEN_METADATA: TokenMetadata = {
   icon: rnearAssetIcon,
 };
 
-export const DEFAULT_GAS_RESERVE = "200000000000000000000000";  // 0.2 NEAR
+export const DEFAULT_GAS_RESERVE = "200000000000000000000000"; // 0.2 NEAR
 
 export const LINEAR_POOL: StakingPool = {
   id: "linear",
