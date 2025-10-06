@@ -47,6 +47,11 @@ const STAKING_POOL_MAPPING: Record<string, StakingPool> = {
     name: "MetaPool",
     description: "5.98% APY",
   },
+  [process.env.NEXT_PUBLIC_NEAR_RNEAR_TOKEN_CONTRACT_ID ?? ""]: {
+    stakingPoolId: process.env.NEXT_PUBLIC_NEAR_RNEAR_TOKEN_CONTRACT_ID ?? "",
+    name: "rNEAR",
+    description: "9.64% APY",
+  },
 };
 
 export const VeNearOnboardingModalContent = ({
