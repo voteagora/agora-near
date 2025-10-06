@@ -29,11 +29,14 @@ export const LINEAR_TOKEN_CONTRACT_ID =
   process.env.NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID ?? "";
 export const STNEAR_TOKEN_CONTRACT_ID =
   process.env.NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID ?? "";
+export const RNEAR_TOKEN_CONTRACT_ID =
+  process.env.NEXT_PUBLIC_NEAR_RNEAR_TOKEN_CONTRACT_ID ?? "";
 
 const ONBOARDING_POOLS: string[] = [
   LINEAR_TOKEN_CONTRACT_ID,
   STNEAR_TOKEN_CONTRACT_ID,
-];
+  RNEAR_TOKEN_CONTRACT_ID,
+].filter(Boolean);
 
 type OnboardingContextType = {
   isLoading: boolean;
@@ -193,6 +196,15 @@ export const HouseOfStakeOnboardingProvider = ({
                 type: "lst",
                 contractId: STNEAR_TOKEN_CONTRACT_ID,
                 symbol: "stNEAR",
+                balance: token.balance,
+              } as TokenBalance;
+            }
+
+            if (token.contract_id === RNEAR_TOKEN_CONTRACT_ID) {
+              return {
+                type: "lst",
+                contractId: RNEAR_TOKEN_CONTRACT_ID,
+                symbol: "rNEAR",
                 balance: token.balance,
               } as TokenBalance;
             }

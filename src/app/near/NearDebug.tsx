@@ -60,7 +60,9 @@ export default function NearDebug() {
         token.contract_id ===
           process.env.NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID ||
         token.contract_id ===
-          process.env.NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID
+          process.env.NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID ||
+        token.contract_id ===
+          process.env.NEXT_PUBLIC_NEAR_RNEAR_TOKEN_CONTRACT_ID
     ) || [];
 
   return (
@@ -114,7 +116,11 @@ export default function NearDebug() {
                                 process.env
                                   .NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID
                                   ? "liNEAR"
-                                  : "stNEAR"}
+                                  : token.contract_id ===
+                                      process.env
+                                        .NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID
+                                    ? "stNEAR"
+                                    : "rNEAR"}
                               </span>
                               <TokenAmount
                                 amount={token.balance}
@@ -123,7 +129,11 @@ export default function NearDebug() {
                                   process.env
                                     .NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID
                                     ? "liNEAR"
-                                    : "stNEAR"
+                                    : token.contract_id ===
+                                        process.env
+                                          .NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID
+                                      ? "stNEAR"
+                                      : "rNEAR"
                                 }
                                 maximumSignificantDigits={24}
                               />
