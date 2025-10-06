@@ -243,7 +243,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     } finally {
       setIsInitialized(true);
     }
-  }, [networkId]);
+  }, [networkId, useNearConnect]);
 
   /**
    * Displays a modal to login the user
@@ -584,7 +584,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
       });
       return (keys as any).keys || [];
     },
-    [networkId, selector]
+    [nearConnector, networkId, selector]
   );
 
   const signMessage = useCallback(
