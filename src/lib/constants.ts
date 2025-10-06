@@ -4,6 +4,7 @@ import nearAssetIcon from "@/assets/near_icon.jpg";
 import linearAssetIcon from "@/assets/linear.svg";
 import stnearAssetIcon from "@/assets/stnear.svg";
 import veNearAssetIcon from "@/assets/venear.svg";
+import rnearAssetIcon from "@/assets/rnear.svg";
 
 export const SECONDS_IN_HOUR = 3600;
 
@@ -63,6 +64,11 @@ export const LINEAR_TOKEN_CONTRACT = "linear-protocol.near";
 
 export const STNEAR_TOKEN_CONTRACT = "meta-pool.near";
 
+export const RNEAR_TOKEN_CONTRACTS = {
+  testnet: "", //TODO: Add testnet contract ID
+  mainnet: "lst.rhealab.near",
+};
+
 export const NEAR_TOKEN_METADATA: TokenMetadata = {
   name: "NEAR",
   symbol: "NEAR",
@@ -91,6 +97,13 @@ export const VENEAR_TOKEN_METADATA: TokenMetadata = {
   icon: veNearAssetIcon,
 };
 
+export const RNEAR_TOKEN_METADATA: TokenMetadata = {
+  name: "rNEAR",
+  symbol: "RNEAR",
+  decimals: NEAR_NOMINATION_EXP,
+  icon: rnearAssetIcon,
+};
+
 export const DEFAULT_GAS_RESERVE = "200000000000000000000000"; // 0.2 NEAR
 
 export const LINEAR_POOL: StakingPool = {
@@ -104,6 +117,15 @@ export const STNEAR_POOL: StakingPool = {
   contract: STNEAR_TOKEN_CONTRACT,
   priceMethod: "get_st_near_price",
   metadata: STNEAR_TOKEN_METADATA,
+};
+
+export const RNEAR_POOL: StakingPool = {
+  id: "rnear",
+  contracts: {
+    testnet: RNEAR_TOKEN_CONTRACTS.testnet,
+    mainnet: RNEAR_TOKEN_CONTRACTS.mainnet,
+  },
+  metadata: RNEAR_TOKEN_METADATA,
 };
 
 // Represents the version where the lockup contract was updated to support locking LST tokens
