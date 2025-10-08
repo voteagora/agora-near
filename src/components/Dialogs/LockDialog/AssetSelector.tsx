@@ -92,7 +92,7 @@ export const AssetSelector = ({ handleTokenSelect }: AssetSelectorProps) => {
             }
             className="w-full py-2 text-left rounded-lg hover:bg-wash px-3"
           >
-            Importar desde validador
+            Import from Validator
           </button>
         </div>
       </div>

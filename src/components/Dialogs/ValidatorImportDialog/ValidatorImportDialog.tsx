@@ -44,7 +44,7 @@ export function ValidatorImportDialog({
 
   const handleProceed = useCallback(() => {
     if (!validatorId || !effectiveAccountId) return;
-    // Abre el lock dialog para continuar el flujo normal tras verificar manualmente en review
+    // Open the lock dialog to continue the normal flow after manual verification in review
     openDialog({
       type: "NEAR_LOCK",
       className: "sm:w-[700px]",
@@ -54,7 +54,7 @@ export function ValidatorImportDialog({
 
   return (
     <div className="flex flex-col gap-4 p-6 w-full">
-      <h2 className="text-xl font-semibold">Importar desde validador</h2>
+      <h2 className="text-xl font-semibold">Import from Validator</h2>
       <div className="flex flex-col gap-2">
         <label className="text-sm text-secondary">
           Validator ID (staking pool)
@@ -66,9 +66,11 @@ export function ValidatorImportDialog({
         />
       </div>
       <div className="flex flex-col gap-2">
-        <label className="text-sm text-secondary">Tu cuenta (opcional)</label>
+        <label className="text-sm text-secondary">
+          Your Account (optional)
+        </label>
         <Input
-          placeholder="tu-cuenta.near"
+          placeholder="your-account.near"
           value={accountId}
           onChange={(e) => setAccountId(e.target.value)}
         />
@@ -76,11 +78,11 @@ export function ValidatorImportDialog({
       {validatorId && effectiveAccountId ? (
         <div className="flex flex-col gap-2 border border-line rounded-lg p-4">
           <div className="flex justify-between">
-            <span className="text-sm text-secondary">Cuenta</span>
+            <span className="text-sm text-secondary">Account</span>
             <span className="text-sm">{effectiveAccountId}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm text-secondary">Validador</span>
+            <span className="text-sm text-secondary">Validator</span>
             <span className="text-sm">{validatorId}</span>
           </div>
           <div className="flex justify-between">
@@ -109,13 +111,13 @@ export function ValidatorImportDialog({
       ) : null}
       <div className="flex gap-2 justify-end">
         <Button variant="secondary" onClick={closeDialog}>
-          Cancelar
+          Cancel
         </Button>
         <Button
           onClick={handleProceed}
           disabled={!validatorId || !effectiveAccountId}
         >
-          Continuar
+          Continue
         </Button>
       </div>
     </div>
