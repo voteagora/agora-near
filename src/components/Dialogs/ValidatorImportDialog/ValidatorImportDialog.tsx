@@ -110,7 +110,7 @@ export function ValidatorImportDialog({
         </div>
       ) : null}
       <div className="flex gap-2 justify-end">
-        <Button variant="secondary" onClick={closeDialog}>
+        <Button variant="outline" onClick={closeDialog}>
           Cancel
         </Button>
         <Button
