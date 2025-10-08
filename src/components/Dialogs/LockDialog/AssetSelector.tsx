@@ -5,6 +5,7 @@ import { useLockProviderContext } from "../LockProvider";
 import Image from "next/image";
 import TokenAmount from "../../shared/TokenAmount";
 import { Skeleton } from "../../ui/skeleton";
+import { useOpenDialog } from "../DialogProvider/DialogProvider";
 
 type AssetSelectorProps = {
   handleTokenSelect: (token: TokenWithBalance) => void;
@@ -13,6 +14,7 @@ type AssetSelectorProps = {
 export const AssetSelector = ({ handleTokenSelect }: AssetSelectorProps) => {
   const { availableTokens } = useLockProviderContext();
   const { price, isLoading: isLoadingPrice } = usePrice();
+  const openDialog = useOpenDialog();
 
   return (
     <div className="flex flex-col items-center w-full bg-neutral w-full h-full">
@@ -79,6 +81,20 @@ export const AssetSelector = ({ handleTokenSelect }: AssetSelectorProps) => {
             </button>
           );
         })}
+        <div className="mt-4 pt-4 border-t border-line">
+          <button
+            onClick={() =>
+              openDialog({
+                type: "VALIDATOR_IMPORT",
+                className: "sm:w-[600px]",
+                params: {},
+              })
+            }
+            className="w-full py-2 text-left rounded-lg hover:bg-wash px-3"
+          >
+            Importar desde validador
+          </button>
+        </div>
       </div>
     </div>
   );

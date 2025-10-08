@@ -13,6 +13,7 @@ import { UnlockDialog } from "../UnlockDialog";
 import { EncourageConnectWalletDialog } from "@/components/Delegates/Delegations/EncourageConnectWalletDialog";
 import SubscribeDialog from "@/components/Notifications/SubscribeDialog";
 import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
+import { ValidatorImportDialog } from "../ValidatorImportDialog/ValidatorImportDialog";
 
 export type DialogType =
   | DelegateDialogType
@@ -27,7 +28,8 @@ export type DialogType =
   | UnlockDialogType
   | EncourageConnectWalletDialogType
   | SubscribeDialogType
-  | ConfirmDialogType;
+  | ConfirmDialogType
+  | ValidatorImportDialogType;
 
 export type DelegateDialogType = {
   type: "NEAR_DELEGATE";
@@ -124,6 +126,12 @@ export type ConfirmDialogType = {
   };
 };
 
+export type ValidatorImportDialogType = {
+  type: "VALIDATOR_IMPORT";
+  className?: string;
+  params: Record<string, never>;
+};
+
 export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_DELEGATE: ({ delegateAddress }, closeDialog) => {
     return (
@@ -191,5 +199,8 @@ export const dialogs: DialogDefinitions<DialogType> = {
   },
   CONFIRM: (params, closeDialog) => (
     <ConfirmDialog {...params} closeDialog={closeDialog} />
+  ),
+  VALIDATOR_IMPORT: (_, closeDialog) => (
+    <ValidatorImportDialog closeDialog={closeDialog} />
   ),
 };
