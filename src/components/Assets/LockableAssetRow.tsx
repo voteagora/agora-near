@@ -2,6 +2,7 @@ import { memo, useCallback, useMemo } from "react";
 import {
   LINEAR_TOKEN_CONTRACTS,
   STNEAR_TOKEN_CONTRACTS,
+  RNEAR_TOKEN_CONTRACTS,
 } from "@/lib/constants";
 import { useNear } from "@/contexts/NearContext";
 import { TokenWithBalance } from "@/lib/types";
@@ -27,6 +28,8 @@ export const LockableAssetRow = memo<LockableAssetRowProps>(
           url = "https://app.linearprotocol.org/";
         } else if (tokenAccountId === STNEAR_TOKEN_CONTRACTS[networkId]) {
           url = "https://www.metapool.app/stake/?token=near";
+        } else if (tokenAccountId === RNEAR_TOKEN_CONTRACTS[networkId]) {
+          url = "https://app.rhea.finance/stake";
         }
 
         if (url) {
