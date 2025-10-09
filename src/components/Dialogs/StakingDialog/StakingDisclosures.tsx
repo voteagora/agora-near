@@ -41,10 +41,10 @@ export const StakingDisclosures = memo(
 
           <div>
             <h2 className="text-sm font-bold text-gray-900">
-              Displayed APY Is an Estimate
+              Displayed VPG Is an Estimate
             </h2>
             <p className="text-[#3C3C3C] leading-relaxed text-sm">
-              The APY you see is only an estimate based on recent performance.
+              The VPG you see is only an estimate based on recent performance.
               Actual returns may vary and are not guaranteed.
             </p>
           </div>

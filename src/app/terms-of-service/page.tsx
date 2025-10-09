@@ -550,7 +550,7 @@ export default function TermsOfServicePage() {
                   congestion or insufficient gas;
                 </li>
                 <li>
-                  Rewards, APY projections, and veNEAR conversion rates are
+                  Rewards, VPG projections, and veNEAR conversion rates are
                   estimates and not guarantees;
                 </li>
                 <li>
@@ -822,7 +822,7 @@ export default function TermsOfServicePage() {
           </h3>
           <div className="text-secondary space-y-4">
             <p>
-              Information presented through the Interface—including APY figures,
+              Information presented through the Interface—including VPG figures,
               historical performance, proposal discussions, or analytics—does
               not constitute investment, legal, or tax advice. You must consult
               your own professional advisers. The tax consequences of

@@ -39,7 +39,7 @@ export const StakingOptionCard = ({
         <span>{tokenMetadata.name}</span>
       </div>
       <div className="flex flex-col">
-        <div className="text-xs text-[#676767]">EST. APY</div>
+        <div className="text-xs text-[#676767]">EST. VPG</div>
         <div className="text-4xl font-light">
           {apy ? `${apy.toFixed(2)}%` : "-"}
         </div>
