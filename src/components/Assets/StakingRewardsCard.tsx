@@ -40,7 +40,7 @@ export const StakingRewardsCard = memo(
                   </span>
                 )}
                 <span className="text-xs sm:text-sm lg:text-sm text-white">
-                  APY
+                  VPG
                 </span>
               </div>
             </div>
