@@ -5,13 +5,13 @@ import { VStack, HStack } from "@/components/Layout/Stack";
 import { Tab } from "@headlessui/react";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 import Markdown from "@/components/shared/Markdown/Markdown";
-import InputBox from "@/components/shared/InputBox";
+import { InputBox } from "@/components/shared/InputBox";
 import { DraftProposal } from "@/lib/api/proposal/types";
 import { useUpdateDraftProposal } from "@/hooks/useDraftProposals";
 import { toast } from "react-hot-toast";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
 import Link from "next/link";
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import TokenAmount from "@/components/shared/TokenAmount";
 import Big from "big.js";
 import { VotingConfig } from "@/lib/contracts/types/voting";
@@ -42,9 +42,10 @@ export interface DraftEditFormRef {
 function DraftDetailsForm() {
   const {
     watch,
-    setValue,
     formState: { errors },
+    control,
   } = useFormContext<FormValues>();
+
   const descriptionValue = watch("description");
   const [displayMode, setDisplayMode] = useState<DisplayMode>("write");
 
@@ -52,14 +53,16 @@ function DraftDetailsForm() {
     <VStack className="mt-4">
       <div className="flex flex-col gap-4">
         <h4 className="text-xs font-semibold mb-1 text-secondary">Title</h4>
-        <InputBox
-          placeholder={"I'd like to propose..."}
-          value={watch("title")}
-          onChange={(next) =>
-            setValue("title", next, { shouldDirty: true, shouldValidate: true })
-          }
-          error={!!errors.title}
-          required
+        <Controller
+          control={control}
+          name="title"
+          render={({ field }) => (
+            <InputBox
+              placeholder={"I'd like to propose..."}
+              error={!!errors.title}
+              {...field}
+            />
+          )}
         />
         {errors.title && (
           <p className={errorTextStyle}>{errors.title.message}</p>
@@ -129,17 +132,16 @@ function DraftDetailsForm() {
 
         {displayMode === "write" && (
           <>
-            <textarea
-              className={`text-tertiary p-4 rounded-md outline-none w-full min-h-[16rem] border ${errors.description ? "border-negative" : "border-line"}`}
-              value={descriptionValue}
-              onChange={(e) =>
-                setValue("description", e.target.value, {
-                  shouldDirty: true,
-                  shouldValidate: true,
-                })
-              }
-              placeholder="I'm a proposal body, and I like markdown formatting..."
-              required
+            <Controller
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <textarea
+                  className={`text-tertiary p-4 rounded-md outline-none w-full min-h-[16rem] border ${errors.description ? "border-negative" : "border-line"}`}
+                  placeholder="I'm a proposal body, and I like markdown formatting..."
+                  {...field}
+                />
+              )}
             />
             {errors.description && (
               <p className={errorTextStyle}>{errors.description.message}</p>
@@ -162,12 +164,16 @@ function DraftDetailsForm() {
             <ArrowTopRightOnSquareIcon className="w-4 h-4" />
           </Link>
         </div>
-        <InputBox
-          placeholder={"https://gov.near.org/your-proposal"}
-          value={watch("link")}
-          onChange={(next) => setValue("link", next, { shouldDirty: true })}
-          error={!!errors.link}
-          required
+        <Controller
+          control={control}
+          name="link"
+          render={({ field }) => (
+            <InputBox
+              placeholder={"https://gov.near.org/your-proposal"}
+              error={!!errors.link}
+              {...field}
+            />
+          )}
         />
         {errors.link && (
           <div className={errorTextStyle}>
@@ -230,7 +236,7 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
             }
           );
         },
-        (errors) => {
+        () => {
           toast.error("Please fix all validation errors before saving");
         }
       )();
