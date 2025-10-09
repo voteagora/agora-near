@@ -120,7 +120,11 @@ export default function NearDebug() {
                                       process.env
                                         .NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID
                                     ? "stNEAR"
-                                    : "rNEAR"}
+                                    : token.contract_id ===
+                                        process.env
+                                          .NEXT_PUBLIC_NEAR_RNEAR_TOKEN_CONTRACT_ID
+                                      ? "rNEAR"
+                                      : token.contract_id}
                               </span>
                               <TokenAmount
                                 amount={token.balance}
@@ -133,7 +137,11 @@ export default function NearDebug() {
                                         process.env
                                           .NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID
                                       ? "stNEAR"
-                                      : "rNEAR"
+                                      : token.contract_id ===
+                                          process.env
+                                            .NEXT_PUBLIC_NEAR_RNEAR_TOKEN_CONTRACT_ID
+                                        ? "rNEAR"
+                                        : token.contract_id
                                 }
                                 maximumSignificantDigits={24}
                               />
