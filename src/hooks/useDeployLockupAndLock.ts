@@ -153,6 +153,15 @@ export const useDeployLockupAndLock = () => {
       ],
     });
 
+    // Ensure account info used by Lockup Holdings ("Locked") updates immediately
+    queryClient.invalidateQueries({
+      queryKey: [
+        READ_NEAR_CONTRACT_QK,
+        TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        "get_account_info",
+      ],
+    });
+
     queryClient.invalidateQueries({
       queryKey: [
         READ_NEAR_CONTRACT_QK,
