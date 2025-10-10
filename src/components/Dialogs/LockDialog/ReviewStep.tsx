@@ -18,6 +18,8 @@ import { useLockProviderContext } from "../LockProvider";
 import { DepositTooltip } from "./DepositTooltip";
 import { DisclosuresContent } from "./DisclosuresContent";
 import { LiquidStakingTokenLockWarning } from "./LiquidStakingTokenLockWarning";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
+import { trackEvent } from "@/lib/analytics";
 
 type ReviewStepProps = {
   handleEdit: () => void;
@@ -81,6 +83,17 @@ export const ReviewStep = memo(
     }, [venearAmount]);
 
     const onSubmit = useCallback(() => {
+      trackEvent({
+        event_name:
+          selectedToken?.type === "lst"
+            ? MixpanelEvents.LockedNEARWithLST
+            : MixpanelEvents.LockedNEAR,
+        event_data: {
+          token: selectedToken?.metadata?.symbol,
+          type: selectedToken?.type,
+          amountYocto: utils.format.parseNearAmount(enteredAmount) ?? "0",
+        },
+      });
       executeTransactions({
         numTransactions: requiredTransactions.length,
       });

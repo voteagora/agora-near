@@ -3,6 +3,8 @@ import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useFetchProof } from "./useFetchProof";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
+import { trackEvent } from "@/lib/analytics";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { useWriteHOSContract } from "./useWriteHOSContract";
 
@@ -27,7 +29,7 @@ export function useCastVote({ onSuccess }: { onSuccess?: () => void }) {
         queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
       }),
     ]);
-
+    trackEvent({ event_name: MixpanelEvents.VotedOnProposal });
     onSuccess?.();
   }, [queryClient, onSuccess]);
 
