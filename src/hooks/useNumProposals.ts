@@ -1,11 +1,11 @@
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useReadHOSContract } from "./useReadHOSContract";
 import { useMemo } from "react";
 
 export const useNumProposals = () => {
   const [{ data: numProposals, isLoading, error }] = useReadHOSContract([
     {
-      contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+      contractId: CONTRACTS.VOTING_CONTRACT_ID,
       methodName: "get_num_proposals",
       config: {
         args: {},

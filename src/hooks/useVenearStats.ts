@@ -1,5 +1,5 @@
 import { useReadHOSContract } from "@/hooks/useReadHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 
 export interface VeNearStats {
   totalSupply: string;
@@ -13,28 +13,28 @@ export interface VeNearStats {
 
 const queries = [
   {
-    contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+    contractId: CONTRACTS.VENEAR_CONTRACT_ID,
     methodName: "ft_total_supply",
     config: {
       args: {},
     },
   },
   {
-    contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+    contractId: CONTRACTS.VENEAR_CONTRACT_ID,
     methodName: "get_lockup_deployment_cost",
     config: {
       args: {},
     },
   },
   {
-    contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+    contractId: CONTRACTS.VENEAR_CONTRACT_ID,
     methodName: "storage_balance_bounds",
     config: {
       args: {},
     },
   },
   {
-    contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+    contractId: CONTRACTS.VENEAR_CONTRACT_ID,
     methodName: "get_config",
     config: {
       args: {},

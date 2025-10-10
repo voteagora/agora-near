@@ -1,6 +1,6 @@
 import { useNear } from "@/contexts/NearContext";
 import { useWriteHOSContract } from "@/hooks/useWriteHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook } from "@testing-library/react";
 import React from "react";
@@ -153,7 +153,7 @@ describe("useRegisterLockup", () => {
       });
 
       expect(mockMutate).toHaveBeenCalledWith({
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        contractId: CONTRACTS.VENEAR_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "storage_deposit",
@@ -184,7 +184,7 @@ describe("useRegisterLockup", () => {
       });
 
       expect(mockMutateAsync).toHaveBeenCalledWith({
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        contractId: CONTRACTS.VENEAR_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "storage_deposit",

@@ -1,5 +1,5 @@
 import { useWriteHOSContract } from "@/hooks/useWriteHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
 import { DELEGATES_QK } from "@/hooks/useDelegates";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -16,7 +16,7 @@ vi.mock("@/hooks/useWriteHOSContract", () => ({
 }));
 
 vi.mock("@/lib/contractConstants", () => ({
-  TESTNET_CONTRACTS: {
+  CONTRACTS: {
     VENEAR_CONTRACT_ID: "venear.testnet",
   },
 }));
@@ -187,7 +187,7 @@ describe("useUndelegate", () => {
       });
 
       expect(mockMutate).toHaveBeenCalledWith({
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        contractId: CONTRACTS.VENEAR_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "undelegate",
@@ -235,7 +235,7 @@ describe("useUndelegate", () => {
       });
 
       expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
+        queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VENEAR_CONTRACT_ID],
       });
     });
 
