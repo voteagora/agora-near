@@ -26,37 +26,31 @@ const getContractConfig = (): ContractConfig => {
       return {
         VENEAR_CONTRACT_ID: "venear.dao",
         VOTING_CONTRACT_ID: "vote.dao",
-
       };
     case "august-prod":
       return {
         VENEAR_CONTRACT_ID: "v.voteagora.near", // v.hos-07.testnet (old dev)
         VOTING_CONTRACT_ID: "vote.voteagora.near", // vote.hos-07.testnet (old dev)
-
       };
     case "staging":
       return {
         VENEAR_CONTRACT_ID: "venear.stagingdao.near",
         VOTING_CONTRACT_ID: "vote.stagingdao.near",
-
       };
     case "dev":
       return {
         VENEAR_CONTRACT_ID: DEV_VENEAR_CONTRACT_ID,
         VOTING_CONTRACT_ID: DEV_VOTING_CONTRACT_ID,
-
       };
     case "local":
       return {
         VENEAR_CONTRACT_ID: DEV_VENEAR_CONTRACT_ID,
         VOTING_CONTRACT_ID: DEV_VOTING_CONTRACT_ID,
-
       };
     default:
       return {
         VENEAR_CONTRACT_ID: DEV_VENEAR_CONTRACT_ID,
         VOTING_CONTRACT_ID: DEV_VOTING_CONTRACT_ID,
-
       };
   }
 };

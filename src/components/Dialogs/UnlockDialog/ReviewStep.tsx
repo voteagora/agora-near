@@ -42,10 +42,7 @@ export const ReviewStep = memo(
         lockupAccountId: lockupAccountId || "",
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: [
-              READ_NEAR_CONTRACT_QK,
-              CONTRACTS.VENEAR_CONTRACT_ID,
-            ],
+            queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VENEAR_CONTRACT_ID],
           });
           queryClient.invalidateQueries({
             queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
