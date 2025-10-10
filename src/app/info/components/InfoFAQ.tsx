@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, ReactNode, useState } from "react";
+import React, { useEffect, ReactNode, useState, useCallback } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -11,6 +11,8 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { getQuorumFloor, getQuorumPercentage } from "@/lib/proposalUtils";
 import TokenAmount from "@/components/shared/TokenAmount";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
+import { trackEvent } from "@/lib/analytics";
 
 interface FAQ {
   id: string;
@@ -567,6 +569,20 @@ const InfoFAQ = () => {
     }
   }, [faqId, isValidFaqId]);
 
+  const handleToggle = useCallback(
+    (value: string) => {
+      setOpenItem(value);
+      if (value) {
+        const faq = faqs.find((f) => f.id === value);
+        trackEvent({
+          event_name: MixpanelEvents.FAQExpanded,
+          event_data: { id: value, question: faq?.question },
+        });
+      }
+    },
+    []
+  );
+
   return (
     <div className="mt-12">
       <h3 className="text-2xl font-black text-primary mb-6">
@@ -577,7 +593,7 @@ const InfoFAQ = () => {
         collapsible
         className="w-full"
         value={openItem}
-        onValueChange={setOpenItem}
+        onValueChange={handleToggle}
       >
         {faqs.map((faq) => (
           <AccordionItem key={faq.id} value={faq.id} id={faq.id}>

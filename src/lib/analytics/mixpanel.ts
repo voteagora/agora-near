@@ -84,4 +84,5 @@ export const MixpanelEvents = {
   CreatedDelegateStatement: "Created Delegate Statement",
   ProposalCreated: "Proposal Created",
   VotedOnProposal: "Voted on Proposal",
+  FAQExpanded: "FAQ Expanded",
 };
