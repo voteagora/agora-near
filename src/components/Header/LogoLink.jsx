@@ -5,6 +5,8 @@ import Link from "next/link";
 
 export default function LogoLink() {
   const { ui, isProd } = Tenant.current();
+  const gitSha =
+    process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || "";
 
   return (
     <Link href="/" className="flex flex-row justify-between w-full">
@@ -25,7 +27,7 @@ export default function LogoLink() {
           <>
             <div className="h-3 w-[2px] bg-line rounded-full hidden sm:block"></div>
             <span className="hidden sm:block font-semibold text-primary bg-tertiary/10 px-1.5 py-0.5 rounded-lg text-xs border border-line">
-              Test contracts mode
+              Dev contracts {gitSha && `(${gitSha})`}
             </span>
           </>
         )}
