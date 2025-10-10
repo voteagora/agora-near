@@ -569,19 +569,16 @@ const InfoFAQ = () => {
     }
   }, [faqId, isValidFaqId]);
 
-  const handleToggle = useCallback(
-    (value: string) => {
-      setOpenItem(value);
-      if (value) {
-        const faq = faqs.find((f) => f.id === value);
-        trackEvent({
-          event_name: MixpanelEvents.FAQExpanded,
-          event_data: { id: value, question: faq?.question },
-        });
-      }
-    },
-    []
-  );
+  const handleToggle = useCallback((value: string) => {
+    setOpenItem(value);
+    if (value) {
+      const faq = faqs.find((f) => f.id === value);
+      trackEvent({
+        event_name: MixpanelEvents.FAQExpanded,
+        event_data: { id: value, question: faq?.question },
+      });
+    }
+  }, []);
 
   return (
     <div className="mt-12">
