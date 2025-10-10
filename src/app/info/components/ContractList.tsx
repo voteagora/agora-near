@@ -10,10 +10,7 @@ import Image from "next/image";
 import linkIcon from "@/assets/link.svg";
 import Link from "next/link";
 
-const nearUrl =
-  process.env.NEXT_PUBLIC_AGORA_ENV === "prod"
-    ? "https://nearblocks.io"
-    : "https://testnet.nearblocks.io";
+const nearUrl = "https://nearblocks.io";
 
 const ContractList = () => {
   const list = [

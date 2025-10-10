@@ -82,12 +82,9 @@ export const fetchProposalChartData = async (proposalId: string) => {
 };
 
 export const fetchProposal = async (proposalId: string) => {
-  const rpcUrl = getRpcUrl(
-    process.env.NEXT_PUBLIC_AGORA_ENV === "prod" ? "mainnet" : "testnet",
-    {
-      useArchivalNode: true,
-    }
-  );
+  const rpcUrl = getRpcUrl("mainnet", {
+    useArchivalNode: true,
+  });
 
   const jsonRpcProvider = new JsonRpcProvider({ url: rpcUrl });
 
