@@ -1,5 +1,5 @@
 import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { TokenWithBalance } from "@/lib/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -73,7 +73,7 @@ export function LockDialogContent({ closeDialog }: DialogContentProps) {
   const handleViewDashboard = useCallback(() => {
     closeDialog();
     queryClient.invalidateQueries({
-      queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
+      queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VENEAR_CONTRACT_ID],
     });
     router.push("/assets");
   }, [closeDialog, queryClient, router]);

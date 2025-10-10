@@ -9,13 +9,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useReadHOSContract } from "@/hooks/useReadHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { getVotingDays } from "@/lib/proposalUtils";
 
 const GovernorSettingsParams = () => {
   const [{ data: config, isLoading }] = useReadHOSContract([
     {
-      contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+      contractId: CONTRACTS.VOTING_CONTRACT_ID,
       methodName: "get_config",
       config: {
         args: {},
