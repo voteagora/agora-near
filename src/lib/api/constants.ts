@@ -11,7 +11,9 @@ const getApiUrl = () => {
     case "local":
       return "http://localhost:8080/api";
     default:
-      throw new Error(`Unknown NEXT_PUBLIC_AGORA_ENV: ${process.env.NEXT_PUBLIC_AGORA_ENV}, so API is unknown.`);
+      throw new Error(
+        `Unknown NEXT_PUBLIC_AGORA_ENV: ${process.env.NEXT_PUBLIC_AGORA_ENV}, so API is unknown.`
+      );
   }
 };
 
