@@ -38,8 +38,6 @@ export const StakingReview = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDisclosures, setShowDisclosures] = useState(false);
 
-  const needsToSelectPool = useRef(!currentStakingPoolId);
-
   const { networkId } = useNear();
 
   const { price, isLoading: isLoadingNearPrice } = usePrice();
@@ -47,6 +45,11 @@ export const StakingReview = ({
 
   const selectedStats = poolStats[selectedPool.id];
   const selectedTokenMetadata = selectedPool.metadata;
+
+  const needsToSelectPool = useMemo(() => {
+    const desiredPoolId = selectedPool.contracts[networkId];
+    return !currentStakingPoolId || currentStakingPoolId !== desiredPoolId;
+  }, [currentStakingPoolId, selectedPool.contracts, networkId]);
 
   const totalUsd = useMemo(() => {
     if (!price || !enteredAmountYoctoNear) return "0";
@@ -74,12 +77,12 @@ export const StakingReview = ({
 
   const requiredSteps = useMemo(() => {
     const steps: StakingStep[] = [];
-    if (needsToSelectPool.current) {
+    if (needsToSelectPool) {
       steps.push("select_pool");
     }
     steps.push("stake");
     return steps;
-  }, []);
+  }, [needsToSelectPool]);
 
   const onStake = useCallback(
     async ({ startAtStep = 0 }: { startAtStep?: number }) => {
