@@ -550,7 +550,7 @@ export default function TermsOfServicePage() {
                   congestion or insufficient gas;
                 </li>
                 <li>
-                  Rewards, VPG projections, and veNEAR conversion rates are
+                  Rewards, any APY projection, Voting Power Growth, and veNEAR conversion rates are
                   estimates and not guarantees;
                 </li>
                 <li>

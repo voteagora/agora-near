@@ -40,12 +40,12 @@ const STAKING_POOL_MAPPING: Record<string, StakingPool> = {
   [process.env.NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID ?? ""]: {
     stakingPoolId: process.env.NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID ?? "",
     name: "liNEAR",
-    description: "5.99% VPG",
+    description: "5.99% Voting Power Growth",
   },
   [process.env.NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID ?? ""]: {
     stakingPoolId: process.env.NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID ?? "",
     name: "MetaPool",
-    description: "5.98% VPG",
+    description: "5.98% Voting Power Growth",
   },
 };
 
