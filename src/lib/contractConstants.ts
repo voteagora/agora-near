@@ -20,43 +20,47 @@ const getContractConfig = (): ContractConfig => {
     };
   }
 
+  const STAKING_POOL_ID = "chorusone.pool.f863973.m0"
+  const DEV_VENEAR_CONTRACT_ID = "vt.voteagora.near";
+  const DEV_VOTING_CONTRACT_ID = "vote-dev.voteagora.near";
+
   // Otherwise, use environment-specific config
   switch (process.env.NEXT_PUBLIC_AGORA_ENV) {
     case "prod":
       return {
-        VENEAR_CONTRACT_ID: "", // TODO: Add prod contract ID
-        VOTING_CONTRACT_ID: "", // TODO: Add prod voting contract ID
-        STAKING_POOL_ID: "", // TODO: Add prod staking pool ID
+        VENEAR_CONTRACT_ID: "venear.dao",
+        VOTING_CONTRACT_ID: "vote.dao",
+        STAKING_POOL_ID
       };
     case "august-prod":
       return {
-        VENEAR_CONTRACT_ID: "", // TODO: Add august-prod contract ID
-        VOTING_CONTRACT_ID: "", // TODO: Add august-prod voting contract ID
-        STAKING_POOL_ID: "", // TODO: Add august-prod staking pool ID
+        VENEAR_CONTRACT_ID: "v.hos-07.testnet", // v.hos-07.testnet (old dev)
+        VOTING_CONTRACT_ID: "vote.voteagora.near", // vote.hos-07.testnet (old dev)
+        STAKING_POOL_ID
       };
     case "staging":
       return {
-        VENEAR_CONTRACT_ID: "", // TODO: Add staging contract ID
-        VOTING_CONTRACT_ID: "", // TODO: Add staging voting contract ID
-        STAKING_POOL_ID: "", // TODO: Add staging staking pool ID
+        VENEAR_CONTRACT_ID: "venear.stagingdao.near", 
+        VOTING_CONTRACT_ID: "vote.stagingdao.near",
+        STAKING_POOL_ID
       };
     case "dev":
       return {
-        VENEAR_CONTRACT_ID: "", // TODO: Add dev contract ID
-        VOTING_CONTRACT_ID: "", // TODO: Add dev voting contract ID
-        STAKING_POOL_ID: "", // TODO: Add dev staking pool ID
+        VENEAR_CONTRACT_ID: DEV_VENEAR_CONTRACT_ID,
+        VOTING_CONTRACT_ID: DEV_VOTING_CONTRACT_ID,
+        STAKING_POOL_ID
       };
     case "local":
       return {
-        VENEAR_CONTRACT_ID: "", // TODO: Add local/dev contract ID
-        VOTING_CONTRACT_ID: "", // TODO: Add local/dev voting contract ID
-        STAKING_POOL_ID: "", // TODO: Add local/dev staking pool ID
+        VENEAR_CONTRACT_ID: DEV_VENEAR_CONTRACT_ID,
+        VOTING_CONTRACT_ID: DEV_VOTING_CONTRACT_ID,
+        STAKING_POOL_ID
       };
     default:
       return {
-        VENEAR_CONTRACT_ID: "", // TODO: Add default contract ID
-        VOTING_CONTRACT_ID: "", // TODO: Add default voting contract ID
-        STAKING_POOL_ID: "", // TODO: Add default staking pool ID
+        VENEAR_CONTRACT_ID: DEV_VENEAR_CONTRACT_ID,
+        VOTING_CONTRACT_ID: DEV_VOTING_CONTRACT_ID,
+        STAKING_POOL_ID
       };
   }
 };
