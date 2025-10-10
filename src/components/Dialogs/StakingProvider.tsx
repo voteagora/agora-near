@@ -97,9 +97,10 @@ export const StakingProvider = ({
   );
   const [enteredAmount, setEnteredAmount] = useState(prefilledAmount ?? "");
   const [isStakingMax, setIsStakingMax] = useState(false);
-  const [selectedPool, setSelectedPool] = useState<StakingPool>(
+  const [selectedPool, setSelectedPoolState] = useState<StakingPool>(
     supportedPools[0]
   );
+  const [hasUserSelectedPool, setHasUserSelectedPool] = useState(false);
 
   const {
     lockupAccountId,
@@ -136,7 +137,13 @@ export const StakingProvider = ({
         (contractId) => contractId === stakingPoolId
       )
     );
-  }, [stakingPoolId]);
+  }, [stakingPoolId, supportedPools]);
+
+  const effectiveSelectedPool = useMemo(() => {
+    return hasUserSelectedPool
+      ? selectedPool
+      : (preSelectedStakingPool ?? selectedPool);
+  }, [hasUserSelectedPool, preSelectedStakingPool, selectedPool]);
 
   const { stats, error: stakingPoolStatsError } = useStakingPoolStats({
     pools: supportedPools,
@@ -159,7 +166,7 @@ export const StakingProvider = ({
       },
       {} as Record<string, { apy: number; totalVolumeYocto: string }>
     );
-  }, [stats, exchangeRateMap]);
+  }, [stats, exchangeRateMap, supportedPools]);
 
   const enteredAmountYoctoNear = useMemo(() => {
     if (isStakingMax) {
@@ -177,9 +184,9 @@ export const StakingProvider = ({
   const amountInStakingToken = useMemo(() => {
     return convertNearToStakingToken(
       enteredAmountYoctoNear,
-      exchangeRateMap[selectedPool.id]
+      exchangeRateMap[effectiveSelectedPool.id]
     );
-  }, [enteredAmountYoctoNear, exchangeRateMap, selectedPool.id]);
+  }, [enteredAmountYoctoNear, exchangeRateMap, effectiveSelectedPool.id]);
 
   const amountError = useMemo(() => {
     if (!enteredAmount) {
@@ -228,11 +235,16 @@ export const StakingProvider = ({
   const error =
     lockupAccountError || stakingPoolStatsError || maxStakingAmountError;
 
+  const setSelectedPool = useCallback((pool: StakingPool) => {
+    setHasUserSelectedPool(true);
+    setSelectedPoolState(pool);
+  }, []);
+
   return (
     <StakingContext.Provider
       value={{
         currentStakingPoolId: stakingPoolId,
-        selectedPool: preSelectedStakingPool ?? selectedPool,
+        selectedPool: effectiveSelectedPool,
         hasAlreadySelectedStakingPool: !!preSelectedStakingPool,
         setSelectedPool,
         enteredAmount,

@@ -31,7 +31,6 @@ export const EnterStakingAmount = ({
     selectedPool,
     setSelectedPool,
     source,
-    hasAlreadySelectedStakingPool,
     isStakingMax,
   } = useStakingProviderContext();
 
@@ -53,7 +52,7 @@ export const EnterStakingAmount = ({
           {pools.map((pool) => (
             <StakingOptionCard
               key={pool.id}
-              isEnabled={!hasAlreadySelectedStakingPool}
+              isEnabled={true}
               isSelected={selectedPool.id === pool.id}
               onSelect={() => setSelectedPool(pool)}
               tokenMetadata={pool.metadata}
