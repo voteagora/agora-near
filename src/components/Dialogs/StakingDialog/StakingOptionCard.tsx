@@ -29,13 +29,19 @@ export const StakingOptionCard = ({
       }`}
     >
       <div className="flex items-center gap-2">
-        <Image
-          src={tokenMetadata.icon}
-          alt={tokenMetadata.symbol}
-          width={24}
-          height={24}
-          className="rounded-full border border-black bg-white"
-        />
+        {tokenMetadata.icon ? (
+          <Image
+            src={tokenMetadata.icon}
+            alt={tokenMetadata.symbol}
+            width={24}
+            height={24}
+            className="rounded-full border border-black bg-white"
+          />
+        ) : (
+          <div className="w-6 h-6 rounded-full border border-black bg-white flex items-center justify-center text-[10px]">
+            {tokenMetadata.symbol?.[0] ?? "?"}
+          </div>
+        )}
         <span>{tokenMetadata.name}</span>
       </div>
       <div className="flex flex-col">

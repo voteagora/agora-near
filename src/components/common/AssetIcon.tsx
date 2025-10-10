@@ -5,21 +5,28 @@ export const AssetIcon = ({
   name,
   size = "20px",
 }: {
-  icon: string | StaticImageData;
+  icon?: string | StaticImageData;
   name: string;
   size?: string;
 }) => {
   return (
     <div
-      className={`w-[${size}] h-[${size}] bg-gray-300 rounded-full overflow-hidden`}
+      className="relative rounded-full overflow-hidden bg-gray-300"
+      style={{ width: size, height: size }}
     >
-      <Image
-        src={icon}
-        alt={name}
-        width={0}
-        height={0}
-        style={{ width: "100%", height: "100%" }}
-      />
+      {icon ? (
+        <Image
+          src={icon}
+          alt={name}
+          fill
+          sizes={size}
+          style={{ objectFit: "cover" }}
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center text-xs text-white bg-gray-400">
+          {name?.[0] ?? ""}
+        </div>
+      )}
     </div>
   );
 };
