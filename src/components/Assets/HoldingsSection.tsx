@@ -81,10 +81,33 @@ export const HoldingsSection = memo(() => {
     [availableTokens]
   );
 
-  const walletTokens = useMemo(
-    () => availableTokens.filter((token) => token.type !== "lockup"),
-    [availableTokens]
-  );
+  const walletTokens = useMemo(() => {
+    const priority: Record<string, number> = {
+      NEAR: 0,
+      LINEAR: 1,
+      RNEAR: 2,
+      STNEAR: 3,
+    };
+    return availableTokens
+      .filter((token) => token.type !== "lockup")
+      .sort((a, b) => {
+        const aKey = a.metadata?.symbol ?? "";
+        const bKey = b.metadata?.symbol ?? "";
+        const aP = priority[aKey] ?? 999;
+        const bP = priority[bKey] ?? 999;
+        if (aP !== bP) return aP - bP;
+        // fallback: sort by balance desc
+        try {
+          // big.js may not be imported here; fallback simple string compare length then lex
+          if ((a.balance?.length ?? 0) !== (b.balance?.length ?? 0)) {
+            return (b.balance?.length ?? 0) - (a.balance?.length ?? 0);
+          }
+          return (b.balance ?? "").localeCompare(a.balance ?? "");
+        } catch {
+          return 0;
+        }
+      });
+  }, [availableTokens]);
 
   const isLoading =
     isLoadingAvailableTokens ||
