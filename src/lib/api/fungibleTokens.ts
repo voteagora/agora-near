@@ -15,8 +15,7 @@ export interface FungibleTokensResponse {
 }
 
 export async function fetchFungibleTokens(
-  accountId: string,
-  networkId: "mainnet" = "mainnet"
+  accountId: string
 ): Promise<FungibleTokensResponse | null> {
   if (!accountId) return null;
 
