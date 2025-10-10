@@ -30,7 +30,7 @@ const getContractConfig = (): ContractConfig => {
       };
     case "august-prod":
       return {
-        VENEAR_CONTRACT_ID: "v.hos-07.testnet", // v.hos-07.testnet (old dev)
+        VENEAR_CONTRACT_ID: "v.voteagora.near", // v.hos-07.testnet (old dev)
         VOTING_CONTRACT_ID: "vote.voteagora.near", // vote.hos-07.testnet (old dev)
 
       };
