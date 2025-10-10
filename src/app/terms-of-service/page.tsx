@@ -550,8 +550,8 @@ export default function TermsOfServicePage() {
                   congestion or insufficient gas;
                 </li>
                 <li>
-                  Rewards, any APY projection, Voting Power Growth, and veNEAR conversion rates are
-                  estimates and not guarantees;
+                  Rewards, any APY projection, Voting Power Growth, and veNEAR
+                  conversion rates are estimates and not guarantees;
                 </li>
                 <li>
                   Liquid-staking tokens (stNEAR, liNEAR) carry additional
