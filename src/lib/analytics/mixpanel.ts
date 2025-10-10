@@ -85,4 +85,5 @@ export const MixpanelEvents = {
   ProposalCreated: "Proposal Created",
   VotedOnProposal: "Voted on Proposal",
   FAQExpanded: "FAQ Expanded",
+  ExternalLinkClicked: "External Link Clicked",
 };
