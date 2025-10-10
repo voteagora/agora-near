@@ -9,6 +9,7 @@ import {
 import Image from "next/image";
 import linkIcon from "@/assets/link.svg";
 import Link from "next/link";
+import { CONTRACTS } from "@/lib/contractConstants";
 
 const nearUrl = "https://nearblocks.io";
 
@@ -16,11 +17,11 @@ const ContractList = () => {
   const list = [
     {
       title: "veNEAR",
-      address: process.env.NEXT_PUBLIC_NEAR_CONTRACT_ID ?? "",
+      address: CONTRACTS.VENEAR_CONTRACT_ID,
     },
     {
       title: "Governor",
-      address: process.env.NEXT_PUBLIC_NEAR_VOTING_CONTRACT_ID ?? "",
+      address: CONTRACTS.VOTING_CONTRACT_ID,
     },
   ];
 

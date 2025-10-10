@@ -22,11 +22,10 @@ These variables are prefixed with `NEXT_PUBLIC_` and are exposed to the browser:
   - `staging` - Staging environment with dedicated contracts and cloud API
   - `dev` - Development environment with dedicated contracts and cloud API
   - `local` - Local development (uses `dev` contracts with localhost API)
-- **`NEXT_PUBLIC_NEAR_CONTRACT_ID`** - veNEAR governance token contract address
-- **`NEXT_PUBLIC_NEAR_VOTING_CONTRACT_ID`** - Voting/governance contract address
-- **`NEXT_PUBLIC_NEAR_STAKING_POOL_ID`** - Primary staking pool contract address
 - **`NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID`** - Linear protocol LST (liquid staking token) contract
 - **`NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID`** - Meta Pool stNEAR LST contract
+
+  **Note:** Contract IDs (veNEAR, voting, staking pool) are automatically configured based on this environment setting in `src/lib/contractConstants.ts`. For backwards compatibility, you can still override with individual env vars if needed.
 
 ### Optional Public Variables
 
