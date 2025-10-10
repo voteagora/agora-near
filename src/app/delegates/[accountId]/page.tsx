@@ -15,7 +15,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const address = params.accountId;
 
-  const delegateProfile = await getDelegate(address, "mainnet");
+  const delegateProfile = await getDelegate(address);
 
   const statement = delegateProfile?.statement;
   const votingPower = delegateProfile?.votingPower;
