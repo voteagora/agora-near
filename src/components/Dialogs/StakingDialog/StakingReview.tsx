@@ -92,7 +92,7 @@ export const StakingReview = ({
 
           if (step === "select_pool") {
             await selectStakingPoolAsync({
-              stakingPoolId: selectedPool.contracts[networkId],
+              stakingPoolId: selectedPool.contract,
             });
           } else if (step === "stake") {
             await stakeNear(enteredAmountYoctoNear);
@@ -111,7 +111,7 @@ export const StakingReview = ({
       networkId,
       requiredSteps,
       selectStakingPoolAsync,
-      selectedPool.contracts,
+      selectedPool.contract,
       stakeNear,
     ]
   );

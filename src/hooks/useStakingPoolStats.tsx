@@ -19,7 +19,7 @@ export const useStakingPoolStats = ({ pools }: StakingPoolStatsProps) => {
           queryFn: () =>
             getStakingPoolApy({
               networkId,
-              contractId: pool.contracts[networkId],
+              contractId: pool.contract,
             }),
         },
       ]),
@@ -33,7 +33,7 @@ export const useStakingPoolStats = ({ pools }: StakingPoolStatsProps) => {
           queryKey: ["staking-supply", pool, networkId],
           queryFn: () =>
             viewMethod({
-              contractId: pool.contracts[networkId],
+              contractId: pool.contract,
               method: "ft_total_supply",
               args: {},
             }) as Promise<string | undefined | null>,

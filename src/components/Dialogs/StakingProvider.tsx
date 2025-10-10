@@ -120,7 +120,7 @@ export const StakingProvider = ({
 
   const preSelectedStakingPool = useMemo(() => {
     return supportedPools.find((pool) =>
-      Object.values(pool.contracts).some(
+      Object.values(pool.contract).some(
         (contractId) => contractId === stakingPoolId
       )
     );
