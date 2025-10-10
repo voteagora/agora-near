@@ -3,7 +3,10 @@ import { LockDialogContent } from "./LockDialogContent";
 import { MaintenanceDialog } from "./MaintenanceDialog";
 import Tenant from "@/lib/tenant/tenant";
 
-export type LockDialogSource = "onboarding" | "account_management";
+export type LockDialogSource =
+  | "onboarding"
+  | "account_management"
+  | "claim_rewards";
 
 type NearLockDialogProps = {
   closeDialog: () => void;
