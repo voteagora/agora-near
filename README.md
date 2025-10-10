@@ -16,7 +16,12 @@ This application uses several environment variables for configuration. A `.env.e
 
 These variables are prefixed with `NEXT_PUBLIC_` and are exposed to the browser:
 
-- **`NEXT_PUBLIC_AGORA_ENV`** - Environment selector: `prod` (mainnet), `dev` (testnet + cloud API), or `local` (testnet + localhost API)
+- **`NEXT_PUBLIC_AGORA_ENV`** - Environment selector (all use mainnet):
+  - `prod` - Production environment with dedicated contracts and cloud API
+  - `august-prod` - August production environment with dedicated contracts and cloud API
+  - `staging` - Staging environment with dedicated contracts and cloud API
+  - `dev` - Development environment with dedicated contracts and cloud API
+  - `local` - Local development (uses `dev` contracts with localhost API)
 - **`NEXT_PUBLIC_NEAR_CONTRACT_ID`** - veNEAR governance token contract address
 - **`NEXT_PUBLIC_NEAR_VOTING_CONTRACT_ID`** - Voting/governance contract address
 - **`NEXT_PUBLIC_NEAR_STAKING_POOL_ID`** - Primary staking pool contract address
