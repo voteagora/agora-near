@@ -1,4 +1,4 @@
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useRef } from "react";
 import { DELEGATES_QK } from "./useDelegates";
@@ -30,7 +30,7 @@ export function useDelegateAll({
 
   const onDelegateSuccess = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
+      queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VENEAR_CONTRACT_ID],
     });
 
     // We mutate the client cache directly here instead of invalidating the query since
@@ -104,7 +104,7 @@ export function useDelegateAll({
     (receiverId: string) => {
       targetDelegateeAddressRef.current = receiverId;
       return mutate({
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        contractId: CONTRACTS.VENEAR_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "delegate_all",

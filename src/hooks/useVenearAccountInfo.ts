@@ -1,11 +1,11 @@
 import { useReadHOSContract } from "@/hooks/useReadHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useMemo } from "react";
 
 export function useVenearAccountInfo(accountId: string | undefined | null) {
   const results = useReadHOSContract([
     {
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+      contractId: CONTRACTS.VENEAR_CONTRACT_ID,
       methodName: "get_account_info" as const,
       config: {
         args: { account_id: accountId || "" },

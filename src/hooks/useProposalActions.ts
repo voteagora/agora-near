@@ -1,4 +1,4 @@
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
@@ -17,7 +17,7 @@ export const useProposalActions = ({
 
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VOTING_CONTRACT_ID],
+      queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VOTING_CONTRACT_ID],
     });
   }, [queryClient]);
 
@@ -48,7 +48,7 @@ export const useProposalActions = ({
   const approveProposal = useCallback(
     (proposalId: number, votingStartTimeSec?: number) => {
       return mutateApproveProposal({
-        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        contractId: CONTRACTS.VOTING_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "approve_proposal",
@@ -68,7 +68,7 @@ export const useProposalActions = ({
   const rejectProposal = useCallback(
     (proposalId: number) => {
       return mutateRejectProposal({
-        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        contractId: CONTRACTS.VOTING_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "reject_proposal",

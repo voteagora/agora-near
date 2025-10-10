@@ -6,7 +6,7 @@ import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
 import { usePrice } from "@/hooks/usePrice";
 import { READ_NEAR_CONTRACT_QK } from "@/hooks/useReadHOSContract";
 import { useUnlockNear } from "@/hooks/useUnlockNear";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { yoctoNearToUsdFormatted } from "@/lib/utils";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import { useQueryClient } from "@tanstack/react-query";
@@ -42,10 +42,7 @@ export const ReviewStep = memo(
         lockupAccountId: lockupAccountId || "",
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: [
-              READ_NEAR_CONTRACT_QK,
-              TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
-            ],
+            queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VENEAR_CONTRACT_ID],
           });
           queryClient.invalidateQueries({
             queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],

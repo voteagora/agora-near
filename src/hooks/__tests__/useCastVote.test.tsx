@@ -1,5 +1,5 @@
 import { useNear } from "@/contexts/NearContext";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useWriteHOSContract } from "@/hooks/useWriteHOSContract";
 import { useFetchProof } from "@/hooks/useFetchProof";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -163,7 +163,7 @@ describe("useCastVote", () => {
       );
 
       expect(mockMutateAsync).toHaveBeenCalledWith({
-        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        contractId: CONTRACTS.VOTING_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "vote",
@@ -258,7 +258,7 @@ describe("useCastVote", () => {
       });
 
       expect(mockMutateAsync).toHaveBeenCalledWith({
-        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        contractId: CONTRACTS.VOTING_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "vote",
@@ -304,11 +304,11 @@ describe("useCastVote", () => {
       });
 
       expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VOTING_CONTRACT_ID],
+        queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VOTING_CONTRACT_ID],
       });
 
       expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
+        queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VENEAR_CONTRACT_ID],
       });
     });
   });

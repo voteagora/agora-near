@@ -15,14 +15,13 @@ export interface FungibleTokensResponse {
 }
 
 export async function fetchFungibleTokens(
-  accountId: string,
-  networkId: "testnet" | "mainnet"
+  accountId: string
 ): Promise<FungibleTokensResponse | null> {
   if (!accountId) return null;
 
   try {
     const response = await axios.get<FungibleTokensResponse>(
-      `https://${networkId === "testnet" ? "test." : ""}api.fastnear.com/v1/account/${accountId}/ft`
+      `https://api.fastnear.com/v1/account/${accountId}/ft`
     );
 
     return response.data;

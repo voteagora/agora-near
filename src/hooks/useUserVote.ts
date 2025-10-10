@@ -1,4 +1,4 @@
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useNear } from "@/contexts/NearContext";
 import { useReadHOSContract } from "./useReadHOSContract";
 
@@ -7,7 +7,7 @@ export function useUserVote(proposalId: number) {
 
   const [result] = useReadHOSContract([
     {
-      contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+      contractId: CONTRACTS.VOTING_CONTRACT_ID,
       methodName: "get_vote",
       config: {
         args: {

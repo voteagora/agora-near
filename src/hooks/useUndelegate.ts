@@ -1,5 +1,5 @@
 import { useWriteHOSContract } from "./useWriteHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useCallback } from "react";
 import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
@@ -29,7 +29,7 @@ export function useUndelegate({
 
   const onUndelegateSuccess = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
+      queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VENEAR_CONTRACT_ID],
     });
 
     // We mutate the client cache directly here instead of invalidating the query since
@@ -92,7 +92,7 @@ export function useUndelegate({
 
   const undelegate = useCallback(() => {
     return mutate({
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+      contractId: CONTRACTS.VENEAR_CONTRACT_ID,
       methodCalls: [
         {
           methodName: "undelegate",

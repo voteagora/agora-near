@@ -14,7 +14,7 @@ import {
 import { FUNGIBLE_TOKEN_QK } from "../useFungibleTokens";
 import { NEAR_BALANCE_QK } from "../useBalance";
 import { READ_NEAR_CONTRACT_QK } from "../useReadHOSContract";
-import { TESTNET_CONTRACTS } from "../../lib/contractConstants";
+import { CONTRACTS } from "../../lib/contractConstants";
 
 // Mock the dependencies
 vi.mock("../../contexts/NearContext", () => ({
@@ -543,7 +543,7 @@ describe("useDeployLockupAndLock", () => {
       expect(invalidateQueriesSpy).toHaveBeenCalledWith({
         queryKey: [
           READ_NEAR_CONTRACT_QK,
-          TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+          CONTRACTS.VENEAR_CONTRACT_ID,
           "ft_balance_of",
         ],
       });

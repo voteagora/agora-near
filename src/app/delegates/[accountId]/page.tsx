@@ -15,10 +15,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const address = params.accountId;
 
-  const delegateProfile = await getDelegate(
-    address,
-    process.env.NEXT_PUBLIC_AGORA_ENV === "prod" ? "mainnet" : "testnet"
-  );
+  const delegateProfile = await getDelegate(address);
 
   const statement = delegateProfile?.statement;
   const votingPower = delegateProfile?.votingPower;

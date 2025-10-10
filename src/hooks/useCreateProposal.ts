@@ -1,5 +1,5 @@
 import { ProposalMetadata } from "@/lib/contracts/types/voting";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useQueryClient } from "@tanstack/react-query";
 import Big from "big.js";
 import { useCallback, useMemo } from "react";
@@ -24,7 +24,7 @@ export const useCreateProposal = ({
 
   const onProposalCreateSuccess = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VOTING_CONTRACT_ID],
+      queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VOTING_CONTRACT_ID],
     });
     onSuccess?.();
   }, [queryClient, onSuccess]);
@@ -50,7 +50,7 @@ export const useCreateProposal = ({
   const createProposal = useCallback(
     (metadata: ProposalMetadata) => {
       return mutateCreateProposal({
-        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        contractId: CONTRACTS.VOTING_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "create_proposal",
@@ -67,7 +67,7 @@ export const useCreateProposal = ({
   const createProposalAsync = useCallback(
     (metadata: ProposalMetadata) => {
       return mutateCreateProposalAsync({
-        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        contractId: CONTRACTS.VOTING_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "create_proposal",

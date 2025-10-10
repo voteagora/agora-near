@@ -28,7 +28,7 @@ import { useUndelegate } from "@/hooks/useUndelegate";
 import { useUnlockNear } from "@/hooks/useUnlockNear";
 import { useVenearAccountStats } from "@/hooks/useVenearAccountStats";
 import { useVenearStats } from "@/hooks/useVenearStats";
-import { LINEAR_TOKEN_CONTRACTS } from "@/lib/constants";
+import { LINEAR_TOKEN_CONTRACT } from "@/lib/constants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
 import { utils } from "near-api-js";
@@ -195,7 +195,7 @@ export default function VeNearDebugCards() {
       if (!yoctoAmount) throw new Error("Invalid amount");
       if (!accountInfo?.stakingPool) {
         await selectStakingPoolAsync({
-          stakingPoolId: LINEAR_TOKEN_CONTRACTS["testnet"],
+          stakingPoolId: LINEAR_TOKEN_CONTRACT,
         });
       }
       stakeNear(yoctoAmount);

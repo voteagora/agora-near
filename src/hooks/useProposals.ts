@@ -1,5 +1,5 @@
 import { useNear } from "@/contexts/NearContext";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
@@ -23,7 +23,7 @@ export function useProposals({
   const fetchProposals = useCallback(
     async ({ pageParam = 0 }) => {
       const result = (await viewMethod({
-        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        contractId: CONTRACTS.VOTING_CONTRACT_ID,
         method: "get_proposals",
         args: { from_index: pageParam, limit: pageSize },
       })) as ProposalInfo[];

@@ -1,6 +1,6 @@
 import { useNear } from "@/contexts/NearContext";
 import { useReadHOSContract } from "@/hooks/useReadHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 
 export const useLockupAccount = () => {
   const { signedAccountId } = useNear();
@@ -13,7 +13,7 @@ export const useLockupAccount = () => {
     },
   ] = useReadHOSContract([
     {
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+      contractId: CONTRACTS.VENEAR_CONTRACT_ID,
       methodName: "get_lockup_account_id" as const,
       config: {
         args: { account_id: signedAccountId || "" },

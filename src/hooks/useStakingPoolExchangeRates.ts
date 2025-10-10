@@ -17,7 +17,7 @@ export const useStakingPoolExchangeRates = ({
         queryKey: [`${pool.id}-price`],
         queryFn: () => {
           return viewMethod({
-            contractId: pool.contracts[networkId],
+            contractId: pool.contract,
             method: pool.priceMethod ?? "ft_price",
             args: {},
           }) as Promise<string | null>;

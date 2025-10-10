@@ -1,4 +1,4 @@
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { providers } from "near-api-js";
 import { useCallback, useEffect, useState } from "react";
 import { useReadHOSContract } from "./useReadHOSContract";
@@ -13,7 +13,7 @@ export const useTotalSupply = () => {
   const [{ data: votableSupply, isLoading: isLoadingVotableSupply }] =
     useReadHOSContract([
       {
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        contractId: CONTRACTS.VENEAR_CONTRACT_ID,
         methodName: "ft_total_supply",
         config: { args: {} },
       },

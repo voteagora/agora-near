@@ -1,8 +1,5 @@
 import { memo, useCallback } from "react";
-import {
-  LINEAR_TOKEN_CONTRACTS,
-  STNEAR_TOKEN_CONTRACTS,
-} from "@/lib/constants";
+import { LINEAR_TOKEN_CONTRACT, STNEAR_TOKEN_CONTRACT } from "@/lib/constants";
 import { useNear } from "@/contexts/NearContext";
 import { TokenWithBalance } from "@/lib/types";
 import TokenAmount from "../shared/TokenAmount";
@@ -23,9 +20,9 @@ export const AvailableTokenRow = memo<AvailableTokenRowProps>(
         let url = "";
 
         // Determine the correct URL based on the token
-        if (tokenAccountId === LINEAR_TOKEN_CONTRACTS[networkId]) {
+        if (tokenAccountId === LINEAR_TOKEN_CONTRACT) {
           url = "https://app.linearprotocol.org/";
-        } else if (tokenAccountId === STNEAR_TOKEN_CONTRACTS[networkId]) {
+        } else if (tokenAccountId === STNEAR_TOKEN_CONTRACT) {
           url = "https://www.metapool.app/stake/?token=near";
         }
 

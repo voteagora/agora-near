@@ -1,7 +1,7 @@
 import { useNear } from "@/contexts/NearContext";
 import { useWriteHOSContract } from "./useWriteHOSContract";
 
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useCallback, useMemo } from "react";
 
 type Props = {
@@ -28,7 +28,7 @@ export const useRegisterLockup = ({ onSuccess }: Props) => {
   const registerAndDeployLockup = useCallback(
     (storageDepositAmount: string, lockupDeploymentCost: string) => {
       registerMutation({
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        contractId: CONTRACTS.VENEAR_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "storage_deposit",
@@ -49,7 +49,7 @@ export const useRegisterLockup = ({ onSuccess }: Props) => {
   const registerAndDeployLockupAsync = useCallback(
     (storageDepositAmount: string, lockupDeploymentCost: string) => {
       return registerMutationAsync({
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        contractId: CONTRACTS.VENEAR_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "storage_deposit",

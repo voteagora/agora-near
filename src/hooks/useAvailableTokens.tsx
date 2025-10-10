@@ -1,9 +1,9 @@
 import { useNear } from "@/contexts/NearContext";
 import {
-  LINEAR_TOKEN_CONTRACTS,
+  LINEAR_TOKEN_CONTRACT,
   LINEAR_TOKEN_METADATA,
   NEAR_TOKEN_METADATA,
-  STNEAR_TOKEN_CONTRACTS,
+  STNEAR_TOKEN_CONTRACT,
   STNEAR_TOKEN_METADATA,
 } from "@/lib/constants";
 import { TokenWithBalance } from "@/lib/types";
@@ -27,12 +27,12 @@ export const useAvailableTokens = () => {
     useAvailableToLock({ lockupAccountId });
 
   const linearTokenContractId = useMemo(
-    () => LINEAR_TOKEN_CONTRACTS[networkId],
+    () => LINEAR_TOKEN_CONTRACT,
     [networkId]
   );
 
   const stNearTokenContractId = useMemo(
-    () => STNEAR_TOKEN_CONTRACTS[networkId],
+    () => STNEAR_TOKEN_CONTRACT,
     [networkId]
   );
 
