@@ -167,9 +167,9 @@ const DraftProposalsPageContent = memo(
 
           try {
             const transactionResult = await createProposalAsync({
-              title,
-              description,
-              link,
+              title: title || null,
+              description: description || null,
+              link: link || null,
               voting_options: NEAR_VOTING_OPTIONS,
             });
 
@@ -198,6 +198,7 @@ const DraftProposalsPageContent = memo(
       draftId,
       handleSubmitForm,
       router,
+      setError,
       step,
       updateDraft,
     ]);
