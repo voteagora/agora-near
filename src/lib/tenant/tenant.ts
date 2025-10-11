@@ -20,6 +20,12 @@ export default class Tenant {
     return this._isProd;
   }
 
+  public get contractEnvironment(): string {
+    const env = process.env.NEXT_PUBLIC_AGORA_ENV || "unknown";
+    // Local uses dev contracts
+    return env === "local" ? "dev(?)" : env;
+  }
+
   public get namespace(): TenantNamespace {
     return "near";
   }
