@@ -2,6 +2,9 @@
 const path = require("path");
 
 const nextConfig = {
+  env: {
+    NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: process.env.VERCEL_GIT_COMMIT_SHA,
+  },
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },

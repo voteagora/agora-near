@@ -12,7 +12,7 @@ import {
 } from "./types";
 import { getRpcUrl } from "@/lib/utils";
 import { JsonRpcProvider } from "near-api-js/lib/providers";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 
 export const fetchApprovedProposals = async (
@@ -82,19 +82,16 @@ export const fetchProposalChartData = async (proposalId: string) => {
 };
 
 export const fetchProposal = async (proposalId: string) => {
-  const rpcUrl = getRpcUrl(
-    process.env.NEXT_PUBLIC_AGORA_ENV === "prod" ? "mainnet" : "testnet",
-    {
-      useArchivalNode: true,
-    }
-  );
+  const rpcUrl = getRpcUrl("mainnet", {
+    useArchivalNode: true,
+  });
 
   const jsonRpcProvider = new JsonRpcProvider({ url: rpcUrl });
 
   const res = await jsonRpcProvider.query({
     request_type: "call_function",
     finality: "optimistic",
-    account_id: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+    account_id: CONTRACTS.VOTING_CONTRACT_ID,
     method_name: "get_proposal",
     args_base64: Buffer.from(
       JSON.stringify({ proposal_id: Number(proposalId) })

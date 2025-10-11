@@ -72,8 +72,8 @@ export const ProjectionSlider = memo(
       <div className={cn("w-full max-w-4xl mx-auto", className)}>
         <div className="mb-8 text-center">
           <h3 className="text-lg font-medium text-primary mb-2">
-            Amount of veNEAR tokens you could be earning at{" "}
-            {(apy * 100).toFixed(2)}% APY
+            With {(apy * 100).toFixed(2)}% voting power growth, how much veNEAR
+            would you get by locking?
           </h3>
           <div className="text-6xl font-bold text-primary mb-8 tabular-nums">
             <TokenAmount

@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
 import TokenAmount from "../shared/TokenAmount";
-import { useNear } from "@/contexts/NearContext";
 import { LINEAR_POOL, STNEAR_POOL } from "@/lib/constants";
 
 export const VeNearStakedAssetRow = ({
@@ -11,19 +10,17 @@ export const VeNearStakedAssetRow = ({
   stakedBalance: string;
   stakingPoolId: string;
 }) => {
-  const { networkId } = useNear();
-
   const token = useMemo(() => {
-    if (stakingPoolId === LINEAR_POOL.contracts[networkId]) {
+    if (stakingPoolId === LINEAR_POOL.contract) {
       return LINEAR_POOL.metadata;
     }
 
-    if (stakingPoolId === STNEAR_POOL.contracts[networkId]) {
+    if (stakingPoolId === STNEAR_POOL.contract) {
       return STNEAR_POOL.metadata;
     }
 
     return null;
-  }, [stakingPoolId, networkId]);
+  }, [stakingPoolId]);
 
   const columns = useMemo(() => {
     return [

@@ -1,4 +1,4 @@
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useReadHOSContract } from "./useReadHOSContract";
 import { useMemo } from "react";
 import { CACHE_TTL } from "@/lib/constants";
@@ -6,7 +6,7 @@ import { CACHE_TTL } from "@/lib/constants";
 export const useVenearConfig = ({ enabled }: { enabled: boolean }) => {
   const [{ data, isLoading, error }] = useReadHOSContract([
     {
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+      contractId: CONTRACTS.VENEAR_CONTRACT_ID,
       methodName: "get_config",
       config: {
         args: {},

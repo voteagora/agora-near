@@ -9,7 +9,7 @@ export const useDelegateProfile = ({ accountId }: { accountId?: string }) => {
 
   return useQuery({
     queryKey: [QK_DELEGATE_PROFILE, accountId],
-    queryFn: () => getDelegate(accountId ?? "", networkId),
+    queryFn: () => getDelegate(accountId ?? ""),
     enabled: !!accountId,
   });
 };

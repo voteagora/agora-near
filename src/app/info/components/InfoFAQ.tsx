@@ -59,8 +59,8 @@ const faqs: FAQ[] = [
           <div>
             <p className="font-semibold mb-1">3. Fund your lockup contract</p>
             <p>
-              The user transfers NEAR tokens from their wallet into their
-              personal lockup contract.
+              The user transfers NEAR, or any other supported tokens, from their
+              wallet into their personal lockup contract.
             </p>
           </div>
           <div>

@@ -8,6 +8,46 @@
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Environment Variables
+
+This application uses several environment variables for configuration. A `.env.example` file is provided as a template.
+
+### Required Public Variables
+
+These variables are prefixed with `NEXT_PUBLIC_` and are exposed to the browser:
+
+- **`NEXT_PUBLIC_AGORA_ENV`** - Environment selector (all use mainnet):
+  - `prod` - Production environment with dedicated contracts and cloud API
+  - `august-prod` - August production environment with dedicated contracts and cloud API
+  - `staging` - Staging environment with dedicated contracts and cloud API
+  - `dev` - Development environment with dedicated contracts and cloud API
+  - `local` - Local development (uses `dev` contracts with localhost API)
+- **`NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID`** - Linear protocol LST (liquid staking token) contract
+- **`NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID`** - Meta Pool stNEAR LST contract
+
+  **Note:** Contract IDs (veNEAR, voting, staking pool) are automatically configured based on this environment setting in `src/lib/contractConstants.ts`. For backwards compatibility, you can still override with individual env vars if needed.
+
+### Optional Public Variables
+
+- **`NEXT_PUBLIC_AGORA_ROOT`** - Custom root path; redirects `/` to this path if set (default: `/`)
+- **`NEXT_PUBLIC_MAINTENANCE_MODE`** - Displays maintenance mode when set to `"true"`
+- **`NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE`** - Percentage of total voting power required for quorum (default: `"0.35"` = 35%)
+- **`NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR`** - Minimum absolute veNEAR required for quorum (default: `"7000000"` = 7M veNEAR)
+- **`NEXT_PUBLIC_GA_MEASUREMENT_ID`** - Google Analytics measurement ID for tracking
+
+### Server-Side Variables
+
+These are only available on the server/build side:
+
+- **`NODE_ENV`** - Enables development features when set to `"development"`
+- **`MIN_VERSION_FOR_LST_LOCKUP`** - Minimum lockup contract version that supports LST token locking
+
+### Vercel Variables
+
+These are automatically set by Vercel and used for OpenTelemetry instrumentation:
+
+- `VERCEL_ENV`, `VERCEL_REGION`, `NEXT_RUNTIME`, `VERCEL_GIT_COMMIT_SHA`, `VERCEL_URL`, `VERCEL_BRANCH_URL`
+
 ## About this repo
 
 You will find a mix of different styles at work in this repo. We are a small team and will be settling on standards in the coming months as we move more and more of the multi-tennant / instance style of Agora, into one codebase.

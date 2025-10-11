@@ -1,5 +1,5 @@
 import { useNear } from "@/contexts/NearContext";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { MerkleProof } from "@/lib/contracts/types/common";
 import { VAccount } from "@/lib/contracts/types/venear";
 import { act, renderHook } from "@testing-library/react";
@@ -105,7 +105,7 @@ describe("useFetchProof", () => {
       });
 
       expect(mockViewMethod).toHaveBeenCalledWith({
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        contractId: CONTRACTS.VENEAR_CONTRACT_ID,
         method: "get_proof",
         args: { account_id: mockAccountId },
         blockId: mockBlockHeight,
@@ -157,7 +157,7 @@ describe("useFetchProof", () => {
       ).rejects.toThrow("Contract call failed");
 
       expect(mockViewMethod).toHaveBeenCalledWith({
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        contractId: CONTRACTS.VENEAR_CONTRACT_ID,
         method: "get_proof",
         args: { account_id: mockAccountId },
         blockId: mockBlockHeight,

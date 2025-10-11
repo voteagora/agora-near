@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { getRpcUrl } from "@/lib/utils";
 import { convertUnit } from "@fastnear/utils";
 import {
@@ -198,7 +198,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
   const signIn = useCallback(async () => {
     if (!selector) return;
     const modal = setupModal(selector, {
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+      contractId: CONTRACTS.VENEAR_CONTRACT_ID,
     });
     modal.show();
   }, [selector]);

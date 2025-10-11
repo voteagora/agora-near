@@ -44,7 +44,6 @@ export const LockTokensCard = memo(
               <span className="text-3xl sm:text-4xl lg:text-6xl font-bold">
                 {apy}%
               </span>
-              <span className="text-xs sm:text-sm lg:text-lg">APY</span>
             </div>
             <Link
               href="/info"

@@ -23,8 +23,7 @@ const { ui } = Tenant.current();
 const shouldHideAgoraBranding = ui.hideAgoraBranding;
 const shouldHideAgoraFooter = ui.hideAgoraFooter;
 
-const networkId =
-  process.env.NEXT_PUBLIC_AGORA_ENV === "prod" ? "mainnet" : "testnet";
+const networkId = "mainnet";
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>

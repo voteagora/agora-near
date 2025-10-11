@@ -284,7 +284,9 @@ export const ReviewStep = memo(
           <div className="flex flex-row justify-between items-start py-4">
             <div className="flex flex-col">
               <span className="font-bold text-primary">Amount locking</span>
-              <span className="text-secondary text-xs">{annualAPY}% APY</span>
+              <span className="text-secondary text-xs">
+                {annualAPY}% Voting Power Growth
+              </span>
             </div>
             <TokenAmount
               amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}

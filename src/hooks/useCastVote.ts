@@ -1,5 +1,5 @@
 import { useNear } from "@/contexts/NearContext";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useFetchProof } from "./useFetchProof";
@@ -23,10 +23,10 @@ export function useCastVote({ onSuccess }: { onSuccess?: () => void }) {
   const onVoteSuccess = useCallback(() => {
     Promise.all([
       queryClient.invalidateQueries({
-        queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VOTING_CONTRACT_ID],
+        queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VOTING_CONTRACT_ID],
       }),
       queryClient.invalidateQueries({
-        queryKey: [READ_NEAR_CONTRACT_QK, TESTNET_CONTRACTS.VENEAR_CONTRACT_ID],
+        queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VENEAR_CONTRACT_ID],
       }),
     ]);
     trackEvent({ event_name: MixpanelEvents.VotedOnProposal });
@@ -62,7 +62,7 @@ export function useCastVote({ onSuccess }: { onSuccess?: () => void }) {
       const [merkleProof, vAccount] = proof;
 
       return mutateVote({
-        contractId: TESTNET_CONTRACTS.VOTING_CONTRACT_ID,
+        contractId: CONTRACTS.VOTING_CONTRACT_ID,
         methodCalls: [
           {
             methodName: "vote",

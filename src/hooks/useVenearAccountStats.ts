@@ -1,12 +1,12 @@
 import { useReadHOSContract } from "@/hooks/useReadHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useMemo } from "react";
 
 // TODO: Decompose this hook - this is mainly for the debug menu
 export function useVenearAccountStats(accountId: string | undefined | null) {
   const results = useReadHOSContract([
     {
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+      contractId: CONTRACTS.VENEAR_CONTRACT_ID,
       methodName: "ft_balance_of" as const,
       config: {
         args: { account_id: accountId || "" },
@@ -14,7 +14,7 @@ export function useVenearAccountStats(accountId: string | undefined | null) {
       },
     },
     {
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+      contractId: CONTRACTS.VENEAR_CONTRACT_ID,
       methodName: "get_account_info" as const,
       config: {
         args: { account_id: accountId || "" },
@@ -22,7 +22,7 @@ export function useVenearAccountStats(accountId: string | undefined | null) {
       },
     },
     {
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+      contractId: CONTRACTS.VENEAR_CONTRACT_ID,
       methodName: "get_lockup_account_id" as const,
       config: {
         args: { account_id: accountId || "" },

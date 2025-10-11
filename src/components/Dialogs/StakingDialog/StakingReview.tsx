@@ -92,7 +92,7 @@ export const StakingReview = ({
 
           if (step === "select_pool") {
             await selectStakingPoolAsync({
-              stakingPoolId: selectedPool.contracts[networkId],
+              stakingPoolId: selectedPool.contract,
             });
           } else if (step === "stake") {
             await stakeNear(enteredAmountYoctoNear);
@@ -111,7 +111,7 @@ export const StakingReview = ({
       networkId,
       requiredSteps,
       selectStakingPoolAsync,
-      selectedPool.contracts,
+      selectedPool.contract,
       stakeNear,
     ]
   );
@@ -180,7 +180,7 @@ export const StakingReview = ({
           <div>
             <h2 className="text-md font-semibold mb-1">Amount staking</h2>
             <div className="text-sm text-[#9D9FA1]">
-              {`${selectedStats?.apy?.toFixed(2) ?? "-"}% APY`}
+              {`${selectedStats?.apy?.toFixed(2) ?? "-"}% Voting Power Growth`}
             </div>
           </div>
           <div className="text-right">
