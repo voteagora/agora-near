@@ -35,7 +35,7 @@ const GovernorSettings = async () => {
                 rel="noopener noreferrer"
                 className="text-secondary text-sm hover:text-primary transition-colors"
               >
-                Proposal Types coming in House of Stake v2.0
+                Proposal Types coming soon.
               </a>
             </div>
           </div>
