@@ -5,9 +5,9 @@ import { useState, useEffect, memo } from "react";
 
 // Constants
 const BANNER_CONFIG = {
-  storageKey: "alpha-launch-banner-dismissed",
+  storageKey: "full-launch-banner-dismissed",
   targetUrl: "/info#roadmap",
-  message: "Welcome to the Alpha Launch",
+  message: "Welcome to the Full Launch",
 } as const;
 
 // Icon components
