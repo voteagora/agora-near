@@ -114,7 +114,7 @@ export const AssetsLandingPage = memo(
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 items-center px-4 lg:px-0">
               <div className="text-center lg:text-left order-1 lg:order-1 z-10 bg-white py-6 lg:py-8 lg:ml-10">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-black mb-4 lg:mb-6 leading-tight">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-5xl font-bold text-black mb-4 lg:mb-6 leading-tight">
                   Lock & stake tokens for boosted voting power & rewards
                 </h1>
                 <UpdatedButton
@@ -147,6 +147,13 @@ export const AssetsLandingPage = memo(
               startingAmount={DEFAULT_BALANCE_FOR_PROJECTION}
               onProjectionChange={handleProjectionChange}
             />
+          </div>
+          <div className="mb-8 lg:mb-16 px-4 lg:px-0">
+            <p className="text-sm sm:text-base lg:text-sm text-gray-500">
+              *Source of APY comes from independent staking pools and is subject
+              to change. For up to date APY, please refer to the staking pools
+              directly.
+            </p>
           </div>
         </div>
       </div>

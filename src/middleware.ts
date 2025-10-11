@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const API_PREFIX = "/api/v1";
-const ROOT_PATH = process.env.NEXT_PUBLIC_AGORA_ROOT || "/";
+const ROOT_PATH = process.env.NEXT_PUBLIC_AGORA_ROOT || "/info";
 
 /*
   CORS headers for authenticated API routes are handled poorly by Next

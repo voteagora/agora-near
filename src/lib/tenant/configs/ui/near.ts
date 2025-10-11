@@ -18,24 +18,9 @@ export const nearTenantUIConfig = new TenantUI({
 
   governanceIssues: [
     {
-      icon: "stack",
-      title: "Cross chain ecosystem",
-      key: "crossChain",
-    },
-    {
       icon: "piggyBank",
       title: "Funding and grants",
       key: "fundingAndGrants",
-    },
-    {
-      icon: "piggyBank",
-      title: "Incentivized participation",
-      key: "incentivizedParticipation",
-    },
-    {
-      icon: "lockClosed",
-      title: "Security",
-      key: "security",
     },
     {
       icon: "community",
@@ -87,7 +72,7 @@ export const nearTenantUIConfig = new TenantUI({
     {
       name: "bugs",
       title: "Report bugs & feedback",
-      url: "https://app.deform.cc/form/037da05f-7045-41be-be0c-c8e07d5858f0",
+      url: "https://t.me/near_hos_support",
     },
     {
       name: "governance-forum",
@@ -175,9 +160,9 @@ export const nearTenantUIConfig = new TenantUI({
           image: infoPageCard01,
         },
         {
-          name: "Governance Docs",
-          title: "Protocol Docs",
-          url: "https://docs.near.org/",
+          name: "House of Stake Docs",
+          title: "House of Stake Docs",
+          url: "https://houseofstake.org/",
           image: infoPageCard02,
         },
         {
