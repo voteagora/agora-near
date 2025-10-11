@@ -1,4 +1,7 @@
-import { convertNanoSecondsToDays } from "@/lib/utils";
+import {
+  convertNanoSecondsToDays,
+  formatNanoSecondsToTimeUnit,
+} from "@/lib/utils";
 import Big from "big.js";
 import { format } from "date-fns";
 import { parseNearAmount } from "near-api-js/lib/utils/format";
@@ -158,7 +161,10 @@ export const getVotingDays = ({
 }: {
   voting_duration_ns: string;
 }) => {
+  // Preserve days wording for >= 1 day, otherwise provide a humanized unit
   const votingDays = convertNanoSecondsToDays(voting_duration_ns);
-  const votingDuration = `${votingDays} ${votingDays === 1 ? "day" : "days"}`;
-  return votingDuration;
+  if (votingDays >= 1) {
+    return `${votingDays} ${votingDays === 1 ? "day" : "days"}`;
+  }
+  return formatNanoSecondsToTimeUnit(voting_duration_ns);
 };

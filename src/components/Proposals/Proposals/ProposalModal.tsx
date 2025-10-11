@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCreateProposal } from "@/hooks/useCreateProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
-import { convertNanoSecondsToDays } from "@/lib/utils";
+import { getVotingDays } from "@/lib/proposalUtils";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 const Required = () => <span className="text-red-500">*</span>;
@@ -50,8 +50,9 @@ export function ProposalModal() {
     );
   }
 
-  const votingDays = convertNanoSecondsToDays(config.voting_duration_ns);
-  const votingDuration = `${votingDays} ${votingDays === 1 ? "day" : "days"}`;
+  const votingDuration = getVotingDays({
+    voting_duration_ns: config.voting_duration_ns,
+  });
 
   return (
     <div className="p-4 space-y-4">
