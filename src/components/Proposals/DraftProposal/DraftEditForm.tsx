@@ -160,7 +160,7 @@ function DraftDetailsForm() {
             target="_blank"
             className="text-xs text-primary hover:text-secondary underline flex items-center gap-1"
           >
-            Forum post required{" "}
+            Optional for drafts, required on submission{" "}
             <ArrowTopRightOnSquareIcon className="w-4 h-4" />
           </Link>
         </div>
@@ -236,9 +236,8 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
             }
           );
         },
-        () => {
-          toast.error("Please fix all validation errors before saving");
-        }
+        // Do not block draft saves due to validation errors; allow partial drafts
+        undefined
       )();
     };
 

@@ -27,6 +27,21 @@ import DraftEditForm, { DraftEditFormRef } from "./DraftEditForm";
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
+  // Allow saving drafts without enforcing link validation
+  link: z.string().optional().or(z.literal("")),
+  options: z
+    .array(
+      z.object({
+        title: z.string().min(1, "Option title is required"),
+      })
+    )
+    .min(2, "At least two options are required"),
+});
+
+// Strict validation used only on submission
+const submitSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
   link: z
     .string()
     .min(1, "Link is required")
@@ -105,6 +120,7 @@ const DraftProposalsPageContent = memo(
       reset,
       handleSubmit: handleSubmitForm,
       watch,
+      setError,
     } = useFormContext<FormValues>();
 
     const [title, description, link] = watch(["title", "description", "link"]);
@@ -128,6 +144,24 @@ const DraftProposalsPageContent = memo(
                 stage: DraftProposalStage.AWAITING_SUBMISSION,
               },
             });
+            return;
+          }
+
+          // Enforce strict validation only at submission time
+          const submitValidation = submitSchema.safeParse({
+            title,
+            description,
+            link,
+            options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
+          });
+
+          if (!submitValidation.success) {
+            const message =
+              submitValidation.error.issues[0]?.message || "Invalid submission";
+            // Surface the error on the link field and return to the editable step
+            setError("link", { type: "manual", message });
+            toast.error(message);
+            setStep(1);
             return;
           }
 
