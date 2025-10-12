@@ -76,16 +76,6 @@ export const HoldingsSection = memo(() => {
     [openDialog]
   );
 
-  const openStakingDialog = useCallback(() => {
-    openDialog({
-      type: "NEAR_STAKING",
-      className: "sm:w-[500px]",
-      params: {
-        source: "account_management",
-      },
-    });
-  }, [openDialog]);
-
   const lockupLiquidTokens = useMemo(
     () => availableTokens.filter((token) => token.type === "lockup"),
     [availableTokens]
@@ -155,7 +145,6 @@ export const HoldingsSection = memo(() => {
               stakingPoolId={stakingPoolId}
               stakedBalance={stakedBalance}
               openLockDialog={openLockDialog}
-              openStakingDialog={openStakingDialog}
             />
           ) : (
             <HosActivityTable address={signedAccountId} />

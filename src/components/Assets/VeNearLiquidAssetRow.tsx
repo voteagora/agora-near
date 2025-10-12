@@ -12,12 +12,12 @@ export const VeNearLiquidAssetRow = ({
   lockupAccountId,
   token,
   stakingPoolId,
-  onStakeClick,
+  onLockClick,
 }: {
   lockupAccountId?: string;
   token: TokenWithBalance;
   stakingPoolId?: string | null;
-  onStakeClick: () => void;
+  onLockClick: (tokenAccountId?: string) => void;
 }) => {
   const [
     { data: liquidOwnersBalance, isLoading: isLoadingLiquidOwnersBalance },
@@ -54,9 +54,12 @@ export const VeNearLiquidAssetRow = ({
       : venearLiquidBalance;
   }, [liquidOwnersBalance, venearLiquidBalance, isLoadingAvailableToTransfer]);
 
-  const handleStakeClick = useCallback(() => {
-    onStakeClick();
-  }, [onStakeClick]);
+  const handleLockClick = useCallback(
+    (tokenAccountId?: string) => {
+      onLockClick(tokenAccountId);
+    },
+    [onLockClick]
+  );
 
   const { transferLockup } = useTransferLockup({
     lockupAccountId: lockupAccountId ?? "",
@@ -72,8 +75,8 @@ export const VeNearLiquidAssetRow = ({
   const actionButtons = useMemo(
     () => [
       {
-        title: "Stake",
-        onClick: handleStakeClick,
+        title: token.type === "lst" ? "Lock" : "Lock & Stake",
+        onClick: () => handleLockClick(token.accountId),
         disabled:
           !!stakingPoolId &&
           token.type === "lst" &&
@@ -88,7 +91,7 @@ export const VeNearLiquidAssetRow = ({
       token.type,
       token.accountId,
       stakingPoolId,
-      handleStakeClick,
+      handleLockClick,
       handleWithdraw,
     ]
   );
