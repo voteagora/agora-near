@@ -52,7 +52,6 @@ export const HoldingsContent = memo(
             <VeNearLiquidAssetRow
               key={token.accountId}
               token={token}
-              stakingPoolId={stakingPoolId ?? undefined}
               onLockClick={openLockDialog}
               lockupAccountId={lockupAccountId ?? undefined}
             />

@@ -11,12 +11,10 @@ import toast from "react-hot-toast";
 export const VeNearLiquidAssetRow = ({
   lockupAccountId,
   token,
-  stakingPoolId,
   onLockClick,
 }: {
   lockupAccountId?: string;
   token: TokenWithBalance;
-  stakingPoolId?: string | null;
   onLockClick: (tokenAccountId?: string) => void;
 }) => {
   const [
@@ -75,25 +73,15 @@ export const VeNearLiquidAssetRow = ({
   const actionButtons = useMemo(
     () => [
       {
-        title: token.type === "lst" ? "Lock" : "Lock & Stake",
+        title: "Lock & Stake",
         onClick: () => handleLockClick(token.accountId),
-        disabled:
-          !!stakingPoolId &&
-          token.type === "lst" &&
-          stakingPoolId !== token.accountId,
       },
       {
         title: "Withdraw",
         onClick: handleWithdraw,
       },
     ],
-    [
-      token.type,
-      token.accountId,
-      stakingPoolId,
-      handleLockClick,
-      handleWithdraw,
-    ]
+    [token.accountId, handleLockClick, handleWithdraw]
   );
 
   const availableToTransferCol = useMemo(() => {
