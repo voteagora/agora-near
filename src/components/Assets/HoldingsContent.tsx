@@ -16,6 +16,7 @@ interface HoldingsContentProps {
   stakingPoolId: string | null | undefined;
   stakedBalance: string | null | undefined;
   openLockDialog: (preSelectedTokenId?: string) => void;
+  openStakingDialog: () => void;
 }
 
 export const HoldingsContent = memo(
@@ -31,6 +32,7 @@ export const HoldingsContent = memo(
     stakingPoolId,
     stakedBalance,
     openLockDialog,
+    openStakingDialog,
   }: HoldingsContentProps) => {
     return (
       <table className="w-full">
@@ -53,7 +55,7 @@ export const HoldingsContent = memo(
               key={token.accountId}
               token={token}
               stakingPoolId={stakingPoolId ?? undefined}
-              onLockClick={openLockDialog}
+              onStakeClick={openStakingDialog}
               lockupAccountId={lockupAccountId ?? undefined}
             />
           ))}

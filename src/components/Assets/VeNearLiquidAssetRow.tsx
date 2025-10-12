@@ -12,12 +12,12 @@ export const VeNearLiquidAssetRow = ({
   lockupAccountId,
   token,
   stakingPoolId,
-  onLockClick,
+  onStakeClick,
 }: {
   lockupAccountId?: string;
   token: TokenWithBalance;
   stakingPoolId?: string | null;
-  onLockClick: (tokenAccountId?: string) => void;
+  onStakeClick: () => void;
 }) => {
   const [
     { data: liquidOwnersBalance, isLoading: isLoadingLiquidOwnersBalance },
@@ -54,12 +54,9 @@ export const VeNearLiquidAssetRow = ({
       : venearLiquidBalance;
   }, [liquidOwnersBalance, venearLiquidBalance, isLoadingAvailableToTransfer]);
 
-  const handleLockClick = useCallback(
-    (tokenAccountId?: string) => {
-      onLockClick(tokenAccountId);
-    },
-    [onLockClick]
-  );
+  const handleStakeClick = useCallback(() => {
+    onStakeClick();
+  }, [onStakeClick]);
 
   const { transferLockup } = useTransferLockup({
     lockupAccountId: lockupAccountId ?? "",
@@ -70,14 +67,14 @@ export const VeNearLiquidAssetRow = ({
 
   const actionButton = useMemo(
     () => ({
-      title: token.type === "lst" ? "Lock" : "Lock & Stake",
-      onClick: () => handleLockClick(token.accountId),
+      title: "Stake",
+      onClick: handleStakeClick,
       disabled:
         !!stakingPoolId &&
         token.type === "lst" &&
         stakingPoolId !== token.accountId,
     }),
-    [token.type, token.accountId, stakingPoolId, handleLockClick]
+    [token.type, token.accountId, stakingPoolId, handleStakeClick]
   );
 
   const availableToTransferCol = useMemo(() => {
