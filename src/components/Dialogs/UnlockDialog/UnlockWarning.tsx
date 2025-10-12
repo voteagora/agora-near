@@ -11,7 +11,7 @@ export const UnlockWarning = () => {
         />
       </div>
       <p className="text-sm ml-2">
-        Unlocking tokens will reduce your voting power and forfeit your rewards.
+        Unlocking tokens will decrease your voting power.
       </p>
     </div>
   );
