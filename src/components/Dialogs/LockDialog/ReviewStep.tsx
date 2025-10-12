@@ -52,6 +52,21 @@ export const ReviewStep = memo(
       venearGlobalLockupVersion,
     } = useLockProviderContext();
 
+    // Determine if the just-locked amount leaves any liquid NEAR available to stake.
+    // If the user only covered the required deposits, there will be nothing to stake.
+    const lockedAmountYocto = useMemo(() => {
+      return utils.format.parseNearAmount(enteredAmount) ?? "0";
+    }, [enteredAmount]);
+
+    const hasStakeableAfterLock = useMemo(() => {
+      if (selectedToken?.type === "lst") return false;
+      try {
+        return Big(lockedAmountYocto).gt(Big(depositTotal ?? "0"));
+      } catch {
+        return false;
+      }
+    }, [depositTotal, lockedAmountYocto, selectedToken?.type]);
+
     const {
       transactionText,
       transactionStep,
@@ -182,14 +197,25 @@ export const ReviewStep = memo(
             >
               Lock More Funds
             </UpdatedButton>
-            <UpdatedButton
-              type="primary"
-              className="w-full"
-              onClick={handleProceedToStaking}
-              variant="rounded"
-            >
-              Next
-            </UpdatedButton>
+            {hasStakeableAfterLock ? (
+              <UpdatedButton
+                type="primary"
+                className="w-full"
+                onClick={handleProceedToStaking}
+                variant="rounded"
+              >
+                Next
+              </UpdatedButton>
+            ) : (
+              <UpdatedButton
+                type="primary"
+                className="w-full"
+                onClick={handleViewDashboard}
+                variant="rounded"
+              >
+                View Dashboard
+              </UpdatedButton>
+            )}
           </div>
         </div>
       );
