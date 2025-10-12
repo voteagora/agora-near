@@ -68,6 +68,17 @@ export const EnterStakingAmount = ({
             <TokenAmount amount={maxStakingAmount ?? "0"} hideCurrency />
           </div>
 
+          {(!maxStakingAmount || Big(maxStakingAmount).lte(0)) && (
+            <div className="mb-3">
+              <div className="bg-white border border-gray-200 rounded-lg p-3">
+                <p className="text-sm text-[#9D9FA1]">
+                  No NEAR available to stake. To stake, lock more NEAR or
+                  deposit additional funds into your lockup.
+                </p>
+              </div>
+            </div>
+          )}
+
           <div className="relative">
             <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
               <div className="flex items-center gap-2">
