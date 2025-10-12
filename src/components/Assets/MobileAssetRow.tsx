@@ -17,6 +17,13 @@ type OverflowButton = {
   showExternalIcon?: boolean;
 };
 
+type ActionButton = {
+  title: string;
+  onClick: () => void;
+  disabled?: boolean;
+  isLoading?: boolean;
+};
+
 type MobileAssetRowProps = {
   metadata?: TokenMetadata | null;
   columns: {
@@ -24,12 +31,8 @@ type MobileAssetRowProps = {
     subtitle: React.ReactNode;
   }[];
   overflowButtons?: OverflowButton[];
-  actionButton?: {
-    title: string;
-    onClick: () => void;
-    disabled?: boolean;
-    isLoading?: boolean;
-  };
+  actionButton?: ActionButton;
+  actionButtons?: ActionButton[];
 };
 
 const variants = {
@@ -44,12 +47,24 @@ export const MobileAssetRow = memo(
     columns,
     overflowButtons,
     actionButton,
+    actionButtons,
   }: MobileAssetRowProps) => {
+    const buttonsToRender = useMemo(() => {
+      if (actionButtons && actionButtons.length > 0) {
+        return actionButtons;
+      }
+      if (actionButton) {
+        return [actionButton];
+      }
+      return [];
+    }, [actionButton, actionButtons]);
+
     const hasActionButtons = useMemo(() => {
       return (
-        !!actionButton || (!!overflowButtons && overflowButtons.length > 0)
+        buttonsToRender.length > 0 ||
+        (!!overflowButtons && overflowButtons.length > 0)
       );
-    }, [actionButton, overflowButtons]);
+    }, [buttonsToRender, overflowButtons]);
 
     return (
       <Popover className="relative">
@@ -134,28 +149,27 @@ export const MobileAssetRow = memo(
                         </div>
 
                         <div className="flex flex-col gap-2 grow justify-end">
-                          {actionButton && (
+                          {buttonsToRender.map((button, index) => (
                             <UpdatedButton
+                              key={index}
                               className="w-full"
                               variant="rounded"
                               onClick={() => {
-                                actionButton.onClick();
+                                button.onClick();
                                 close();
                               }}
-                              type={
-                                actionButton.disabled ? "disabled" : "primary"
-                              }
-                              disabled={actionButton.disabled}
+                              type={button.disabled ? "disabled" : "primary"}
+                              disabled={button.disabled}
                             >
-                              {actionButton.isLoading ? (
+                              {button.isLoading ? (
                                 <div className="flex items-center justify-center">
                                   <LoadingSpinner />
                                 </div>
                               ) : (
-                                actionButton.title
+                                button.title
                               )}
                             </UpdatedButton>
-                          )}
+                          ))}
                           {overflowButtons?.map((button, index) => (
                             <button
                               key={index}

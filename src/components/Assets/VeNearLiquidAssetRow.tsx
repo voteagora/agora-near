@@ -65,16 +65,32 @@ export const VeNearLiquidAssetRow = ({
     },
   });
 
-  const actionButton = useMemo(
-    () => ({
-      title: "Stake",
-      onClick: handleStakeClick,
-      disabled:
-        !!stakingPoolId &&
-        token.type === "lst" &&
-        stakingPoolId !== token.accountId,
-    }),
-    [token.type, token.accountId, stakingPoolId, handleStakeClick]
+  const handleWithdraw = useCallback(() => {
+    transferLockup({ amount: availableToTransfer });
+  }, [transferLockup, availableToTransfer]);
+
+  const actionButtons = useMemo(
+    () => [
+      {
+        title: "Stake",
+        onClick: handleStakeClick,
+        disabled:
+          !!stakingPoolId &&
+          token.type === "lst" &&
+          stakingPoolId !== token.accountId,
+      },
+      {
+        title: "Withdraw",
+        onClick: handleWithdraw,
+      },
+    ],
+    [
+      token.type,
+      token.accountId,
+      stakingPoolId,
+      handleStakeClick,
+      handleWithdraw,
+    ]
   );
 
   const availableToTransferCol = useMemo(() => {
@@ -116,23 +132,12 @@ export const VeNearLiquidAssetRow = ({
     [token.balance, token.metadata?.symbol, availableToTransferCol]
   );
 
-  const overflowButtons = useMemo(
-    () => [
-      {
-        title: "Withdraw",
-        onClick: () => transferLockup({ amount: availableToTransfer }),
-      },
-    ],
-    [transferLockup, availableToTransfer]
-  );
-
   return (
     <ResponsiveAssetRow
       metadata={token.metadata}
       columns={columns}
-      showOverflowMenu
-      overflowButtons={overflowButtons}
-      actionButton={actionButton}
+      showOverflowMenu={false}
+      actionButtons={actionButtons}
     />
   );
 };
