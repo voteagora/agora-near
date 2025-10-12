@@ -112,7 +112,13 @@ export const ReviewStep = memo(
       executeTransactions({
         numTransactions: requiredTransactions.length,
       });
-    }, [executeTransactions, requiredTransactions.length]);
+    }, [
+      executeTransactions,
+      requiredTransactions.length,
+      enteredAmount,
+      selectedToken?.metadata?.symbol,
+      selectedToken?.type,
+    ]);
 
     const shouldShowLSTWarning = useMemo(() => {
       const versionToCheck =
