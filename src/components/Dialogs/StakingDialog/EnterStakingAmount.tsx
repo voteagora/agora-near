@@ -70,10 +70,10 @@ export const EnterStakingAmount = ({
 
           {(!maxStakingAmount || Big(maxStakingAmount).lte(0)) && (
             <div className="mb-3">
-              <div className="bg-white border border-gray-200 rounded-lg p-3 flex items-start gap-2">
-                <p className="text-sm text-[#9D9FA1] text-justify">
-                  No NEAR available to stake. To earn liquid rewards, lock more
-                  NEAR or deposit additional funds into your lockup.
+              <div className="bg-white border border-gray-200 rounded-lg p-3">
+                <p className="text-sm text-[#9D9FA1]">
+                  No NEAR available to stake. To stake, lock more NEAR or
+                  deposit additional funds into your lockup.
                 </p>
               </div>
             </div>
