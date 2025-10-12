@@ -27,15 +27,9 @@ export default function OtherInfoFormSection({
           form={form}
         />
         <DelegateStatementInputGroup
-          title="Warpcast"
+          title="Telegram"
           placeholder="@yourname"
           name="warpcast"
-          form={form}
-        />
-        <DelegateStatementInputGroup
-          title="Discord"
-          placeholder="yourname#2142"
-          name="discord"
           form={form}
         />
         <DelegateStatementInputGroup

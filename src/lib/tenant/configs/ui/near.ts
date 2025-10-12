@@ -82,7 +82,7 @@ export const nearTenantUIConfig = new TenantUI({
     {
       name: "code-of-conduct",
       title: "Delegate Code of Conduct",
-      url: "https://gov.near.org/t/near-call-for-delegates-house-of-stake/40513#p-137747-h-6-delegate-code-of-conduct-6",
+      url: "https://houseofstake.org/docs/structure/delegates-and-participants/",
     },
     {
       name: "delegate-statement-template",
