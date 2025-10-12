@@ -16,6 +16,8 @@ import OtherInfoFormSection from "./OtherInfoFormSection";
 import TopIssuesFormSection from "./TopIssuesFormSection";
 import DelegateProfile from "../Delegates/DelegateProfile/DelegateProfile";
 import { DelegateProfile as DelegateProfileType } from "@/lib/api/delegates/types";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
+import { trackEvent } from "@/lib/analytics";
 
 export default function DelegateStatementForm({
   form,
@@ -101,6 +103,10 @@ export default function DelegateStatementForm({
       return;
     }
 
+    trackEvent({
+      event_name: MixpanelEvents.CreatedDelegateStatement,
+      event_data: { address: signedAccountId },
+    });
     setSaveSuccess(true);
     router.push(`/delegates/${signedAccountId}`);
   }

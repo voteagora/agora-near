@@ -7,6 +7,8 @@ import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 import Tenant from "@/lib/tenant/tenant";
 import { type SyntheticEvent } from "react";
 import { DelegateSocialLinks } from "../DelegateCard/DelegateSocialLinks";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
+import { trackEvent } from "@/lib/analytics";
 
 export function DelegateActions({
   address,
@@ -40,6 +42,10 @@ export function DelegateActions({
     if (!signedAccountId) {
       signIn();
     } else {
+      trackEvent({
+        event_name: MixpanelEvents.Delegated,
+        event_data: { to: address },
+      });
       openDialog({
         type: isDelegated ? "NEAR_UNDELEGATE" : "NEAR_DELEGATE",
         params: {

@@ -1,6 +1,8 @@
 import { ProposalMetadata } from "@/lib/contracts/types/voting";
 import { CONTRACTS } from "@/lib/contractConstants";
 import { useQueryClient } from "@tanstack/react-query";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
+import { trackEvent } from "@/lib/analytics";
 import Big from "big.js";
 import { useCallback, useMemo } from "react";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
@@ -26,6 +28,7 @@ export const useCreateProposal = ({
     queryClient.invalidateQueries({
       queryKey: [READ_NEAR_CONTRACT_QK, CONTRACTS.VOTING_CONTRACT_ID],
     });
+    trackEvent({ event_name: MixpanelEvents.ProposalCreated });
     onSuccess?.();
   }, [queryClient, onSuccess]);
 

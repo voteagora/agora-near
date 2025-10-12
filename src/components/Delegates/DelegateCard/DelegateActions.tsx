@@ -8,6 +8,8 @@ import { DelegateProfile } from "@/lib/api/delegates/types";
 import Tenant from "@/lib/tenant/tenant";
 import { type SyntheticEvent } from "react";
 import { DelegateSocialLinks } from "./DelegateSocialLinks";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
+import { trackEvent } from "@/lib/analytics";
 
 type DelegateActionsProps = {
   delegate: DelegateProfile;
@@ -35,6 +37,10 @@ export function DelegateActions({ delegate }: DelegateActionsProps) {
     if (!signedAccountId) {
       signIn();
     } else {
+      trackEvent({
+        event_name: MixpanelEvents.Delegated,
+        event_data: { to: delegate.address },
+      });
       openDialog({
         type: isDelegated ? "NEAR_UNDELEGATE" : "NEAR_DELEGATE",
         params: {
