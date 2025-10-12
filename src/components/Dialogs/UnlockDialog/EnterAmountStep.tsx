@@ -73,7 +73,9 @@ export const EnterAmountStep = ({ handleReview }: EnterAmountStepProps) => {
                   available until they are unlocked through the staking pool.
                   Currently, this is not possible through this UI, instead the
                   operation can be done by directly interacting with the
-                  contracts.
+                  contracts. It is expected that staking balances will be zero
+                  on the third-party platforms due to your lock-up contract
+                  being the owner.
                 </p>
               </div>
             }
