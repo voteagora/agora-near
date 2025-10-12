@@ -20,6 +20,13 @@ type OverflowButton = {
   showExternalIcon?: boolean;
 };
 
+type ActionButton = {
+  title: string;
+  onClick: () => void;
+  disabled?: boolean;
+  isLoading?: boolean;
+};
+
 type AssetRowProps = {
   metadata?: TokenMetadata | null;
   columns: {
@@ -28,12 +35,8 @@ type AssetRowProps = {
   }[];
   showOverflowMenu: boolean;
   overflowButtons?: OverflowButton[];
-  actionButton?: {
-    title: string;
-    onClick: () => void;
-    disabled?: boolean;
-    isLoading?: boolean;
-  };
+  actionButton?: ActionButton;
+  actionButtons?: ActionButton[];
   className?: string;
 };
 
@@ -46,6 +49,7 @@ export const AssetRow = memo(
     showOverflowMenu,
     overflowButtons,
     actionButton,
+    actionButtons,
     className,
   }: AssetRowProps) => {
     const numColPlaceholders = MAX_COLUMNS - columns.length - 1;
@@ -63,26 +67,41 @@ export const AssetRow = memo(
       )
     );
 
+    const buttonsToRender = useMemo(() => {
+      if (actionButtons && actionButtons.length > 0) {
+        return actionButtons;
+      }
+      if (actionButton) {
+        return [actionButton];
+      }
+      return [];
+    }, [actionButton, actionButtons]);
+
     const actionButtonContent = useMemo(() => {
-      if (!actionButton) return null;
+      if (buttonsToRender.length === 0) return null;
 
       return (
-        <UpdatedButton
-          className="w-full"
-          variant="rounded"
-          onClick={actionButton.disabled ? undefined : actionButton.onClick}
-          type={actionButton.disabled ? "disabled" : undefined}
-        >
-          {actionButton.isLoading ? (
-            <div className="flex items-center justify-center">
-              <LoadingSpinner />
-            </div>
-          ) : (
-            actionButton.title
-          )}
-        </UpdatedButton>
+        <div className="flex gap-2">
+          {buttonsToRender.map((button, index) => (
+            <UpdatedButton
+              key={index}
+              className="w-full"
+              variant="rounded"
+              onClick={button.disabled ? undefined : button.onClick}
+              type={button.disabled ? "disabled" : undefined}
+            >
+              {button.isLoading ? (
+                <div className="flex items-center justify-center">
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                button.title
+              )}
+            </UpdatedButton>
+          ))}
+        </div>
       );
-    }, [actionButton]);
+    }, [buttonsToRender]);
 
     return (
       <tr
@@ -118,7 +137,11 @@ export const AssetRow = memo(
         {columnPlaceholders}
         <td className="py-4 pl-4 w-1 whitespace-nowrap">
           <div className="flex items-center justify-end gap-2">
-            <div className="w-40">{actionButtonContent}</div>
+            <div
+              className={buttonsToRender.length > 1 ? "min-w-[320px]" : "w-40"}
+            >
+              {actionButtonContent}
+            </div>
             <div className="w-9 h-9 flex items-center justify-center">
               {showOverflowMenu &&
                 overflowButtons &&

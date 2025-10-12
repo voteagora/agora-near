@@ -113,13 +113,11 @@ export const VeNearAssetRow = memo<VeNearAssetRowProps>(
       [balanceWithRewards, pendingBalanceCol]
     );
 
-    const overflowButtons = useMemo(
-      () => [
-        {
-          title: "Unlock",
-          onClick: handleUnlockTokens,
-        },
-      ],
+    const actionButton = useMemo(
+      () => ({
+        title: "Unlock",
+        onClick: handleUnlockTokens,
+      }),
       [handleUnlockTokens]
     );
 
@@ -127,8 +125,8 @@ export const VeNearAssetRow = memo<VeNearAssetRowProps>(
       <ResponsiveAssetRow
         metadata={VENEAR_TOKEN_METADATA}
         columns={columns}
-        showOverflowMenu
-        overflowButtons={overflowButtons}
+        showOverflowMenu={false}
+        actionButton={actionButton}
       />
     );
   }
