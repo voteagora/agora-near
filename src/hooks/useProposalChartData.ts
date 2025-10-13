@@ -6,13 +6,15 @@ export const CHART_DATA_QK = `${Endpoint.Proposals}/charts`;
 
 export const useProposalChartData = ({
   proposalId,
+  blockHeight,
 }: {
   proposalId: string;
+  blockHeight?: number;
 }) => {
   const { data, error, status, isPending } = useQuery({
-    queryKey: [CHART_DATA_QK, proposalId],
+    queryKey: [CHART_DATA_QK, proposalId, blockHeight],
     queryFn: () => {
-      return fetchProposalChartData(proposalId);
+      return fetchProposalChartData(proposalId, blockHeight);
     },
   });
 

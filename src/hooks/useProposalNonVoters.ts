@@ -8,9 +8,11 @@ export const NON_VOTERS_QK = `${Endpoint.Proposals}/non-voters`;
 export const useProposalNonVoters = ({
   proposalId,
   pageSize,
+  blockHeight,
 }: {
   proposalId: string;
   pageSize: number;
+  blockHeight?: number;
 }) => {
   const {
     data,
@@ -21,9 +23,14 @@ export const useProposalNonVoters = ({
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: [NON_VOTERS_QK, proposalId],
+    queryKey: [NON_VOTERS_QK, proposalId, blockHeight],
     queryFn: ({ pageParam = 1 }) => {
-      return fetchProposalNonVoters(proposalId, pageSize, pageParam);
+      return fetchProposalNonVoters(
+        proposalId,
+        pageSize,
+        pageParam,
+        blockHeight
+      );
     },
     getNextPageParam: (currentPage, _, pageParam) => {
       if (currentPage.count <= pageParam * pageSize) return undefined;
