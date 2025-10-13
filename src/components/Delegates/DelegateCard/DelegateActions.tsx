@@ -10,6 +10,12 @@ import { type SyntheticEvent } from "react";
 import { DelegateSocialLinks } from "./DelegateSocialLinks";
 import { MixpanelEvents } from "@/lib/analytics/mixpanel";
 import { trackEvent } from "@/lib/analytics";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type DelegateActionsProps = {
   delegate: DelegateProfile;
@@ -30,6 +36,8 @@ export function DelegateActions({ delegate }: DelegateActionsProps) {
   const isRetired = ui.delegates?.retired.includes(
     delegate.address.toLowerCase() as `0x${string}`
   );
+
+  const hasNotRegistered = !delegate.votingPower;
 
   const handleDelegate = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -67,9 +75,24 @@ export function DelegateActions({ delegate }: DelegateActionsProps) {
         warpcast={delegate.warpcast}
       />
       {!isOwnAccount && (
-        <UpdatedButton type="secondary" onClick={handleDelegate}>
-          {isDelegated ? "Undelegate" : "Delegate"}
-        </UpdatedButton>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-block">
+                <UpdatedButton
+                  type="secondary"
+                  onClick={handleDelegate}
+                  disabled={hasNotRegistered}
+                >
+                  {isDelegated ? "Undelegate" : "Delegate"}
+                </UpdatedButton>
+              </span>
+            </TooltipTrigger>
+            {hasNotRegistered && (
+              <TooltipContent>This user hasn't registered yet</TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       )}
     </div>
   );
