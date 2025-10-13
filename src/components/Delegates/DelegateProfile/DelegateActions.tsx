@@ -9,17 +9,20 @@ import { type SyntheticEvent } from "react";
 import { DelegateSocialLinks } from "../DelegateCard/DelegateSocialLinks";
 import { MixpanelEvents } from "@/lib/analytics/mixpanel";
 import { trackEvent } from "@/lib/analytics";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function DelegateActions({
   address,
   twitter,
   discord,
   warpcast,
+  votingPower,
 }: {
   address: string;
   twitter?: string | null;
   discord?: string | null;
   warpcast?: string | null;
+  votingPower?: string | null;
 }) {
   const { signedAccountId, signIn } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
@@ -35,6 +38,8 @@ export function DelegateActions({
   const isRetired = ui.delegates?.retired.includes(
     address.toLowerCase() as `0x${string}`
   );
+
+  const hasNotRegistered = !votingPower;
 
   const handleDelegate = (e: SyntheticEvent) => {
     e.preventDefault();
@@ -72,9 +77,26 @@ export function DelegateActions({
         warpcast={warpcast}
       />
       {!isOwnAccount && (
-        <UpdatedButton type="secondary" onClick={handleDelegate}>
-          {isDelegated ? "Undelegate" : "Delegate"}
-        </UpdatedButton>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-block">
+                <UpdatedButton 
+                  type="secondary" 
+                  onClick={handleDelegate}
+                  disabled={hasNotRegistered}
+                >
+                  {isDelegated ? "Undelegate" : "Delegate"}
+                </UpdatedButton>
+              </span>
+            </TooltipTrigger>
+            {hasNotRegistered && (
+              <TooltipContent>
+                This user hasn't registered yet
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       )}
     </div>
   );
