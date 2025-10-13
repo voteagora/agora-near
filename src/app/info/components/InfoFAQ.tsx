@@ -546,6 +546,33 @@ const faqs: FAQ[] = [
       </div>
     ),
   },
+  {
+    id: "staking-unstaking-cli",
+    question:
+      "How to interact with the underlying staking pool through the lockup contracts?",
+    answer: (
+      <div className="space-y-4">
+        <p>
+          In order to interact with the underlying staking pool in the contracts
+          run the following commands
+        </p>
+        <div className="space-y-3">
+          <p className="font-semibold mb-1"> 1. Select the staking pool</p>
+          <p>
+            {`near contract call-function as-transaction lockup-example.near select_staking_pool json-args ‘{“select_staking_pool_account_id”: “staking_pool-example”}’ prepaid-gas '75.0 Tgas' sign-as YOUR_ACCOUNT.near network-config mainnet sign-with-keychain send`}
+          </p>
+          <p className="font-semibold mb-1">2. Deposit and stake</p>
+          <p>
+            {`near contract call-function as-transaction lockup-example.near deposit_and_stake json-args '{"amount": "1000000000000000000000000000" }' prepaid-gas '125.0 Tgas' attached-deposit '1 yoctoNEAR' sign-as YOUR_ACCOUNT.near network-config mainnet sign-with-keychain send`}
+          </p>
+          <p className="font-semibold mb-1">3. And finally, unstake</p>
+          <p>
+            {`near contract call-function as-transaction staking-pool-example.near unstake_all json-args '' prepaid-gas '125.0 Tgas' attached-deposit '1 yoctoNEAR' sign-as YOUR_ACCOUNT.near network-config mainnet sign-with-keychain send`}
+          </p>
+        </div>
+      </div>
+    ),
+  },
 ];
 
 const InfoFAQ = () => {

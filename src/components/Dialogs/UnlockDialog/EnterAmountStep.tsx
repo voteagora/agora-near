@@ -75,7 +75,15 @@ export const EnterAmountStep = ({ handleReview }: EnterAmountStepProps) => {
                   operation can be done by directly interacting with the
                   contracts. It is expected that staking balances will be zero
                   on the third-party platforms due to your lock-up contract
-                  being the owner.
+                  being the owner. See the{" "}
+                  <a
+                    href="/info"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-700"
+                  >
+                    FAQ
+                  </a>
                 </p>
               </div>
             }
