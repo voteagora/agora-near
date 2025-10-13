@@ -74,7 +74,7 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
   const [filterParam] = useQueryState("filter");
 
   const isDelegationEncouragementEnabled = ui.toggle(
-    "delegation-encouragement"
+    "delegation-encouragement-wallet"
   )?.enabled;
 
   const shouldShowEncourageBanner = useMemo(() => {

@@ -18,7 +18,7 @@ export function DesktopConnectButton({
 }: DesktopConnectButtonProps) {
   const { ui } = Tenant.current();
   const isDelegationEncouragementEnabled = ui.toggle(
-    "delegation-encouragement"
+    "delegation-encouragement-wallet"
   )?.enabled;
   return (
     <div
