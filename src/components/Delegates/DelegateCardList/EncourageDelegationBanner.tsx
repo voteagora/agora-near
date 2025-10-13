@@ -1,10 +1,13 @@
 import { useMemo } from "react";
-import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { UpdatedButton } from "@/components/Button";
 import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 import Big from "big.js";
 import Link from "next/link";
+
+const DISMISSED_BANNER_KEY = "agora-delegation-encouragement-dismissed";
 
 export const EncourageDelegationBanner = ({
   filterParam,
@@ -13,6 +16,10 @@ export const EncourageDelegationBanner = ({
 }) => {
   const { signedAccountId } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
+  const [isDismissed, setIsDismissed] = useLocalStorage(
+    DISMISSED_BANNER_KEY,
+    false
+  );
 
   const shouldShowBanner = useMemo(() => {
     if (!accountInfo || !signedAccountId) return false;
@@ -34,16 +41,16 @@ export const EncourageDelegationBanner = ({
     return totalBalance.gt(0) && (!hasDelegated || isDelegatedToSelf);
   }, [accountInfo, signedAccountId, filterParam]);
 
-  if (!shouldShowBanner || !signedAccountId) {
+  if (!shouldShowBanner || !signedAccountId || isDismissed) {
     return null;
   }
 
   return (
-    <div className="w-full p-4 rounded-lg border border-negative flex flex-col sm:flex-row justify-start items-start gap-4 mt-3 mb-1">
-      <div className="flex-1 flex-col justify-start items-start gap-1 text-neutral-900">
-        <div className="flex items-start gap-2">
+    <div className="w-full rounded-lg border border-negative mt-3 mb-1 p-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+        <div className="flex-1 flex items-start gap-2 text-neutral-900 min-w-0">
           <ExclamationCircleIcon className="w-6 h-6 stroke-negative flex-shrink-0 mt-0.5" />
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 flex-1">
             <div className="text-base font-bold leading-normal">
               Vote through endorsed delegates!
             </div>
@@ -52,15 +59,27 @@ export const EncourageDelegationBanner = ({
             </div>
           </div>
         </div>
+        <div className="flex items-center gap-2 w-full sm:w-auto sm:flex-shrink-0">
+          <Link
+            href="/delegates?filter=endorsed"
+            className="flex-1 sm:flex-initial"
+          >
+            <UpdatedButton
+              type="primary"
+              className="font-medium px-[20px] py-3 w-full sm:w-auto whitespace-nowrap"
+            >
+              View endorsed delegates
+            </UpdatedButton>
+          </Link>
+          <button
+            onClick={() => setIsDismissed(true)}
+            className="p-1 hover:bg-tertiary/10 rounded-md transition-colors flex-shrink-0"
+            aria-label="Dismiss banner"
+          >
+            <XMarkIcon className="w-5 h-5 stroke-secondary" />
+          </button>
+        </div>
       </div>
-      <Link href="/delegates?filter=endorsed" className="w-full sm:w-auto">
-        <UpdatedButton
-          type="primary"
-          className="font-medium px-[20px] py-3 w-full sm:w-auto"
-        >
-          View endorsed delegates
-        </UpdatedButton>
-      </Link>
     </div>
   );
 };
