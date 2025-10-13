@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CONTRACTS } from "@/lib/contractConstants";
+import { generateNonce } from "@/lib/api/nonce/requests";
 import { getRpcUrl } from "@/lib/utils";
 import { convertUnit } from "@fastnear/utils";
 import {
@@ -10,13 +10,13 @@ import {
   WalletSelector,
 } from "@near-wallet-selector/core";
 import { SignedMessage } from "@near-wallet-selector/core/src/lib/wallet";
-import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupHotWallet } from "@near-wallet-selector/hot-wallet";
-import { setupUnityWallet } from "@near-wallet-selector/unity-wallet";
-import { setupWalletConnect } from "@near-wallet-selector/wallet-connect";
 import { setupIntearWallet } from "@near-wallet-selector/intear-wallet";
+import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupModal } from "@near-wallet-selector/modal-ui";
 import "@near-wallet-selector/modal-ui/styles.css";
+import { setupUnityWallet } from "@near-wallet-selector/unity-wallet";
+import { setupWalletConnect } from "@near-wallet-selector/wallet-connect";
 import { providers } from "near-api-js";
 import {
   createContext,
@@ -27,7 +27,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { generateNonce } from "@/lib/api/nonce/requests";
 
 // Default to max Tgas since it gets refunded if not used
 const DEFAULT_GAS = convertUnit("30 Tgas");
@@ -197,9 +196,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
    */
   const signIn = useCallback(async () => {
     if (!selector) return;
-    const modal = setupModal(selector, {
-      contractId: CONTRACTS.VENEAR_CONTRACT_ID,
-    });
+    const modal = setupModal(selector, {});
     modal.show();
   }, [selector]);
 
