@@ -6,6 +6,7 @@ import { useFungibleTokens } from "@/hooks/useFungibleTokens";
 import { useLockNear } from "@/hooks/useLockNear";
 import { useStakingPool } from "@/hooks/useStakingPool";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
+import { useAccountExists } from "@/hooks/useAccountExists";
 import {
   DEFAULT_GAS_RESERVE,
   LINEAR_TOKEN_CONTRACT,
@@ -129,17 +130,11 @@ export const LockProvider = ({
   source,
   preSelectedTokenId,
 }: LockProviderProps) => {
-  const { signedAccountId, networkId } = useNear();
+  const { signedAccountId } = useNear();
 
-  const linearTokenContractId = useMemo(
-    () => LINEAR_TOKEN_CONTRACT,
-    [networkId]
-  );
+  const linearTokenContractId = useMemo(() => LINEAR_TOKEN_CONTRACT, []);
 
-  const stNearTokenContractId = useMemo(
-    () => STNEAR_TOKEN_CONTRACT,
-    [networkId]
-  );
+  const stNearTokenContractId = useMemo(() => STNEAR_TOKEN_CONTRACT, []);
 
   const [selectedToken, setSelectedToken] = useState<
     TokenWithBalance | undefined
@@ -178,6 +173,10 @@ export const LockProvider = ({
     isLoading: isLoadingLockupAccount,
     error: lockupAccountError,
   } = useLockupAccount();
+
+  // Detect if the deterministic lockup account already exists on-chain
+  const { exists: lockupExists, isLoading: isCheckingLockupExists } =
+    useAccountExists(lockupAccountId);
 
   const { lockNearAsync, isLockingNear, lockingNearError } = useLockNear({
     lockupAccountId: lockupAccountId || "",
@@ -281,6 +280,7 @@ export const LockProvider = ({
     isLoadingVenearConfig ||
     isLoadingVeNearAccount ||
     isLoadingLockupAccount ||
+    isCheckingLockupExists ||
     isLoadingFungibleTokens ||
     isLoadingNearBalance ||
     isLoadingStakingPools;
@@ -501,7 +501,8 @@ export const LockProvider = ({
   const requiredTransactions = useMemo(() => {
     const transactions: LockTransaction[] = [];
 
-    if (!venearAccountInfo) {
+    // If the lockup account already exists on-chain, skip deploy regardless of veNEAR account info
+    if (lockupExists === false) {
       // Requires deploying lockup
       transactions.push("deploy_lockup");
     }
@@ -528,12 +529,7 @@ export const LockProvider = ({
     transactions.push("lock_near");
 
     return transactions;
-  }, [
-    selectedToken?.type,
-    stakingPoolId,
-    transferAmountYocto,
-    venearAccountInfo,
-  ]);
+  }, [selectedToken?.type, stakingPoolId, transferAmountYocto, lockupExists]);
 
   const getAmountToLock = useCallback(async () => {
     // Lock all when onboarding
