@@ -595,6 +595,12 @@ const faqs: FAQ[] = [
     answer:
       "The current contract architecture only allows one LST position to be locked at a time. Concurrent locking of multiple LSTs is not supported in House of Stake V1.When you lock NEAR tokens for governance, they are locked for a specific period. During this time, you cannot transfer or use these tokens for other purposes, but you maintain voting rights and earn rewards. The locking period helps ensure long-term alignment with the protocol's success.",
   },
+  {
+    id: "no-proposal-start-date",
+    question: "When do proposals go live? Why is there are lag?",
+    answer:
+      "Proposals don't go live immediately.  Instead, they get published, with a lead-time configured to give token holders time to allocate their veNEAR to a delegate of their choice.  This is important, in the event that a token holder's delegate need to be changed.",
+  },
 ];
 
 const InfoFAQ = () => {
