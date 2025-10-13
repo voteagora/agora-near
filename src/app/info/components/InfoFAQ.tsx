@@ -560,6 +560,9 @@ const faqs: FAQ[] = [
           <div>
             <p className="font-semibold mb-2">1. Select the staking pool</p>
             <pre className="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto text-sm">
+              <p> Retrieve the lockup contract account ID: </p>
+              <code>{`near contract call-function as-read-only venear.dao get_lockup_account_id json-args '{"account_id": "YOUR_ACCOUNT.near"}' network-config mainnet now`}</code>
+              <p> Configure staking pool: </p>
               <code>
                 {`near contract call-function as-transaction lockup-example.near select_staking_pool json-args '{"select_staking_pool_account_id": "staking_pool-example"}' prepaid-gas '75.0 Tgas' sign-as YOUR_ACCOUNT.near network-config mainnet sign-with-keychain send`}
               </code>
@@ -577,7 +580,7 @@ const faqs: FAQ[] = [
             <p className="font-semibold mb-2">3. And finally, unstake</p>
             <pre className="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto text-sm">
               <code>
-                {`near contract call-function as-transaction staking-pool-example.near unstake_all json-args '' prepaid-gas '125.0 Tgas' attached-deposit '1 yoctoNEAR' sign-as YOUR_ACCOUNT.near network-config mainnet sign-with-keychain send`}
+                {`near contract call-function as-transaction lockup-example.near unstake_all json-args '' prepaid-gas '125.0 Tgas' attached-deposit '1 yoctoNEAR' sign-as YOUR_ACCOUNT.near network-config mainnet sign-with-keychain send`}
               </code>
             </pre>
           </div>
