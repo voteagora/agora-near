@@ -63,6 +63,12 @@ export const LockableAssetRow = memo<LockableAssetRowProps>(
           !!stakingPoolId &&
           token.type === "lst" &&
           stakingPoolId !== token.accountId,
+        tooltip:
+          !!stakingPoolId &&
+          token.type === "lst" &&
+          stakingPoolId !== token.accountId
+            ? "You can't lock more than one LST."
+            : undefined,
       }),
       [token.type, token.accountId, stakingPoolId, handleLockClick]
     );

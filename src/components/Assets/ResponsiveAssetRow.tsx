@@ -14,6 +14,7 @@ type ActionButton = {
   onClick: () => void;
   disabled?: boolean;
   isLoading?: boolean;
+  tooltip?: string;
 };
 
 type ResponsiveAssetRowProps = {

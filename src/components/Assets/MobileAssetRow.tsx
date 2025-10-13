@@ -10,6 +10,7 @@ import React, { memo, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { UpdatedButton } from "../Button";
 import LoadingSpinner from "../shared/LoadingSpinner";
+import { TooltipWithTap } from "../ui/tooltip-with-tap";
 
 type OverflowButton = {
   title: string;
@@ -22,6 +23,7 @@ type ActionButton = {
   onClick: () => void;
   disabled?: boolean;
   isLoading?: boolean;
+  tooltip?: string;
 };
 
 type MobileAssetRowProps = {
@@ -149,27 +151,42 @@ export const MobileAssetRow = memo(
                         </div>
 
                         <div className="flex flex-col gap-2 grow justify-end">
-                          {buttonsToRender.map((button, index) => (
-                            <UpdatedButton
-                              key={index}
-                              className="w-full"
-                              variant="rounded"
-                              onClick={() => {
-                                button.onClick();
-                                close();
-                              }}
-                              type={button.disabled ? "disabled" : "primary"}
-                              disabled={button.disabled}
-                            >
-                              {button.isLoading ? (
-                                <div className="flex items-center justify-center">
-                                  <LoadingSpinner />
-                                </div>
-                              ) : (
-                                button.title
-                              )}
-                            </UpdatedButton>
-                          ))}
+                          {buttonsToRender.map((button, index) => {
+                            const buttonElement = (
+                              <UpdatedButton
+                                key={index}
+                                className="w-full"
+                                variant="rounded"
+                                onClick={() => {
+                                  button.onClick();
+                                  close();
+                                }}
+                                type={button.disabled ? "disabled" : "primary"}
+                                disabled={button.disabled}
+                              >
+                                {button.isLoading ? (
+                                  <div className="flex items-center justify-center">
+                                    <LoadingSpinner />
+                                  </div>
+                                ) : (
+                                  button.title
+                                )}
+                              </UpdatedButton>
+                            );
+
+                            if (button.tooltip && button.disabled) {
+                              return (
+                                <TooltipWithTap
+                                  key={index}
+                                  content={button.tooltip}
+                                >
+                                  {buttonElement}
+                                </TooltipWithTap>
+                              );
+                            }
+
+                            return buttonElement;
+                          })}
                           {overflowButtons?.map((button, index) => (
                             <button
                               key={index}

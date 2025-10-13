@@ -13,6 +13,7 @@ import Image from "next/image";
 import React, { memo, useMemo } from "react";
 import { UpdatedButton } from "../Button";
 import LoadingSpinner from "../shared/LoadingSpinner";
+import { TooltipWithTap } from "../ui/tooltip-with-tap";
 
 type OverflowButton = {
   title: string;
@@ -25,6 +26,7 @@ type ActionButton = {
   onClick: () => void;
   disabled?: boolean;
   isLoading?: boolean;
+  tooltip?: string;
 };
 
 type AssetRowProps = {
@@ -82,23 +84,35 @@ export const AssetRow = memo(
 
       return (
         <div className="flex gap-2">
-          {buttonsToRender.map((button, index) => (
-            <UpdatedButton
-              key={index}
-              className="w-full"
-              variant="rounded"
-              onClick={button.disabled ? undefined : button.onClick}
-              type={button.disabled ? "disabled" : undefined}
-            >
-              {button.isLoading ? (
-                <div className="flex items-center justify-center">
-                  <LoadingSpinner />
-                </div>
-              ) : (
-                button.title
-              )}
-            </UpdatedButton>
-          ))}
+          {buttonsToRender.map((button, index) => {
+            const buttonElement = (
+              <UpdatedButton
+                key={index}
+                className="w-full"
+                variant="rounded"
+                onClick={button.disabled ? undefined : button.onClick}
+                type={button.disabled ? "disabled" : undefined}
+              >
+                {button.isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <LoadingSpinner />
+                  </div>
+                ) : (
+                  button.title
+                )}
+              </UpdatedButton>
+            );
+
+            if (button.tooltip && button.disabled) {
+              return (
+                <TooltipWithTap key={index} content={button.tooltip}>
+                  {buttonElement}
+                </TooltipWithTap>
+              );
+            }
+
+            return buttonElement;
+          })}
         </div>
       );
     }, [buttonsToRender]);
