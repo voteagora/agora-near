@@ -589,6 +589,12 @@ const faqs: FAQ[] = [
       </div>
     ),
   },
+  {
+    id: "only-one-lst-position",
+    question: "Why can't I lock more than one LST position?",
+    answer:
+      "The current contract architecture only allows one LST position to be locked at a time. Concurrent locking of multiple LSTs is not supported in House of Stake V1.When you lock NEAR tokens for governance, they are locked for a specific period. During this time, you cannot transfer or use these tokens for other purposes, but you maintain voting rights and earn rewards. The locking period helps ensure long-term alignment with the protocol's success.",
+  },
 ];
 
 const InfoFAQ = () => {
