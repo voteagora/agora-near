@@ -2,7 +2,7 @@ import { useHosActivity } from "@/hooks/useHosActivity";
 import { HosActivity } from "@/lib/api/delegates/types";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { memo, useCallback, useEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useRef, useMemo } from "react";
 import TokenAmount from "../shared/TokenAmount";
 import { Skeleton } from "../ui/skeleton";
 
@@ -123,6 +123,14 @@ export const HosActivityTable = memo(({ address }: Props) => {
     address,
   });
 
+  const filteredActivities = useMemo(
+    () =>
+      activities.filter(
+        (activity) => activity.transactionType !== "outbound_delegation"
+      ),
+    [activities]
+  );
+
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -160,7 +168,7 @@ export const HosActivityTable = memo(({ address }: Props) => {
     );
   }
 
-  if (activities.length === 0) {
+  if (filteredActivities.length === 0) {
     return (
       <div className="text-center py-12 text-gray-500">No activity found</div>
     );
@@ -186,7 +194,7 @@ export const HosActivityTable = memo(({ address }: Props) => {
           </tr>
         </thead>
         <tbody>
-          {activities.map((activity, index) => (
+          {filteredActivities.map((activity, index) => (
             <HosActivityRow
               key={`${activity?.receiptId}-${index}`}
               activity={activity}
