@@ -7,18 +7,15 @@ import { useProposalActions } from "@/hooks/useProposalActions";
 import { toast } from "react-hot-toast";
 import { ChevronLeftIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { getVotingDays } from "@/lib/proposalUtils";
 
 export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
   const router = useRouter();
 
-  const { config } = useProposalConfig();
+  const { config, votingDuration } = useProposalConfig();
   const { signedAccountId } = useNear();
 
   const isReviewer =
     signedAccountId && config?.reviewer_ids.includes(signedAccountId);
-
-  const votingDuration = config ? getVotingDays(config) : "";
 
   const { approveProposal, isApprovingProposal, approveProposalError } =
     useProposalActions({

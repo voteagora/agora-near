@@ -8,26 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useReadHOSContract } from "@/hooks/useReadHOSContract";
-import { CONTRACTS } from "@/lib/contractConstants";
-import { getVotingDays } from "@/lib/proposalUtils";
+import { useProposalConfig } from "@/hooks/useProposalConfig";
 
 const GovernorSettingsParams = () => {
-  const [{ data: config, isLoading }] = useReadHOSContract([
-    {
-      contractId: CONTRACTS.VOTING_CONTRACT_ID,
-      methodName: "get_config",
-      config: {
-        args: {},
-        staleTime: Infinity,
-        gcTime: 0,
-      },
-    },
-  ]);
-
-  const votingDuration = getVotingDays({
-    voting_duration_ns: config?.voting_duration_ns ?? "",
-  });
+  const { votingDuration, isLoading } = useProposalConfig();
 
   return (
     <Table>

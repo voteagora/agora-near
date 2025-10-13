@@ -65,7 +65,13 @@ type DraftProposalPageProps = {
   draftId: string;
 };
 
-function ScreeningCommitteePanel({ reviewerIds }: { reviewerIds: string[] }) {
+function ScreeningCommitteePanel({
+  reviewerIds,
+  votingDuration,
+}: {
+  reviewerIds: string[];
+  votingDuration: string;
+}) {
   return (
     <div className="bg-wash rounded-xl border border-line p-6">
       <h2 className="text-2xl font-extrabold mb-4 text-primary">
@@ -74,7 +80,7 @@ function ScreeningCommitteePanel({ reviewerIds }: { reviewerIds: string[] }) {
       <p className="text-sm text-secondary mb-4">
         Submitting your proposal will send it to the Screening Committee for
         review. Any committee member can approve it. Once approved, your
-        proposal will go live for one day.
+        proposal will go live for {votingDuration}.
       </p>
 
       <h3 className="text-lg font-semibold mb-3 text-primary border-t pt-4">
@@ -100,7 +106,11 @@ const DraftProposalsPageContent = memo(
   ({ draftId }: DraftProposalPageProps) => {
     const router = useRouter();
     const { signedAccountId } = useNear();
-    const { config, isLoading: configLoading } = useProposalConfig();
+    const {
+      config,
+      votingDuration,
+      isLoading: configLoading,
+    } = useProposalConfig();
     const openDialog = useOpenDialog();
     const draftFormRef = useRef<DraftEditFormRef>(null);
     const {
@@ -361,6 +371,7 @@ const DraftProposalsPageContent = memo(
             ref={draftFormRef}
             draft={draft}
             config={config}
+            votingDuration={votingDuration}
             onSaveSuccess={() => {
               reset({
                 title: draft.title || "",
@@ -434,7 +445,10 @@ const DraftProposalsPageContent = memo(
             </VStack>
 
             <div className="shrink-0 w-full lg:w-[24rem]">
-              <ScreeningCommitteePanel reviewerIds={config.reviewer_ids} />
+              <ScreeningCommitteePanel
+                reviewerIds={config.reviewer_ids}
+                votingDuration={votingDuration}
+              />
             </div>
           </HStack>
         )}
