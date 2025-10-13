@@ -78,7 +78,7 @@ export const LINEAR_TOKEN_METADATA: TokenMetadata = {
 };
 
 export const STNEAR_TOKEN_METADATA: TokenMetadata = {
-  name: "Meta Pool stNEAR",
+  name: "stNEAR",
   symbol: "STNEAR",
   decimals: NEAR_NOMINATION_EXP,
   icon: stnearAssetIcon,
