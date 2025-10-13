@@ -1,6 +1,7 @@
 import React from "react";
 import InfoAbout from "@/app/info/components/InfoAbout";
 import { InfoHero } from "@/app/info/components/InfoHero";
+import { VeNearGoalBar } from "@/app/info/components/VeNearGoalBar";
 
 import GovernorSettings from "@/app/info/components/GovernorSettings";
 import InfoFAQ from "@/app/info/components/InfoFAQ";
@@ -49,6 +50,7 @@ export default async function Page() {
   return (
     <div className="flex flex-col">
       <InfoHero />
+      <VeNearGoalBar />
       <InfoAbout />
       <GovernorSettings />
       <InfoFAQ />
