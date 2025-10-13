@@ -1,7 +1,7 @@
 import Image from "next/image";
 import discordIcon from "@/assets/discord.svg";
 import xIcon from "@/assets/x.svg";
-import warpcastIcon from "@/assets/warpcast.svg";
+import telegramIcon from "@/assets/telegram.svg";
 import toast from "react-hot-toast";
 
 const ICON_HEIGHT = 24;
@@ -16,7 +16,7 @@ export function DelegateSocialLinks({
   twitter?: string | null;
   warpcast?: string | null;
 }) {
-  const warpcastUsername = warpcast?.replace(/@/g, "");
+  const telegramUsername = warpcast?.replace(/@/g, "");
   return (
     <div className="flex flex-row gap-4 h-auto items-center justify-center">
       {twitter && (
@@ -41,15 +41,14 @@ export function DelegateSocialLinks({
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            window &&
-              window.open(`https://warpcast.com/${warpcastUsername}`, "_blank");
+            window && window.open(`https://t.me/${telegramUsername}`, "_blank");
           }}
         >
           <Image
             height={ICON_HEIGHT}
             width={ICON_WIDTH}
-            src={warpcastIcon.src}
-            alt="Warpcast icon"
+            src={telegramIcon.src}
+            alt="Telegram icon"
           />
         </button>
       )}
