@@ -11,13 +11,13 @@ import toast from "react-hot-toast";
 export const VeNearLiquidAssetRow = ({
   lockupAccountId,
   token,
-  stakingPoolId,
   onStakeClick,
+  onLockClick,
 }: {
   lockupAccountId?: string;
   token: TokenWithBalance;
-  stakingPoolId?: string | null;
   onStakeClick: () => void;
+  onLockClick: (accountId?: string) => void;
 }) => {
   const [
     { data: liquidOwnersBalance, isLoading: isLoadingLiquidOwnersBalance },
@@ -69,28 +69,27 @@ export const VeNearLiquidAssetRow = ({
     transferLockup({ amount: availableToTransfer });
   }, [transferLockup, availableToTransfer]);
 
+  const handleLockClick = useCallback(
+    () => onLockClick(lockupAccountId),
+    [lockupAccountId, onLockClick]
+  );
+
   const actionButtons = useMemo(
     () => [
       {
+        title: "Lock",
+        onClick: handleLockClick,
+      },
+      {
         title: "Stake",
         onClick: handleStakeClick,
-        disabled:
-          !!stakingPoolId &&
-          token.type === "lst" &&
-          stakingPoolId !== token.accountId,
       },
       {
         title: "Withdraw",
         onClick: handleWithdraw,
       },
     ],
-    [
-      token.type,
-      token.accountId,
-      stakingPoolId,
-      handleStakeClick,
-      handleWithdraw,
-    ]
+    [handleLockClick, handleStakeClick, handleWithdraw]
   );
 
   const availableToTransferCol = useMemo(() => {
@@ -114,6 +113,21 @@ export const VeNearLiquidAssetRow = ({
     };
   }, [availableToTransfer, isLoadingAvailableToTransfer]);
 
+  const availableToStakeCol = useMemo(() => {
+    return {
+      title: "Available to stake",
+      subtitle: isLoadingLiquidOwnersBalance ? (
+        <Skeleton className="w-16 h-4" />
+      ) : (
+        <TokenAmount
+          amount={liquidOwnersBalance ?? "0"}
+          maximumSignificantDigits={4}
+          minimumFractionDigits={4}
+        />
+      ),
+    };
+  }, [isLoadingLiquidOwnersBalance, liquidOwnersBalance]);
+
   const columns = useMemo(
     () => [
       {
@@ -127,9 +141,15 @@ export const VeNearLiquidAssetRow = ({
           />
         ),
       },
+      availableToStakeCol,
       availableToTransferCol,
     ],
-    [token.balance, token.metadata?.symbol, availableToTransferCol]
+    [
+      token.balance,
+      token.metadata?.symbol,
+      availableToStakeCol,
+      availableToTransferCol,
+    ]
   );
 
   return (
