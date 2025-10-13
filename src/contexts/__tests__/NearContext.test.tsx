@@ -174,10 +174,22 @@ describe("NearContext", () => {
         await result.current.signIn();
       });
 
-      expect(mockSetupModal).toHaveBeenCalledWith(mockWalletSelector, {
-        contractId: CONTRACTS.VENEAR_CONTRACT_ID,
-      });
       expect(mockModal.show).toHaveBeenCalled();
+    });
+
+    it("should not create a function-call key when signing in", async () => {
+      const { result } = renderHook(() => useNear(), { wrapper: TestWrapper });
+
+      await waitFor(() => {
+        expect(result.current.isInitialized).toBe(true);
+      });
+
+      await act(async () => {
+        await result.current.signIn();
+      });
+
+      // Absence of contractId field in the second arg means we are not requesting a function-call key to be created
+      expect(mockSetupModal).toHaveBeenCalledWith(mockWalletSelector, {});
     });
 
     it("should handle signIn when selector is not initialized", async () => {
