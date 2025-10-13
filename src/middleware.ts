@@ -70,6 +70,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(ROOT_PATH, request.url));
   }
 
+  // Hide `/near` page in production only; keep for dev/staging
+  if (
+    (path === "/near" || path.startsWith("/near/")) &&
+    (process.env.NEXT_PUBLIC_AGORA_ENV === "prod" || process.env.NODE_ENV === "production")
+  ) {
+    return new NextResponse("Not Found", { status: 404 });
+  }
+
   // Handle preflight OPTIONS requests
   if (request.method === "OPTIONS") {
     return setOptionsCorsHeaders(request);
@@ -84,5 +92,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/api/v1/:path*"],
+  matcher: ["/", "/api/v1/:path*", "/near", "/near/:path*"],
 };
