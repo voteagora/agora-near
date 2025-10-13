@@ -129,7 +129,7 @@ const InfoRoadmap = () => {
 
       <div className="mb-8 p-6 bg-wash border border-line rounded-lg">
         <h4 className="text-lg font-semibold text-primary mb-3">
-          Full Launch: October XX, 2025
+          Full Launch: October 13, 2025
         </h4>
         <p className="text-secondary mb-3">
           House of Stake is ready for the full community to participate in the
