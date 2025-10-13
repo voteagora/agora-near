@@ -9,7 +9,12 @@ import { type SyntheticEvent } from "react";
 import { DelegateSocialLinks } from "../DelegateCard/DelegateSocialLinks";
 import { MixpanelEvents } from "@/lib/analytics/mixpanel";
 import { trackEvent } from "@/lib/analytics";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function DelegateActions({
   address,
@@ -81,8 +86,8 @@ export function DelegateActions({
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="inline-block">
-                <UpdatedButton 
-                  type="secondary" 
+                <UpdatedButton
+                  type="secondary"
                   onClick={handleDelegate}
                   disabled={hasNotRegistered}
                 >
@@ -91,9 +96,7 @@ export function DelegateActions({
               </span>
             </TooltipTrigger>
             {hasNotRegistered && (
-              <TooltipContent>
-                This user hasn't registered yet
-              </TooltipContent>
+              <TooltipContent>This user hasn't registered yet</TooltipContent>
             )}
           </Tooltip>
         </TooltipProvider>
