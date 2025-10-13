@@ -15,6 +15,7 @@ import {
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { DraftProposalStage } from "@/lib/api/proposal/types";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
+import { getVotingDays } from "@/lib/proposalUtils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeftIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -65,7 +66,13 @@ type DraftProposalPageProps = {
   draftId: string;
 };
 
-function ScreeningCommitteePanel({ reviewerIds }: { reviewerIds: string[] }) {
+function ScreeningCommitteePanel({
+  reviewerIds,
+  votingDuration,
+}: {
+  reviewerIds: string[];
+  votingDuration: string;
+}) {
   return (
     <div className="bg-wash rounded-xl border border-line p-6">
       <h2 className="text-2xl font-extrabold mb-4 text-primary">
@@ -74,7 +81,7 @@ function ScreeningCommitteePanel({ reviewerIds }: { reviewerIds: string[] }) {
       <p className="text-sm text-secondary mb-4">
         Submitting your proposal will send it to the Screening Committee for
         review. Any committee member can approve it. Once approved, your
-        proposal will go live for one day.
+        proposal will go live for {votingDuration}.
       </p>
 
       <h3 className="text-lg font-semibold mb-3 text-primary border-t pt-4">
@@ -434,7 +441,12 @@ const DraftProposalsPageContent = memo(
             </VStack>
 
             <div className="shrink-0 w-full lg:w-[24rem]">
-              <ScreeningCommitteePanel reviewerIds={config.reviewer_ids} />
+              <ScreeningCommitteePanel
+                reviewerIds={config.reviewer_ids}
+                votingDuration={getVotingDays({
+                  voting_duration_ns: config.voting_duration_ns,
+                })}
+              />
             </div>
           </HStack>
         )}
