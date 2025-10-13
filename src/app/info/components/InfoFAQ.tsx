@@ -425,12 +425,13 @@ const faqs: FAQ[] = [
   },
   {
     id: "rewards-distribution",
-    question: "How will rewards be calculated and distributed?",
+    question: "How will rewards be calculated and distributed, in the future?",
     answer: (
       <div className="space-y-4">
         <p>
-          The formula to calculate the annual total NEAR rewards paid to veNEAR
-          holders is as follows:
+          A future proposal will be put up to vote on the following. The latest
+          thinking, is that the formula to calculate the annual total NEAR
+          rewards paid to veNEAR holders would be as follows:
         </p>
         <div className="p-4 text-center my-4">
           <span className="font-mono text-lg">
