@@ -465,9 +465,14 @@ export const NearProvider: React.FC<NearProviderProps> = ({
 
       const nonce = Buffer.from(nonceResponse.nonce, "hex");
 
+      // This breaks the signature for HOT wallet.
+      const sanitizedMessage = message.replace(/[’”“]/g, (match) =>
+        match === "'" ? "'" : '"'
+      );
+
       const selectedWallet = await selector.wallet();
       return selectedWallet.signMessage({
-        message,
+        message: sanitizedMessage,
         recipient,
         nonce,
       });
