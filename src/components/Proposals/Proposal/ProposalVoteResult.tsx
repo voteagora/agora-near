@@ -42,6 +42,7 @@ const ProposalVoteResult = ({
   } = useProposalVotes({
     proposalId: proposal.id.toString(),
     pageSize: 20,
+    blockHeight: proposal.snapshot_and_state?.snapshot.block_height,
   });
 
   const {
@@ -52,6 +53,7 @@ const ProposalVoteResult = ({
   } = useProposalNonVoters({
     proposalId: proposal.id.toString(),
     pageSize: 20,
+    blockHeight: proposal.snapshot_and_state?.snapshot.block_height,
   });
 
   const handleClick = () => {
