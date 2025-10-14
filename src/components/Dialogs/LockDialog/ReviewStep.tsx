@@ -50,6 +50,7 @@ export const ReviewStep = memo(
       lockupStorageCost,
       venearAccountLockupVersion,
       venearGlobalLockupVersion,
+      lstPriceYocto,
     } = useLockProviderContext();
 
     // Determine if the just-locked amount leaves any liquid NEAR available to stake.
@@ -319,6 +320,17 @@ export const ReviewStep = memo(
               <span className="text-secondary text-xs">
                 {annualAPY}% Voting Power Growth
               </span>
+              {selectedToken?.type === "lst" && lstPriceYocto && (
+                <span className="text-secondary text-xs">
+                  {(() => {
+                    const nearPerLst = utils.format.formatNearAmount(
+                      lstPriceYocto,
+                      4
+                    );
+                    return `1 ${selectedToken?.metadata?.symbol} ≈ ${nearPerLst} NEAR`;
+                  })()}
+                </span>
+              )}
             </div>
             <TokenAmount
               amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}

@@ -74,6 +74,8 @@ type LockProviderContextType = {
   lockupStorageCost: string;
   venearAccountLockupVersion: number | undefined;
   venearGlobalLockupVersion: number | undefined;
+  // YoctoNEAR per 1 unit of selected LST (stNEAR/liNEAR) if applicable
+  lstPriceYocto?: string;
 };
 
 export const LockProviderContext = createContext<LockProviderContextType>({
@@ -108,6 +110,7 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   lockupStorageCost: "0",
   venearAccountLockupVersion: undefined,
   venearGlobalLockupVersion: undefined,
+  lstPriceYocto: undefined,
 });
 
 export const useLockProviderContext = () => {
@@ -276,6 +279,29 @@ export const LockProvider = ({
     lockupAccountId: lockupAccountId ?? "",
     enabled: !!venearAccountInfo,
   });
+
+  const lstPriceYocto = useMemo(() => {
+    if (selectedToken?.type !== "lst") {
+      return undefined;
+    }
+
+    if (selectedToken.accountId === stNearTokenContractId) {
+      return stakingPools.stNear.price ?? undefined;
+    }
+
+    if (selectedToken.accountId === linearTokenContractId) {
+      return stakingPools.liNear.price ?? undefined;
+    }
+
+    return undefined;
+  }, [
+    selectedToken?.type,
+    selectedToken?.accountId,
+    stNearTokenContractId,
+    linearTokenContractId,
+    stakingPools.stNear.price,
+    stakingPools.liNear.price,
+  ]);
 
   const isInitializing =
     isLoadingVenearConfig ||
@@ -614,6 +640,7 @@ export const LockProvider = ({
         venearAccountLockupVersion:
           venearAccountInfo?.lockupVersion ?? undefined,
         venearGlobalLockupVersion: veNearLockupVersion,
+        lstPriceYocto,
       }}
     >
       {children}
