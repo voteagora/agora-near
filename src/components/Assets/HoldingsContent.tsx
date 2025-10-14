@@ -1,4 +1,5 @@
 import { memo } from "react";
+import Big from "big.js";
 import { LockableAssetRow } from "./LockableAssetRow";
 import { VeNearAssetRow } from "./VeNearAssetRow";
 import { VeNearLiquidAssetRow } from "./VeNearLiquidAssetRow";
@@ -34,6 +35,15 @@ export const HoldingsContent = memo(
     openLockDialog,
     openStakingDialog,
   }: HoldingsContentProps) => {
+    // TODO: Fix root cause of dust amounts remaining after "Max" lock
+    // This filters out dust amounts (<=0.001) as a temporary workaround
+    const DUST_THRESHOLD = 0.001;
+    const filterDust = (token: any) =>
+      Big(token.balance).div("1e24").gte(DUST_THRESHOLD);
+
+    const filteredLockupLiquidTokens = lockupLiquidTokens.filter(filterDust);
+    const filteredWalletTokens = walletTokens.filter(filterDust);
+
     return (
       <table className="w-full">
         <tbody>
@@ -50,7 +60,7 @@ export const HoldingsContent = memo(
             pendingBalance={pendingBalance}
             isEligibleToUnlock={isEligibleToUnlock}
           />
-          {lockupLiquidTokens.map((token) => (
+          {filteredLockupLiquidTokens.map((token) => (
             <VeNearLiquidAssetRow
               key={token.accountId}
               token={token}
@@ -65,14 +75,14 @@ export const HoldingsContent = memo(
               stakedBalance={stakedBalance ?? "0"}
             />
           )}
-          {walletTokens.length > 0 && (
+          {filteredWalletTokens.length > 0 && (
             <>
               <tr>
                 <td colSpan={3} className="pt-8 pb-3">
                   <h3 className="text-lg font-semibold">Wallet Holdings</h3>
                 </td>
               </tr>
-              {walletTokens.map((token) => (
+              {filteredWalletTokens.map((token) => (
                 <LockableAssetRow
                   key={token.accountId}
                   token={token}
