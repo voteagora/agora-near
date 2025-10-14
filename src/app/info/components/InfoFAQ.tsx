@@ -358,7 +358,7 @@ const faqs: FAQ[] = [
     id: "rewards-system",
     question: "How does the rewards system work?",
     answer:
-      "Participants earn rewards for actively engaging in governance. This includes rewards for locking tokens, delegating voting power, and participating in votes. Delegates can also earn additional rewards based on their participation rate and the amount of voting power delegated to them.",
+      "House of Stake is currently debating how best to reward governance participants. It's likely that rewards will be offered in future, but this isn't final yet.",
   },
   {
     id: "proposal-process",
