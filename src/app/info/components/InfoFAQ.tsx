@@ -460,6 +460,19 @@ const faqs: FAQ[] = [
                 {`near contract call-function as-transaction lockup-example.near unstake_all json-args '' prepaid-gas '125.0 Tgas' attached-deposit '1 yoctoNEAR' sign-as YOUR_ACCOUNT.near network-config mainnet sign-with-keychain send`}
               </code>
             </pre>
+            <br />
+            <p>
+              For more information click{" "}
+              <a
+                href="https://github.com/voteagora/agora-near/wiki/How-to:-Lock-and-Stake-with-a-Custom-Staking-Pool"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary underline hover:text-secondary"
+              >
+                here
+              </a>{" "}
+              to view the wiki.
+            </p>
           </div>
         </div>
       </div>
