@@ -5,7 +5,7 @@ import {
   NEAR_TOKEN_METADATA,
   STNEAR_TOKEN_CONTRACT,
   STNEAR_TOKEN_METADATA,
-  RNEAR_TOKEN_CONTRACTS,
+  RNEAR_TOKEN_CONTRACT,
   RNEAR_TOKEN_METADATA,
 } from "@/lib/constants";
 import { TokenWithBalance } from "@/lib/types";
@@ -28,20 +28,11 @@ export const useAvailableTokens = () => {
   const { availableToLock: availableToLockInLockup, isLoadingAvailableToLock } =
     useAvailableToLock({ lockupAccountId });
 
-  const linearTokenContractId = useMemo(
-    () => LINEAR_TOKEN_CONTRACT,
-    [networkId]
-  );
+  const linearTokenContractId = useMemo(() => LINEAR_TOKEN_CONTRACT, []);
 
-  const stNearTokenContractId = useMemo(
-    () => STNEAR_TOKEN_CONTRACT,
-    [networkId]
-  );
+  const stNearTokenContractId = useMemo(() => STNEAR_TOKEN_CONTRACT, []);
 
-  const rNearTokenContractId = useMemo(
-    () => RNEAR_TOKEN_CONTRACTS[networkId],
-    [networkId]
-  );
+  const rNearTokenContractId = useMemo(() => RNEAR_TOKEN_CONTRACT, [networkId]);
 
   const isLoading =
     isLoadingFungibleTokens ||
