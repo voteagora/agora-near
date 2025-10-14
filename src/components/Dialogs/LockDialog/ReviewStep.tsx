@@ -315,7 +315,7 @@ export const ReviewStep = memo(
         <div className="flex flex-col text-sm border-b border-line">
           <div className="flex flex-row justify-between items-start py-4">
             <div className="flex flex-col">
-              <span className="font-bold text-primary">Amount locking</span>
+              <span className="font-bold text-primary">Amount to Lock</span>
               <span className="text-secondary text-xs">
                 {annualAPY}% Voting Power Growth
               </span>
@@ -335,8 +335,8 @@ export const ReviewStep = memo(
                   <span className="font-bold text-primary">Deposit fees</span>
                   <DepositTooltip
                     totalDeposit={depositTotal}
-                    title="Voting Requirements"
-                    subtitle="To participate in voting you'll need to make two deposits:"
+                    title="Deposit Fee Breakdown"
+                    subtitle="To participate in voting, there are two deposits required."
                     lineItems={[
                       {
                         amount: venearStorageCost,
