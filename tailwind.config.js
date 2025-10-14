@@ -395,10 +395,18 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        "star-pulse": {
+          "0%, 100%": { opacity: 0.3, transform: "scale(0.8)" },
+          "50%": { opacity: 1, transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "star-pulse-1": "star-pulse 7.2s ease-in-out infinite 0s",
+        "star-pulse-2": "star-pulse 8.8s ease-in-out infinite 1.7s",
+        "star-pulse-3": "star-pulse 6.4s ease-in-out infinite 3.1s",
+        "star-pulse-4": "star-pulse 9.6s ease-in-out infinite 4.8s",
       },
     },
   },
