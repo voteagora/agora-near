@@ -1,13 +1,9 @@
 import { memo, useCallback, useMemo } from "react";
-<<<<<<< HEAD
 import {
   LINEAR_TOKEN_CONTRACT,
   STNEAR_TOKEN_CONTRACT,
   RNEAR_TOKEN_CONTRACTS,
 } from "@/lib/constants";
-=======
-import { LINEAR_TOKEN_CONTRACT, STNEAR_TOKEN_CONTRACT } from "@/lib/constants";
->>>>>>> origin/main
 import { useNear } from "@/contexts/NearContext";
 import { TokenWithBalance } from "@/lib/types";
 import TokenAmount from "../shared/TokenAmount";

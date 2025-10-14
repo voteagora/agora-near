@@ -28,15 +28,11 @@ import { useUndelegate } from "@/hooks/useUndelegate";
 import { useUnlockNear } from "@/hooks/useUnlockNear";
 import { useVenearAccountStats } from "@/hooks/useVenearAccountStats";
 import { useVenearStats } from "@/hooks/useVenearStats";
-<<<<<<< HEAD
 import {
   LINEAR_TOKEN_CONTRACT,
   STNEAR_TOKEN_CONTRACT,
   RNEAR_TOKEN_CONTRACTS,
 } from "@/lib/constants";
-=======
-import { LINEAR_TOKEN_CONTRACT } from "@/lib/constants";
->>>>>>> origin/main
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
 import { utils } from "near-api-js";
