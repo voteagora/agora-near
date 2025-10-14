@@ -538,7 +538,10 @@ export const LockProvider = ({
       transactions.push("deploy_lockup");
     }
 
-    if (selectedToken?.type === "lst" && !stakingPoolId) {
+    if (
+      selectedToken?.type === "lst" &&
+      (!stakingPoolId || stakingPoolId !== selectedToken.accountId)
+    ) {
       transactions.push("select_staking_pool");
     }
 
