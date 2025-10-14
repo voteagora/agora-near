@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, ReactNode, useState } from "react";
+import React, { useEffect, ReactNode, useState, useCallback } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -11,6 +11,8 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { getQuorumFloor, getQuorumPercentage } from "@/lib/proposalUtils";
 import TokenAmount from "@/components/shared/TokenAmount";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
+import { trackEvent } from "@/lib/analytics";
 
 interface FAQ {
   id: string;
@@ -57,8 +59,8 @@ const faqs: FAQ[] = [
           <div>
             <p className="font-semibold mb-1">3. Fund your lockup contract</p>
             <p>
-              The user transfers NEAR tokens from their wallet into their
-              personal lockup contract.
+              The user transfers NEAR, or any other supported tokens, from their
+              wallet into their personal lockup contract.
             </p>
           </div>
           <div>
@@ -423,12 +425,13 @@ const faqs: FAQ[] = [
   },
   {
     id: "rewards-distribution",
-    question: "How will rewards be calculated and distributed?",
+    question: "How will rewards be calculated and distributed, in the future?",
     answer: (
       <div className="space-y-4">
         <p>
-          The formula to calculate the annual total NEAR rewards paid to veNEAR
-          holders is as follows:
+          A future proposal will be put up to vote on the following. The latest
+          thinking, is that the formula to calculate the annual total NEAR
+          rewards paid to veNEAR holders would be as follows:
         </p>
         <div className="p-4 text-center my-4">
           <span className="font-mono text-lg">
@@ -544,6 +547,60 @@ const faqs: FAQ[] = [
       </div>
     ),
   },
+  {
+    id: "staking-unstaking-cli",
+    question:
+      "How to interact with the underlying staking pool through the lockup contracts?",
+    answer: (
+      <div className="space-y-4">
+        <p>
+          In order to interact with the underlying staking pool in the contracts
+          run the following commands
+        </p>
+        <div className="space-y-4">
+          <div>
+            <p className="font-semibold mb-2">1. Select the staking pool</p>
+            <pre className="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto text-sm">
+              <p> Retrieve the lockup contract account ID: </p>
+              <code>{`near contract call-function as-read-only venear.dao get_lockup_account_id json-args '{"account_id": "YOUR_ACCOUNT.near"}' network-config mainnet now`}</code>
+              <p> Configure staking pool: </p>
+              <code>
+                {`near contract call-function as-transaction lockup-example.near select_staking_pool json-args '{"select_staking_pool_account_id": "staking_pool-example"}' prepaid-gas '75.0 Tgas' sign-as YOUR_ACCOUNT.near network-config mainnet sign-with-keychain send`}
+              </code>
+            </pre>
+          </div>
+          <div>
+            <p className="font-semibold mb-2">2. Deposit and stake</p>
+            <pre className="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto text-sm">
+              <code>
+                {`near contract call-function as-transaction lockup-example.near deposit_and_stake json-args '{"amount": "1000000000000000000000000000" }' prepaid-gas '125.0 Tgas' attached-deposit '1 yoctoNEAR' sign-as YOUR_ACCOUNT.near network-config mainnet sign-with-keychain send`}
+              </code>
+            </pre>
+          </div>
+          <div>
+            <p className="font-semibold mb-2">3. And finally, unstake</p>
+            <pre className="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto text-sm">
+              <code>
+                {`near contract call-function as-transaction lockup-example.near unstake_all json-args '' prepaid-gas '125.0 Tgas' attached-deposit '1 yoctoNEAR' sign-as YOUR_ACCOUNT.near network-config mainnet sign-with-keychain send`}
+              </code>
+            </pre>
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "only-one-lst-position",
+    question: "Why can't I lock more than one LST position?",
+    answer:
+      "The current contract architecture only allows one LST position to be locked at a time. Concurrent locking of multiple LSTs is not supported in House of Stake V1.When you lock NEAR tokens for governance, they are locked for a specific period. During this time, you cannot transfer or use these tokens for other purposes, but you maintain voting rights and earn rewards. The locking period helps ensure long-term alignment with the protocol's success.",
+  },
+  {
+    id: "proposal-start-timing",
+    question: "When does a proposal go live?",
+    answer:
+      "The proposal reviewer selects the start time.  This can be any time, on a per-proposal basis.",
+  },
 ];
 
 const InfoFAQ = () => {
@@ -567,6 +624,17 @@ const InfoFAQ = () => {
     }
   }, [faqId, isValidFaqId]);
 
+  const handleToggle = useCallback((value: string) => {
+    setOpenItem(value);
+    if (value) {
+      const faq = faqs.find((f) => f.id === value);
+      trackEvent({
+        event_name: MixpanelEvents.FAQExpanded,
+        event_data: { id: value, question: faq?.question },
+      });
+    }
+  }, []);
+
   return (
     <div className="mt-12">
       <h3 className="text-2xl font-black text-primary mb-6">
@@ -577,7 +645,7 @@ const InfoFAQ = () => {
         collapsible
         className="w-full"
         value={openItem}
-        onValueChange={setOpenItem}
+        onValueChange={handleToggle}
       >
         {faqs.map((faq) => (
           <AccordionItem key={faq.id} value={faq.id} id={faq.id}>

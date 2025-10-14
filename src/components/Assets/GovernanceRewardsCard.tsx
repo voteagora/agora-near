@@ -1,8 +1,7 @@
 import { ArrowRightIcon } from "lucide-react";
 import { memo } from "react";
-import GreenStar from "@/assets/green_star.svg";
-import Image from "next/image";
 import Link from "next/link";
+import { AnimatedStars } from "./AnimatedStars";
 
 export const GovernanceRewardsCard = memo(() => {
   return (
@@ -13,7 +12,8 @@ export const GovernanceRewardsCard = memo(() => {
             <div className="text-lg font-semibold">Governance Rewards</div>
           </div>
           <div className="text-sm text-gray-300 mb-4">
-            NEAR is rewarding veToken holders with liquid NEAR rewards
+            Coming soon! NEAR is rewarding veNEAR holders with liquid NEAR
+            rewards.
           </div>
           <Link
             href="/info?item=rewards-distribution"
@@ -22,12 +22,7 @@ export const GovernanceRewardsCard = memo(() => {
             Learn more <ArrowRightIcon className="w-4 h-4" />
           </Link>
         </div>
-        <div className="flex flex-col justify-center gap-4 ml-8">
-          <Image src={GreenStar} alt="" className="w-6 h-6" />
-          <Image src={GreenStar} alt="" className="w-6 h-6" />
-          <Image src={GreenStar} alt="" className="w-6 h-6" />
-          <Image src={GreenStar} alt="" className="w-6 h-6" />
-        </div>
+        <AnimatedStars />
       </div>
     </div>
   );

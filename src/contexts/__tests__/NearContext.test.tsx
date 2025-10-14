@@ -12,7 +12,7 @@ import {
 } from "vitest";
 import { NearProvider, useNear } from "../NearContext";
 
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { getRpcUrl } from "@/lib/utils";
 import { setupWalletSelector } from "@near-wallet-selector/core";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
@@ -175,7 +175,7 @@ describe("NearContext", () => {
       });
 
       expect(mockSetupModal).toHaveBeenCalledWith(mockWalletSelector, {
-        contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        contractId: CONTRACTS.VENEAR_CONTRACT_ID,
       });
       expect(mockModal.show).toHaveBeenCalled();
     });

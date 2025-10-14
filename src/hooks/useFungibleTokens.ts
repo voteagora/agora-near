@@ -12,8 +12,7 @@ export function useFungibleTokens(accountId: string | undefined) {
 
   return useQuery<FungibleTokensResponse | null>({
     queryKey: [FUNGIBLE_TOKEN_QK, accountId],
-    queryFn: () =>
-      accountId ? fetchFungibleTokens(accountId, networkId) : null,
+    queryFn: () => (accountId ? fetchFungibleTokens(accountId) : null),
     enabled: !!accountId,
   });
 }

@@ -60,15 +60,9 @@ export const CACHE_TTL = {
 export const NANO_SECONDS_IN_DAY = 1000000000 * 60 * 60 * 24;
 export const NANO_SECONDS_IN_YEAR = 365 * NANO_SECONDS_IN_DAY;
 
-export const LINEAR_TOKEN_CONTRACTS = {
-  testnet: "linear-protocol.testnet",
-  mainnet: "linear-protocol.near",
-};
+export const LINEAR_TOKEN_CONTRACT = "linear-protocol.near";
 
-export const STNEAR_TOKEN_CONTRACTS = {
-  testnet: "meta-v2.pool.testnet",
-  mainnet: "meta-pool.near",
-};
+export const STNEAR_TOKEN_CONTRACT = "meta-pool.near";
 
 export const RNEAR_TOKEN_CONTRACTS = {
   testnet: "", //TODO: Add testnet contract ID
@@ -90,7 +84,7 @@ export const LINEAR_TOKEN_METADATA: TokenMetadata = {
 };
 
 export const STNEAR_TOKEN_METADATA: TokenMetadata = {
-  name: "Staked NEAR",
+  name: "stNEAR",
   symbol: "STNEAR",
   decimals: NEAR_NOMINATION_EXP,
   icon: stnearAssetIcon,
@@ -114,19 +108,13 @@ export const DEFAULT_GAS_RESERVE = "200000000000000000000000"; // 0.2 NEAR
 
 export const LINEAR_POOL: StakingPool = {
   id: "linear",
-  contracts: {
-    testnet: LINEAR_TOKEN_CONTRACTS.testnet,
-    mainnet: LINEAR_TOKEN_CONTRACTS.mainnet,
-  },
+  contract: LINEAR_TOKEN_CONTRACT,
   metadata: LINEAR_TOKEN_METADATA,
 };
 
 export const STNEAR_POOL: StakingPool = {
   id: "stnear",
-  contracts: {
-    testnet: STNEAR_TOKEN_CONTRACTS.testnet,
-    mainnet: STNEAR_TOKEN_CONTRACTS.mainnet,
-  },
+  contract: STNEAR_TOKEN_CONTRACT,
   priceMethod: "get_st_near_price",
   metadata: STNEAR_TOKEN_METADATA,
 };

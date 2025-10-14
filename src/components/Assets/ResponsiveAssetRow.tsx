@@ -9,6 +9,14 @@ type OverflowButton = {
   showExternalIcon?: boolean;
 };
 
+type ActionButton = {
+  title: string;
+  onClick: () => void;
+  disabled?: boolean;
+  isLoading?: boolean;
+  tooltip?: string;
+};
+
 type ResponsiveAssetRowProps = {
   metadata?: TokenMetadata | null;
   columns: {
@@ -17,12 +25,8 @@ type ResponsiveAssetRowProps = {
   }[];
   showOverflowMenu?: boolean;
   overflowButtons?: OverflowButton[];
-  actionButton?: {
-    title: string;
-    onClick: () => void;
-    disabled?: boolean;
-    isLoading?: boolean;
-  };
+  actionButton?: ActionButton;
+  actionButtons?: ActionButton[];
 };
 
 export const ResponsiveAssetRow = memo<ResponsiveAssetRowProps>(
@@ -32,6 +36,7 @@ export const ResponsiveAssetRow = memo<ResponsiveAssetRowProps>(
     showOverflowMenu = false,
     overflowButtons,
     actionButton,
+    actionButtons,
   }) => {
     return (
       <>
@@ -42,6 +47,7 @@ export const ResponsiveAssetRow = memo<ResponsiveAssetRowProps>(
           showOverflowMenu={showOverflowMenu}
           overflowButtons={overflowButtons}
           actionButton={actionButton}
+          actionButtons={actionButtons}
           className="hidden sm:table-row"
         />
 
@@ -52,6 +58,7 @@ export const ResponsiveAssetRow = memo<ResponsiveAssetRowProps>(
             columns={columns}
             overflowButtons={overflowButtons}
             actionButton={actionButton}
+            actionButtons={actionButtons}
           />
         </div>
       </>

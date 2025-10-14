@@ -79,6 +79,9 @@ const SubscribeDialog = ({
 
     const emailToUse = existingEmail || email;
     if (!emailToUse) {
+      if (wantsNotifications === "prompt") {
+        return;
+      }
       throw new Error("Email is required");
     }
 

@@ -1,6 +1,6 @@
 import { useNear } from "@/contexts/NearContext";
 import { fetchHosActivity } from "@/lib/api/delegates/requests";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -29,7 +29,7 @@ export const useHosActivity = ({
         pageParam,
         address,
         networkId,
-        TESTNET_CONTRACTS.VENEAR_CONTRACT_ID
+        CONTRACTS.VENEAR_CONTRACT_ID
       );
     },
     getNextPageParam: (currentPage, _, pageParam) => {

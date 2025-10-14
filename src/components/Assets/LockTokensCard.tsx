@@ -37,15 +37,17 @@ export const LockTokensCard = memo(
               Lock Tokens
             </h3>
             <p className="text-sm sm:text-base lg:text-lg mb-4">
-              Get boosted voting power!
+              Get boosted voting power.
             </p>
 
-            <div className="flex items-baseline gap-1 mb-4">
+            <div className="flex items-baseline gap-1 mb-1">
               <span className="text-3xl sm:text-4xl lg:text-6xl font-bold">
                 {apy}%
               </span>
-              <span className="text-xs sm:text-sm lg:text-lg">APY</span>
             </div>
+            <p className="text-sm sm:text-base lg:text-xs mb-3">
+              veNEAR growth per annum.
+            </p>
             <Link
               href="/info"
               className="flex items-center text-black font-medium hover:opacity-80 transition-opacity gap-2"

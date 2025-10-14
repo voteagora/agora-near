@@ -31,8 +31,9 @@ export default function DelegateStatementBoolSelector({
                 href={codeOfConductLink.url}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline"
               >
-                Agree with the {codeOfConductLink.title}
+                Review the {codeOfConductLink.title}
               </a>
             }
             checked={agreeCodeConduct}

@@ -71,25 +71,19 @@ export const EnterAmountStep = ({ handleReview }: EnterAmountStepProps) => {
                   You can unlock this balance but will lose voting power and
                   rewards. Any staked assets you have locked will not be
                   available until they are unlocked through the staking pool.
-                  Visit{" "}
+                  Currently, this is not possible through this UI, instead the
+                  operation can be done by directly interacting with the
+                  contracts. It is expected that staking balances will be zero
+                  on the third-party platforms due to your lock-up contract
+                  being the owner. See the{" "}
                   <a
-                    href="https://staking.metapool.app/"
+                    href="/info"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-700"
                   >
-                    https://staking.metapool.app/
-                  </a>{" "}
-                  to unstake stNEAR or{" "}
-                  <a
-                    href="https://app.linearprotocol.org/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-700"
-                  >
-                    https://app.linearprotocol.org/
-                  </a>{" "}
-                  to unstake liNEAR.
+                    FAQ
+                  </a>
                 </p>
               </div>
             }

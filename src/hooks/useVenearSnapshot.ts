@@ -1,5 +1,5 @@
 import { CACHE_TTL } from "@/lib/constants";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import Big from "big.js";
 import { useMemo } from "react";
 import { useReadHOSContract } from "./useReadHOSContract";
@@ -19,7 +19,7 @@ export const useVenearSnapshot = ({
 }: { enabled?: boolean } = {}): VenearSnapshotResult => {
   const [{ data, isLoading, error }] = useReadHOSContract([
     {
-      contractId: TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+      contractId: CONTRACTS.VENEAR_CONTRACT_ID,
       methodName: "get_snapshot",
       config: {
         args: {},

@@ -11,13 +11,13 @@ import toast from "react-hot-toast";
 export const VeNearLiquidAssetRow = ({
   lockupAccountId,
   token,
-  stakingPoolId,
+  onStakeClick,
   onLockClick,
 }: {
   lockupAccountId?: string;
   token: TokenWithBalance;
-  stakingPoolId?: string | null;
-  onLockClick: (tokenAccountId?: string) => void;
+  onStakeClick: () => void;
+  onLockClick: (accountId?: string) => void;
 }) => {
   const [
     { data: liquidOwnersBalance, isLoading: isLoadingLiquidOwnersBalance },
@@ -54,12 +54,9 @@ export const VeNearLiquidAssetRow = ({
       : venearLiquidBalance;
   }, [liquidOwnersBalance, venearLiquidBalance, isLoadingAvailableToTransfer]);
 
-  const handleLockClick = useCallback(
-    (tokenAccountId?: string) => {
-      onLockClick(tokenAccountId);
-    },
-    [onLockClick]
-  );
+  const handleStakeClick = useCallback(() => {
+    onStakeClick();
+  }, [onStakeClick]);
 
   const { transferLockup } = useTransferLockup({
     lockupAccountId: lockupAccountId ?? "",
@@ -68,16 +65,31 @@ export const VeNearLiquidAssetRow = ({
     },
   });
 
-  const actionButton = useMemo(
-    () => ({
-      title: token.type === "lst" ? "Lock" : "Lock & Stake",
-      onClick: () => handleLockClick(token.accountId),
-      disabled:
-        !!stakingPoolId &&
-        token.type === "lst" &&
-        stakingPoolId !== token.accountId,
-    }),
-    [token.type, token.accountId, stakingPoolId, handleLockClick]
+  const handleWithdraw = useCallback(() => {
+    transferLockup({ amount: availableToTransfer });
+  }, [transferLockup, availableToTransfer]);
+
+  const handleLockClick = useCallback(
+    () => onLockClick(lockupAccountId),
+    [lockupAccountId, onLockClick]
+  );
+
+  const actionButtons = useMemo(
+    () => [
+      {
+        title: "Lock",
+        onClick: handleLockClick,
+      },
+      {
+        title: "Stake",
+        onClick: handleStakeClick,
+      },
+      {
+        title: "Withdraw",
+        onClick: handleWithdraw,
+      },
+    ],
+    [handleLockClick, handleStakeClick, handleWithdraw]
   );
 
   const availableToTransferCol = useMemo(() => {
@@ -101,6 +113,21 @@ export const VeNearLiquidAssetRow = ({
     };
   }, [availableToTransfer, isLoadingAvailableToTransfer]);
 
+  const availableToStakeCol = useMemo(() => {
+    return {
+      title: "Available to stake",
+      subtitle: isLoadingLiquidOwnersBalance ? (
+        <Skeleton className="w-16 h-4" />
+      ) : (
+        <TokenAmount
+          amount={liquidOwnersBalance ?? "0"}
+          maximumSignificantDigits={4}
+          minimumFractionDigits={4}
+        />
+      ),
+    };
+  }, [isLoadingLiquidOwnersBalance, liquidOwnersBalance]);
+
   const columns = useMemo(
     () => [
       {
@@ -114,28 +141,23 @@ export const VeNearLiquidAssetRow = ({
           />
         ),
       },
+      availableToStakeCol,
       availableToTransferCol,
     ],
-    [token.balance, token.metadata?.symbol, availableToTransferCol]
-  );
-
-  const overflowButtons = useMemo(
-    () => [
-      {
-        title: "Withdraw",
-        onClick: () => transferLockup({ amount: availableToTransfer }),
-      },
-    ],
-    [transferLockup, availableToTransfer]
+    [
+      token.balance,
+      token.metadata?.symbol,
+      availableToStakeCol,
+      availableToTransferCol,
+    ]
   );
 
   return (
     <ResponsiveAssetRow
       metadata={token.metadata}
       columns={columns}
-      showOverflowMenu
-      overflowButtons={overflowButtons}
-      actionButton={actionButton}
+      showOverflowMenu={false}
+      actionButtons={actionButtons}
     />
   );
 };

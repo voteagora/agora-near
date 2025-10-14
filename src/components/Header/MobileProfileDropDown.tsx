@@ -70,7 +70,7 @@ const RenderEncourageDelegation = () => {
 export const MobileProfileDropDown = ({ accountId, signOut }: Props) => {
   const { ui } = Tenant.current();
   const isDelegationEncouragementEnabled = ui.toggle(
-    "delegation-encouragement"
+    "delegation-encouragement-wallet"
   )?.enabled;
   // Don't hydrate the component until the user clicks on the profile dropdown
   const [shouldHydrate, setShouldHydrate] = useState(false);

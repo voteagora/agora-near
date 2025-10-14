@@ -11,7 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { FUNGIBLE_TOKEN_QK } from "./useFungibleTokens";
 import { NEAR_BALANCE_QK } from "./useBalance";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 
 export const useDeployLockupAndLock = () => {
   const {
@@ -148,8 +148,17 @@ export const useDeployLockupAndLock = () => {
     queryClient.invalidateQueries({
       queryKey: [
         READ_NEAR_CONTRACT_QK,
-        TESTNET_CONTRACTS.VENEAR_CONTRACT_ID,
+        CONTRACTS.VENEAR_CONTRACT_ID,
         "ft_balance_of",
+      ],
+    });
+
+    // Ensure account info used by Lockup Holdings ("Locked") updates immediately
+    queryClient.invalidateQueries({
+      queryKey: [
+        READ_NEAR_CONTRACT_QK,
+        CONTRACTS.VENEAR_CONTRACT_ID,
+        "get_account_info",
       ],
     });
 

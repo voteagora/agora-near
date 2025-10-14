@@ -125,6 +125,18 @@ const InfoRoadmap = () => {
           core workflows and feature requests that we can prioritize for the
           next release.
         </p>
+      </div>
+
+      <div className="mb-8 p-6 bg-wash border border-line rounded-lg">
+        <h4 className="text-lg font-semibold text-primary mb-3">
+          Full Launch: October 13, 2025
+        </h4>
+        <p className="text-secondary mb-3">
+          House of Stake is ready for the full community to participate in the
+          full House of Stake Governance. New production contracts have been
+          deployed, the first proposal will launch soon, and there are wallet
+          upgrades, bug fixes, and support for rNEAR launching soon!
+        </p>
         <p className="text-secondary mb-3">
           Please submit bug reports and feature requests on our{" "}
           <a
@@ -170,7 +182,7 @@ const InfoRoadmap = () => {
         </p>
       </div>
 
-      <div className="space-y-8">
+      {/* <div className="space-y-8">
         {roadmapData.map((version) => (
           <div
             key={version.version}
@@ -212,7 +224,7 @@ const InfoRoadmap = () => {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       <div className="mt-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
         <h4 className="text-lg font-semibold text-primary mb-3">

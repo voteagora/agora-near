@@ -5,7 +5,7 @@ import { NANO_SECONDS_IN_DAY, NANO_SECONDS_IN_YEAR } from "./constants";
 export const getAPYFromGrowthRate = (growthRateNs: Big) => {
   try {
     const annualRatePercent = growthRateNs.mul(NANO_SECONDS_IN_YEAR).mul(100);
-    return annualRatePercent.toFixed(2);
+    return annualRatePercent.toFixed(0);
   } catch (error) {
     return "0";
   }

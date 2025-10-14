@@ -1,9 +1,13 @@
 import { memo, useCallback, useMemo } from "react";
+<<<<<<< HEAD
 import {
-  LINEAR_TOKEN_CONTRACTS,
-  STNEAR_TOKEN_CONTRACTS,
+  LINEAR_TOKEN_CONTRACT,
+  STNEAR_TOKEN_CONTRACT,
   RNEAR_TOKEN_CONTRACTS,
 } from "@/lib/constants";
+=======
+import { LINEAR_TOKEN_CONTRACT, STNEAR_TOKEN_CONTRACT } from "@/lib/constants";
+>>>>>>> origin/main
 import { useNear } from "@/contexts/NearContext";
 import { TokenWithBalance } from "@/lib/types";
 import TokenAmount from "../shared/TokenAmount";
@@ -24,9 +28,9 @@ export const LockableAssetRow = memo<LockableAssetRowProps>(
         let url = "";
 
         // Determine the correct URL based on the token
-        if (tokenAccountId === LINEAR_TOKEN_CONTRACTS[networkId]) {
+        if (tokenAccountId === LINEAR_TOKEN_CONTRACT) {
           url = "https://app.linearprotocol.org/";
-        } else if (tokenAccountId === STNEAR_TOKEN_CONTRACTS[networkId]) {
+        } else if (tokenAccountId === STNEAR_TOKEN_CONTRACT) {
           url = "https://www.metapool.app/stake/?token=near";
         } else if (tokenAccountId === RNEAR_TOKEN_CONTRACTS[networkId]) {
           url = "https://app.rhea.finance/stake";
@@ -65,12 +69,9 @@ export const LockableAssetRow = memo<LockableAssetRowProps>(
       () => ({
         title: token.type === "lst" ? "Lock" : "Lock & Stake",
         onClick: () => handleLockClick(token.accountId),
-        disabled:
-          !!stakingPoolId &&
-          token.type === "lst" &&
-          stakingPoolId !== token.accountId,
+        disabled: false,
       }),
-      [token.type, token.accountId, stakingPoolId, handleLockClick]
+      [token.type, token.accountId, handleLockClick]
     );
 
     const columns = useMemo(

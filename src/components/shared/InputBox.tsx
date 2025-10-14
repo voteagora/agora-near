@@ -1,26 +1,19 @@
 "use client";
 
-export default function InputBox({
-  placeholder,
-  onChange,
-  value,
-  error,
-  ...props
-}: {
-  placeholder: string;
-  value: any;
-  onChange: (next: any) => void;
-  error?: boolean;
-  [key: string]: any;
-}) {
+import React from "react";
+
+export const InputBox = React.forwardRef<
+  HTMLInputElement,
+  React.InputHTMLAttributes<HTMLInputElement> & { error?: boolean }
+>(({ error, ...props }, ref) => {
   return (
     <input
+      ref={ref}
       className={`w-full py-2 px-4 rounded-md text-base border ${error ? "border-negative" : "border-line"} bg-neutral`}
-      placeholder={placeholder}
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
       onWheel={(e) => e.currentTarget.blur()}
       {...props}
     />
   );
-}
+});
+
+InputBox.displayName = "Inputbox";

@@ -18,6 +18,8 @@ import {
 import TokenAmount from "@/components/shared/TokenAmount";
 
 import { useTotalSupply } from "@/hooks/useTotalNearSupply";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
+import { trackEvent } from "@/lib/analytics";
 
 export default function DAOMetricsHeader() {
   const { ui } = Tenant.current();
@@ -151,6 +153,16 @@ export default function DAOMetricsHeader() {
                     rel="noreferrer nonopener"
                     target="_blank"
                     className="text-center"
+                    onClick={() =>
+                      trackEvent({
+                        event_name: MixpanelEvents.ExternalLinkClicked,
+                        event_data: {
+                          label: governanceForumLink.title,
+                          url: governanceForumLink.url,
+                          placement: "DAOMetricsHeader",
+                        },
+                      })
+                    }
                   >
                     {governanceForumLink.title}
                   </a>
@@ -161,6 +173,16 @@ export default function DAOMetricsHeader() {
                     rel="noreferrer nonopener"
                     target="_blank"
                     className="text-center"
+                    onClick={() =>
+                      trackEvent({
+                        event_name: MixpanelEvents.ExternalLinkClicked,
+                        event_data: {
+                          label: bugsLink.title,
+                          url: bugsLink.url,
+                          placement: "DAOMetricsHeader",
+                        },
+                      })
+                    }
                   >
                     {bugsLink.title}
                   </a>
@@ -176,6 +198,16 @@ export default function DAOMetricsHeader() {
                     rel="noreferrer nonopener"
                     target="_blank"
                     className="text-center"
+                    onClick={() =>
+                      trackEvent({
+                        event_name: MixpanelEvents.ExternalLinkClicked,
+                        event_data: {
+                          label: faqLink.title,
+                          url: faqLink.url,
+                          placement: "DAOMetricsHeader",
+                        },
+                      })
+                    }
                   >
                     {faqLink.title}
                   </a>
@@ -187,6 +219,16 @@ export default function DAOMetricsHeader() {
                     rel="noreferrer nonopener"
                     target="_blank"
                     className="text-center"
+                    onClick={() =>
+                      trackEvent({
+                        event_name: MixpanelEvents.ExternalLinkClicked,
+                        event_data: {
+                          label: "Blog",
+                          url: blogLink.url,
+                          placement: "DAOMetricsHeader",
+                        },
+                      })
+                    }
                   >
                     Blog
                   </a>
@@ -198,6 +240,16 @@ export default function DAOMetricsHeader() {
                     rel="noreferrer nonopener"
                     target="_blank"
                     className="hidden sm:inline"
+                    onClick={() =>
+                      trackEvent({
+                        event_name: MixpanelEvents.ExternalLinkClicked,
+                        event_data: {
+                          label: discordLink.title,
+                          url: discordLink.url,
+                          placement: "DAOMetricsHeader",
+                        },
+                      })
+                    }
                   >
                     <Image src={discord} alt={discordLink.title} />
                   </a>
@@ -209,6 +261,16 @@ export default function DAOMetricsHeader() {
                     rel="noreferrer nonopener"
                     target="_blank"
                     className="hidden sm:inline"
+                    onClick={() =>
+                      trackEvent({
+                        event_name: MixpanelEvents.ExternalLinkClicked,
+                        event_data: {
+                          label: githubLink.title,
+                          url: githubLink.url,
+                          placement: "DAOMetricsHeader",
+                        },
+                      })
+                    }
                   >
                     <Image src={github} alt={githubLink.title} />
                   </a>
@@ -220,6 +282,16 @@ export default function DAOMetricsHeader() {
                     rel="noreferrer nonopener"
                     target="_blank"
                     className="hidden sm:inline"
+                    onClick={() =>
+                      trackEvent({
+                        event_name: MixpanelEvents.ExternalLinkClicked,
+                        event_data: {
+                          label: twitterLink.title,
+                          url: twitterLink.url,
+                          placement: "DAOMetricsHeader",
+                        },
+                      })
+                    }
                   >
                     <Image src={twitter} alt={twitterLink.title} />
                   </a>
@@ -231,6 +303,16 @@ export default function DAOMetricsHeader() {
                     rel="noreferrer nonopener"
                     target="_blank"
                     className="hidden sm:inline"
+                    onClick={() =>
+                      trackEvent({
+                        event_name: MixpanelEvents.ExternalLinkClicked,
+                        event_data: {
+                          label: telegramLink.title,
+                          url: telegramLink.url,
+                          placement: "DAOMetricsHeader",
+                        },
+                      })
+                    }
                   >
                     <Image src={telegram} alt={telegramLink.title} />
                   </a>
@@ -242,6 +324,16 @@ export default function DAOMetricsHeader() {
                     rel="noreferrer nonopener"
                     target="_blank"
                     className="hidden sm:inline"
+                    onClick={() =>
+                      trackEvent({
+                        event_name: MixpanelEvents.ExternalLinkClicked,
+                        event_data: {
+                          label: agoraLink.title,
+                          url: agoraLink.url,
+                          placement: "DAOMetricsHeader",
+                        },
+                      })
+                    }
                   >
                     {agoraLink.title}
                   </a>

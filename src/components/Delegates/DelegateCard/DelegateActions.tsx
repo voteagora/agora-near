@@ -8,6 +8,14 @@ import { DelegateProfile } from "@/lib/api/delegates/types";
 import Tenant from "@/lib/tenant/tenant";
 import { type SyntheticEvent } from "react";
 import { DelegateSocialLinks } from "./DelegateSocialLinks";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
+import { trackEvent } from "@/lib/analytics";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type DelegateActionsProps = {
   delegate: DelegateProfile;
@@ -29,12 +37,18 @@ export function DelegateActions({ delegate }: DelegateActionsProps) {
     delegate.address.toLowerCase() as `0x${string}`
   );
 
+  const hasNotRegistered = !delegate.votingPower;
+
   const handleDelegate = (e: SyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!signedAccountId) {
       signIn();
     } else {
+      trackEvent({
+        event_name: MixpanelEvents.Delegated,
+        event_data: { to: delegate.address },
+      });
       openDialog({
         type: isDelegated ? "NEAR_UNDELEGATE" : "NEAR_DELEGATE",
         params: {
@@ -61,9 +75,24 @@ export function DelegateActions({ delegate }: DelegateActionsProps) {
         warpcast={delegate.warpcast}
       />
       {!isOwnAccount && (
-        <UpdatedButton type="secondary" onClick={handleDelegate}>
-          {isDelegated ? "Undelegate" : "Delegate"}
-        </UpdatedButton>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-block">
+                <UpdatedButton
+                  type="secondary"
+                  onClick={handleDelegate}
+                  disabled={hasNotRegistered}
+                >
+                  {isDelegated ? "Undelegate" : "Delegate"}
+                </UpdatedButton>
+              </span>
+            </TooltipTrigger>
+            {hasNotRegistered && (
+              <TooltipContent>This user hasn't registered yet</TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       )}
     </div>
   );

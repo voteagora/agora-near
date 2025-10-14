@@ -21,6 +21,7 @@ type DelegateProfileProps = {
       | null;
     statement?: string | null;
     endorsed?: boolean | null;
+    votingPower?: string | null;
   };
   isEditMode?: boolean;
   stats?: {
@@ -92,6 +93,7 @@ export default function DelegateProfile({
                 twitter={profile.twitter}
                 discord={profile.discord}
                 warpcast={profile.warpcast}
+                votingPower={profile.votingPower}
               />
             </div>
           </div>

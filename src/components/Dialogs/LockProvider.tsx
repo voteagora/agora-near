@@ -8,10 +8,10 @@ import { useStakingPool } from "@/hooks/useStakingPool";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
 import {
   DEFAULT_GAS_RESERVE,
-  LINEAR_TOKEN_CONTRACTS,
+  LINEAR_TOKEN_CONTRACT,
   LINEAR_TOKEN_METADATA,
   NEAR_TOKEN_METADATA,
-  STNEAR_TOKEN_CONTRACTS,
+  STNEAR_TOKEN_CONTRACT,
   STNEAR_TOKEN_METADATA,
   RNEAR_TOKEN_CONTRACTS,
   RNEAR_TOKEN_METADATA,
@@ -134,12 +134,12 @@ export const LockProvider = ({
   const { signedAccountId, networkId } = useNear();
 
   const linearTokenContractId = useMemo(
-    () => LINEAR_TOKEN_CONTRACTS[networkId],
+    () => LINEAR_TOKEN_CONTRACT,
     [networkId]
   );
 
   const stNearTokenContractId = useMemo(
-    () => STNEAR_TOKEN_CONTRACTS[networkId],
+    () => STNEAR_TOKEN_CONTRACT,
     [networkId]
   );
 

@@ -50,12 +50,7 @@ export default function DelegateStatementContainer({
           <p className="break-words">No delegate statement for {address}</p>
           {isConnected && signedAccountId === address && (
             <p className="my-3">
-              <a
-                rel="noopener"
-                target="_blank"
-                className="underline"
-                href="/delegates/create"
-              >
+              <a className="underline" href="/delegates/create">
                 Create your delegate statement
               </a>
             </p>

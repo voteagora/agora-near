@@ -150,10 +150,7 @@ export type TokenWithBalance = {
 
 export type StakingPool = {
   id: string;
-  contracts: {
-    mainnet: string;
-    testnet: string;
-  };
+  contract: string;
   priceMethod?: string;
   metadata: TokenMetadata;
 };
