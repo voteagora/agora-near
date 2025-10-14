@@ -71,7 +71,7 @@ export const EnterAmountStep = ({
 
   const conversionText = useMemo(() => {
     if (!showConversion) return null;
-    const nearPerLst = utils.format.formatNearAmount(lstPriceYocto ?? "0");
+    const nearPerLst = utils.format.formatNearAmount(lstPriceYocto ?? "0", 4);
     const symbol = selectedToken?.metadata?.symbol ?? "";
     return `1 ${symbol} ≈ ${nearPerLst} NEAR`;
   }, [lstPriceYocto, selectedToken?.metadata?.symbol, showConversion]);

@@ -323,8 +323,10 @@ export const ReviewStep = memo(
               {selectedToken?.type === "lst" && lstPriceYocto && (
                 <span className="text-secondary text-xs">
                   {(() => {
-                    const nearPerLst =
-                      utils.format.formatNearAmount(lstPriceYocto);
+                    const nearPerLst = utils.format.formatNearAmount(
+                      lstPriceYocto,
+                      4
+                    );
                     return `1 ${selectedToken?.metadata?.symbol} ≈ ${nearPerLst} NEAR`;
                   })()}
                 </span>
