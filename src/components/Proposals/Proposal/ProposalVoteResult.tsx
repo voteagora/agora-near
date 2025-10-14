@@ -22,6 +22,139 @@ import clsx from "clsx";
 import { useNear } from "@/contexts/NearContext";
 import { useProposalNonVoters } from "@/hooks/useProposalNonVoters";
 import { icons } from "@/assets/icons";
+import { useSnapshotVotingPower } from "@/hooks/useSnapshotVotingPower";
+
+const NonVoterRow = ({
+  accountId,
+  you,
+  fallbackAmount,
+  blockHeight,
+}: {
+  accountId: string;
+  you: boolean;
+  fallbackAmount: string;
+  blockHeight?: number;
+}) => {
+  const { votingPower, isLoading } = useSnapshotVotingPower({
+    accountId,
+    blockHeight,
+  });
+
+  const amount = !isLoading ? votingPower.toFixed() : fallbackAmount;
+
+  return (
+    <li>
+      <VStack gap={2} className="text-xs text-tertiary px-0 py-1">
+        <VStack>
+          <HoverCard openDelay={100} closeDelay={100}>
+            <HoverCardTrigger>
+              <HStack
+                justifyContent="justify-between"
+                className="font-semibold text-secondary"
+              >
+                <HStack gap={1} alignItems="items-center">
+                  {accountId}
+                  {you && <p className="text-primary">(you)</p>}
+                </HStack>
+                <TokenAmount amount={amount} hideCurrency />
+              </HStack>
+            </HoverCardTrigger>
+          </HoverCard>
+        </VStack>
+      </VStack>
+    </li>
+  );
+};
+
+const VoterRow = ({
+  accountId,
+  you,
+  voteOption,
+  fallbackAmount,
+  blockHeight,
+}: {
+  accountId: string;
+  you: boolean;
+  voteOption: number;
+  fallbackAmount: string;
+  blockHeight?: number;
+}) => {
+  const { votingPower, isLoading } = useSnapshotVotingPower({
+    accountId,
+    blockHeight,
+  });
+
+  const amount = !isLoading ? votingPower.toFixed() : fallbackAmount;
+
+  return (
+    <li>
+      <VStack gap={2} className="text-xs text-tertiary px-0 py-1">
+        <VStack>
+          <HoverCard openDelay={100} closeDelay={100}>
+            <HoverCardTrigger>
+              <HStack
+                justifyContent="justify-between"
+                className="font-semibold text-secondary"
+              >
+                <HStack gap={1} alignItems="items-center">
+                  {accountId}
+                  {you && <p className="text-primary">(you)</p>}
+                </HStack>
+                <HStack alignItems="items-center">
+                  <TooltipProvider delayDuration={0}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className={clsx(
+                            "flex items-center gap-1",
+                            voteOption === 0
+                              ? "text-positive"
+                              : voteOption === 1
+                                ? "text-negative"
+                                : "text-secondary"
+                          )}
+                        >
+                          <TokenAmount amount={amount} hideCurrency />
+                          {voteOption === 0 && (
+                            <CheckIcon
+                              strokeWidth={4}
+                              className="w-3 h-3 text-positive"
+                            />
+                          )}
+                          {voteOption === 1 && (
+                            <X
+                              strokeWidth={4}
+                              className="w-3 h-3 text-negative"
+                            />
+                          )}
+                          {voteOption === 2 && (
+                            <MinusIcon
+                              strokeWidth={4}
+                              className="w-3 h-3 text-secondary"
+                            />
+                          )}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="p-4">
+                        <TokenAmount amount={amount} />
+                        Voted{" "}
+                        {voteOption === 0
+                          ? "For"
+                          : voteOption === 1
+                            ? "Against"
+                            : "Abstain"}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </HStack>
+              </HStack>
+            </HoverCardTrigger>
+          </HoverCard>
+        </VStack>
+      </VStack>
+    </li>
+  );
+};
 
 const ProposalVoteResult = ({
   proposal,
@@ -110,35 +243,15 @@ const ProposalVoteResult = ({
               >
                 <ul className="flex flex-col">
                   {nonVoters.map((nonVoter) => (
-                    <li key={nonVoter.id}>
-                      <VStack
-                        gap={2}
-                        className="text-xs text-tertiary px-0 py-1"
-                      >
-                        <VStack>
-                          <HoverCard openDelay={100} closeDelay={100}>
-                            <HoverCardTrigger>
-                              <HStack
-                                justifyContent="justify-between"
-                                className="font-semibold text-secondary"
-                              >
-                                <HStack gap={1} alignItems="items-center">
-                                  {nonVoter.registeredVoterId}
-                                  {nonVoter.registeredVoterId ===
-                                    signedAccountId && (
-                                    <p className="text-primary">(you)</p>
-                                  )}
-                                </HStack>
-                                <TokenAmount
-                                  amount={nonVoter.votingPower}
-                                  hideCurrency
-                                />
-                              </HStack>
-                            </HoverCardTrigger>
-                          </HoverCard>
-                        </VStack>
-                      </VStack>
-                    </li>
+                    <NonVoterRow
+                      key={nonVoter.id}
+                      accountId={nonVoter.registeredVoterId}
+                      you={nonVoter.registeredVoterId === signedAccountId}
+                      fallbackAmount={nonVoter.votingPower}
+                      blockHeight={
+                        proposal.snapshot_and_state?.snapshot.block_height
+                      }
+                    />
                   ))}
                 </ul>
               </InfiniteScroll>
@@ -166,82 +279,16 @@ const ProposalVoteResult = ({
               >
                 <ul className="flex flex-col">
                   {votingHistory.map((vote) => (
-                    <li key={vote.accountId}>
-                      <VStack
-                        gap={2}
-                        className="text-xs text-tertiary px-0 py-1"
-                      >
-                        <VStack>
-                          <HoverCard openDelay={100} closeDelay={100}>
-                            <HoverCardTrigger>
-                              <HStack
-                                justifyContent="justify-between"
-                                className="font-semibold text-secondary"
-                              >
-                                <HStack gap={1} alignItems="items-center">
-                                  {vote.accountId}
-                                  {vote.accountId === signedAccountId && (
-                                    <p className="text-primary">(you)</p>
-                                  )}
-                                </HStack>
-                                <HStack alignItems="items-center">
-                                  <TooltipProvider delayDuration={0}>
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <div
-                                          className={clsx(
-                                            "flex items-center gap-1",
-                                            Number(vote.voteOption) === 0
-                                              ? "text-positive"
-                                              : Number(vote.voteOption) === 1
-                                                ? "text-negative"
-                                                : "text-secondary"
-                                          )}
-                                        >
-                                          <TokenAmount
-                                            amount={vote.votingPower}
-                                            hideCurrency
-                                          />
-                                          {Number(vote.voteOption) === 0 && (
-                                            <CheckIcon
-                                              strokeWidth={4}
-                                              className="w-3 h-3 text-positive"
-                                            />
-                                          )}
-                                          {Number(vote.voteOption) === 1 && (
-                                            <X
-                                              strokeWidth={4}
-                                              className="w-3 h-3 text-negative"
-                                            />
-                                          )}
-                                          {Number(vote.voteOption) === 2 && (
-                                            <MinusIcon
-                                              strokeWidth={4}
-                                              className="w-3 h-3 text-secondary"
-                                            />
-                                          )}
-                                        </div>
-                                      </TooltipTrigger>
-                                      <TooltipContent className="p-4">
-                                        <TokenAmount
-                                          amount={vote.votingPower}
-                                        />
-                                        Voted{" "}
-                                        {Number(vote.voteOption) === 0
-                                          ? "For"
-                                          : Number(vote.voteOption) === 1
-                                            ? "Against"
-                                            : "Abstain"}
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </TooltipProvider>
-                                </HStack>
-                              </HStack>
-                            </HoverCardTrigger>
-                          </HoverCard>
-                        </VStack>
-                      </VStack>
-                    </li>
+                    <VoterRow
+                      key={vote.accountId}
+                      accountId={vote.accountId}
+                      you={vote.accountId === signedAccountId}
+                      voteOption={Number(vote.voteOption)}
+                      fallbackAmount={vote.votingPower}
+                      blockHeight={
+                        proposal.snapshot_and_state?.snapshot.block_height
+                      }
+                    />
                   ))}
                 </ul>
               </InfiniteScroll>
