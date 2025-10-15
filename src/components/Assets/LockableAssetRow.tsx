@@ -2,7 +2,7 @@ import { memo, useCallback, useMemo } from "react";
 import {
   LINEAR_TOKEN_CONTRACT,
   STNEAR_TOKEN_CONTRACT,
-  RNEAR_TOKEN_CONTRACTS,
+  RNEAR_TOKEN_CONTRACT,
 } from "@/lib/constants";
 import { useNear } from "@/contexts/NearContext";
 import { TokenWithBalance } from "@/lib/types";
@@ -19,25 +19,22 @@ export const LockableAssetRow = memo<LockableAssetRowProps>(
   ({ token, stakingPoolId, onLockClick }) => {
     const { networkId } = useNear();
 
-    const handleManageStaking = useCallback(
-      (tokenAccountId: string) => {
-        let url = "";
+    const handleManageStaking = useCallback((tokenAccountId: string) => {
+      let url = "";
 
-        // Determine the correct URL based on the token
-        if (tokenAccountId === LINEAR_TOKEN_CONTRACT) {
-          url = "https://app.linearprotocol.org/";
-        } else if (tokenAccountId === STNEAR_TOKEN_CONTRACT) {
-          url = "https://www.metapool.app/stake/?token=near";
-        } else if (tokenAccountId === RNEAR_TOKEN_CONTRACTS[networkId]) {
-          url = "https://app.rhea.finance/stake";
-        }
+      // Determine the correct URL based on the token
+      if (tokenAccountId === LINEAR_TOKEN_CONTRACT) {
+        url = "https://app.linearprotocol.org/";
+      } else if (tokenAccountId === STNEAR_TOKEN_CONTRACT) {
+        url = "https://www.metapool.app/stake/?token=near";
+      } else if (tokenAccountId === RNEAR_TOKEN_CONTRACT) {
+        url = "https://app.rhea.finance/stake";
+      }
 
-        if (url) {
-          window.open(url, "_blank");
-        }
-      },
-      [networkId]
-    );
+      if (url) {
+        window.open(url, "_blank");
+      }
+    }, []);
 
     const handleLockClick = useCallback(
       (tokenAccountId?: string) => {

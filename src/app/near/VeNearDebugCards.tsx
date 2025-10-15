@@ -31,7 +31,7 @@ import { useVenearStats } from "@/hooks/useVenearStats";
 import {
   LINEAR_TOKEN_CONTRACT,
   STNEAR_TOKEN_CONTRACT,
-  RNEAR_TOKEN_CONTRACTS,
+  RNEAR_TOKEN_CONTRACT,
 } from "@/lib/constants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
@@ -200,7 +200,7 @@ export default function VeNearDebugCards() {
       // If no pool selected, choose a default based on current network and available LST envs
       if (!accountInfo?.stakingPool) {
         const preferredPool =
-          RNEAR_TOKEN_CONTRACTS[networkId] ||
+          RNEAR_TOKEN_CONTRACT ||
           STNEAR_TOKEN_CONTRACT ||
           LINEAR_TOKEN_CONTRACT;
         if (preferredPool) {

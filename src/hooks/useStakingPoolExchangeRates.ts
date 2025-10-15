@@ -9,7 +9,7 @@ export const useStakingPoolExchangeRates = ({
 }: {
   pools: StakingPool[];
 }) => {
-  const { viewMethod, networkId } = useNear();
+  const { viewMethod } = useNear();
 
   const queryResults = useQueries({
     queries: [

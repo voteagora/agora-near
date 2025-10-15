@@ -64,10 +64,7 @@ export const LINEAR_TOKEN_CONTRACT = "linear-protocol.near";
 
 export const STNEAR_TOKEN_CONTRACT = "meta-pool.near";
 
-export const RNEAR_TOKEN_CONTRACTS = {
-  testnet: "", //TODO: Add testnet contract ID
-  mainnet: "lst.rhealab.near",
-};
+export const RNEAR_TOKEN_CONTRACT = "lst.rhealab.near";
 
 export const NEAR_TOKEN_METADATA: TokenMetadata = {
   name: "NEAR",
@@ -121,10 +118,7 @@ export const STNEAR_POOL: StakingPool = {
 
 export const RNEAR_POOL: StakingPool = {
   id: "rnear",
-  contracts: {
-    testnet: RNEAR_TOKEN_CONTRACTS.testnet,
-    mainnet: RNEAR_TOKEN_CONTRACTS.mainnet,
-  },
+  contract: RNEAR_TOKEN_CONTRACT,
   metadata: RNEAR_TOKEN_METADATA,
 };
 

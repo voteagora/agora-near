@@ -131,12 +131,8 @@ export const StakingProvider = ({
   });
 
   const preSelectedStakingPool = useMemo(() => {
-    return supportedPools.find((pool) =>
-      Object.values(pool.contract).some(
-        (contractId) => contractId === stakingPoolId
-      )
-    );
-  }, [stakingPoolId]);
+    return supportedPools.find((pool) => pool.contract === stakingPoolId);
+  }, [stakingPoolId, supportedPools]);
 
   const { stats, error: stakingPoolStatsError } = useStakingPoolStats({
     pools: supportedPools,
@@ -159,7 +155,7 @@ export const StakingProvider = ({
       },
       {} as Record<string, { apy: number; totalVolumeYocto: string }>
     );
-  }, [stats, exchangeRateMap]);
+  }, [stats, exchangeRateMap, supportedPools]);
 
   const enteredAmountYoctoNear = useMemo(() => {
     if (isStakingMax) {
