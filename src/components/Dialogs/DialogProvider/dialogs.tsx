@@ -6,7 +6,6 @@ import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { VoteOptionsDialog } from "../VoteOptionsDialog";
 import { ProposalModal } from "@/components/Proposals/Proposals/ProposalModal";
 import { LockDialogSource, NearLockDialog } from "../LockDialog/index";
-import { VeNearOnboardingModal } from "@/app/near/VeNearOnboardingModal";
 import { StakingDialog, StakingSource } from "../StakingDialog/StakingDialog";
 import { VotingPowerProjectionsDialog } from "../VotingPowerProjectionsDialog";
 import { UnlockDialog } from "../UnlockDialog";
@@ -21,7 +20,6 @@ export type DialogType =
   | NearVoteDialogType
   | VoteOptionsDialogType
   | NearLockDialogType
-  | VeNearOnboardingDialogType
   | StakingDialogType
   | VotingPowerProjectionsDialogType
   | UnlockDialogType
@@ -82,11 +80,6 @@ export type VoteOptionsDialogType = {
     proposal: ProposalInfo;
     config: VotingConfig;
   };
-};
-
-export type VeNearOnboardingDialogType = {
-  type: "VENEAR_ONBOARDING";
-  params: Record<never, never>;
 };
 
 export type VotingPowerProjectionsDialogType = {
@@ -166,9 +159,6 @@ export const dialogs: DialogDefinitions<DialogType> = {
       closeDialog={closeDialog}
     />
   ),
-  VENEAR_ONBOARDING: (_, closeDialog) => {
-    return <VeNearOnboardingModal closeDialog={closeDialog} />;
-  },
   NEAR_STAKING: (params, closeDialog) => {
     return <StakingDialog closeDialog={closeDialog} {...params} />;
   },
