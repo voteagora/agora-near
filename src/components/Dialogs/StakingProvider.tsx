@@ -4,7 +4,6 @@ import { useReadHOSContract } from "@/hooks/useReadHOSContract";
 import { useStakingPoolExchangeRates } from "@/hooks/useStakingPoolExchangeRates";
 import { useStakingPoolStats } from "@/hooks/useStakingPoolStats";
 import { LINEAR_POOL, STNEAR_POOL, RNEAR_POOL } from "@/lib/constants";
-import { useNear } from "@/contexts/NearContext";
 import { StakingPool } from "@/lib/types";
 import {
   convertNearToStakingToken,
@@ -23,12 +22,8 @@ import {
 } from "react";
 import { StakingSource } from "./StakingDialog/StakingDialog";
 
-const getSupportedPools = (networkId: string): StakingPool[] => {
-  const base = [LINEAR_POOL, STNEAR_POOL];
-  if (networkId === "mainnet") {
-    return [...base, RNEAR_POOL];
-  }
-  return base;
+const getSupportedPools = (): StakingPool[] => {
+  return [LINEAR_POOL, STNEAR_POOL, RNEAR_POOL];
 };
 
 type StakingProviderContextType = {
@@ -90,11 +85,7 @@ export const StakingProvider = ({
   prefilledAmount,
   source,
 }: StakingProviderProps) => {
-  const { networkId } = useNear();
-  const supportedPools = useMemo(
-    () => getSupportedPools(networkId),
-    [networkId]
-  );
+  const supportedPools = useMemo(() => getSupportedPools(), []);
   const [enteredAmount, setEnteredAmount] = useState(prefilledAmount ?? "");
   const [isStakingMax, setIsStakingMax] = useState(false);
   const [selectedPool, setSelectedPool] = useState<StakingPool>(
