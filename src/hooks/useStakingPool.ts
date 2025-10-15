@@ -1,10 +1,10 @@
-import {
-  LINEAR_TOKEN_CONTRACT_ID,
-  STNEAR_TOKEN_CONTRACT_ID,
-  RNEAR_TOKEN_CONTRACT_ID,
-} from "@/components/Onboarding/HouseOfStakeOnboardingProvider";
 import { useNear } from "@/contexts/NearContext";
-import { CACHE_TTL } from "@/lib/constants";
+import {
+  CACHE_TTL,
+  LINEAR_TOKEN_CONTRACT,
+  STNEAR_TOKEN_CONTRACT,
+  RNEAR_TOKEN_CONTRACT,
+} from "@/lib/constants";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -24,7 +24,7 @@ export const useStakingPool = () => {
         queryKey: ["stnearPrice"],
         queryFn: () => {
           return viewMethod({
-            contractId: STNEAR_TOKEN_CONTRACT_ID,
+            contractId: STNEAR_TOKEN_CONTRACT,
             method: "get_st_near_price",
             args: {},
           }) as Promise<string | null>;
@@ -35,7 +35,7 @@ export const useStakingPool = () => {
         queryKey: ["linearPrice"],
         queryFn: () => {
           return viewMethod({
-            contractId: LINEAR_TOKEN_CONTRACT_ID,
+            contractId: LINEAR_TOKEN_CONTRACT,
             method: "ft_price",
             args: {},
           }) as Promise<string | null>;
@@ -46,7 +46,7 @@ export const useStakingPool = () => {
         queryKey: ["rnearPrice"],
         queryFn: () => {
           return viewMethod({
-            contractId: RNEAR_TOKEN_CONTRACT_ID,
+            contractId: RNEAR_TOKEN_CONTRACT,
             method: "ft_price",
             args: {},
           }) as Promise<string | null>;
@@ -57,7 +57,7 @@ export const useStakingPool = () => {
         queryKey: ["linearDeposit"],
         queryFn: () => {
           return viewMethod({
-            contractId: LINEAR_TOKEN_CONTRACT_ID,
+            contractId: LINEAR_TOKEN_CONTRACT,
             method: "storage_balance_bounds",
             args: {},
           }) as Promise<
@@ -75,7 +75,7 @@ export const useStakingPool = () => {
         queryKey: ["stnearDeposit"],
         queryFn: () => {
           return viewMethod({
-            contractId: STNEAR_TOKEN_CONTRACT_ID,
+            contractId: STNEAR_TOKEN_CONTRACT,
             method: "storage_balance_bounds",
             args: {},
           }) as Promise<
@@ -93,7 +93,7 @@ export const useStakingPool = () => {
         queryKey: ["rnearDeposit"],
         queryFn: () => {
           return viewMethod({
-            contractId: RNEAR_TOKEN_CONTRACT_ID,
+            contractId: RNEAR_TOKEN_CONTRACT,
             method: "storage_balance_bounds",
             args: {},
           }) as Promise<
