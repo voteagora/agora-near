@@ -377,20 +377,38 @@ const faqs: FAQ[] = [
         <Text>
           The proposal process begins with community discussion on the
           governance forum. Once a proposal gains sufficient support, it can be
-          submitted on-chain for voting. Proposals must meet quorum requirements
-          and pass with the required majority to be implemented.
+          submitted as a pull request to the canonical proposals repository ({" "}
+          <ExternalLink href="https://github.com/houseofstake/proposals">
+            github.com/houseofstake/proposals
+          </ExternalLink>{" "}
+          ). See{" "}
+          <ExternalLink href="https://github.com/houseofstake/proposals/blob/main/HSPs/hsp-001.md">
+            {" "}
+            https://github.com/houseofstake/proposals/blob/main/HSPs/hsp-001.md
+          </ExternalLink>{" "}
+          for more information on this process.
         </Text>
         <Text>
-          All proposals require a forum post on{" "}
-          <ExternalLink href="https://gov.near.org/">gov.near.org</ExternalLink>{" "}
-          before on-chain submission. This ensures proper community discussion.
+          Once a proposal has been merged there, it can go live on-chain for
+          voting. Proposals must meet quorum requirements and pass with the
+          required majority to be implemented.
+        </Text>
+        <Text>
+          All proposals require a forum post on gov.near.org and to be merged to
+          the proposals repository before on-chain submission. This ensures
+          proper community discussion.
         </Text>
         <Callout>
           <p className="font-semibold mb-4 text-base">Process:</p>
           <ol className="list-decimal list-inside space-y-3 text-base leading-relaxed">
             <li>Create a forum post discussing your proposal</li>
             <li>Gather feedback and build community support</li>
-            <li>Submit on-chain using your forum post URL</li>
+            <li>
+              Submit complete proposal, in correct format, to the proposals
+              repository and wait until it's been merged and assigned a HSP
+              number.
+            </li>
+            <li>Submit on-chain using your merged HSP URL.</li>
           </ol>
         </Callout>
       </div>
