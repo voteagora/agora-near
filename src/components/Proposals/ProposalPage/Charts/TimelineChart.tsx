@@ -4,7 +4,7 @@ import { rgbStringToHex } from "@/lib/color";
 import { ChartSkeleton } from "@/components/Proposals/ProposalPage/ProposalChart/ProposalChart";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
-import { formatNearTime, getVenearForQuorum } from "@/lib/proposalUtils";
+import { formatNearTime, getYoctoNearForQuorum } from "@/lib/proposalUtils";
 import Tenant from "@/lib/tenant/tenant";
 import {
   formatFullDate,
@@ -50,7 +50,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
       Number(proposal.voting_duration_ns)
     ).toString()
   );
-  const quorum = getVenearForQuorum(
+  const quorum = getYoctoNearForQuorum(
     proposal.snapshot_and_state?.total_venear ?? "0"
   );
 

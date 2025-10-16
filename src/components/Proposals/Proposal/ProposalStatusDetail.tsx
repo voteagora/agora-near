@@ -12,14 +12,12 @@ import {
 import {
   getProposalStatus,
   getProposalStatusColor,
-  getQuorumFloor,
-  getQuorumPercentage,
   isQuorumFulfilled,
 } from "@/lib/proposalUtils";
 import { cn } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
 import ProposalTimeStatus from "../Proposals/ProposalTimeStatus";
-import TokenAmount from "@/components/shared/TokenAmount";
+import { QuorumExplanation } from "./QuorumExplanation";
 
 export default function ProposalStatusDetail({
   proposal,
@@ -67,17 +65,7 @@ export default function ProposalStatusDetail({
                   <InfoIcon size={14} />
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[400px]">
-                  <div>
-                    {`Even though quorum is not modeled onchain in House of Stake v1, the community has decided that
-                  proposals must meet a minimum quorum requirement to be considered passed. The quorum is calculated as 
-                  the higher of either ${getQuorumPercentage()}% of total veNEAR supply or an absolute floor of`}{" "}
-                    <TokenAmount
-                      amount={getQuorumFloor()}
-                      currency="veNEAR"
-                      trailingSpace={false}
-                    />
-                    {"."}
-                  </div>
+                  <QuorumExplanation />{" "}
                   <a
                     className="text-blue-500"
                     href="/info?item=quorum-requirements"
