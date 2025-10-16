@@ -5,6 +5,8 @@ import {
   NEAR_TOKEN_METADATA,
   STNEAR_TOKEN_CONTRACT,
   STNEAR_TOKEN_METADATA,
+  RNEAR_TOKEN_CONTRACT,
+  RNEAR_TOKEN_METADATA,
 } from "@/lib/constants";
 import { TokenWithBalance } from "@/lib/types";
 import Big from "big.js";
@@ -35,6 +37,8 @@ export const useAvailableTokens = () => {
     () => STNEAR_TOKEN_CONTRACT,
     [networkId]
   );
+
+  const rNearTokenContractId = RNEAR_TOKEN_CONTRACT;
 
   const isLoading =
     isLoadingFungibleTokens ||
@@ -86,6 +90,18 @@ export const useAvailableTokens = () => {
               };
             }
 
+            if (
+              rNearTokenContractId &&
+              token.contract_id === rNearTokenContractId
+            ) {
+              return {
+                type: "lst" as const,
+                accountId: rNearTokenContractId,
+                metadata: RNEAR_TOKEN_METADATA,
+                balance: token.balance,
+              };
+            }
+
             return null;
           })
           .filter((token) => token !== null)
@@ -101,6 +117,7 @@ export const useAvailableTokens = () => {
     nearBalance,
     signedAccountId,
     stNearTokenContractId,
+    rNearTokenContractId,
   ]);
 
   return { isLoading, availableTokens };

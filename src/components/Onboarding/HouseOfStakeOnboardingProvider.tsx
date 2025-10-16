@@ -33,7 +33,7 @@ export const STNEAR_TOKEN_CONTRACT_ID =
 const ONBOARDING_POOLS: string[] = [
   LINEAR_TOKEN_CONTRACT_ID,
   STNEAR_TOKEN_CONTRACT_ID,
-];
+].filter(Boolean);
 
 type OnboardingContextType = {
   isLoading: boolean;

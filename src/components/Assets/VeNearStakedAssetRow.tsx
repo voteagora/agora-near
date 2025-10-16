@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
 import TokenAmount from "../shared/TokenAmount";
-import { LINEAR_POOL, STNEAR_POOL } from "@/lib/constants";
+import { LINEAR_POOL, STNEAR_POOL, RNEAR_POOL } from "@/lib/constants";
 
 export const VeNearStakedAssetRow = ({
   stakedBalance,
@@ -17,6 +17,10 @@ export const VeNearStakedAssetRow = ({
 
     if (stakingPoolId === STNEAR_POOL.contract) {
       return STNEAR_POOL.metadata;
+    }
+
+    if (stakingPoolId === RNEAR_POOL.contract) {
+      return RNEAR_POOL.metadata;
     }
 
     return null;

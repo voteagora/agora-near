@@ -3,7 +3,7 @@ import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useReadHOSContract } from "@/hooks/useReadHOSContract";
 import { useStakingPoolExchangeRates } from "@/hooks/useStakingPoolExchangeRates";
 import { useStakingPoolStats } from "@/hooks/useStakingPoolStats";
-import { LINEAR_POOL, STNEAR_POOL } from "@/lib/constants";
+import { LINEAR_POOL, STNEAR_POOL, RNEAR_POOL } from "@/lib/constants";
 import { StakingPool } from "@/lib/types";
 import {
   convertNearToStakingToken,
@@ -22,7 +22,9 @@ import {
 } from "react";
 import { StakingSource } from "./StakingDialog/StakingDialog";
 
-const supportedPools: StakingPool[] = [LINEAR_POOL, STNEAR_POOL];
+const getSupportedPools = (): StakingPool[] => {
+  return [LINEAR_POOL, STNEAR_POOL, RNEAR_POOL];
+};
 
 type StakingProviderContextType = {
   isLoading: boolean;
@@ -83,6 +85,7 @@ export const StakingProvider = ({
   prefilledAmount,
   source,
 }: StakingProviderProps) => {
+  const supportedPools = useMemo(() => getSupportedPools(), []);
   const [enteredAmount, setEnteredAmount] = useState(prefilledAmount ?? "");
   const [isStakingMax, setIsStakingMax] = useState(false);
   const [selectedPool, setSelectedPool] = useState<StakingPool>(
@@ -119,12 +122,8 @@ export const StakingProvider = ({
   });
 
   const preSelectedStakingPool = useMemo(() => {
-    return supportedPools.find((pool) =>
-      Object.values(pool.contract).some(
-        (contractId) => contractId === stakingPoolId
-      )
-    );
-  }, [stakingPoolId]);
+    return supportedPools.find((pool) => pool.contract === stakingPoolId);
+  }, [stakingPoolId, supportedPools]);
 
   const { stats, error: stakingPoolStatsError } = useStakingPoolStats({
     pools: supportedPools,
@@ -147,7 +146,7 @@ export const StakingProvider = ({
       },
       {} as Record<string, { apy: number; totalVolumeYocto: string }>
     );
-  }, [stats, exchangeRateMap]);
+  }, [stats, exchangeRateMap, supportedPools]);
 
   const enteredAmountYoctoNear = useMemo(() => {
     if (isStakingMax) {
