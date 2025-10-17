@@ -27,12 +27,10 @@ import { useSnapshotVotingPower } from "@/hooks/useSnapshotVotingPower";
 const NonVoterRow = ({
   accountId,
   you,
-  fallbackAmount,
   blockHeight,
 }: {
   accountId: string;
   you: boolean;
-  fallbackAmount: string;
   blockHeight?: number;
 }) => {
   const { votingPower, isLoading } = useSnapshotVotingPower({
@@ -40,7 +38,17 @@ const NonVoterRow = ({
     blockHeight,
   });
 
-  const amount = !isLoading ? votingPower.toFixed() : fallbackAmount;
+  if (isLoading) {
+    return (
+      <li>
+        <VStack gap={2} className="text-xs text-tertiary px-0 py-1">
+          <div className="h-4 w-full bg-tertiary/10 rounded" />
+        </VStack>
+      </li>
+    );
+  }
+
+  const amount = votingPower.toFixed();
 
   return (
     <li>
@@ -70,13 +78,11 @@ const VoterRow = ({
   accountId,
   you,
   voteOption,
-  fallbackAmount,
   blockHeight,
 }: {
   accountId: string;
   you: boolean;
   voteOption: number;
-  fallbackAmount: string;
   blockHeight?: number;
 }) => {
   const { votingPower, isLoading } = useSnapshotVotingPower({
@@ -84,7 +90,17 @@ const VoterRow = ({
     blockHeight,
   });
 
-  const amount = !isLoading ? votingPower.toFixed() : fallbackAmount;
+  if (isLoading) {
+    return (
+      <li>
+        <VStack gap={2} className="text-xs text-tertiary px-0 py-1">
+          <div className="h-4 w-full bg-tertiary/10 rounded" />
+        </VStack>
+      </li>
+    );
+  }
+
+  const amount = votingPower.toFixed();
 
   return (
     <li>
@@ -247,7 +263,6 @@ const ProposalVoteResult = ({
                       key={nonVoter.id}
                       accountId={nonVoter.registeredVoterId}
                       you={nonVoter.registeredVoterId === signedAccountId}
-                      fallbackAmount={nonVoter.votingPower}
                       blockHeight={
                         proposal.snapshot_and_state?.snapshot.block_height
                       }
@@ -284,7 +299,6 @@ const ProposalVoteResult = ({
                       accountId={vote.accountId}
                       you={vote.accountId === signedAccountId}
                       voteOption={Number(vote.voteOption)}
-                      fallbackAmount={vote.votingPower}
                       blockHeight={
                         proposal.snapshot_and_state?.snapshot.block_height
                       }
