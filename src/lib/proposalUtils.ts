@@ -8,8 +8,11 @@ import { parseNearAmount } from "near-api-js/lib/utils/format";
 import {
   ProposalDisplayStatus,
   ProposalStatus,
-  VotingConfig,
 } from "./contracts/types/voting";
+import {
+  DEFAULT_QUORUM_FLOOR_VENEAR,
+  DEFAULT_QUORUM_THRESHOLD_PERCENTAGE,
+} from "./constants";
 
 export const isForGreaterThanAgainst = ({
   forVotingPower,
@@ -109,13 +112,26 @@ export const getProposalTimes = ({
   };
 };
 
-export const getVenearForQuorum = (totalVotingPower: string) => {
-  const quorumPercentage = Big(
-    process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.35"
-  );
-  const quorumFloor = Big(
-    process.env.NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR ?? "7000000"
-  );
+const QUORUM_OVERRIDE_AMOUNT_IN_NEAR =
+  process.env.NEXT_PUBLIC_NEAR_QUORUM_VENEAR_OVERRIDE;
+
+const QUORUM_THRESHOLD_PERCENTAGE =
+  process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ??
+  DEFAULT_QUORUM_THRESHOLD_PERCENTAGE;
+
+const QUORUM_FLOOR_IN_NEAR =
+  process.env.NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR ??
+  DEFAULT_QUORUM_FLOOR_VENEAR;
+
+export const getYoctoNearForQuorum = (totalVotingPower: string) => {
+  const isQuorumOverrideActive = getIsQuorumOverrideActive();
+
+  if (isQuorumOverrideActive) {
+    return Big(getQuorumOverrideYoctoNear());
+  }
+
+  const quorumPercentage = Big(QUORUM_THRESHOLD_PERCENTAGE);
+  const quorumFloor = Big(getQuorumFloorYoctoNear());
 
   const percentageBasedQuorum = Big(totalVotingPower).mul(quorumPercentage);
 
@@ -124,13 +140,19 @@ export const getVenearForQuorum = (totalVotingPower: string) => {
     : quorumFloor;
 };
 
-export const getQuorumPercentage = () =>
-  Number(process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ?? "0.35") *
-  100;
+export const getIsQuorumOverrideActive = (): boolean => {
+  return !!QUORUM_OVERRIDE_AMOUNT_IN_NEAR;
+};
 
-export const getQuorumFloor = () =>
-  parseNearAmount(process.env.NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR) ??
-  "7000000000000000000000000000000"; // 7M NEAR
+export const getQuorumOverrideYoctoNear = () => {
+  return parseNearAmount(QUORUM_OVERRIDE_AMOUNT_IN_NEAR) ?? "0";
+};
+
+export const getFormattedQuorumPercentage = () =>
+  `${Number(QUORUM_THRESHOLD_PERCENTAGE) * 100}%`;
+
+export const getQuorumFloorYoctoNear = () =>
+  parseNearAmount(QUORUM_FLOOR_IN_NEAR) ?? "0";
 
 export const getTotalForAgainstVotes = (
   forVotingPower: string,
@@ -148,7 +170,7 @@ export const isQuorumFulfilled = ({
   forVotingPower: string;
   againstVotingPower: string;
 }) => {
-  const quorum = getVenearForQuorum(totalVotingPower);
+  const quorum = getYoctoNearForQuorum(totalVotingPower);
   const totalForAgainstVotes = getTotalForAgainstVotes(
     forVotingPower,
     againstVotingPower

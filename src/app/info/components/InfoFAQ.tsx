@@ -1,19 +1,18 @@
 "use client";
 
-import React, { useEffect, ReactNode, useState, useCallback } from "react";
+import { QuorumExplanation } from "@/components/Proposals/Proposal/QuorumExplanation";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useSearchParams } from "next/navigation";
-import Image from "next/image";
-import { getQuorumFloor, getQuorumPercentage } from "@/lib/proposalUtils";
-import TokenAmount from "@/components/shared/TokenAmount";
-import { MixpanelEvents } from "@/lib/analytics/mixpanel";
 import { trackEvent } from "@/lib/analytics";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
+import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 
 interface FAQ {
   id: string;
@@ -405,7 +404,7 @@ const faqs: FAQ[] = [
             <li>Gather feedback and build community support</li>
             <li>
               Submit complete proposal, in correct format, to the proposals
-              repository and wait until it's been merged and assigned a HSP
+              repository and wait until it&apos;s been merged and assigned a HSP
               number.
             </li>
             <li>Submit on-chain using your merged HSP URL.</li>
@@ -419,15 +418,8 @@ const faqs: FAQ[] = [
     question: "What are the quorum requirements?",
     answer: (
       <Text>
-        {`Quorum is not modeled onchain in House of Stake v1, but the community has decided that proposals must meet a minimum quorum requirement to be considered passed. The quorum is calculated as the higher of either ${getQuorumPercentage()}% of total veNEAR supply or an absolute floor of `}
-        <TokenAmount
-          amount={getQuorumFloor()}
-          currency="veNEAR"
-          trailingSpace={false}
-          maximumSignificantDigits={0}
-          minimumFractionDigits={0}
-        />
-        {`. In House of Stake v1.5, the quorum requirement will be enforced onchain.`}
+        <QuorumExplanation />
+        {` In House of Stake v1.5, the quorum requirement will be enforced onchain.`}
       </Text>
     ),
   },

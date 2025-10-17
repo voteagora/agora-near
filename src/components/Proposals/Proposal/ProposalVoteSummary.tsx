@@ -6,7 +6,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
-import { getVenearForQuorum } from "@/lib/proposalUtils";
+import { getYoctoNearForQuorum } from "@/lib/proposalUtils";
 import { useState } from "react";
 import ProposalPopover from "./ProposalPopover";
 import ProposalStatusDetail from "./ProposalStatusDetail";
@@ -18,7 +18,7 @@ export default function ProposalVoteSummary({
   proposal: ProposalInfo;
 }) {
   const [showDetails, setShowDetails] = useState(false);
-  const quorum = getVenearForQuorum(
+  const quorum = getYoctoNearForQuorum(
     proposal.snapshot_and_state?.total_venear ?? "0"
   );
 

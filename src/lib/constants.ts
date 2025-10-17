@@ -126,3 +126,7 @@ export const RNEAR_POOL: StakingPool = {
 export const MIN_VERSION_FOR_LST_LOCKUP = process.env.MIN_VERSION_FOR_LST_LOCKUP
   ? Number(process.env.MIN_VERSION_FOR_LST_LOCKUP)
   : Number.MAX_SAFE_INTEGER;
+
+export const DEFAULT_QUORUM_THRESHOLD_PERCENTAGE = "0.35";
+
+export const DEFAULT_QUORUM_FLOOR_VENEAR = "7000000"; // 7M veNEAR
