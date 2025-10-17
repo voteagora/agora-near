@@ -13,7 +13,7 @@ export async function generateMetadata() {
   )}&description=${encodeURIComponent(imageDescription)}`;
 
   return {
-    title: "RNEAR ORIGINAL",
+    title: title,
     description: description,
     openGraph: {
       images: [
