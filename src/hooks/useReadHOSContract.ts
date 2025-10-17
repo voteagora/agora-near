@@ -29,6 +29,7 @@ export type ReadContractQuery<M extends MethodName> = {
   methodName: M;
   config: ReadContractConfig<MethodArgs<M>>;
   blockId?: number;
+  useArchivalNode?: boolean;
 };
 
 // Helper type to map a tuple of method names to their corresponding query results
@@ -45,26 +46,31 @@ export function useReadHOSContract<const T extends readonly MethodName[]>(
 
   const mappedQueries = useMemo(
     () =>
-      queries.map(({ contractId, methodName, config, blockId }) => ({
-        queryKey: [
-          READ_NEAR_CONTRACT_QK,
-          contractId,
-          methodName,
-          config.args,
-        ] as const,
-        queryFn: async () => {
-          const res = await viewMethod({
+      queries.map(
+        ({ contractId, methodName, config, blockId, useArchivalNode }) => ({
+          queryKey: [
+            READ_NEAR_CONTRACT_QK,
             contractId,
-            method: methodName,
-            args: config.args,
+            methodName,
+            config.args,
             blockId,
-          });
-          return res as MethodResult<typeof methodName> | null | undefined;
-        },
-        enabled: config.enabled ?? true,
-        staleTime: config.staleTime ?? CACHE_TTL.SHORT, // Cache for 5 minutes by default
-        gcTime: config.gcTime,
-      })),
+            useArchivalNode,
+          ] as const,
+          queryFn: async () => {
+            const res = await viewMethod({
+              contractId,
+              method: methodName,
+              args: config.args,
+              blockId,
+              useArchivalNode,
+            });
+            return res as MethodResult<typeof methodName> | null | undefined;
+          },
+          enabled: config.enabled ?? true,
+          staleTime: config.staleTime ?? CACHE_TTL.SHORT, // Cache for 5 minutes by default
+          gcTime: config.gcTime,
+        })
+      ),
     [queries, viewMethod]
   );
 

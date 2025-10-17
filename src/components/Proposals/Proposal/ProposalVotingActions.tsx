@@ -9,12 +9,14 @@ import { useCheckVoterStatus } from "@/hooks/useCheckVoterStatus";
 import { CHART_DATA_QK } from "@/hooks/useProposalChartData";
 import { VOTES_QK } from "@/hooks/useProposalVotes";
 
+import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
 import { useProposalVotingPower } from "@/hooks/useProposalVotingPower";
 import { useUserVote } from "@/hooks/useUserVote";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useState, useEffect, memo, useMemo } from "react";
+import Big from "big.js";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
 const ProposalVotingActionsFallback = memo(() => {
   return (
@@ -89,13 +91,39 @@ const ProposalVotingActionsContent = memo(
       });
     }, [proposal.voting_options, selectedVote, setSelectedVote]);
 
-    return (
-      <div className="flex flex-col gap-3 py-3 px-3 border-t border-line">
-        <div className="flex flex-row gap-2">{votingOptions}</div>
+    const hasVotingPower = Big(votingPower).gt(0);
+    const hasSelectedVote = selectedVote !== undefined;
+
+    const isVoteSubmissionDisabled =
+      !hasVotingPower || !hasSelectedVote || (hasVoted && !isUpdatingVote);
+
+    const submitButton = useMemo(() => {
+      if (!hasVotingPower) {
+        return (
+          <TooltipWithTap
+            content={
+              <div className="max-w-[350px] flex flex-col text-left p-3">
+                <p>
+                  Sorry, you can&apos;t vote if you had no voting power at the
+                  time of the proposal.
+                </p>
+              </div>
+            }
+          >
+            <div>
+              <Button className="w-full" disabled>
+                Vote
+              </Button>
+            </div>
+          </TooltipWithTap>
+        );
+      }
+
+      return (
         <Button
           onClick={onSubmitPress}
           className="w-full"
-          disabled={hasVoted ? !isUpdatingVote : selectedVote === undefined}
+          disabled={isVoteSubmissionDisabled}
         >
           {selectedVote !== undefined ? (
             <>
@@ -111,6 +139,21 @@ const ProposalVotingActionsContent = memo(
             "Select an option"
           )}
         </Button>
+      );
+    }, [
+      hasVotingPower,
+      isVoteSubmissionDisabled,
+      onSubmitPress,
+      proposal.voting_options,
+      selectedVote,
+      submitVotePrefix,
+      votingPower,
+    ]);
+
+    return (
+      <div className="flex flex-col gap-3 py-3 px-3 border-t border-line">
+        <div className="flex flex-row gap-2">{votingOptions}</div>
+        {submitButton}
       </div>
     );
   }
@@ -213,7 +256,7 @@ export default function ProposalVotingActions({
       selectedVote={selectedVote}
       setSelectedVote={setSelectedVote}
       onSubmitPress={openVoteDialog}
-      votingPower={votingPower.toFixed()}
+      votingPower={votingPower ?? "0"}
       hasVoted={hasVoted}
       isUpdatingVote={isUpdatingVote}
     />
