@@ -1,7 +1,7 @@
 import { CONTRACTS } from "@/lib/contractConstants";
 import { useReadHOSContract } from "./useReadHOSContract";
 
-export const useVotingPower = (accountId?: string) => {
+export const useVotingPower = (accountId?: string, blockHeight?: number) => {
   const [{ data, isLoading, error }] = useReadHOSContract([
     {
       contractId: CONTRACTS.VENEAR_CONTRACT_ID,
@@ -10,6 +10,8 @@ export const useVotingPower = (accountId?: string) => {
         args: { account_id: accountId ?? "" },
         enabled: !!accountId,
       },
+      blockId: blockHeight,
+      useArchivalNode: !!blockHeight,
     },
   ]);
 
