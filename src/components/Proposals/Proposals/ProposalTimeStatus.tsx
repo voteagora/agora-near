@@ -28,18 +28,34 @@ export default function ProposalTimeStatus({
 
   switch (status) {
     case ProposalStatus.Created:
-      return <HStack gap={1}>Created {proposalCreateTimeDisplay}</HStack>;
+      return (
+        <HStack gap={1} className="whitespace-nowrap">
+          Created {proposalCreateTimeDisplay}
+        </HStack>
+      );
 
     case ProposalStatus.Voting:
-      return <HStack gap={1}>Ends {proposalEndTimeDisplay}</HStack>;
+      return (
+        <HStack gap={1} className="whitespace-nowrap">
+          Ends {proposalEndTimeDisplay}
+        </HStack>
+      );
 
     case ProposalStatus.Rejected:
       return <HStack gap={1}>Rejected</HStack>;
 
     case ProposalStatus.Approved:
-      return <HStack gap={1}>Starts {proposalStartTimeDisplay}</HStack>;
+      return (
+        <HStack gap={1} className="whitespace-nowrap">
+          Starts {proposalStartTimeDisplay}
+        </HStack>
+      );
 
     case ProposalStatus.Finished:
-      return <HStack gap={1}>Finished {proposalEndTimeDisplay}</HStack>;
+      return (
+        <HStack gap={1} className="whitespace-nowrap">
+          Finished {proposalEndTimeDisplay}
+        </HStack>
+      );
   }
 }

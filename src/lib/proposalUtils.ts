@@ -90,8 +90,8 @@ export function getProposalStatusColor(proposalStatus: string) {
 export const formatNearTime = (time: string | null | undefined) => {
   if (!time) return null;
   const date = new Date(Number(time) / 1000000);
-  // Uses local timezone by default; OOOO prints GMT offset (e.g., GMT+02:00)
-  return format(date, "h:mm aaa MMM dd, yyyy OOOO");
+  // Uses local time zone; "O" provides a short offset (e.g. GMT+2)
+  return format(date, "h:mm aaa MMM dd, yyyy O");
 };
 
 export const getProposalTimes = ({
