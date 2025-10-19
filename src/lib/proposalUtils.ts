@@ -88,7 +88,10 @@ export function getProposalStatusColor(proposalStatus: string) {
 }
 
 export const formatNearTime = (time: string | null | undefined) => {
-  return time ? format(Number(time) / 1000000, "h:mm aaa MMM dd, yyyy") : null;
+  if (!time) return null;
+  const date = new Date(Number(time) / 1000000);
+  // Uses local timezone by default; OOOO prints GMT offset (e.g., GMT+02:00)
+  return format(date, "h:mm aaa MMM dd, yyyy OOOO");
 };
 
 export const getProposalTimes = ({
