@@ -1,13 +1,15 @@
-import { memo } from "react";
-import Big from "big.js";
+import { filterDust } from "@/lib/tokenUtils";
+import { LockupLiquidBalance, TokenWithBalance } from "@/lib/types";
+import { memo, useMemo } from "react";
 import { LockableAssetRow } from "./LockableAssetRow";
 import { VeNearAssetRow } from "./VeNearAssetRow";
-import { VeNearLiquidAssetRow } from "./VeNearLiquidAssetRow";
+import { LockupLiquidNearRow } from "./VeNearLiquidAssetRow";
 import { VeNearStakedAssetRow } from "./VeNearStakedAssetRow";
+import Big from "big.js";
 
 interface HoldingsContentProps {
-  lockupLiquidTokens: any[];
-  walletTokens: any[];
+  liquidLockupBalance: LockupLiquidBalance;
+  walletTokens: TokenWithBalance[];
   unlockTimestamp: string | null | undefined;
   lockupAccountId: string | null | undefined;
   balanceWithRewards: string;
@@ -16,13 +18,13 @@ interface HoldingsContentProps {
   isEligibleToUnlock: boolean;
   stakingPoolId: string | null | undefined;
   stakedBalance: string | null | undefined;
-  openLockDialog: (preSelectedTokenId?: string) => void;
+  openLockDialog: (preSelectedTokenId?: string | null) => void;
   openStakingDialog: () => void;
 }
 
 export const HoldingsContent = memo(
   ({
-    lockupLiquidTokens,
+    liquidLockupBalance,
     walletTokens,
     unlockTimestamp,
     lockupAccountId,
@@ -36,13 +38,44 @@ export const HoldingsContent = memo(
     openStakingDialog,
   }: HoldingsContentProps) => {
     // TODO: Fix root cause of dust amounts remaining after "Max" lock
-    // This filters out dust amounts (<=0.001) as a temporary workaround
-    const DUST_THRESHOLD = 0.001;
-    const filterDust = (token: any) =>
-      Big(token.balance).div("1e24").gte(DUST_THRESHOLD);
+    const filteredWalletTokens = useMemo(
+      () =>
+        walletTokens.map((token) => ({
+          ...token,
+          balance: filterDust({ amount: token.balance }),
+        })),
+      [walletTokens]
+    );
 
-    const filteredLockupLiquidTokens = lockupLiquidTokens.filter(filterDust);
-    const filteredWalletTokens = walletTokens.filter(filterDust);
+    const filteredLiquidLockupBalance = useMemo(() => {
+      return {
+        withdrawableNearBalance: filterDust({
+          amount: liquidLockupBalance.withdrawableNearBalance ?? "0",
+        }),
+        stakableNearBalance: filterDust({
+          amount: liquidLockupBalance.stakableNearBalance ?? "0",
+        }),
+        lockableNearBalance: filterDust({
+          amount: liquidLockupBalance.lockableNearBalance ?? "0",
+        }),
+      };
+    }, [
+      liquidLockupBalance.lockableNearBalance,
+      liquidLockupBalance.stakableNearBalance,
+      liquidLockupBalance.withdrawableNearBalance,
+    ]);
+
+    const hasLiquidNearInLockup = useMemo(
+      () =>
+        Big(filteredLiquidLockupBalance.lockableNearBalance ?? "0").gt(0) ||
+        Big(filteredLiquidLockupBalance.stakableNearBalance ?? "0").gt(0) ||
+        Big(filteredLiquidLockupBalance.withdrawableNearBalance ?? "0").gt(0),
+      [
+        filteredLiquidLockupBalance.lockableNearBalance,
+        filteredLiquidLockupBalance.stakableNearBalance,
+        filteredLiquidLockupBalance.withdrawableNearBalance,
+      ]
+    );
 
     return (
       <table className="w-full">
@@ -60,15 +93,14 @@ export const HoldingsContent = memo(
             pendingBalance={pendingBalance}
             isEligibleToUnlock={isEligibleToUnlock}
           />
-          {filteredLockupLiquidTokens.map((token) => (
-            <VeNearLiquidAssetRow
-              key={token.accountId}
-              token={token}
+          {hasLiquidNearInLockup && (
+            <LockupLiquidNearRow
+              liquidLockupBalance={filteredLiquidLockupBalance}
               onStakeClick={openStakingDialog}
               onLockClick={openLockDialog}
-              lockupAccountId={lockupAccountId ?? undefined}
+              lockupAccountId={lockupAccountId}
             />
-          ))}
+          )}
           {stakingPoolId && (
             <VeNearStakedAssetRow
               stakingPoolId={stakingPoolId}

@@ -3,60 +3,33 @@ import {
   LINEAR_TOKEN_CONTRACT,
   LINEAR_TOKEN_METADATA,
   NEAR_TOKEN_METADATA,
-  STNEAR_TOKEN_CONTRACT,
-  STNEAR_TOKEN_METADATA,
   RNEAR_TOKEN_CONTRACT,
   RNEAR_TOKEN_METADATA,
+  STNEAR_TOKEN_CONTRACT,
+  STNEAR_TOKEN_METADATA,
 } from "@/lib/constants";
 import { TokenWithBalance } from "@/lib/types";
 import Big from "big.js";
 import { useMemo } from "react";
-import { useAvailableToLock } from "./useAvailableToLock";
-import { useFungibleTokens } from "./useFungibleTokens";
-import { useLockupAccount } from "./useLockupAccount";
 import { useBalance } from "./useBalance";
+import { useFungibleTokens } from "./useFungibleTokens";
 
-export const useAvailableTokens = () => {
-  const { signedAccountId, networkId } = useNear();
+export const useLiquidWalletTokens = () => {
+  const { signedAccountId } = useNear();
   const { data: fungibleTokensResponse, isLoading: isLoadingFungibleTokens } =
     useFungibleTokens(signedAccountId);
   const { nearBalance, isLoadingNearBalance } = useBalance(signedAccountId);
 
-  const { lockupAccountId, isLoading: isLoadingLockupAccountId } =
-    useLockupAccount();
+  const linearTokenContractId = useMemo(() => LINEAR_TOKEN_CONTRACT, []);
 
-  const { availableToLock: availableToLockInLockup, isLoadingAvailableToLock } =
-    useAvailableToLock({ lockupAccountId });
-
-  const linearTokenContractId = useMemo(
-    () => LINEAR_TOKEN_CONTRACT,
-    [networkId]
-  );
-
-  const stNearTokenContractId = useMemo(
-    () => STNEAR_TOKEN_CONTRACT,
-    [networkId]
-  );
+  const stNearTokenContractId = useMemo(() => STNEAR_TOKEN_CONTRACT, []);
 
   const rNearTokenContractId = RNEAR_TOKEN_CONTRACT;
 
-  const isLoading =
-    isLoadingFungibleTokens ||
-    isLoadingNearBalance ||
-    isLoadingAvailableToLock ||
-    isLoadingLockupAccountId;
+  const isLoading = isLoadingFungibleTokens || isLoadingNearBalance;
 
   const availableTokens = useMemo(() => {
     const tokens: TokenWithBalance[] = [];
-
-    if (availableToLockInLockup && Big(availableToLockInLockup).gt(0)) {
-      tokens.push({
-        type: "lockup" as const,
-        metadata: NEAR_TOKEN_METADATA,
-        accountId: lockupAccountId,
-        balance: availableToLockInLockup,
-      });
-    }
 
     if (nearBalance && Big(nearBalance).gt(0)) {
       tokens.push({
@@ -110,10 +83,8 @@ export const useAvailableTokens = () => {
 
     return tokens.sort((a, b) => (Big(b.balance).gt(a.balance) ? 1 : -1));
   }, [
-    availableToLockInLockup,
     fungibleTokensResponse,
     linearTokenContractId,
-    lockupAccountId,
     nearBalance,
     signedAccountId,
     stNearTokenContractId,

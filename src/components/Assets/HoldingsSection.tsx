@@ -1,5 +1,5 @@
 import { useNear } from "@/contexts/NearContext";
-import { useAvailableTokens } from "@/hooks/useAvailableTokens";
+import { useLiquidWalletTokens } from "@/hooks/useAvailableTokens";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useLockupPendingBalance } from "@/hooks/useLockupPendingBalance";
@@ -11,6 +11,7 @@ import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
 import { Skeleton } from "../ui/skeleton";
 import { HoldingsContent } from "./HoldingsContent";
 import { HosActivityTable } from "./HosActivityTable";
+import { useLiquidLockupBalance } from "@/hooks/useLiquidLockupBalance";
 
 export const HoldingsSection = memo(() => {
   const [activeTab, setActiveTab] = useState<"Holdings" | "Activity">(
@@ -23,11 +24,16 @@ export const HoldingsSection = memo(() => {
     setActiveTab(tab);
   }, []);
 
-  const { isLoading: isLoadingAvailableTokens, availableTokens } =
-    useAvailableTokens();
+  const {
+    isLoading: isLoadingLiquidWalletTokens,
+    availableTokens: liquidWalletTokens,
+  } = useLiquidWalletTokens();
 
   const { lockupAccountId, isLoading: isLoadingLockupAccountId } =
     useLockupAccount();
+
+  const { isLoading: isLoadingLiquidLockupBalance, liquidLockupBalance } =
+    useLiquidLockupBalance({ lockupAccountId });
 
   const { data: accountInfo, isLoading: isLoadingAccountInfo } =
     useVenearAccountInfo(signedAccountId);
@@ -64,12 +70,12 @@ export const HoldingsSection = memo(() => {
   const openDialog = useOpenDialog();
 
   const openLockDialog = useCallback(
-    (preSelectedTokenId?: string) => {
+    (preSelectedTokenId?: string | null) => {
       openDialog({
         type: "NEAR_LOCK",
         params: {
           source: "account_management",
-          preSelectedTokenId,
+          preSelectedTokenId: preSelectedTokenId ?? undefined,
         },
       });
     },
@@ -86,23 +92,19 @@ export const HoldingsSection = memo(() => {
     });
   }, [openDialog]);
 
-  const lockupLiquidTokens = useMemo(
-    () => availableTokens.filter((token) => token.type === "lockup"),
-    [availableTokens]
-  );
-
   const walletTokens = useMemo(
-    () => availableTokens.filter((token) => token.type !== "lockup"),
-    [availableTokens]
+    () => liquidWalletTokens.filter((token) => token.type !== "lockup"),
+    [liquidWalletTokens]
   );
 
   const isLoading =
-    isLoadingAvailableTokens ||
+    isLoadingLiquidWalletTokens ||
     isLoadingLockupAccountId ||
     isLoadingStakingPoolId ||
     isLoadingAccountInfo ||
     isLoadingLockupPendingBalance ||
-    isLoadingStakedBalance;
+    isLoadingStakedBalance ||
+    isLoadingLiquidLockupBalance;
 
   if (isLoading) {
     return (
@@ -144,7 +146,7 @@ export const HoldingsSection = memo(() => {
         <div className="sm:px-6 py-6 px-2">
           {activeTab === "Holdings" ? (
             <HoldingsContent
-              lockupLiquidTokens={lockupLiquidTokens}
+              liquidLockupBalance={liquidLockupBalance}
               walletTokens={walletTokens}
               unlockTimestamp={unlockTimestamp}
               lockupAccountId={lockupAccountId}

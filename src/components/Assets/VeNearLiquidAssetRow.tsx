@@ -1,59 +1,22 @@
-import { useReadHOSContract } from "@/hooks/useReadHOSContract";
-import Big from "big.js";
+import { useTransferLockup } from "@/hooks/useTransferLockup";
+import { NEAR_TOKEN_METADATA } from "@/lib/constants";
+import { LockupLiquidBalance } from "@/lib/types";
 import { useCallback, useMemo } from "react";
+import toast from "react-hot-toast";
 import TokenAmount from "../shared/TokenAmount";
 import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
-import { TokenWithBalance } from "@/lib/types";
-import { Skeleton } from "../ui/skeleton";
-import { useTransferLockup } from "@/hooks/useTransferLockup";
-import toast from "react-hot-toast";
 
-export const VeNearLiquidAssetRow = ({
+export const LockupLiquidNearRow = ({
   lockupAccountId,
-  token,
+  liquidLockupBalance,
   onStakeClick,
   onLockClick,
 }: {
-  lockupAccountId?: string;
-  token: TokenWithBalance;
+  lockupAccountId?: string | null;
+  liquidLockupBalance: LockupLiquidBalance;
   onStakeClick: () => void;
-  onLockClick: (accountId?: string) => void;
+  onLockClick: (accountId?: string | null) => void;
 }) => {
-  const [
-    { data: liquidOwnersBalance, isLoading: isLoadingLiquidOwnersBalance },
-    { data: venearLiquidBalance, isLoading: isLoadingVenearLiquidBalance },
-  ] = useReadHOSContract([
-    {
-      contractId: lockupAccountId ?? "",
-      methodName: "get_liquid_owners_balance" as const,
-      config: {
-        args: {},
-        enabled: !!lockupAccountId,
-      },
-    },
-    {
-      contractId: lockupAccountId ?? "",
-      methodName: "get_venear_liquid_balance" as const,
-      config: {
-        args: {},
-        enabled: !!lockupAccountId,
-      },
-    },
-  ]);
-
-  const isLoadingAvailableToTransfer =
-    isLoadingLiquidOwnersBalance || isLoadingVenearLiquidBalance;
-
-  const availableToTransfer = useMemo(() => {
-    if (isLoadingAvailableToTransfer) {
-      return "0";
-    }
-
-    return Big(liquidOwnersBalance ?? "0").lt(venearLiquidBalance ?? "0")
-      ? liquidOwnersBalance
-      : venearLiquidBalance;
-  }, [liquidOwnersBalance, venearLiquidBalance, isLoadingAvailableToTransfer]);
-
   const handleStakeClick = useCallback(() => {
     onStakeClick();
   }, [onStakeClick]);
@@ -66,8 +29,8 @@ export const VeNearLiquidAssetRow = ({
   });
 
   const handleWithdraw = useCallback(() => {
-    transferLockup({ amount: availableToTransfer });
-  }, [transferLockup, availableToTransfer]);
+    transferLockup({ amount: liquidLockupBalance.withdrawableNearBalance });
+  }, [transferLockup, liquidLockupBalance.withdrawableNearBalance]);
 
   const handleLockClick = useCallback(
     () => onLockClick(lockupAccountId),
@@ -101,32 +64,28 @@ export const VeNearLiquidAssetRow = ({
           </div>
         </>
       ),
-      subtitle: isLoadingAvailableToTransfer ? (
-        <Skeleton className="w-16 h-4" />
-      ) : (
+      subtitle: (
         <TokenAmount
-          amount={availableToTransfer ?? "0"}
+          amount={liquidLockupBalance.withdrawableNearBalance ?? "0"}
           maximumSignificantDigits={4}
           minimumFractionDigits={4}
         />
       ),
     };
-  }, [availableToTransfer, isLoadingAvailableToTransfer]);
+  }, [liquidLockupBalance.withdrawableNearBalance]);
 
   const availableToStakeCol = useMemo(() => {
     return {
       title: "Available to stake",
-      subtitle: isLoadingLiquidOwnersBalance ? (
-        <Skeleton className="w-16 h-4" />
-      ) : (
+      subtitle: (
         <TokenAmount
-          amount={liquidOwnersBalance ?? "0"}
+          amount={liquidLockupBalance.stakableNearBalance ?? "0"}
           maximumSignificantDigits={4}
           minimumFractionDigits={4}
         />
       ),
     };
-  }, [isLoadingLiquidOwnersBalance, liquidOwnersBalance]);
+  }, [liquidLockupBalance.stakableNearBalance]);
 
   const columns = useMemo(
     () => [
@@ -134,8 +93,8 @@ export const VeNearLiquidAssetRow = ({
         title: "Lockable",
         subtitle: (
           <TokenAmount
-            amount={token.balance}
-            currency={token.metadata?.symbol}
+            amount={liquidLockupBalance.lockableNearBalance ?? "0"}
+            currency={NEAR_TOKEN_METADATA.symbol}
             maximumSignificantDigits={4}
             minimumFractionDigits={4}
           />
@@ -145,8 +104,7 @@ export const VeNearLiquidAssetRow = ({
       availableToTransferCol,
     ],
     [
-      token.balance,
-      token.metadata?.symbol,
+      liquidLockupBalance.lockableNearBalance,
       availableToStakeCol,
       availableToTransferCol,
     ]
@@ -154,7 +112,7 @@ export const VeNearLiquidAssetRow = ({
 
   return (
     <ResponsiveAssetRow
-      metadata={token.metadata}
+      metadata={NEAR_TOKEN_METADATA}
       columns={columns}
       showOverflowMenu={false}
       actionButtons={actionButtons}
