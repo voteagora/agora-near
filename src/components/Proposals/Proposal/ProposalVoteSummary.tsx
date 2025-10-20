@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/hover-card";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { getYoctoNearForQuorum } from "@/lib/proposalUtils";
+import { formatVotingPower } from "@/lib/utils";
+import { NEAR_TOKEN } from "@/lib/constants";
 import { useState } from "react";
 import ProposalPopover from "./ProposalPopover";
 import ProposalStatusDetail from "./ProposalStatusDetail";
@@ -22,6 +24,19 @@ export default function ProposalVoteSummary({
     proposal.snapshot_and_state?.total_venear ?? "0"
   );
 
+  // Convert yocto NEAR to NEAR for display
+  const forVotesNumber =
+    Number(proposal.votes[0].total_venear) / Math.pow(10, NEAR_TOKEN.decimals);
+  const againstVotesNumber =
+    Number(proposal.votes[1].total_venear) / Math.pow(10, NEAR_TOKEN.decimals);
+
+  // Determine the maximum value for consistent scaling
+  const maxVotes = Math.max(forVotesNumber, againstVotesNumber);
+
+  // Format both values with the same scale
+  const formattedForVotes = formatVotingPower(forVotesNumber, maxVotes);
+  const formattedAgainstVotes = formatVotingPower(againstVotesNumber, maxVotes);
+
   return (
     <HoverCard
       open={showDetails}
@@ -34,18 +49,10 @@ export default function ProposalVoteSummary({
           <HoverCardTrigger className="w-full cursor-pointer flex flex-col gap-2 px-4 pt-2">
             <div className="flex flex-row justify-between mt-2">
               <div className="text-positive">
-                {proposal.voting_options[0]} -{" "}
-                <TokenAmount
-                  amount={proposal.votes[0].total_venear}
-                  hideCurrency
-                />
+                {proposal.voting_options[0]} - {formattedForVotes}
               </div>
               <div className="text-negative">
-                {proposal.voting_options[1]} -{" "}
-                <TokenAmount
-                  amount={proposal.votes[1].total_venear}
-                  hideCurrency
-                />
+                {proposal.voting_options[1]} - {formattedAgainstVotes}
               </div>
             </div>
             <ProposalVoteBar proposal={proposal} />
