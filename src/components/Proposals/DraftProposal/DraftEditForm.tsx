@@ -274,8 +274,8 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
                 Screening Committee.
               </li>
               <li>
-                All created proposals will have two voting options: For and
-                Against.
+                All created proposals will have three voting options: For,
+                Against, and Abstain.
               </li>
               <li>Once approved, voting will be open for {votingDuration}.</li>
               <li>
