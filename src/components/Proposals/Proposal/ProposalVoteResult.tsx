@@ -2,7 +2,6 @@
 
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { useState } from "react";
-import Image from "next/image";
 import ProposalVoteFilter from "./ProposalVoteFilter";
 import ProposalVoteSummary from "./ProposalVoteSummary";
 import ProposalVotingActions from "./ProposalVotingActions";
@@ -72,13 +71,7 @@ const ProposalVoteResult = ({
           className="border w-10 h-10 rounded-full bg-neutral absolute top-[-20px] left-[calc(50%-20px)] shadow-newDefault block md:hidden"
         >
           <div className="flex flex-col justify-center">
-            <Image
-              className="opacity-60"
-              src={icons.expand}
-              alt="expand"
-              width={16}
-              height={16}
-            />
+            <img className="opacity-60" src={icons.expand.src} alt="expand" />
           </div>
         </button>
         <div className="flex flex-col gap-4">
