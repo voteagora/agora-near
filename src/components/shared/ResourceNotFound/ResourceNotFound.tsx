@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { UpdatedButton } from "@/components/Button";
+import Link from "next/link";
 import { AnimatedStars } from "@/components/Assets/AnimatedStars";
 import logo from "@/assets/agora_logo.svg";
 
@@ -36,9 +36,12 @@ export default function ResourceNotFound({
         </p>
         {showCTA && (
           <div className="mt-6">
-            <UpdatedButton type="primary" variant="rounded" href={ctaHref}>
+            <Link
+              href={ctaHref}
+              className="font-semibold py-2 px-4 border border-line cursor-pointer rounded-full bg-brandPrimary hover:bg-brandPrimary/90 text-neutral transition-shadow"
+            >
               {ctaLabel}
-            </UpdatedButton>
+            </Link>
           </div>
         )}
       </div>
@@ -67,9 +70,12 @@ export default function ResourceNotFound({
         </p>
         {showCTA && (
           <div className="mt-6">
-            <UpdatedButton type="primary" variant="rounded" href={ctaHref}>
+            <Link
+              href={ctaHref}
+              className="font-semibold py-2 px-4 border border-line cursor-pointer rounded-full bg-brandPrimary hover:bg-brandPrimary/90 text-neutral transition-shadow"
+            >
               {ctaLabel}
-            </UpdatedButton>
+            </Link>
           </div>
         )}
       </div>
