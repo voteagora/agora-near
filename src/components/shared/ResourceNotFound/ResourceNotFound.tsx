@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { UpdatedButton } from "@/components/Button";
+import Link from "next/link";
 import { AnimatedStars } from "@/components/Assets/AnimatedStars";
 import logo from "@/assets/agora_logo.svg";
 
@@ -36,9 +36,12 @@ export default function ResourceNotFound({
         </p>
         {showCTA && (
           <div className="mt-6">
-            <UpdatedButton type="primary" variant="rounded" href={ctaHref}>
+            <Link
+              href={ctaHref}
+              className="font-semibold py-2 px-4 border border-line cursor-pointer rounded-full bg-brandPrimary hover:bg-brandPrimary/90 text-neutral transition-shadow"
+            >
               {ctaLabel}
-            </UpdatedButton>
+            </Link>
           </div>
         )}
       </div>
@@ -46,14 +49,11 @@ export default function ResourceNotFound({
   }
 
   return (
-    <div className="relative flex items-center justify-center min-h-[60vh] text-center">
-      <div className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none select-none">
-        <AnimatedStars />
+    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center md:flex-row md:items-center md:justify-center md:gap-8">
+      <div className="hidden md:block pointer-events-none select-none shrink-0">
+        <AnimatedStars className="mr-8" />
       </div>
-      <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none select-none">
-        <AnimatedStars />
-      </div>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center max-w-md">
         <Image
           className={"my-6"}
           alt="Agora"
@@ -67,11 +67,17 @@ export default function ResourceNotFound({
         </p>
         {showCTA && (
           <div className="mt-6">
-            <UpdatedButton type="primary" variant="rounded" href={ctaHref}>
+            <Link
+              href={ctaHref}
+              className="font-semibold py-2 px-4 border border-line cursor-pointer rounded-full bg-brandPrimary hover:bg-brandPrimary/90 text-neutral transition-shadow"
+            >
               {ctaLabel}
-            </UpdatedButton>
+            </Link>
           </div>
         )}
+      </div>
+      <div className="hidden md:block pointer-events-none select-none shrink-0">
+        <AnimatedStars className="ml-8" />
       </div>
     </div>
   );

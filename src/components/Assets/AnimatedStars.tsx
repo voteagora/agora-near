@@ -23,23 +23,25 @@ const StarIcon = () => (
   </svg>
 );
 
-export const AnimatedStars = memo(() => {
-  return (
-    <div className="flex flex-col justify-center gap-4 ml-8">
-      <div className="animate-star-pulse-1">
-        <StarIcon />
+export const AnimatedStars = memo(
+  ({ className = "" }: { className?: string }) => {
+    return (
+      <div className={`flex flex-col justify-center gap-4 ${className}`}>
+        <div className="animate-star-pulse-1">
+          <StarIcon />
+        </div>
+        <div className="animate-star-pulse-2">
+          <StarIcon />
+        </div>
+        <div className="animate-star-pulse-3">
+          <StarIcon />
+        </div>
+        <div className="animate-star-pulse-4">
+          <StarIcon />
+        </div>
       </div>
-      <div className="animate-star-pulse-2">
-        <StarIcon />
-      </div>
-      <div className="animate-star-pulse-3">
-        <StarIcon />
-      </div>
-      <div className="animate-star-pulse-4">
-        <StarIcon />
-      </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 AnimatedStars.displayName = "AnimatedStars";
