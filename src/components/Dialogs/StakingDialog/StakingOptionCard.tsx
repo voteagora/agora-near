@@ -1,6 +1,11 @@
 import TokenAmount from "@/components/shared/TokenAmount";
 import { LINEAR_TOKEN_METADATA } from "@/lib/constants";
 import Image from "next/image";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type StakingOptionCardProps = {
   isSelected: boolean;
@@ -9,6 +14,7 @@ type StakingOptionCardProps = {
   apy: number | undefined;
   totalVolumeYocto: string;
   isEnabled?: boolean;
+  disabledReason?: string;
 };
 
 export const StakingOptionCard = ({
@@ -18,12 +24,15 @@ export const StakingOptionCard = ({
   apy,
   totalVolumeYocto,
   isEnabled = true,
+  disabledReason,
 }: StakingOptionCardProps) => {
-  return (
+  const Card = (
     <div
       onClick={isEnabled ? onSelect : undefined}
-      className={`rounded-lg p-4 gap-4 flex flex-col cursor-pointer transition-all duration-200 border border-black ${
-        isSelected
+      className={`rounded-lg p-4 gap-4 flex flex-col transition-all duration-200 border border-black ${
+        isEnabled ? "cursor-pointer" : "cursor-not-allowed opacity-60"
+      } ${
+        isSelected && isEnabled
           ? "bg-[#00E391] text-black"
           : "bg-gray-50 text-black hover:bg-gray-100"
       }`}
@@ -57,6 +66,22 @@ export const StakingOptionCard = ({
           />
         </div>
       </div>
+      {!isEnabled && disabledReason && (
+        <div className="text-xs text-[#676767]">{disabledReason}</div>
+      )}
     </div>
   );
+
+  if (!isEnabled && disabledReason) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>{Card}</div>
+        </TooltipTrigger>
+        <TooltipContent>{disabledReason}</TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return Card;
 };

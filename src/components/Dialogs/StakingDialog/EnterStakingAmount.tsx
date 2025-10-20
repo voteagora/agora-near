@@ -7,6 +7,7 @@ import { formatNumber } from "@/lib/utils";
 import Big from "big.js";
 import Image from "next/image";
 import { useCallback } from "react";
+import { useNear } from "@/contexts/NearContext";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingDialogHeader } from "./StakingDialogHeader";
 import { StakingOptionCard } from "./StakingOptionCard";
@@ -20,6 +21,7 @@ export const EnterStakingAmount = ({
   onContinue,
   onSkip,
 }: EnterStakingAmountProps) => {
+  const { networkId } = useNear();
   const {
     poolStats,
     pools,
@@ -53,7 +55,15 @@ export const EnterStakingAmount = ({
           {pools.map((pool) => (
             <StakingOptionCard
               key={pool.id}
-              isEnabled={!hasAlreadySelectedStakingPool}
+              isEnabled={
+                !hasAlreadySelectedStakingPool &&
+                !(pool.id === "rnear" && networkId === "mainnet")
+              }
+              disabledReason={
+                pool.id === "rnear" && networkId === "mainnet"
+                  ? "Coming Soon"
+                  : undefined
+              }
               isSelected={selectedPool.id === pool.id}
               onSelect={() => setSelectedPool(pool)}
               tokenMetadata={pool.metadata}
