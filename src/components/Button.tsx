@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import { cn } from "@/lib/utils";
