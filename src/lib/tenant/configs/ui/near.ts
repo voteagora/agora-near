@@ -110,10 +110,11 @@ export const nearTenantUIConfig = new TenantUI({
       description:
         "NEAR House of Stake governance empowers token holders to lock NEAR for voting rights, delegate votes to trusted representatives, and earn rewards for active participation.",
       meta: {
-        title: "NEAR Agora",
-        description: "Home of the NEAR House of Stake governance",
-        imageTitle: "NEAR Agora",
-        imageDescription: "Home of the NEAR House of Stake governance",
+        title: "NEAR Proposals | House of Stake Governance",
+        description:
+          "View and vote on active NEAR governance proposals. Participate in on-chain governance decisions that shape the future of the NEAR ecosystem.",
+        imageTitle: "NEAR Proposals",
+        imageDescription: "View and vote on active NEAR governance proposals",
       },
     },
     {
@@ -122,11 +123,12 @@ export const nearTenantUIConfig = new TenantUI({
       description:
         "NEAR House of Stake governance empowers token holders to lock NEAR for voting rights, delegate votes to trusted representatives, and earn rewards for active participation.",
       meta: {
-        title: "Voter on Agora",
-        description: "Delegate your voting power to a trusted representative",
-        imageTitle: "Voter on Agora",
+        title: "NEAR Voters | Delegate Your Voting Power",
+        description:
+          "Browse and delegate your voting power to trusted NEAR governance representatives. View voter statements, voting history, and track delegated power.",
+        imageTitle: "NEAR Voters",
         imageDescription:
-          "Delegate your voting power to a trusted representative",
+          "Delegate your voting power to trusted NEAR governance representatives",
       },
     },
     {
@@ -135,10 +137,12 @@ export const nearTenantUIConfig = new TenantUI({
       description:
         "NEAR House of Stake governance empowers token holders to lock NEAR for voting rights, delegate votes to trusted representatives, and earn rewards for active participation.",
       meta: {
-        title: "NEAR Agora",
-        description: "Home of the NEAR House of Stake governance",
-        imageTitle: "NEAR Agora",
-        imageDescription: "Home of the NEAR House of Stake governance",
+        title: "NEAR Assets | Lock & Stake Your Tokens",
+        description:
+          "Manage your NEAR governance assets. Lock NEAR tokens, stake with liquid staking protocols like LiNEAR and stNEAR, and earn voting power and rewards.",
+        imageTitle: "NEAR Assets",
+        imageDescription:
+          "Lock & stake NEAR tokens to participate in governance",
       },
     },
     {
@@ -147,10 +151,11 @@ export const nearTenantUIConfig = new TenantUI({
       description:
         "House of Stake is the home of NEAR governance, powered by Agora. NEAR token holders lock tokens for voting rights, delegate votes to trusted representatives, and participate in shaping the future of the NEAR ecosystem.",
       meta: {
-        title: "NEAR Agora",
-        description: "Home of NEAR House of Stake governance",
-        imageTitle: "NEAR Agora",
-        imageDescription: "Home of NEAR House of Stake governance",
+        title: "About NEAR House of Stake | Governance Info",
+        description:
+          "Learn how NEAR House of Stake governance works. Discover voting mechanics, token locking, delegation, and how to participate in shaping the NEAR ecosystem.",
+        imageTitle: "About NEAR House of Stake",
+        imageDescription: "Learn how NEAR governance works",
       },
       links: [
         {
@@ -223,6 +228,10 @@ export const nearTenantUIConfig = new TenantUI({
     {
       name: "delegation-encouragement",
       enabled: true,
+    },
+    {
+      name: "delegation-encouragement-wallet",
+      enabled: false,
     },
   ],
 });

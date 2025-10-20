@@ -28,7 +28,11 @@ import { useUndelegate } from "@/hooks/useUndelegate";
 import { useUnlockNear } from "@/hooks/useUnlockNear";
 import { useVenearAccountStats } from "@/hooks/useVenearAccountStats";
 import { useVenearStats } from "@/hooks/useVenearStats";
-import { LINEAR_TOKEN_CONTRACT } from "@/lib/constants";
+import {
+  LINEAR_TOKEN_CONTRACT,
+  STNEAR_TOKEN_CONTRACT,
+  RNEAR_TOKEN_CONTRACT,
+} from "@/lib/constants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import Big from "big.js";
 import { utils } from "near-api-js";
@@ -36,7 +40,7 @@ import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function VeNearDebugCards() {
-  const { signedAccountId } = useNear();
+  const { signedAccountId, networkId } = useNear();
   const { data: contractInfo, isLoading: isLoadingContractInfo } =
     useVenearStats();
   const { data: accountInfo, isLoading: isLoadingAccount } =
@@ -193,10 +197,15 @@ export default function VeNearDebugCards() {
     try {
       const yoctoAmount = utils.format.parseNearAmount(stakeAmount);
       if (!yoctoAmount) throw new Error("Invalid amount");
+      // If no pool selected, choose a default based on current network and available LST envs
       if (!accountInfo?.stakingPool) {
-        await selectStakingPoolAsync({
-          stakingPoolId: LINEAR_TOKEN_CONTRACT,
-        });
+        const preferredPool =
+          RNEAR_TOKEN_CONTRACT ||
+          STNEAR_TOKEN_CONTRACT ||
+          LINEAR_TOKEN_CONTRACT;
+        if (preferredPool) {
+          await selectStakingPoolAsync({ stakingPoolId: preferredPool });
+        }
       }
       stakeNear(yoctoAmount);
     } catch (error) {

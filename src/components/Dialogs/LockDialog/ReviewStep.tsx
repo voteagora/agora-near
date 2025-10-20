@@ -50,7 +50,23 @@ export const ReviewStep = memo(
       lockupStorageCost,
       venearAccountLockupVersion,
       venearGlobalLockupVersion,
+      lstPriceYocto,
     } = useLockProviderContext();
+
+    // Determine if the just-locked amount leaves any liquid NEAR available to stake.
+    // If the user only covered the required deposits, there will be nothing to stake.
+    const lockedAmountYocto = useMemo(() => {
+      return utils.format.parseNearAmount(enteredAmount) ?? "0";
+    }, [enteredAmount]);
+
+    const hasStakeableAfterLock = useMemo(() => {
+      if (selectedToken?.type === "lst") return false;
+      try {
+        return Big(lockedAmountYocto).gt(Big(depositTotal ?? "0"));
+      } catch {
+        return false;
+      }
+    }, [depositTotal, lockedAmountYocto, selectedToken?.type]);
 
     const {
       transactionText,
@@ -97,7 +113,13 @@ export const ReviewStep = memo(
       executeTransactions({
         numTransactions: requiredTransactions.length,
       });
-    }, [executeTransactions, requiredTransactions.length]);
+    }, [
+      executeTransactions,
+      requiredTransactions.length,
+      enteredAmount,
+      selectedToken?.metadata?.symbol,
+      selectedToken?.type,
+    ]);
 
     const shouldShowLSTWarning = useMemo(() => {
       const versionToCheck =
@@ -182,14 +204,25 @@ export const ReviewStep = memo(
             >
               Lock More Funds
             </UpdatedButton>
-            <UpdatedButton
-              type="primary"
-              className="w-full"
-              onClick={handleProceedToStaking}
-              variant="rounded"
-            >
-              Next
-            </UpdatedButton>
+            {hasStakeableAfterLock ? (
+              <UpdatedButton
+                type="primary"
+                className="w-full"
+                onClick={handleProceedToStaking}
+                variant="rounded"
+              >
+                Next
+              </UpdatedButton>
+            ) : (
+              <UpdatedButton
+                type="primary"
+                className="w-full"
+                onClick={handleViewDashboard}
+                variant="rounded"
+              >
+                View Dashboard
+              </UpdatedButton>
+            )}
           </div>
         </div>
       );
@@ -283,10 +316,21 @@ export const ReviewStep = memo(
         <div className="flex flex-col text-sm border-b border-line">
           <div className="flex flex-row justify-between items-start py-4">
             <div className="flex flex-col">
-              <span className="font-bold text-primary">Amount locking</span>
+              <span className="font-bold text-primary">Amount to Lock</span>
               <span className="text-secondary text-xs">
                 {annualAPY}% Voting Power Growth
               </span>
+              {selectedToken?.type === "lst" && lstPriceYocto && (
+                <span className="text-secondary text-xs">
+                  {(() => {
+                    const nearPerLst = utils.format.formatNearAmount(
+                      lstPriceYocto,
+                      4
+                    );
+                    return `1 ${selectedToken?.metadata?.symbol} ≈ ${nearPerLst} NEAR`;
+                  })()}
+                </span>
+              )}
             </div>
             <TokenAmount
               amount={utils.format.parseNearAmount(enteredAmount) ?? "0"}
@@ -303,8 +347,8 @@ export const ReviewStep = memo(
                   <span className="font-bold text-primary">Deposit fees</span>
                   <DepositTooltip
                     totalDeposit={depositTotal}
-                    title="Voting Requirements"
-                    subtitle="To participate in voting you'll need to make two deposits:"
+                    title="Deposit Fee Breakdown"
+                    subtitle="To participate in voting, there are two deposits required."
                     lineItems={[
                       {
                         amount: venearStorageCost,

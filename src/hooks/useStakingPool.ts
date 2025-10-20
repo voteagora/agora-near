@@ -1,9 +1,10 @@
-import {
-  LINEAR_TOKEN_CONTRACT_ID,
-  STNEAR_TOKEN_CONTRACT_ID,
-} from "@/components/Onboarding/HouseOfStakeOnboardingProvider";
 import { useNear } from "@/contexts/NearContext";
-import { CACHE_TTL } from "@/lib/constants";
+import {
+  CACHE_TTL,
+  LINEAR_TOKEN_CONTRACT,
+  STNEAR_TOKEN_CONTRACT,
+  RNEAR_TOKEN_CONTRACT,
+} from "@/lib/constants";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -13,15 +14,17 @@ export const useStakingPool = () => {
   const [
     { data: stNearPrice, isLoading: isLoadingStNearPrice },
     { data: liNearPrice, isLoading: isLoadingLiNearPrice },
+    { data: rNearPrice, isLoading: isLoadingRnearPrice },
     { data: liNearDeposit, isLoading: isLoadingLinearDeposit },
     { data: stNearDeposit, isLoading: isLoadingStnearDeposit },
+    { data: rNearDeposit, isLoading: isLoadingRnearDeposit },
   ] = useQueries({
     queries: [
       {
         queryKey: ["stnearPrice"],
         queryFn: () => {
           return viewMethod({
-            contractId: STNEAR_TOKEN_CONTRACT_ID,
+            contractId: STNEAR_TOKEN_CONTRACT,
             method: "get_st_near_price",
             args: {},
           }) as Promise<string | null>;
@@ -32,7 +35,18 @@ export const useStakingPool = () => {
         queryKey: ["linearPrice"],
         queryFn: () => {
           return viewMethod({
-            contractId: LINEAR_TOKEN_CONTRACT_ID,
+            contractId: LINEAR_TOKEN_CONTRACT,
+            method: "ft_price",
+            args: {},
+          }) as Promise<string | null>;
+        },
+        staleTime: CACHE_TTL.MEDIUM,
+      },
+      {
+        queryKey: ["rnearPrice"],
+        queryFn: () => {
+          return viewMethod({
+            contractId: RNEAR_TOKEN_CONTRACT,
             method: "ft_price",
             args: {},
           }) as Promise<string | null>;
@@ -43,7 +57,7 @@ export const useStakingPool = () => {
         queryKey: ["linearDeposit"],
         queryFn: () => {
           return viewMethod({
-            contractId: LINEAR_TOKEN_CONTRACT_ID,
+            contractId: LINEAR_TOKEN_CONTRACT,
             method: "storage_balance_bounds",
             args: {},
           }) as Promise<
@@ -61,7 +75,25 @@ export const useStakingPool = () => {
         queryKey: ["stnearDeposit"],
         queryFn: () => {
           return viewMethod({
-            contractId: STNEAR_TOKEN_CONTRACT_ID,
+            contractId: STNEAR_TOKEN_CONTRACT,
+            method: "storage_balance_bounds",
+            args: {},
+          }) as Promise<
+            | {
+                min?: string;
+                max?: string;
+              }
+            | null
+            | undefined
+          >;
+        },
+        staleTime: CACHE_TTL.MEDIUM,
+      },
+      {
+        queryKey: ["rnearDeposit"],
+        queryFn: () => {
+          return viewMethod({
+            contractId: RNEAR_TOKEN_CONTRACT,
             method: "storage_balance_bounds",
             args: {},
           }) as Promise<
@@ -88,8 +120,19 @@ export const useStakingPool = () => {
         price: liNearPrice,
         deposit: liNearDeposit,
       },
+      rNear: {
+        price: rNearPrice,
+        deposit: rNearDeposit,
+      },
     }),
-    [stNearPrice, liNearPrice, stNearDeposit, liNearDeposit]
+    [
+      stNearPrice,
+      liNearPrice,
+      rNearPrice,
+      stNearDeposit,
+      liNearDeposit,
+      rNearDeposit,
+    ]
   );
 
   return {
@@ -97,7 +140,9 @@ export const useStakingPool = () => {
     isLoading:
       isLoadingStNearPrice ||
       isLoadingLiNearPrice ||
+      isLoadingRnearPrice ||
       isLoadingLinearDeposit ||
-      isLoadingStnearDeposit,
+      isLoadingStnearDeposit ||
+      isLoadingRnearDeposit,
   };
 };

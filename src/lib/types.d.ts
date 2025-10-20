@@ -148,6 +148,12 @@ export type TokenWithBalance = {
   balance: string;
 };
 
+export type LockupLiquidBalance = {
+  lockableNearBalance?: string;
+  stakableNearBalance?: string;
+  withdrawableNearBalance?: string;
+};
+
 export type StakingPool = {
   id: string;
   contract: string;

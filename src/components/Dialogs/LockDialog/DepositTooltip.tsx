@@ -33,10 +33,7 @@ export const DepositTooltip = ({
           </div>
           <div className="space-y-4">
             {lineItems.map((item) => (
-              <div
-                className="border-b border-neutral-200 pb-4"
-                key={item.title}
-              >
+              <div className="pb-4" key={item.title}>
                 <div className="flex justify-between font-bold items-center">
                   <span>{item.title}</span>
                   <TokenAmount amount={item.amount} />
@@ -48,7 +45,7 @@ export const DepositTooltip = ({
             ))}
             <div className="font-bold">
               <div className="flex justify-between items-center">
-                <span>Total Required:</span>
+                <span>Total:</span>
                 <TokenAmount amount={totalDeposit} />
               </div>
             </div>

@@ -29,6 +29,7 @@ const displayModeSelectorSelectedStyles = "bg-wash text-primary rounded-full";
 interface DraftEditFormProps {
   draft: DraftProposal;
   config: VotingConfig;
+  votingDuration: string;
   onSaveSuccess?: () => void;
 }
 
@@ -197,7 +198,7 @@ function DraftDetailsForm() {
 }
 
 const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
-  ({ draft, config, onSaveSuccess }, ref) => {
+  ({ draft, config, votingDuration, onSaveSuccess }, ref) => {
     const { mutate: updateDraft, isPending: isUpdating } =
       useUpdateDraftProposal();
     const totalDeposit = Big(config.base_proposal_fee)
@@ -276,7 +277,7 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
                 All created proposals will have two voting options: For and
                 Against.
               </li>
-              <li>Once approved, voting will be open for 1 day.</li>
+              <li>Once approved, voting will be open for {votingDuration}.</li>
               <li>
                 Creating a proposal requires a minimum deposit of{" "}
                 <TokenAmount amount={totalDeposit} minimumFractionDigits={2} />.

@@ -51,6 +51,7 @@ export const DelegateProfileContent = ({ address }: { address: string }) => {
             topIssues: delegate.topIssues,
             statement: delegate.statement,
             endorsed: delegate.endorsed,
+            votingPower: delegate.votingPower,
           }}
           stats={{
             votingPower,

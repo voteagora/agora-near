@@ -4,6 +4,7 @@ import nearAssetIcon from "@/assets/near_icon.jpg";
 import linearAssetIcon from "@/assets/linear.svg";
 import stnearAssetIcon from "@/assets/stnear.svg";
 import veNearAssetIcon from "@/assets/venear.svg";
+import rnearAssetIcon from "@/assets/rnear.svg";
 
 export const SECONDS_IN_HOUR = 3600;
 
@@ -63,6 +64,8 @@ export const LINEAR_TOKEN_CONTRACT = "linear-protocol.near";
 
 export const STNEAR_TOKEN_CONTRACT = "meta-pool.near";
 
+export const RNEAR_TOKEN_CONTRACT = "lst.rhealab.near";
+
 export const NEAR_TOKEN_METADATA: TokenMetadata = {
   name: "NEAR",
   symbol: "NEAR",
@@ -78,7 +81,7 @@ export const LINEAR_TOKEN_METADATA: TokenMetadata = {
 };
 
 export const STNEAR_TOKEN_METADATA: TokenMetadata = {
-  name: "Staked NEAR",
+  name: "stNEAR",
   symbol: "STNEAR",
   decimals: NEAR_NOMINATION_EXP,
   icon: stnearAssetIcon,
@@ -89,6 +92,13 @@ export const VENEAR_TOKEN_METADATA: TokenMetadata = {
   symbol: "VENEAR",
   decimals: NEAR_NOMINATION_EXP,
   icon: veNearAssetIcon,
+};
+
+export const RNEAR_TOKEN_METADATA: TokenMetadata = {
+  name: "rNEAR",
+  symbol: "RNEAR",
+  decimals: NEAR_NOMINATION_EXP,
+  icon: rnearAssetIcon,
 };
 
 export const DEFAULT_GAS_RESERVE = "200000000000000000000000"; // 0.2 NEAR
@@ -106,7 +116,17 @@ export const STNEAR_POOL: StakingPool = {
   metadata: STNEAR_TOKEN_METADATA,
 };
 
+export const RNEAR_POOL: StakingPool = {
+  id: "rnear",
+  contract: RNEAR_TOKEN_CONTRACT,
+  metadata: RNEAR_TOKEN_METADATA,
+};
+
 // Represents the version where the lockup contract was updated to support locking LST tokens
 export const MIN_VERSION_FOR_LST_LOCKUP = process.env.MIN_VERSION_FOR_LST_LOCKUP
   ? Number(process.env.MIN_VERSION_FOR_LST_LOCKUP)
   : Number.MAX_SAFE_INTEGER;
+
+export const DEFAULT_QUORUM_THRESHOLD_PERCENTAGE = "0.35";
+
+export const DEFAULT_QUORUM_FLOOR_VENEAR = "7000000"; // 7M veNEAR

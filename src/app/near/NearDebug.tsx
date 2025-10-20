@@ -9,6 +9,11 @@ import VeNearDebugCards from "./VeNearDebugCards";
 import TokenAmount from "@/components/shared/TokenAmount";
 import { useFungibleTokens } from "@/hooks/useFungibleTokens";
 import { FungibleToken } from "@/lib/api/fungibleTokens";
+import {
+  LINEAR_TOKEN_CONTRACT,
+  STNEAR_TOKEN_CONTRACT,
+  RNEAR_TOKEN_CONTRACT,
+} from "@/lib/constants";
 
 export default function NearDebug() {
   const { signedAccountId, signIn, signOut, getBalance } = useNear();
@@ -57,10 +62,9 @@ export default function NearDebug() {
   const liquidStakingTokens =
     fungibleTokens?.tokens?.filter(
       (token: FungibleToken) =>
-        token.contract_id ===
-          process.env.NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID ||
-        token.contract_id ===
-          process.env.NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID
+        token.contract_id === LINEAR_TOKEN_CONTRACT ||
+        token.contract_id === STNEAR_TOKEN_CONTRACT ||
+        token.contract_id === RNEAR_TOKEN_CONTRACT
     ) || [];
 
   return (
@@ -110,20 +114,26 @@ export default function NearDebug() {
                               className="flex justify-between items-center"
                             >
                               <span className="font-medium">
-                                {token.contract_id ===
-                                process.env
-                                  .NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID
+                                {token.contract_id === LINEAR_TOKEN_CONTRACT
                                   ? "liNEAR"
-                                  : "stNEAR"}
+                                  : token.contract_id === STNEAR_TOKEN_CONTRACT
+                                    ? "stNEAR"
+                                    : token.contract_id === RNEAR_TOKEN_CONTRACT
+                                      ? "rNEAR"
+                                      : token.contract_id}
                               </span>
                               <TokenAmount
                                 amount={token.balance}
                                 currency={
-                                  token.contract_id ===
-                                  process.env
-                                    .NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID
+                                  token.contract_id === LINEAR_TOKEN_CONTRACT
                                     ? "liNEAR"
-                                    : "stNEAR"
+                                    : token.contract_id ===
+                                        STNEAR_TOKEN_CONTRACT
+                                      ? "stNEAR"
+                                      : token.contract_id ===
+                                          RNEAR_TOKEN_CONTRACT
+                                        ? "rNEAR"
+                                        : token.contract_id
                                 }
                                 maximumSignificantDigits={24}
                               />

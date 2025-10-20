@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCreateProposal } from "@/hooks/useCreateProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
-import { getVotingDays } from "@/lib/proposalUtils";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 const Required = () => <span className="text-red-500">*</span>;
@@ -26,7 +25,7 @@ export function ProposalModal() {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const { config, isLoading } = useProposalConfig();
+  const { config, votingDuration, isLoading } = useProposalConfig();
   const { createProposal, isCreatingProposal, createProposalError } =
     useCreateProposal({
       baseFee: config?.base_proposal_fee || "0",
@@ -49,10 +48,6 @@ export function ProposalModal() {
       </div>
     );
   }
-
-  const votingDuration = getVotingDays({
-    voting_duration_ns: config.voting_duration_ns,
-  });
 
   return (
     <div className="p-4 space-y-4">

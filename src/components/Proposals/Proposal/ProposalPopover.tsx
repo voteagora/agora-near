@@ -4,7 +4,7 @@ import { ProposalInfo } from "@/lib/contracts/types/voting";
 import {
   getProposalTimes,
   getTotalForAgainstVotes,
-  getVenearForQuorum,
+  getYoctoNearForQuorum,
   isQuorumFulfilled,
 } from "@/lib/proposalUtils";
 import Big from "big.js";
@@ -27,7 +27,7 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
     return row;
   }, [createdTime, startTime, endTime]);
 
-  const quorum = getVenearForQuorum(
+  const quorum = getYoctoNearForQuorum(
     proposal.snapshot_and_state?.total_venear ?? "0"
   );
   const hasMetQuorum = isQuorumFulfilled({

@@ -39,6 +39,7 @@ export const EnterAmountStep = ({
     maxAmountToLock,
     amountError,
     isLockingMax,
+    lstPriceYocto,
   } = useLockProviderContext();
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +64,17 @@ export const EnterAmountStep = ({
 
   const shouldDisableButton =
     !enteredAmount || Number(enteredAmount) === 0 || isLoading || !!amountError;
+
+  const showConversion = useMemo(() => {
+    return selectedToken?.type === "lst" && !!lstPriceYocto;
+  }, [selectedToken?.type, lstPriceYocto]);
+
+  const conversionText = useMemo(() => {
+    if (!showConversion) return null;
+    const nearPerLst = utils.format.formatNearAmount(lstPriceYocto ?? "0", 4);
+    const symbol = selectedToken?.metadata?.symbol ?? "";
+    return `1 ${symbol} ≈ ${nearPerLst} NEAR`;
+  }, [lstPriceYocto, selectedToken?.metadata?.symbol, showConversion]);
 
   return (
     <div className="flex flex-col gap-6 h-full w-full">
@@ -141,6 +153,11 @@ export const EnterAmountStep = ({
             </button>
           </div>
         </div>
+        {showConversion && (
+          <div className="px-4 pb-2 -mt-2 text-xs text-secondary">
+            {conversionText}
+          </div>
+        )}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
           <div className="w-8 h-8 flex items-center justify-center bg-neutral border border-line rounded-full">
             <ArrowDownIcon className="w-4 h-4 text-primary" />
