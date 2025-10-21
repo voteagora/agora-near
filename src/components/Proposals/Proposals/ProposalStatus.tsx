@@ -1,5 +1,6 @@
-import TokenAmount from "@/components/shared/TokenAmount";
 import { Proposal } from "@/lib/api/proposal/types";
+import { formatVotingPower } from "@/lib/utils";
+import { NEAR_TOKEN } from "@/lib/constants";
 import Big from "big.js";
 
 export default function ProposalStatus({ proposal }: { proposal: Proposal }) {
@@ -11,18 +12,24 @@ export default function ProposalStatus({ proposal }: { proposal: Proposal }) {
     .plus(proposal.abstainVotingPower)
     .toFixed();
 
+  // Convert yocto NEAR to NEAR for display
+  const forVotesNumber = Number(forVotes) / Math.pow(10, NEAR_TOKEN.decimals);
+  const againstVotesNumber =
+    Number(againstVotes) / Math.pow(10, NEAR_TOKEN.decimals);
+
+  // Determine the maximum value for consistent scaling
+  const maxVotes = Math.max(forVotesNumber, againstVotesNumber);
+
+  // Format both values with the same scale
+  const formattedForVotes = formatVotingPower(forVotesNumber, maxVotes);
+  const formattedAgainstVotes = formatVotingPower(againstVotesNumber, maxVotes);
+
   return (
     <div className="flex flex-col items-end gap-1 justify-center">
       <div className="flex flex-row space-between text-primary gap-1">
-        <div>
-          <TokenAmount amount={forVotes} hideCurrency />
-          For
-        </div>
+        <div>{formattedForVotes} For</div>
         <div>–</div>
-        <div>
-          <TokenAmount amount={againstVotes} hideCurrency />
-          Against
-        </div>
+        <div>{formattedAgainstVotes} Against</div>
       </div>
       {totalVotes !== "0" && (
         <div className="flex w-52 h-1 bg-wash rounded-full">
