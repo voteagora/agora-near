@@ -19,6 +19,7 @@ export default function ProposalChart({
 
   const { data: chartData, isLoading } = useProposalChartData({
     proposalId: String(proposal.id),
+    blockHeight: proposal.snapshot_and_state?.snapshot.block_height,
   });
 
   const votes = useMemo(() => chartData?.data ?? [], [chartData]);
