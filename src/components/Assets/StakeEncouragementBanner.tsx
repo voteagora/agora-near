@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import Big from "big.js";
 import { UpdatedButton } from "@/components/Button";
+import { ExclamationCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useLiquidLockupBalance } from "@/hooks/useLiquidLockupBalance";
@@ -67,28 +68,34 @@ export default function StakeEncouragementBanner({ onStakeClick }: Props) {
   if (!shouldShow) return null;
 
   return (
-    <div className="w-full rounded-lg border border-brandPrimary/30 bg-brandPrimary/5 p-4 mb-4">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 justify-between">
-        <div className="flex-1">
-          <p className="text-sm text-gray-800 font-medium">
-            You have NEAR in your lockup that is not staked. Stake it now to
-            start earning.
-          </p>
+    <div className="w-full rounded-lg border border-negative mt-3 mb-1 p-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+        <div className="flex-1 flex items-start gap-2 text-neutral-900 min-w-0">
+          <ExclamationCircleIcon className="w-6 h-6 stroke-negative flex-shrink-0 mt-0.5" />
+          <div className="flex flex-col gap-1 flex-1">
+            <div className="text-base font-bold leading-normal">
+              Stake your locked NEAR
+            </div>
+            <div className="text-sm font-medium leading-[21px]">
+              You have NEAR in your lockup that is not staked. Stake it to start
+              earning.
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto sm:flex-shrink-0">
           <UpdatedButton
             type="primary"
-            variant="rounded"
+            className="font-medium px-[20px] py-3 w-full sm:w-auto whitespace-nowrap"
             onClick={onStakeClick}
           >
             Stake NEAR
           </UpdatedButton>
           <button
-            aria-label="Dismiss"
             onClick={() => setDismissed(true)}
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="p-1 hover:bg-tertiary/10 rounded-md transition-colors flex-shrink-0"
+            aria-label="Dismiss banner"
           >
-            Dismiss
+            <XMarkIcon className="w-5 h-5 stroke-secondary" />
           </button>
         </div>
       </div>
