@@ -59,10 +59,12 @@ export default function LegacyOnboardingPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="max-w-3xl w-full mx-auto p-4 sm:p-8">
-        <h1 className="text-3xl font-bold mb-2">Onboard legacy staked tokens</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          Onboard legacy staked tokens
+        </h1>
         <p className="text-[#6B7280] mb-8">
-          Lock your NEAR and stake with a whitelisted custom pool. If you already
-          stake with a pool, enter its account ID below.
+          Lock your NEAR and stake with a whitelisted custom pool. If you
+          already stake with a pool, enter its account ID below.
         </p>
         <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-6">
           <StakingProvider source="onboarding">
@@ -73,5 +75,3 @@ export default function LegacyOnboardingPage() {
     </div>
   );
 }
-
-
