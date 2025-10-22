@@ -12,7 +12,7 @@ export const StakingSubmitting = ({
   requiredSteps,
   currentStep,
 }: {
-  requiredSteps: StakingStep[];
+  requiredSteps: (StakingStep | "top_up" | "lock")[];
   currentStep: number;
 }) => {
   const { enteredAmountYoctoNear } = useStakingProviderContext();
@@ -21,6 +21,10 @@ export const StakingSubmitting = ({
     switch (requiredSteps[currentStep]) {
       case "select_pool":
         return "Selecting pool...";
+      case "top_up":
+        return "Transferring NEAR to your lockup...";
+      case "lock":
+        return "Locking NEAR in your lockup...";
       case "stake":
         return "Staking your NEAR...";
     }
@@ -55,8 +59,10 @@ export const StakingSubmitting = ({
                   </h4>
                   <div className="border-b border-gray-200 my-2" />
                   <ul className="text-sm space-y-1 font-medium list-disc pl-4">
-                    <li>Selecting your staking pool (for stNEAR/liNEAR)</li>
-                    <li>Refreshing your balance</li>
+                    <li>Select your staking pool (if needed)</li>
+                    <li>Transfer NEAR to your lockup (if needed)</li>
+                    <li>Lock NEAR in your lockup (if needed)</li>
+                    <li>Stake your NEAR</li>
                   </ul>
                 </div>
               }
