@@ -46,7 +46,9 @@ export const AssetsHome = memo(() => {
       <div className="sm:px-6 px-2 mt-4">
         <div className="bg-white rounded-2xl border border-gray-200 p-4 flex items-center justify-between">
           <div>
-            <div className="text-lg font-semibold">Onboard legacy staked tokens</div>
+            <div className="text-lg font-semibold">
+              Onboard legacy staked tokens
+            </div>
             <div className="text-sm text-[#6B7280]">
               Lock and stake with a custom, whitelisted staking pool.
             </div>
