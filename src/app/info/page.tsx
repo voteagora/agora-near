@@ -1,7 +1,7 @@
 import React from "react";
 import InfoAbout from "@/app/info/components/InfoAbout";
 import { InfoHero } from "@/app/info/components/InfoHero";
-
+import InfoVideos from "@/app/info/components/InfoVideos";
 import GovernorSettings from "@/app/info/components/GovernorSettings";
 import InfoFAQ from "@/app/info/components/InfoFAQ";
 import InfoRoadmap from "@/app/info/components/InfoRoadmap";
@@ -49,6 +49,7 @@ export default async function Page() {
   return (
     <div className="flex flex-col">
       <InfoHero />
+      <InfoVideos />
       <InfoAbout />
       <GovernorSettings />
       <InfoFAQ />
