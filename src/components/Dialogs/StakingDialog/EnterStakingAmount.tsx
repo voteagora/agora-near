@@ -6,10 +6,11 @@ import { StakingPool } from "@/lib/types";
 import { formatNumber } from "@/lib/utils";
 import Big from "big.js";
 import Image from "next/image";
-import { useCallback } from "react";
+import { useCallback, useState, useMemo } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingDialogHeader } from "./StakingDialogHeader";
 import { StakingOptionCard } from "./StakingOptionCard";
+import { useIsPoolWhitelisted } from "@/hooks/useIsPoolWhitelisted";
 
 type EnterStakingAmountProps = {
   onContinue: (selectedProvider: StakingPool) => void;
@@ -34,6 +35,15 @@ export const EnterStakingAmount = ({
     hasAlreadySelectedStakingPool,
     isStakingMax,
   } = useStakingProviderContext();
+
+  const [customPoolId, setCustomPoolId] = useState<string>("");
+  const { isWhitelisted, isLoading: isCheckingCustomPool } =
+    useIsPoolWhitelisted(customPoolId);
+
+  const isCustomPoolValid = useMemo(
+    () => !!customPoolId && isWhitelisted,
+    [customPoolId, isWhitelisted]
+  );
 
   const handleContinue = useCallback(() => {
     if (!enteredAmount || !!amountError) return;
@@ -61,6 +71,37 @@ export const EnterStakingAmount = ({
               totalVolumeYocto={poolStats[pool.id]?.totalVolumeYocto ?? "-"}
             />
           ))}
+        </div>
+        {/* Custom pool entry */}
+        <div className="mb-6">
+          <div className="text-sm text-[#9D9FA1] mb-2">Or enter a custom staking pool</div>
+          <div className="flex gap-2 items-center">
+            <Input
+              type="text"
+              placeholder="staking-pool.account.near"
+              value={customPoolId}
+              onChange={(e) => setCustomPoolId(e.target.value.trim())}
+            />
+            <UpdatedButton
+              variant="rounded"
+              onClick={() =>
+                isCustomPoolValid &&
+                setSelectedPool({
+                  id: customPoolId,
+                  contract: customPoolId,
+                  metadata: NEAR_TOKEN_METADATA,
+                } as StakingPool)
+              }
+              disabled={!isCustomPoolValid || hasAlreadySelectedStakingPool}
+            >
+              {isCheckingCustomPool ? "Checking..." : "Use pool"}
+            </UpdatedButton>
+          </div>
+          {!!customPoolId && !isCustomPoolValid && !isCheckingCustomPool && (
+            <div className="text-xs text-red-500 mt-1">
+              Pool is not whitelisted for House of Stake.
+            </div>
+          )}
         </div>
         <div className="mb-6">
           <div className="text-base text-[#9D9FA1] mb-2">
