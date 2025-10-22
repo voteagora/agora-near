@@ -74,7 +74,9 @@ export const EnterStakingAmount = ({
         </div>
         {/* Custom pool entry */}
         <div className="mb-6">
-          <div className="text-sm text-[#9D9FA1] mb-2">Or enter a custom staking pool</div>
+          <div className="text-sm text-[#9D9FA1] mb-2">
+            Or enter a custom staking pool
+          </div>
           <div className="flex gap-2 items-center">
             <Input
               type="text"

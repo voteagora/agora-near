@@ -36,5 +36,3 @@ export const useIsPoolWhitelisted = (poolAccountId?: string) => {
     whitelistAccountId: stakingPoolWhitelistId,
   };
 };
-
-
