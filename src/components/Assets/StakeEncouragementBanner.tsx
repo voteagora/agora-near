@@ -49,8 +49,8 @@ export default function StakeEncouragementBanner({ onStakeClick }: Props) {
     );
     const staked = Big(stakedBalance ?? "0");
 
-    // Mostrar si hay NEAR líquido dentro del lockup (stakable o withdrawable)
-    // y o bien no hay pool seleccionada aún o el staked actual es 0
+    // Show if there is liquid NEAR in the lockup (stakable or withdrawable)
+    // and either no pool is selected yet or the current staked amount is 0
     const hasLiquidInLockup = liquid.gt(0) || withdrawable.gt(0);
     const hasNoStake = !stakingPoolId || staked.lte(0);
 
