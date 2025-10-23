@@ -3,7 +3,9 @@ import { useVenearConfig } from "./useVenearConfig";
 
 export const useIsPoolWhitelisted = () => {
   const { viewMethod } = useNear();
-  const { stakingPoolWhitelistId, isLoading } = useVenearConfig({ enabled: true });
+  const { stakingPoolWhitelistId, isLoading } = useVenearConfig({
+    enabled: true,
+  });
 
   async function isWhitelisted(poolAccountId?: string) {
     if (!stakingPoolWhitelistId || !poolAccountId) return false;
