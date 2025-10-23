@@ -137,15 +137,13 @@ export function formatVotingPower(value: number, maxValue: number): string {
   let suffix = "";
   let divisor = 1;
 
-  // This is to avoid the number being too large or too small to be displayed
-  // 1B, 1M, 1K
-  if (maxValue >= 1_100_000_000) {
+  if (maxValue >= 1_000_000_000) {
     suffix = "B";
     divisor = 1_000_000_000;
-  } else if (maxValue >= 1_100_000) {
+  } else if (maxValue >= 1_000_000) {
     suffix = "M";
     divisor = 1_000_000;
-  } else if (maxValue >= 1_100) {
+  } else if (maxValue >= 1_000) {
     suffix = "K";
     divisor = 1_000;
   }
@@ -166,8 +164,9 @@ export function formatVotingPower(value: number, maxValue: number): string {
     // Round to appropriate decimal places
     formattedValue = scaledValue.toFixed(decimalPlaces);
 
-    // Remove trailing zeros and decimal point if not needed
-    formattedValue = formattedValue.replace(/\.?0+$/, "");
+    if (formattedValue.includes('.')) {
+      formattedValue = formattedValue.replace(/\.?0+$/, "");
+    }
   }
 
   return formattedValue + suffix;
