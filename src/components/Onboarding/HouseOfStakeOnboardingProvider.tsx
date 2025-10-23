@@ -199,15 +199,6 @@ export const HouseOfStakeOnboardingProvider = ({
               } as TokenBalance;
             }
 
-            if (token.contract_id === RNEAR_TOKEN_CONTRACT_ID) {
-              return {
-                type: "lst",
-                contractId: RNEAR_TOKEN_CONTRACT_ID,
-                symbol: "rNEAR",
-                balance: token.balance,
-              } as TokenBalance;
-            }
-
             return null;
           })
           .filter((token) => token !== null)
