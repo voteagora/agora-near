@@ -5,11 +5,7 @@ import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useStakingPool } from "@/hooks/useStakingPool";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
 import { getAPYFromGrowthRate } from "@/lib/lockUtils";
-import {
-  LINEAR_TOKEN_CONTRACT,
-  STNEAR_TOKEN_CONTRACT,
-  RNEAR_TOKEN_CONTRACT,
-} from "@/lib/constants";
+import { LINEAR_TOKEN_CONTRACT, STNEAR_TOKEN_CONTRACT } from "@/lib/constants";
 import {
   createContext,
   useCallback,
@@ -33,12 +29,10 @@ type TokenBalance = {
 // Re-export for consumers expecting these symbols from this module
 export const LINEAR_TOKEN_CONTRACT_ID = LINEAR_TOKEN_CONTRACT;
 export const STNEAR_TOKEN_CONTRACT_ID = STNEAR_TOKEN_CONTRACT;
-export const RNEAR_TOKEN_CONTRACT_ID = RNEAR_TOKEN_CONTRACT;
 
 const ONBOARDING_POOLS: string[] = [
   LINEAR_TOKEN_CONTRACT_ID,
   STNEAR_TOKEN_CONTRACT_ID,
-  RNEAR_TOKEN_CONTRACT_ID,
 ].filter(Boolean);
 
 type OnboardingContextType = {

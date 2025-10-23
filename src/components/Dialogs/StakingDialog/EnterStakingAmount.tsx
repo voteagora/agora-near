@@ -37,13 +37,32 @@ export const EnterStakingAmount = ({
   } = useStakingProviderContext();
 
   const [customPoolId, setCustomPoolId] = useState<string>("");
-  const { isWhitelisted, isLoading: isCheckingCustomPool } =
-    useIsPoolWhitelisted(customPoolId);
+  const { isWhitelisted } = useIsPoolWhitelisted();
+  const [isValidatingCustomPool, setIsValidatingCustomPool] =
+    useState<boolean>(false);
+  const [customPoolError, setCustomPoolError] = useState<string>("");
 
-  const isCustomPoolValid = useMemo(
-    () => !!customPoolId && isWhitelisted,
-    [customPoolId, isWhitelisted]
-  );
+  const isCustomPoolValid = useMemo(() => !!customPoolId, [customPoolId]);
+
+  const handleUseCustomPool = useCallback(async () => {
+    if (!isCustomPoolValid || hasAlreadySelectedStakingPool) return;
+    setCustomPoolError("");
+    setIsValidatingCustomPool(true);
+    try {
+      const allowed = await isWhitelisted(customPoolId);
+      if (!allowed) {
+        setCustomPoolError("Pool is not whitelisted for House of Stake.");
+        return;
+      }
+      setSelectedPool({
+        id: customPoolId,
+        contract: customPoolId,
+        metadata: NEAR_TOKEN_METADATA,
+      } as StakingPool);
+    } finally {
+      setIsValidatingCustomPool(false);
+    }
+  }, [customPoolId, hasAlreadySelectedStakingPool, isCustomPoolValid, isWhitelisted, setSelectedPool]);
 
   const handleContinue = useCallback(() => {
     if (!enteredAmount || !!amountError) return;
@@ -73,6 +92,7 @@ export const EnterStakingAmount = ({
           ))}
         </div>
         {/* Custom pool entry */}
+        {!hasAlreadySelectedStakingPool && (
         <div className="mb-6">
           <div className="text-sm text-[#9D9FA1] mb-2">
             Or enter a custom staking pool
@@ -86,25 +106,17 @@ export const EnterStakingAmount = ({
             />
             <UpdatedButton
               variant="rounded"
-              onClick={() =>
-                isCustomPoolValid &&
-                setSelectedPool({
-                  id: customPoolId,
-                  contract: customPoolId,
-                  metadata: NEAR_TOKEN_METADATA,
-                } as StakingPool)
-              }
-              disabled={!isCustomPoolValid || hasAlreadySelectedStakingPool}
+              onClick={handleUseCustomPool}
+              disabled={!isCustomPoolValid || isValidatingCustomPool}
             >
-              {isCheckingCustomPool ? "Checking..." : "Use pool"}
+              {isValidatingCustomPool ? "Checking..." : "Use pool"}
             </UpdatedButton>
           </div>
-          {!!customPoolId && !isCustomPoolValid && !isCheckingCustomPool && (
-            <div className="text-xs text-red-500 mt-1">
-              Pool is not whitelisted for House of Stake.
-            </div>
+          {!!customPoolError && (
+            <div className="text-xs text-red-500 mt-1">{customPoolError}</div>
           )}
         </div>
+        )}
         <div className="mb-6">
           <div className="text-base text-[#9D9FA1] mb-2">
             NEAR Available{" "}
