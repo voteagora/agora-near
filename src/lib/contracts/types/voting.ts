@@ -56,6 +56,7 @@ export interface ProposalInfo {
     total_venear: string;
     venear_growth_config: any;
   } | null;
+  quorumAmountYoctoNear?: string;
 }
 
 /** Contract config object returned by get_config */
