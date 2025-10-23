@@ -8,6 +8,7 @@ import {
   useLockProviderContext,
 } from "@/components/Dialogs/LockProvider";
 import { useQueryClient } from "@tanstack/react-query";
+import { NEAR_ACCOUNT_EXISTS_QK } from "./useAccountExists";
 import { FUNGIBLE_TOKEN_QK } from "./useFungibleTokens";
 import { NEAR_BALANCE_QK } from "./useBalance";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
@@ -50,6 +51,8 @@ export const useDeployLockupAndLock = () => {
     lockupAccountId: lockupAccountId ?? "",
   });
 
+  const queryClient = useQueryClient();
+
   const getTransactionText = useCallback(
     (step: LockTransaction) => {
       switch (step) {
@@ -77,6 +80,10 @@ export const useDeployLockupAndLock = () => {
             storageDepositAmount ?? "",
             lockupDeploymentCost ?? ""
           );
+          // Ensure subsequent attempts detect that the lockup now exists
+          queryClient.invalidateQueries({
+            queryKey: [NEAR_ACCOUNT_EXISTS_QK, lockupAccountId],
+          });
           break;
         case "transfer_ft": {
           await transferFungibleToken({
@@ -123,10 +130,9 @@ export const useDeployLockupAndLock = () => {
       transferAmountYocto,
       transferFungibleToken,
       transferNear,
+      queryClient,
     ]
   );
-
-  const queryClient = useQueryClient();
 
   const refreshBalances = useCallback(() => {
     queryClient.invalidateQueries({
