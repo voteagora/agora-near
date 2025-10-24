@@ -26,18 +26,21 @@ export default function ProposalStatusDetail({
   proposal: ProposalInfo;
   className?: string;
 }) {
+  const quorum = proposal.quorumAmountYoctoNear ?? "0";
+
   const status = getProposalStatus({
     status: proposal.status,
-    totalVotingPower: proposal.snapshot_and_state?.total_venear ?? "0",
+    quorumAmount: quorum,
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
   });
+
   const isDefeated = status === ProposalDisplayStatus.Defeated;
 
   const { text, bg } = getProposalStatusColor(status);
 
   const quorumFulfilled = isQuorumFulfilled({
-    totalVotingPower: proposal.snapshot_and_state?.total_venear ?? "0",
+    quorumAmount: quorum,
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
   });
@@ -65,7 +68,7 @@ export default function ProposalStatusDetail({
                   <InfoIcon size={14} />
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[400px]">
-                  <QuorumExplanation />{" "}
+                  <QuorumExplanation quorumAmount={quorum} />{" "}
                   <a
                     className="text-blue-500"
                     href="/info?item=quorum-requirements"
