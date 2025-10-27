@@ -30,19 +30,39 @@ interface BubbleNode extends d3.SimulationNodeDatum {
   r: number;
 }
 
+// Controls visual scaling of bubble sizes relative to voting power ratio
 const SCALING_EXPONENT = 0.4;
 const transformVotesToBubbleData = (
   votes: ProposalVotingHistoryRecord[]
 ): BubbleNode[] => {
   const sortedVotes = votes.slice().slice(0, CHART_DIMENSIONS.maxVotes);
-  const maxWeight = Math.max(...sortedVotes.map((v) => Number(v.votingPower)));
-  return sortedVotes.map((vote) => ({
-    address: vote.accountId,
-    support:
-      vote.voteOption === "0" ? "1" : vote.voteOption === "1" ? "0" : "2",
-    value: Number(vote.votingPower),
-    r: Math.pow(Number(vote.votingPower) / maxWeight, SCALING_EXPONENT) * 40,
-  }));
+
+  // Sanitize weights: coerce to number, ensure finite and non-negative
+  const rawWeights = sortedVotes.map((v) => {
+    const n = Number((v as any)?.votingPower);
+    if (!Number.isFinite(n) || n < 0) return 0;
+    return n;
+  });
+
+  const maxWeight = Math.max(0, ...rawWeights);
+  // If all weights are zero, fallback to uniform weights to avoid degenerate radii
+  const effectiveWeights = maxWeight > 0 ? rawWeights : rawWeights.map(() => 1);
+
+  return sortedVotes.map((vote, i) => {
+    const value = effectiveWeights[i] ?? 0;
+    // Avoid division by zero by falling back to 1 when maxWeight is 0
+    const denom = maxWeight > 0 ? maxWeight : 1;
+    const ratio = value / denom;
+    const radius = Math.pow(ratio, SCALING_EXPONENT) * 40;
+    return {
+      address: vote.accountId,
+      support:
+        vote.voteOption === "0" ? "1" : vote.voteOption === "1" ? "0" : "2",
+      value,
+      // Ensure finite, positive radius to prevent rendering/zoom issues
+      r: Number.isFinite(radius) && radius > 0 ? radius : 1,
+    };
+  });
 };
 
 const ZoomButton = memo(
@@ -223,15 +243,25 @@ export default function BubbleChart({
 
     const dx = bounds.maxX - bounds.minX;
     const dy = bounds.maxY - bounds.minY;
-    const scale =
-      1.5 / Math.max(dx / CHART_DIMENSIONS.width, dy / CHART_DIMENSIONS.height);
+    // Compute a safe denominator for initial fit-to-bounds scaling
+    const denom =
+      Math.max(dx / CHART_DIMENSIONS.width, dy / CHART_DIMENSIONS.height) || 1;
+    let scale = 1.5 / denom;
+    // Guard against NaN/Infinity/zero scale — fallback to neutral scale
+    if (!Number.isFinite(scale) || scale <= 0) {
+      scale = 1;
+    }
     const translateX =
       (CHART_DIMENSIONS.width - scale * (bounds.minX + bounds.maxX)) / 2;
     const translateY =
       (CHART_DIMENSIONS.height - scale * (bounds.minY + bounds.maxY)) / 2;
 
     const defaultTransform = d3.zoomIdentity
-      .translate(translateX, translateY)
+      // Ensure finite translations to prevent the SVG from jumping to invalid positions
+      .translate(
+        Number.isFinite(translateX) ? translateX : 0,
+        Number.isFinite(translateY) ? translateY : 0
+      )
       .scale(scale);
     defaultTransformRef.current = defaultTransform;
     setTransform(defaultTransform);
