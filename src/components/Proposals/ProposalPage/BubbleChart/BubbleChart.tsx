@@ -255,18 +255,19 @@ export default function BubbleChart({
       );
 
       const packedData = packedDataRaw.filter((d) => {
-        // Filter out any nodes with invalid coordinates
+        // Filter out only truly invalid nodes (NaN/Infinity)
+        // Accept very small radii (> 0.01) as d3.pack may generate these legitimately
         const isValid =
           Number.isFinite(d.x) &&
           Number.isFinite(d.y) &&
           Number.isFinite(d.r) &&
-          d.r > 0;
+          d.r >= 0.01;
         if (!isValid) {
-          console.log(
-            "[BubbleChart] Filtering out invalid node:",
-            d.address,
-            { x: d.x, y: d.y, r: d.r }
-          );
+          console.log("[BubbleChart] Filtering out invalid node:", d.address, {
+            x: d.x,
+            y: d.y,
+            r: d.r,
+          });
         }
         return isValid;
       });
@@ -277,24 +278,42 @@ export default function BubbleChart({
         "nodes"
       );
 
-      // Early return if no valid packed data
-      if (packedData.length === 0) {
+      // If filtering removed all nodes, try with less strict validation
+      let finalPackedData = packedData;
+      if (packedData.length === 0 && packedDataRaw.length > 0) {
         console.warn(
-          "[BubbleChart] No valid packed data after d3.pack and filter"
+          "[BubbleChart] Filter removed all nodes, using raw data with basic validation"
         );
+        finalPackedData = packedDataRaw.map((d) => ({
+          ...d,
+          // Ensure minimum viable coordinates
+          x: Number.isFinite(d.x) ? d.x : CHART_DIMENSIONS.width / 2,
+          y: Number.isFinite(d.y) ? d.y : CHART_DIMENSIONS.height / 2,
+          r: Number.isFinite(d.r) && d.r > 0 ? d.r : 5,
+        }));
+        console.log(
+          "[BubbleChart] Using fallback data:",
+          finalPackedData.length,
+          "nodes"
+        );
+      }
+
+      // Early return if truly no data
+      if (finalPackedData.length === 0) {
+        console.warn("[BubbleChart] No nodes available after all attempts");
         setNodes([]);
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
       }
 
       const bounds = {
-        minX: d3.min(packedData, (d) => (d.x ?? 0) - (d.r ?? 0)) || 0,
+        minX: d3.min(finalPackedData, (d) => (d.x ?? 0) - (d.r ?? 0)) || 0,
         maxX:
-          d3.max(packedData, (d) => (d.x ?? 0) + (d.r ?? 0)) ||
+          d3.max(finalPackedData, (d) => (d.x ?? 0) + (d.r ?? 0)) ||
           CHART_DIMENSIONS.width,
-        minY: d3.min(packedData, (d) => (d.y ?? 0) - (d.r ?? 0)) || 0,
+        minY: d3.min(finalPackedData, (d) => (d.y ?? 0) - (d.r ?? 0)) || 0,
         maxY:
-          d3.max(packedData, (d) => (d.y ?? 0) + (d.r ?? 0)) ||
+          d3.max(finalPackedData, (d) => (d.y ?? 0) + (d.r ?? 0)) ||
           CHART_DIMENSIONS.height,
       };
 
@@ -323,7 +342,7 @@ export default function BubbleChart({
         .scale(scale);
       defaultTransformRef.current = defaultTransform;
       setTransform(defaultTransform);
-      setNodes(packedData);
+      setNodes(finalPackedData);
 
       const zoom = d3
         .zoom<SVGSVGElement, undefined>()
