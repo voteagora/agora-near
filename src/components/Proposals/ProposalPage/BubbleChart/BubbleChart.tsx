@@ -213,6 +213,13 @@ export default function BubbleChart({
       }
 
       const bubbleData = transformVotesToBubbleData(votes);
+      console.log(
+        "[BubbleChart] bubbleData generated:",
+        bubbleData.length,
+        "nodes from",
+        votes.length,
+        "votes"
+      );
 
       // Early return if no valid bubble data
       if (!bubbleData || bubbleData.length === 0) {
@@ -231,27 +238,50 @@ export default function BubbleChart({
         .hierarchy<BubbleNode>({ children: bubbleData } as any)
         .sum((d) => d.value ?? 0);
 
-      const packedData = pack(root)
+      const packedDataRaw = pack(root)
         .leaves()
         .map((d) => ({
           ...d.data,
           x: d.x,
           y: d.y,
           r: d.r,
-        }))
-        .filter((d) => {
-          // Filter out any nodes with invalid coordinates
-          return (
-            Number.isFinite(d.x) &&
-            Number.isFinite(d.y) &&
-            Number.isFinite(d.r) &&
-            d.r > 0
+        })) as BubbleNode[];
+
+      console.log(
+        "[BubbleChart] packedDataRaw:",
+        packedDataRaw.length,
+        "nodes",
+        packedDataRaw.slice(0, 3)
+      );
+
+      const packedData = packedDataRaw.filter((d) => {
+        // Filter out any nodes with invalid coordinates
+        const isValid =
+          Number.isFinite(d.x) &&
+          Number.isFinite(d.y) &&
+          Number.isFinite(d.r) &&
+          d.r > 0;
+        if (!isValid) {
+          console.log(
+            "[BubbleChart] Filtering out invalid node:",
+            d.address,
+            { x: d.x, y: d.y, r: d.r }
           );
-        }) as BubbleNode[];
+        }
+        return isValid;
+      });
+
+      console.log(
+        "[BubbleChart] packedData after filter:",
+        packedData.length,
+        "nodes"
+      );
 
       // Early return if no valid packed data
       if (packedData.length === 0) {
-        console.warn("[BubbleChart] No valid packed data after d3.pack");
+        console.warn(
+          "[BubbleChart] No valid packed data after d3.pack and filter"
+        );
         setNodes([]);
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
