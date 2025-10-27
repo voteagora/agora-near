@@ -164,7 +164,7 @@ export function formatVotingPower(value: number, maxValue: number): string {
     // Round to appropriate decimal places
     formattedValue = scaledValue.toFixed(decimalPlaces);
 
-    if (formattedValue.includes('.')) {
+    if (formattedValue.includes(".")) {
       formattedValue = formattedValue.replace(/\.?0+$/, "");
     }
   }
