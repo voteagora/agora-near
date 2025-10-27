@@ -200,13 +200,18 @@ export default function BubbleChart({
   };
 
   useEffect(() => {
+    console.log("[BubbleChart] useEffect triggered, votes:", votes.length);
     const svg = svgRef.current;
-    if (!svg) return;
+    if (!svg) {
+      console.warn("[BubbleChart] No SVG ref, exiting");
+      return;
+    }
 
     try {
       setHasMoreVotes(votes.length > CHART_DIMENSIONS.maxVotes);
 
       if (votes.length === 0) {
+        console.warn("[BubbleChart] No votes, showing empty state");
         setNodes([]);
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
@@ -358,11 +363,14 @@ export default function BubbleChart({
       };
     } catch (error) {
       console.error("[BubbleChart] Error rendering bubble chart:", error);
+      console.error("[BubbleChart] Error stack:", error instanceof Error ? error.stack : error);
       // Reset to safe state on error
       setNodes([]);
       setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
     }
   }, [votes, createZoom]);
+
+  console.log("[BubbleChart] Render - nodes.length:", nodes.length, "votes.length:", votes.length);
 
   return (
     <div className="relative w-full" ref={containerRef}>

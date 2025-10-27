@@ -144,8 +144,7 @@ export default function BubbleProdTestPage() {
             <li>✓ Zoom controls work</li>
             <li>✓ Click bubbles to navigate</li>
             <li>
-              ✓ Console shows: "packedData after filter: 8 nodes" (or
-              fallback)
+              ✓ Console shows: "packedData after filter: 8 nodes" (or fallback)
             </li>
           </ul>
         </div>
@@ -153,4 +152,3 @@ export default function BubbleProdTestPage() {
     </div>
   );
 }
-
