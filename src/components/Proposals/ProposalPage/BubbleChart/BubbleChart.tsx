@@ -99,54 +99,17 @@ const BubbleNode = memo(({ node }: { node: BubbleNode }) => {
     return rgbStringToHex(colorMap[node.support]);
   }, [node.support, ui.customization]);
 
-  // Contrast-aware text color
-  const textColor = useMemo(() => {
-    const hex = (fillColor || "#000000").replace("#", "");
-    const r = parseInt(hex.slice(0, 2), 16) / 255;
-    const g = parseInt(hex.slice(2, 4), 16) / 255;
-    const b = parseInt(hex.slice(4, 6), 16) / 255;
-    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-    return luminance > 0.6 ? "#000000" : "#FFFFFF";
-  }, [fillColor]);
-
-  const baseFontSize = useMemo(() => {
-    const scaled = node.r / 3.5;
-    return Math.max(8, Math.min(scaled, 16));
+  // Conservative, stable font sizing
+  const fontSize = useMemo(() => {
+    const scaled = node.r / 4;
+    return Math.max(10, Math.min(scaled, 14));
   }, [node.r]);
 
-  const textRef = useRef<SVGTextElement>(null);
-  const [fittedFontSize, setFittedFontSize] = useState<number>(baseFontSize);
+  // Only show text if there is reasonable space
+  const shouldShowText = node.r >= 16;
 
-  // Fit text without stretching: iteratively shrink until it fits target width
-  useEffect(() => {
-    setFittedFontSize(baseFontSize);
-    const el = textRef.current;
-    if (!el) return;
-
-    const maxWidth = node.r * 1.6; // ~80% of diameter
-    let attempts = 0;
-
-    const adjust = () => {
-      if (!el || attempts > 6) return;
-      const width = el.getComputedTextLength();
-      if (Number.isFinite(width) && width > 0 && width > maxWidth) {
-        setFittedFontSize((prev) => {
-          const ratio = maxWidth / width;
-          const next = Math.max(6, Math.floor(prev * ratio * 0.96));
-          return next < prev ? next : prev;
-        });
-        attempts += 1;
-        requestAnimationFrame(adjust);
-      }
-    };
-
-    requestAnimationFrame(adjust);
-  }, [baseFontSize, node.address, node.r]);
-
-  const clipId = useMemo(
-    () => `clip-${node.address.replace(/[^a-zA-Z0-9_-]/g, "_")}`,
-    [node.address]
-  );
+  // Max width for single-line text (~80% diameter)
+  const maxTextWidthPx = Math.max(50, node.r * 1.6);
 
   return (
     <g
@@ -157,39 +120,41 @@ const BubbleNode = memo(({ node }: { node: BubbleNode }) => {
       }}
       style={{ cursor: "pointer" }}
     >
-      <defs>
-        <clipPath id={clipId}>
-          <circle r={node.r} />
-        </clipPath>
-      </defs>
-
       <circle
         r={node.r}
         style={{ fill: fillColor, transition: "fill 0.15s ease-out" }}
       />
 
-      <g clipPath={`url(#${clipId})`}>
-        <text
-          ref={textRef}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fill={textColor}
-          style={{
-            fontSize: `${fittedFontSize}px`,
-            fontWeight: 600,
-            userSelect: "none",
-            pointerEvents: "none",
-            paintOrder: "stroke",
-            stroke:
-              textColor === "#FFFFFF"
-                ? "rgba(0,0,0,0.5)"
-                : "rgba(255,255,255,0.55)",
-            strokeWidth: 1,
-          }}
+      {shouldShowText && (
+        <foreignObject
+          x={-node.r}
+          y={-node.r}
+          width={node.r * 2}
+          height={node.r * 2}
+          style={{ pointerEvents: "none", overflow: "hidden" }}
         >
-          {node.address}
-        </text>
-      </g>
+          <div
+            className="flex items-center justify-center w-full h-full text-white"
+            style={{
+              fontSize: `${fontSize}px`,
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              textAlign: "center",
+              textShadow: "0 1px 2px rgba(0,0,0,0.5)",
+              padding: "2px",
+            }}
+            title={node.address}
+          >
+            <span
+              className="truncate"
+              style={{ maxWidth: `${maxTextWidthPx}px` }}
+            >
+              {node.address}
+            </span>
+          </div>
+        </foreignObject>
+      )}
     </g>
   );
 });
