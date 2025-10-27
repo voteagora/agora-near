@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import Tenant from "@/lib/tenant/tenant";
 import { rgbStringToHex } from "@/lib/color";
 import { Plus, Minus, RotateCcw } from "lucide-react";
-import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
 
 //Bubble contransts
@@ -87,74 +86,119 @@ const ZoomButton = memo(
 
 ZoomButton.displayName = "ZoomButton";
 
-const BubbleNode = memo(
-  ({ node, transform }: { node: BubbleNode; transform: d3.ZoomTransform }) => {
-    const router = useRouter();
-    const { ui } = Tenant.current();
+const BubbleNode = memo(({ node }: { node: BubbleNode }) => {
+  const router = useRouter();
+  const { ui } = Tenant.current();
 
-    const fillColor = useMemo(() => {
-      const colorMap = {
-        "1": ui.customization?.positive,
-        "0": ui.customization?.negative,
-        "2": ui.customization?.tertiary,
-      };
-      return rgbStringToHex(colorMap[node.support]);
-    }, [node.support, ui.customization]);
+  const fillColor = useMemo(() => {
+    const colorMap = {
+      "1": ui.customization?.positive,
+      "0": ui.customization?.negative,
+      "2": ui.customization?.tertiary,
+    };
+    return rgbStringToHex(colorMap[node.support]);
+  }, [node.support, ui.customization]);
 
-    const fontSize = Math.min(node.r / 3.5, (node.r * 2) / 10);
+  // Contrast-aware text color
+  const textColor = useMemo(() => {
+    const hex = (fillColor || "#000000").replace("#", "");
+    const r = parseInt(hex.slice(0, 2), 16) / 255;
+    const g = parseInt(hex.slice(2, 4), 16) / 255;
+    const b = parseInt(hex.slice(4, 6), 16) / 255;
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+    return luminance > 0.6 ? "#000000" : "#FFFFFF";
+  }, [fillColor]);
 
-    return (
-      <g
-        transform={`translate(${node.x},${node.y})`}
-        onClick={(e) => {
-          e.stopPropagation();
-          router.push(`/delegates/${node.address}`);
-        }}
-        style={{ cursor: "pointer" }}
-      >
-        <circle
-          r={node.r}
+  const baseFontSize = useMemo(() => {
+    const scaled = node.r / 3.5;
+    return Math.max(8, Math.min(scaled, 16));
+  }, [node.r]);
+
+  const textRef = useRef<SVGTextElement>(null);
+  const [fittedFontSize, setFittedFontSize] = useState<number>(baseFontSize);
+
+  // Fit text without stretching: iteratively shrink until it fits target width
+  useEffect(() => {
+    setFittedFontSize(baseFontSize);
+    const el = textRef.current;
+    if (!el) return;
+
+    const maxWidth = node.r * 1.6; // ~80% of diameter
+    let attempts = 0;
+
+    const adjust = () => {
+      if (!el || attempts > 6) return;
+      const width = el.getComputedTextLength();
+      if (Number.isFinite(width) && width > 0 && width > maxWidth) {
+        setFittedFontSize((prev) => {
+          const ratio = maxWidth / width;
+          const next = Math.max(6, Math.floor(prev * ratio * 0.96));
+          return next < prev ? next : prev;
+        });
+        attempts += 1;
+        requestAnimationFrame(adjust);
+      }
+    };
+
+    requestAnimationFrame(adjust);
+  }, [baseFontSize, node.address, node.r]);
+
+  const clipId = useMemo(
+    () => `clip-${node.address.replace(/[^a-zA-Z0-9_-]/g, "_")}`,
+    [node.address]
+  );
+
+  return (
+    <g
+      transform={`translate(${node.x},${node.y})`}
+      onClick={(e) => {
+        e.stopPropagation();
+        router.push(`/delegates/${node.address}`);
+      }}
+      style={{ cursor: "pointer" }}
+    >
+      <defs>
+        <clipPath id={clipId}>
+          <circle r={node.r} />
+        </clipPath>
+      </defs>
+
+      <circle
+        r={node.r}
+        style={{ fill: fillColor, transition: "fill 0.15s ease-out" }}
+      />
+
+      <g clipPath={`url(#${clipId})`}>
+        <text
+          ref={textRef}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill={textColor}
           style={{
-            fill: fillColor,
-            transition: "fill 0.15s ease-out",
-          }}
-        />
-        <foreignObject
-          x={-node.r}
-          y={-node.r}
-          width={node.r * 2}
-          height={node.r * 2}
-          style={{
+            fontSize: `${fittedFontSize}px`,
+            fontWeight: 600,
+            userSelect: "none",
             pointerEvents: "none",
-            overflow: "hidden",
+            paintOrder: "stroke",
+            stroke:
+              textColor === "#FFFFFF"
+                ? "rgba(0,0,0,0.5)"
+                : "rgba(255,255,255,0.55)",
+            strokeWidth: 1,
           }}
         >
-          <div
-            className="flex items-center justify-center w-full h-full text-white"
-            style={{
-              fontSize: `${fontSize}px`,
-              overflow: "hidden",
-              whiteSpace: "nowrap",
-              textOverflow: "ellipsis",
-            }}
-          >
-            <span className="truncate max-w-[120px]" title={node.address}>
-              {node.address}
-            </span>
-          </div>
-        </foreignObject>
+          {node.address}
+        </text>
       </g>
-    );
-  }
-);
+    </g>
+  );
+});
 
 BubbleNode.displayName = "BubbleNode";
 
 export default function BubbleChart({
-  proposal,
   votes,
 }: {
-  proposal: ProposalInfo;
   votes: ProposalVotingHistoryRecord[];
 }) {
   const [nodes, setNodes] = useState<BubbleNode[]>([]);
@@ -199,19 +243,15 @@ export default function BubbleChart({
       .call(createZoom.transform, defaultTransformRef.current);
   };
 
+  // Effect 1: Process votes into nodes (doesn't need SVG ref)
   useEffect(() => {
-    console.log("[BubbleChart] useEffect triggered, votes:", votes.length);
-    const svg = svgRef.current;
-    if (!svg) {
-      console.warn("[BubbleChart] No SVG ref, exiting");
-      return;
-    }
+    console.log("[BubbleChart] Processing votes, count:", votes.length);
 
     try {
       setHasMoreVotes(votes.length > CHART_DIMENSIONS.maxVotes);
 
       if (votes.length === 0) {
-        console.warn("[BubbleChart] No votes, showing empty state");
+        console.warn("[BubbleChart] No votes, setting empty state");
         setNodes([]);
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
@@ -224,6 +264,10 @@ export default function BubbleChart({
         "nodes from",
         votes.length,
         "votes"
+      );
+      console.log(
+        "[BubbleChart] Initial bubble radii:",
+        bubbleData.map((b) => ({ address: b.address, r: b.r }))
       );
 
       // Early return if no valid bubble data
@@ -257,6 +301,10 @@ export default function BubbleChart({
         packedDataRaw.length,
         "nodes",
         packedDataRaw.slice(0, 3)
+      );
+      console.log(
+        "[BubbleChart] After d3.pack radii:",
+        packedDataRaw.map((b) => ({ address: b.address, r: b.r }))
       );
 
       const packedData = packedDataRaw.filter((d) => {
@@ -349,28 +397,66 @@ export default function BubbleChart({
       setTransform(defaultTransform);
       setNodes(finalPackedData);
 
-      const zoom = d3
-        .zoom<SVGSVGElement, undefined>()
-        .scaleExtent([ZOOM_CONFIG.min, ZOOM_CONFIG.max])
-        .on("zoom", (event) => setTransform(event.transform));
-
-      d3.select<SVGSVGElement, undefined>(svg)
-        .call(zoom as any)
-        .call((selection) => zoom.transform(selection, defaultTransform));
-
-      return () => {
-        zoom.on("zoom", null);
-      };
+      console.log(
+        "[BubbleChart] Successfully processed data, nodes:",
+        finalPackedData.length
+      );
     } catch (error) {
-      console.error("[BubbleChart] Error rendering bubble chart:", error);
-      console.error("[BubbleChart] Error stack:", error instanceof Error ? error.stack : error);
+      console.error("[BubbleChart] Error processing votes:", error);
+      console.error(
+        "[BubbleChart] Error stack:",
+        error instanceof Error ? error.stack : error
+      );
       // Reset to safe state on error
       setNodes([]);
       setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
     }
-  }, [votes, createZoom]);
+  }, [votes]);
 
-  console.log("[BubbleChart] Render - nodes.length:", nodes.length, "votes.length:", votes.length);
+  // Effect 2: Setup zoom behavior (needs SVG ref and nodes)
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) {
+      console.log("[BubbleChart] Zoom effect: No SVG ref yet");
+      return;
+    }
+
+    if (nodes.length === 0) {
+      console.log("[BubbleChart] Zoom effect: No nodes yet");
+      return;
+    }
+
+    console.log(
+      "[BubbleChart] Setting up zoom behavior for",
+      nodes.length,
+      "nodes"
+    );
+
+    const zoom = d3
+      .zoom<SVGSVGElement, undefined>()
+      .scaleExtent([ZOOM_CONFIG.min, ZOOM_CONFIG.max])
+      .on("zoom", (event) => setTransform(event.transform));
+
+    d3.select<SVGSVGElement, undefined>(svg)
+      .call(zoom as any)
+      .call((selection) =>
+        zoom.transform(
+          selection,
+          defaultTransformRef.current || d3.zoomIdentity
+        )
+      );
+
+    return () => {
+      zoom.on("zoom", null);
+    };
+  }, [nodes, createZoom]);
+
+  console.log(
+    "[BubbleChart] Render - nodes.length:",
+    nodes.length,
+    "votes.length:",
+    votes.length
+  );
 
   return (
     <div className="relative w-full" ref={containerRef}>
@@ -409,11 +495,7 @@ export default function BubbleChart({
               transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}
             >
               {nodes.map((node) => (
-                <BubbleNode
-                  key={node.address}
-                  node={node}
-                  transform={transform}
-                />
+                <BubbleNode key={node.address} node={node} />
               ))}
             </g>
           </svg>
