@@ -1,18 +1,17 @@
-import TokenAmount from "@/components/shared/TokenAmount";
 import checkIcon from "@/assets/check.svg";
+import TokenAmount from "@/components/shared/TokenAmount";
+import { NEAR_TOKEN } from "@/lib/constants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import {
   getProposalTimes,
   getTotalForAgainstVotes,
-  getYoctoNearForQuorum,
   isQuorumFulfilled,
 } from "@/lib/proposalUtils";
 import { formatVotingPower } from "@/lib/utils";
-import { NEAR_TOKEN } from "@/lib/constants";
-import Big from "big.js";
 import Image from "next/image";
 import { useMemo } from "react";
 import ProposalVoteBar from "./ProposalVoteBar";
+import Big from "big.js";
 
 const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
   const { createdTime, startTime, endTime } = getProposalTimes({
@@ -29,11 +28,10 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
     return row;
   }, [createdTime, startTime, endTime]);
 
-  const quorum = getYoctoNearForQuorum(
-    proposal.snapshot_and_state?.total_venear ?? "0"
-  );
+  const quorum = proposal.quorumAmountYoctoNear ?? "0";
+
   const hasMetQuorum = isQuorumFulfilled({
-    totalVotingPower: proposal.snapshot_and_state?.total_venear ?? "0",
+    quorumAmount: quorum,
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
   });
@@ -104,7 +102,7 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
                 amount={totalForAgainstVotes.toFixed(0)}
                 hideCurrency
               />{" "}
-              / <TokenAmount amount={quorum.toFixed(0)} hideCurrency />
+              / <TokenAmount amount={quorum} hideCurrency />
               Required
             </p>
           </div>

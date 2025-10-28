@@ -29,6 +29,7 @@ export type Proposal = {
   status?: string | null; // 'Created' | 'Voting' | 'Finished' | 'Rejected'
   votingStartTimeNs?: string | null;
   votingCreatedAtNs?: string | null;
+  quorumAmountYoctoNear?: string | null;
 };
 
 export type ProposalNonVotersRecord = {
@@ -82,4 +83,8 @@ export type GetDraftProposalsResponse = {
   page: number;
   pageSize: number;
   totalPages: number;
+};
+
+export type GetProposalQuorumResponse = {
+  quorumAmount: string;
 };

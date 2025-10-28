@@ -9,6 +9,7 @@ import {
   UpdateDraftProposalRequest,
   GetDraftProposalsResponse,
   UpdateDraftProposalStageRequest,
+  GetProposalQuorumResponse,
 } from "./types";
 import { getRpcUrl } from "@/lib/utils";
 import { JsonRpcProvider } from "near-api-js/lib/providers";
@@ -189,3 +190,8 @@ export const deleteDraftProposal = async (data: {
     }
   );
 };
+
+export const getProposalQuorum = async (data: { proposalId: string }) =>
+  axios.get<GetProposalQuorumResponse>(
+    `${Endpoint.Proposals}/${data.proposalId}/quorum`
+  );
