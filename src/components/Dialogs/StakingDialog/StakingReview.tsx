@@ -6,12 +6,14 @@ import { useNear } from "@/contexts/NearContext";
 import { usePrice } from "@/hooks/usePrice";
 import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
 import { useStakeNear } from "@/hooks/useStakeNear";
+import { useLockNear } from "@/hooks/useLockNear";
 import { yoctoNearToUsdFormatted } from "@/lib/utils";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingSubmitting } from "./StakingSubmitting";
 import { StakingSuccess } from "./StakingSuccess";
 import { StakingDisclosures } from "./StakingDisclosures";
+import Big from "big.js";
 
 export type StakingStep = "select_pool" | "stake";
 
@@ -32,6 +34,7 @@ export const StakingReview = ({
     lockupAccountId,
     resetForm,
     currentStakingPoolId,
+    maxStakingAmount,
   } = useStakingProviderContext();
 
   const [stakingStep, setStakingStep] = useState<number>(0);
@@ -57,6 +60,12 @@ export const StakingReview = ({
     lockupAccountId: lockupAccountId ?? "",
   });
 
+  const { lockNear } = useLockNear({
+    lockupAccountId: lockupAccountId ?? "",
+  });
+
+  const { transferNear } = useNear();
+
   const { selectStakingPoolAsync, error: selectStakingPoolError } =
     useSelectStakingPool({
       lockupAccountId: lockupAccountId ?? "",
@@ -72,14 +81,28 @@ export const StakingReview = ({
     return null;
   }, [stakingNearError, selectStakingPoolError]);
 
+  const topUpAmount = useMemo(() => {
+    try {
+      const max = Big(maxStakingAmount ?? "0");
+      const desired = Big(enteredAmountYoctoNear ?? "0");
+      return desired.gt(max) ? desired.minus(max).toFixed(0) : "0";
+    } catch {
+      return "0";
+    }
+  }, [enteredAmountYoctoNear, maxStakingAmount]);
+
   const requiredSteps = useMemo(() => {
-    const steps: StakingStep[] = [];
+    const steps: (StakingStep | "top_up" | "lock")[] = [];
     if (needsToSelectPool.current) {
       steps.push("select_pool");
     }
+    if (Big(topUpAmount).gt(0)) {
+      steps.push("top_up");
+      steps.push("lock");
+    }
     steps.push("stake");
     return steps;
-  }, []);
+  }, [topUpAmount]);
 
   const onStake = useCallback(
     async ({ startAtStep = 0 }: { startAtStep?: number }) => {
@@ -94,6 +117,13 @@ export const StakingReview = ({
             await selectStakingPoolAsync({
               stakingPoolId: selectedPool.contract,
             });
+          } else if (step === "top_up") {
+            await transferNear({
+              receiverId: lockupAccountId ?? "",
+              amount: topUpAmount,
+            });
+          } else if (step === "lock") {
+            await lockNear({ amount: topUpAmount });
           } else if (step === "stake") {
             await stakeNear(enteredAmountYoctoNear);
           }

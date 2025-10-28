@@ -5,6 +5,7 @@ import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useStakingPool } from "@/hooks/useStakingPool";
 import { useVenearSnapshot } from "@/hooks/useVenearSnapshot";
 import { getAPYFromGrowthRate } from "@/lib/lockUtils";
+import { LINEAR_TOKEN_CONTRACT, STNEAR_TOKEN_CONTRACT } from "@/lib/constants";
 import {
   createContext,
   useCallback,
@@ -25,10 +26,9 @@ type TokenBalance = {
   balance: string;
 };
 
-export const LINEAR_TOKEN_CONTRACT_ID =
-  process.env.NEXT_PUBLIC_NEAR_LINEAR_TOKEN_CONTRACT_ID ?? "";
-export const STNEAR_TOKEN_CONTRACT_ID =
-  process.env.NEXT_PUBLIC_NEAR_STNEAR_TOKEN_CONTRACT_ID ?? "";
+// Re-export for consumers expecting these symbols from this module
+export const LINEAR_TOKEN_CONTRACT_ID = LINEAR_TOKEN_CONTRACT;
+export const STNEAR_TOKEN_CONTRACT_ID = STNEAR_TOKEN_CONTRACT;
 
 const ONBOARDING_POOLS: string[] = [
   LINEAR_TOKEN_CONTRACT_ID,
@@ -53,6 +53,7 @@ type OnboardingContextType = {
   setEnteredAmount: (amount: string) => void;
   stNearPrice: string | null;
   liNearPrice: string | null;
+  rNearPrice: string | null;
   lockApy: string;
   stakeApy: string;
 };
@@ -75,6 +76,7 @@ export const OnboardingContext = createContext<OnboardingContextType>({
   setEnteredAmount: () => {},
   stNearPrice: null,
   liNearPrice: null,
+  rNearPrice: null,
   lockApy: "5.99%",
   stakeApy: "5.99%",
 });
@@ -231,6 +233,7 @@ export const HouseOfStakeOnboardingProvider = ({
         setEnteredAmount,
         stNearPrice: stakingPools.stNear.price ?? null,
         liNearPrice: stakingPools.liNear.price ?? null,
+        rNearPrice: stakingPools.rNear?.price ?? null,
         lockApy: lockupAPY,
         stakeApy: "5.99%",
       }}
