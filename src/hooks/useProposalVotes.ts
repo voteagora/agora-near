@@ -8,9 +8,11 @@ export const VOTES_QK = `${Endpoint.Proposals}/votes`;
 export const useProposalVotes = ({
   proposalId,
   pageSize,
+  blockHeight,
 }: {
   proposalId: string;
   pageSize: number;
+  blockHeight?: number;
 }) => {
   const {
     data,
@@ -21,9 +23,9 @@ export const useProposalVotes = ({
     isFetchingNextPage,
     status,
   } = useInfiniteQuery({
-    queryKey: [VOTES_QK, proposalId],
+    queryKey: [VOTES_QK, proposalId, blockHeight],
     queryFn: ({ pageParam = 1 }) => {
-      return fetchProposalVotes(proposalId, pageSize, pageParam);
+      return fetchProposalVotes(proposalId, pageSize, pageParam, blockHeight);
     },
     getNextPageParam: (currentPage, _, pageParam) => {
       if (currentPage.count <= pageParam * pageSize) return undefined;

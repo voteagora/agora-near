@@ -47,14 +47,18 @@ export const fetchPendingProposals = async (
 export const fetchProposalVotes = async (
   proposalId: string,
   pageSize: number,
-  currentPage: number
+  currentPage: number,
+  blockHeight?: number
 ) => {
+  const params = new URLSearchParams();
+  params.set("page_size", String(pageSize));
+  params.set("page", String(currentPage));
+  if (blockHeight) params.set("block_height", String(blockHeight));
+
   const response = await axios.get<{
     votes: ProposalVotingHistoryRecord[];
     count: number;
-  }>(
-    `${Endpoint.Proposals}/${proposalId}/votes?page_size=${pageSize}&page=${currentPage}`
-  );
+  }>(`${Endpoint.Proposals}/${proposalId}/votes?${params.toString()}`);
 
   return response.data;
 };
@@ -62,21 +66,35 @@ export const fetchProposalVotes = async (
 export const fetchProposalNonVoters = async (
   proposalId: string,
   pageSize: number,
-  currentPage: number
+  currentPage: number,
+  blockHeight?: number
 ) => {
+  const params = new URLSearchParams();
+  params.set("page_size", String(pageSize));
+  params.set("page", String(currentPage));
+  if (blockHeight) params.set("block_height", String(blockHeight));
+
   const response = await axios.get<{
     nonVoters: ProposalNonVotersRecord[];
     count: number;
-  }>(
-    `${Endpoint.Proposals}/${proposalId}/non-voters?page_size=${pageSize}&page=${currentPage}`
-  );
+  }>(`${Endpoint.Proposals}/${proposalId}/non-voters?${params.toString()}`);
 
   return response.data;
 };
-export const fetchProposalChartData = async (proposalId: string) => {
+export const fetchProposalChartData = async (
+  proposalId: string,
+  blockHeight?: number
+) => {
+  const params = new URLSearchParams();
+  if (blockHeight) params.set("block_height", String(blockHeight));
+
   const response = await axios.get<{
     data: ProposalVotingHistoryRecord[];
-  }>(`${Endpoint.Proposals}/${proposalId}/charts`);
+  }>(
+    `${Endpoint.Proposals}/${proposalId}/charts${
+      params.toString() ? `?${params.toString()}` : ""
+    }`
+  );
 
   return response.data;
 };
