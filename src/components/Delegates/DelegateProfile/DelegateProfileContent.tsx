@@ -34,7 +34,12 @@ export const DelegateProfileContent = ({ address }: { address: string }) => {
 
   if (!delegate || isError) {
     return (
-      <ResourceNotFound message="Hmm... can't find that account, please check again." />
+      <ResourceNotFound
+        message="Hmm... can't find that account, please check again."
+        showCTA={true}
+        ctaHref="/delegates"
+        ctaLabel="Back"
+      />
     );
   }
 
