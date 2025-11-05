@@ -3,16 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { projectId: string; address: string } }
+  { params }: { params: { campaignId: number; address: string } }
 ) {
   try {
-    const { projectId, address } = params;
+    const { campaignId, address } = params;
     const body = await request.json();
     const { txHash } = body;
 
-    if (!projectId || !address) {
+    if (!campaignId || !address) {
       return NextResponse.json(
-        { error: "Project ID and address are required" },
+        { error: "Campaign ID and address are required" },
         { status: 400 }
       );
     }
@@ -38,7 +38,7 @@ export async function POST(
     }
 
     const response = await axios.post(
-      `${NEAR_CLAIM_API_URL}/claim/${projectId}/${address}`,
+      `${NEAR_CLAIM_API_URL}/claim/${campaignId}/${address}`,
       { txHash },
       {
         headers: {

@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 
 interface MarkProofAsClaimedArgs {
-  projectId: string;
+  campaignId: number;
   address: string;
   txHash: string;
 }
@@ -10,18 +10,18 @@ export function useMarkProofAsClaimed() {
   const { mutateAsync: markProofAsClaimed, isPending: isMarking } = useMutation(
     {
       mutationFn: async ({
-        projectId,
+        campaignId,
         address,
         txHash,
       }: MarkProofAsClaimedArgs) => {
         const response = await fetch(
-          `/api/near/claim/proofs/${projectId}/${address}`,
+          `/api/near/claim/proofs/${campaignId}/${address}`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ txHash }),
+            body: JSON.stringify({ txHash, campaignId }),
           }
         );
 
