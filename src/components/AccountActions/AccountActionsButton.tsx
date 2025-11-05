@@ -22,6 +22,8 @@ export const AccountActions = memo(({ close }: AccountActionsProps) => {
     });
 
   const hasStatement = !!delegate?.statement;
+  const currentDelegatee = accountInfo?.delegation?.delegatee;
+  const hasActiveDelegation = !!currentDelegatee;
 
   const isLoading =
     isLoadingVenearAccountInfo || !isInitialized || isLoadingDelegateProfile;
@@ -35,6 +37,20 @@ export const AccountActions = memo(({ close }: AccountActionsProps) => {
       },
     });
   }, [accountInfo, close, openDialog]);
+
+  const onChangeDelegatePress = useCallback(() => {
+    close();
+    if (hasActiveDelegation && currentDelegatee) {
+      openDialog({
+        type: "NEAR_UNDELEGATE",
+        params: {
+          delegateAddress: currentDelegatee,
+        },
+      });
+    } else {
+      window.location.href = "/delegates";
+    }
+  }, [close, hasActiveDelegation, currentDelegatee, openDialog]);
 
   if (isLoading) {
     return (
@@ -54,6 +70,16 @@ export const AccountActions = memo(({ close }: AccountActionsProps) => {
           variant="rounded"
         >
           Lock & Stake
+        </UpdatedButton>
+      </div>
+      <div className="mb-4">
+        <UpdatedButton
+          onClick={onChangeDelegatePress}
+          className="w-full"
+          type="secondary"
+          variant="rounded"
+        >
+          {hasActiveDelegation ? "Undelegate" : "Choose a delegate"}
         </UpdatedButton>
       </div>
       <div className="border-b border-line -mx-6 mb-4"></div>
