@@ -7,6 +7,9 @@ import { usePrice } from "@/hooks/usePrice";
 import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
 import { useStakeNear } from "@/hooks/useStakeNear";
 import { useLockNear } from "@/hooks/useLockNear";
+import { useRefreshStakingPoolBalance } from "@/hooks/useRefreshStakingPoolBalance";
+import { useStakedBalance } from "@/hooks/useStakedBalance";
+import { useWriteHOSContract } from "@/hooks/useWriteHOSContract";
 import { yoctoNearToUsdFormatted } from "@/lib/utils";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
@@ -40,10 +43,9 @@ export const StakingReview = ({
   const [stakingStep, setStakingStep] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDisclosures, setShowDisclosures] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const needsToSelectPool = useRef(!currentStakingPoolId);
-
-  const { networkId } = useNear();
 
   const { price, isLoading: isLoadingNearPrice } = usePrice();
   const [isStakeCompleted, setIsStakeCompleted] = useState(false);
@@ -56,7 +58,17 @@ export const StakingReview = ({
     return yoctoNearToUsdFormatted(enteredAmountYoctoNear, String(price));
   }, [enteredAmountYoctoNear, price]);
 
-  const { stakeNear, isStakingNear, stakingNearError } = useStakeNear({
+  const {
+    stakeNear,
+    isStakingNear,
+    stakingNearError,
+    unstakeAll,
+    withdrawAll,
+    isUnstakingAll,
+    isWithdrawingAll,
+    unstakingAllError,
+    withdrawingAllError,
+  } = useStakeNear({
     lockupAccountId: lockupAccountId ?? "",
   });
 
@@ -70,6 +82,66 @@ export const StakingReview = ({
     useSelectStakingPool({
       lockupAccountId: lockupAccountId ?? "",
     });
+
+  // Refresh staking pool balance (e.g., to surface rewards or post-cooldown availability)
+  const {
+    refreshStakingPoolBalanceAsync,
+    error: refreshStakingPoolBalanceError,
+  } = useRefreshStakingPoolBalance({
+    lockupAccountId: lockupAccountId ?? "",
+  });
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const onRefreshStakingBalance = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      await refreshStakingPoolBalanceAsync();
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [refreshStakingPoolBalanceAsync]);
+
+  // Detect whether we can unselect the staking pool (must have 0 deposited/staked)
+  const { stakedBalance, isLoading: isLoadingStakedBalance } = useStakedBalance(
+    {
+      stakingPoolId: currentStakingPoolId,
+      accountId: lockupAccountId,
+    }
+  );
+
+  const { mutateAsync: writeLockupContract } = useWriteHOSContract({
+    contractType: "LOCKUP",
+  });
+  const [isUnselecting, setIsUnselecting] = useState(false);
+  const [unselectError, setUnselectError] = useState<Error | null>(null);
+
+  const canUnselect = useMemo(() => {
+    if (!currentStakingPoolId) return false;
+    try {
+      return !isLoadingStakedBalance && Big(stakedBalance ?? "0").eq(0);
+    } catch {
+      return false;
+    }
+  }, [currentStakingPoolId, isLoadingStakedBalance, stakedBalance]);
+
+  const onUnselectStakingPool = useCallback(async () => {
+    try {
+      setIsUnselecting(true);
+      setUnselectError(null);
+      await writeLockupContract({
+        contractId: lockupAccountId ?? "",
+        methodCalls: [
+          {
+            methodName: "unselect_staking_pool",
+            args: {},
+          },
+        ],
+      });
+    } catch (e) {
+      setUnselectError(e as Error);
+    } finally {
+      setIsUnselecting(false);
+    }
+  }, [writeLockupContract, lockupAccountId]);
 
   const stakeError = useMemo(() => {
     if (stakingNearError) {
@@ -138,11 +210,14 @@ export const StakingReview = ({
     },
     [
       enteredAmountYoctoNear,
-      networkId,
       requiredSteps,
       selectStakingPoolAsync,
       selectedPool.contract,
       stakeNear,
+      lockNear,
+      lockupAccountId,
+      topUpAmount,
+      transferNear,
     ]
   );
 
@@ -237,6 +312,100 @@ export const StakingReview = ({
         </div>
       </div>
       <div className="flex-1 flex flex-col justify-end gap-4">
+        <div className="border rounded-lg p-3">
+          <button
+            onClick={() => setShowAdvanced((v) => !v)}
+            className="text-sm font-medium underline"
+          >
+            {showAdvanced ? "Hide advanced" : "Advanced"}
+          </button>
+          {showAdvanced && (
+            <div className="mt-3 flex flex-col gap-3">
+              <div className="text-xs text-[#9D9FA1]">
+                Manage your staked funds via your lockup contract
+              </div>
+
+              <div className="text-xs">
+                {currentStakingPoolId ? (
+                  <>
+                    Selected pool:{" "}
+                    <span className="font-medium">{currentStakingPoolId}</span>
+                  </>
+                ) : (
+                  <>No staking pool selected</>
+                )}
+              </div>
+
+              <div className="flex gap-2">
+                <UpdatedButton
+                  onClick={onRefreshStakingBalance}
+                  isLoading={isRefreshing}
+                  variant="rounded"
+                >
+                  Refresh balance
+                </UpdatedButton>
+                <UpdatedButton
+                  onClick={unstakeAll}
+                  isLoading={isUnstakingAll}
+                  variant="rounded"
+                >
+                  Unstake all
+                </UpdatedButton>
+                <UpdatedButton
+                  onClick={withdrawAll}
+                  isLoading={isWithdrawingAll}
+                  variant="rounded"
+                >
+                  Withdraw all
+                </UpdatedButton>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <div className="text-xs text-[#9D9FA1]">
+                  To change your staking pool, you must have 0 deposited balance
+                  in the current pool.
+                </div>
+                <div className="flex gap-2 items-center">
+                  <UpdatedButton
+                    onClick={onUnselectStakingPool}
+                    isLoading={isUnselecting}
+                    disabled={!canUnselect}
+                    variant="rounded"
+                  >
+                    Unselect staking pool
+                  </UpdatedButton>
+                  {!canUnselect && currentStakingPoolId && (
+                    <div className="text-xs text-[#9D9FA1]">
+                      Unstake and withdraw all first, then Refresh balance.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {refreshStakingPoolBalanceError && (
+                <div className="text-xs text-red-500">
+                  {refreshStakingPoolBalanceError.message}
+                </div>
+              )}
+              {unstakingAllError && (
+                <div className="text-xs text-red-500">
+                  {unstakingAllError.message}
+                </div>
+              )}
+              {withdrawingAllError && (
+                <div className="text-xs text-red-500">
+                  {withdrawingAllError.message}
+                </div>
+              )}
+              {unselectError && (
+                <div className="text-xs text-red-500">
+                  {unselectError.message}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
         <UpdatedButton
           isLoading={isStakingNear}
           onClick={onStake}
