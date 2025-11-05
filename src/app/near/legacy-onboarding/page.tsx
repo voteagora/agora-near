@@ -16,17 +16,16 @@ export default function LegacyOnboardingPage() {
 
   const { lockupAccountId, isLoading: isLoadingLockup } = useLockupAccount();
 
-  const { stakingPoolId, isLoading: isLoadingPool } = useCurrentStakingPoolId({
-    lockupAccountId: lockupAccountId ?? "",
-    enabled: !!lockupAccountId,
-  });
+  const { stakingPoolId, isLoadingStakingPoolId: isLoadingPool } =
+    useCurrentStakingPoolId({
+      lockupAccountId: lockupAccountId ?? "",
+      enabled: !!lockupAccountId,
+    });
 
-  const {
-    refreshStakingPoolBalanceAsync,
-    error: refreshError,
-  } = useRefreshStakingPoolBalance({
-    lockupAccountId: lockupAccountId ?? "",
-  });
+  const { refreshStakingPoolBalanceAsync, error: refreshError } =
+    useRefreshStakingPoolBalance({
+      lockupAccountId: lockupAccountId ?? "",
+    });
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const onOpenStakingDialog = useCallback(() => {
@@ -119,15 +118,11 @@ export default function LegacyOnboardingPage() {
               </div>
               <div className="text-sm">
                 <span className="text-muted-foreground">Lockup:</span>{" "}
-                <span className="font-medium">
-                  {lockupAccountId ?? "—"}
-                </span>
+                <span className="font-medium">{lockupAccountId ?? "—"}</span>
               </div>
               <div className="text-sm">
                 <span className="text-muted-foreground">Staking Pool:</span>{" "}
-                <span className="font-medium">
-                  {stakingPoolId ?? "—"}
-                </span>
+                <span className="font-medium">{stakingPoolId ?? "—"}</span>
               </div>
               <Separator />
               <div className="text-sm">
@@ -144,9 +139,9 @@ export default function LegacyOnboardingPage() {
             <CardContent className="space-y-4">
               <ol className="list-decimal list-inside space-y-2 text-sm">
                 <li>
-                  Open the Staking dialog to manage your underlying pool:
-                  - use Advanced → Unstake all when you’re ready to exit the
-                  legacy pool.
+                  Open the Staking dialog to manage your underlying pool: - use
+                  Advanced → Unstake all when you’re ready to exit the legacy
+                  pool.
                 </li>
                 <li>
                   After the pool’s cooldown period, use Advanced → Withdraw all
@@ -192,7 +187,10 @@ export default function LegacyOnboardingPage() {
               <CardTitle>Actions</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col sm:flex-row gap-2">
-              <Button onClick={onOpenStakingDialog} className="w-full sm:w-auto">
+              <Button
+                onClick={onOpenStakingDialog}
+                className="w-full sm:w-auto"
+              >
                 Open Staking dialog
               </Button>
               <Button
