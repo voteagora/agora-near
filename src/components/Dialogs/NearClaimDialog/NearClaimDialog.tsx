@@ -47,7 +47,8 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
         await claimReward({
           amount: proof.amount, // Amount in yocto NEAR from the API
           merkleProof: proof.proofData.proof,
-          projectId: proof.projectId,
+          campaignId: proof.campaignId,
+          lockupContract: proof.lockup,
         });
 
         totalClaimed += BigInt(proof.amount);
@@ -55,7 +56,6 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
       }
 
       setClaimedAmount(totalClaimed.toString());
-      // The onSuccess callback will handle setting currentStep to 'success'
     } catch (error) {
       console.error("Failed to claim rewards:", error);
       toast.error(
@@ -206,7 +206,7 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
         <div className="flex flex-col gap-3 max-h-64 overflow-y-auto">
           {unclaimedProofs.map((proof) => (
             <div
-              key={`${proof.projectId}-${proof.treeIndex}`}
+              key={`${proof.campaignId}-${proof.treeIndex}`}
               className="flex items-center justify-between p-3 border border-line rounded-lg"
             >
               <div>
