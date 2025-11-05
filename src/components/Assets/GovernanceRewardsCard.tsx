@@ -12,8 +12,8 @@ export const GovernanceRewardsCard = memo(() => {
             <div className="text-lg font-semibold">Governance Rewards</div>
           </div>
           <div className="text-sm text-gray-300 mb-4">
-            Coming soon! House of Stake is rewarding veNEAR holders with liquid NEAR
-            rewards.
+            Coming soon! House of Stake is rewarding veNEAR holders with liquid
+            NEAR rewards.
           </div>
           <Link
             href="/info?item=rewards-distribution"
