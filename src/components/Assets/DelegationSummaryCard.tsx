@@ -63,9 +63,3 @@ export const DelegationSummaryCard = memo(() => {
 });
 
 DelegationSummaryCard.displayName = "DelegationSummaryCard";
-
-
-
-
-
-
