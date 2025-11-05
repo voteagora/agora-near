@@ -184,7 +184,6 @@ export default function BubbleChart({
 
   const handleZoom = (factor: number) => {
     if (!svgRef.current) return;
-
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([ZOOM_CONFIG.min, ZOOM_CONFIG.max])
@@ -204,36 +203,21 @@ export default function BubbleChart({
       .call(createZoom.transform, defaultTransformRef.current);
   };
 
+  const memoVotes = useMemo(() => votes || [], [votes]);
+
   // Effect 1: Process votes into nodes (doesn't need SVG ref)
   useEffect(() => {
-    console.log("[BubbleChart] Processing votes, count:", votes.length);
-
     try {
-      setHasMoreVotes(votes.length > CHART_DIMENSIONS.maxVotes);
+      setHasMoreVotes(memoVotes.length > CHART_DIMENSIONS.maxVotes);
 
-      if (votes.length === 0) {
-        console.warn("[BubbleChart] No votes, setting empty state");
+      if (memoVotes.length === 0) {
         setNodes([]);
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
       }
 
-      const bubbleData = transformVotesToBubbleData(votes);
-      console.log(
-        "[BubbleChart] bubbleData generated:",
-        bubbleData.length,
-        "nodes from",
-        votes.length,
-        "votes"
-      );
-      console.log(
-        "[BubbleChart] Initial bubble radii:",
-        bubbleData.map((b) => ({ address: b.address, r: b.r }))
-      );
-
-      // Early return if no valid bubble data
+      const bubbleData = transformVotesToBubbleData(memoVotes);
       if (!bubbleData || bubbleData.length === 0) {
-        console.warn("[BubbleChart] No valid bubble data generated from votes");
         setNodes([]);
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
@@ -257,64 +241,16 @@ export default function BubbleChart({
           r: d.r,
         })) as BubbleNode[];
 
-      console.log(
-        "[BubbleChart] packedDataRaw:",
-        packedDataRaw.length,
-        "nodes",
-        packedDataRaw.slice(0, 3)
-      );
-      console.log(
-        "[BubbleChart] After d3.pack radii:",
-        packedDataRaw.map((b) => ({ address: b.address, r: b.r }))
-      );
-
-      const packedData = packedDataRaw.filter((d) => {
-        // Filter out only truly invalid nodes (NaN/Infinity)
-        // Accept very small radii (> 0.01) as d3.pack may generate these legitimately
-        const isValid =
+      const packedData = packedDataRaw.filter(
+        (d) =>
           Number.isFinite(d.x) &&
           Number.isFinite(d.y) &&
           Number.isFinite(d.r) &&
-          d.r >= 0.01;
-        if (!isValid) {
-          console.log("[BubbleChart] Filtering out invalid node:", d.address, {
-            x: d.x,
-            y: d.y,
-            r: d.r,
-          });
-        }
-        return isValid;
-      });
-
-      console.log(
-        "[BubbleChart] packedData after filter:",
-        packedData.length,
-        "nodes"
+          (d.r as number) >= 0.01
       );
 
-      // If filtering removed all nodes, try with less strict validation
-      let finalPackedData = packedData;
-      if (packedData.length === 0 && packedDataRaw.length > 0) {
-        console.warn(
-          "[BubbleChart] Filter removed all nodes, using raw data with basic validation"
-        );
-        finalPackedData = packedDataRaw.map((d) => ({
-          ...d,
-          // Ensure minimum viable coordinates
-          x: Number.isFinite(d.x) ? d.x : CHART_DIMENSIONS.width / 2,
-          y: Number.isFinite(d.y) ? d.y : CHART_DIMENSIONS.height / 2,
-          r: Number.isFinite(d.r) && d.r > 0 ? d.r : 5,
-        }));
-        console.log(
-          "[BubbleChart] Using fallback data:",
-          finalPackedData.length,
-          "nodes"
-        );
-      }
-
-      // Early return if truly no data
+      let finalPackedData = packedData.length > 0 ? packedData : packedDataRaw;
       if (finalPackedData.length === 0) {
-        console.warn("[BubbleChart] No nodes available after all attempts");
         setNodes([]);
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
@@ -333,12 +269,9 @@ export default function BubbleChart({
 
       const dx = bounds.maxX - bounds.minX;
       const dy = bounds.maxY - bounds.minY;
-      // Compute a safe denominator for initial fit-to-bounds scaling
       const denom =
-        Math.max(dx / CHART_DIMENSIONS.width, dy / CHART_DIMENSIONS.height) ||
-        1;
+        Math.max(dx / CHART_DIMENSIONS.width, dy / CHART_DIMENSIONS.height) || 1;
       let scale = 1.5 / denom;
-      // Guard against NaN/Infinity/zero scale — fallback to neutral scale
       if (!Number.isFinite(scale) || scale <= 0) {
         scale = 1;
       }
@@ -348,7 +281,6 @@ export default function BubbleChart({
         (CHART_DIMENSIONS.height - scale * (bounds.minY + bounds.maxY)) / 2;
 
       const defaultTransform = d3.zoomIdentity
-        // Ensure finite translations to prevent the SVG from jumping to invalid positions
         .translate(
           Number.isFinite(translateX) ? translateX : 0,
           Number.isFinite(translateY) ? translateY : 0
@@ -357,110 +289,53 @@ export default function BubbleChart({
       defaultTransformRef.current = defaultTransform;
       setTransform(defaultTransform);
       setNodes(finalPackedData);
-
-      console.log(
-        "[BubbleChart] Successfully processed data, nodes:",
-        finalPackedData.length
-      );
-    } catch (error) {
-      console.error("[BubbleChart] Error processing votes:", error);
-      console.error(
-        "[BubbleChart] Error stack:",
-        error instanceof Error ? error.stack : error
-      );
-      // Reset to safe state on error
+    } catch {
       setNodes([]);
       setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
     }
-  }, [votes]);
+  }, [memoVotes]);
 
   // Effect 2: Setup zoom behavior (needs SVG ref and nodes)
   useEffect(() => {
     const svg = svgRef.current;
-    if (!svg) {
-      console.log("[BubbleChart] Zoom effect: No SVG ref yet");
-      return;
-    }
-
-    if (nodes.length === 0) {
-      console.log("[BubbleChart] Zoom effect: No nodes yet");
-      return;
-    }
-
-    console.log(
-      "[BubbleChart] Setting up zoom behavior for",
-      nodes.length,
-      "nodes"
-    );
+    if (!svg || nodes.length === 0) return;
 
     const zoom = d3
       .zoom<SVGSVGElement, undefined>()
       .scaleExtent([ZOOM_CONFIG.min, ZOOM_CONFIG.max])
       .on("zoom", (event) => setTransform(event.transform));
 
-    d3.select<SVGSVGElement, undefined>(svg)
-      .call(zoom as any)
-      .call((selection) =>
-        zoom.transform(
-          selection,
-          defaultTransformRef.current || d3.zoomIdentity
-        )
-      );
+    const selection = d3.select<SVGSVGElement, undefined>(svg);
+    // Cancel any pending transitions to avoid stutter/freeze
+    (selection as any).interrupt();
+    selection.call(zoom as any);
+    (zoom as any).transform(selection, defaultTransformRef.current || d3.zoomIdentity);
 
     return () => {
       zoom.on("zoom", null);
     };
-  }, [nodes, createZoom]);
-
-  console.log(
-    "[BubbleChart] Render - nodes.length:",
-    nodes.length,
-    "votes.length:",
-    votes.length
-  );
+  }, [nodes]);
 
   return (
     <div className="relative w-full" ref={containerRef}>
       <div className="relative h-[230px]">
-        {nodes.length > 0 && (
-          <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
-            <ZoomButton
-              onClick={() => handleZoom(ZOOM_CONFIG.step)}
-              icon={Plus}
-              label="Zoom in"
-            />
-            <ZoomButton
-              onClick={() => handleZoom(-ZOOM_CONFIG.step)}
-              icon={Minus}
-              label="Zoom out"
-            />
-            <ZoomButton
-              onClick={handleReset}
-              icon={RotateCcw}
-              label="Reset zoom"
-            />
-          </div>
-        )}
+        <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
+          <ZoomButton onClick={() => handleZoom(ZOOM_CONFIG.step)} icon={Plus} label="Zoom in" />
+          <ZoomButton onClick={() => handleZoom(-ZOOM_CONFIG.step)} icon={Minus} label="Zoom out" />
+          <ZoomButton onClick={handleReset} icon={RotateCcw} label="Reset zoom" />
+        </div>
 
-        {nodes.length === 0 ? (
-          <div className="w-full h-full flex items-center justify-center text-secondary text-sm">
-            No voting data available to display
-          </div>
-        ) : (
-          <svg
-            ref={svgRef}
-            viewBox={`0 0 ${CHART_DIMENSIONS.width} ${CHART_DIMENSIONS.height}`}
-            style={{ width: "100%", height: "100%" }}
-          >
-            <g
-              transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}
-            >
-              {nodes.map((node) => (
-                <BubbleNode key={node.address} node={node} />
-              ))}
-            </g>
-          </svg>
-        )}
+        <svg
+          ref={svgRef}
+          viewBox={`0 0 ${CHART_DIMENSIONS.width} ${CHART_DIMENSIONS.height}`}
+          style={{ width: "100%", height: "100%" }}
+        >
+          <g transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}>
+            {nodes.map((node) => (
+              <BubbleNode key={node.address} node={node} />
+            ))}
+          </g>
+        </svg>
       </div>
       {hasMoreVotes && (
         <div className="mt-2 text-center text-xs text-gray-500">
