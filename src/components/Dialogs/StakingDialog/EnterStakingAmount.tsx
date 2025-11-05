@@ -45,7 +45,7 @@ export const EnterStakingAmount = ({
   const isCustomPoolValid = useMemo(() => !!customPoolId, [customPoolId]);
 
   const handleUseCustomPool = useCallback(async () => {
-    if (!isCustomPoolValid || hasAlreadySelectedStakingPool) return;
+    if (!isCustomPoolValid) return;
     setCustomPoolError("");
     setIsValidatingCustomPool(true);
     try {
@@ -59,16 +59,11 @@ export const EnterStakingAmount = ({
         contract: customPoolId,
         metadata: NEAR_TOKEN_METADATA,
       } as StakingPool);
+      setCustomPoolId(""); // Clear input after successful selection
     } finally {
       setIsValidatingCustomPool(false);
     }
-  }, [
-    customPoolId,
-    hasAlreadySelectedStakingPool,
-    isCustomPoolValid,
-    isWhitelisted,
-    setSelectedPool,
-  ]);
+  }, [customPoolId, isCustomPoolValid, isWhitelisted, setSelectedPool]);
 
   const handleContinue = useCallback(() => {
     if (!enteredAmount || !!amountError) return;
@@ -97,32 +92,32 @@ export const EnterStakingAmount = ({
             />
           ))}
         </div>
-        {/* Custom pool entry */}
-        {!hasAlreadySelectedStakingPool && (
-          <div className="mb-6">
-            <div className="text-sm text-[#9D9FA1] mb-2">
-              Or enter a custom staking pool
-            </div>
-            <div className="flex gap-2 items-center">
-              <Input
-                type="text"
-                placeholder="staking-pool.account.near"
-                value={customPoolId}
-                onChange={(e) => setCustomPoolId(e.target.value.trim())}
-              />
-              <UpdatedButton
-                variant="rounded"
-                onClick={handleUseCustomPool}
-                disabled={!isCustomPoolValid || isValidatingCustomPool}
-              >
-                {isValidatingCustomPool ? "Checking..." : "Use pool"}
-              </UpdatedButton>
-            </div>
-            {!!customPoolError && (
-              <div className="text-xs text-red-500 mt-1">{customPoolError}</div>
-            )}
+        {/* Custom pool entry - always visible for flexibility */}
+        <div className="mb-6">
+          <div className="text-sm text-[#9D9FA1] mb-2">
+            {hasAlreadySelectedStakingPool
+              ? "Or change to a custom staking pool"
+              : "Or enter a custom staking pool"}
           </div>
-        )}
+          <div className="flex gap-2 items-center">
+            <Input
+              type="text"
+              placeholder="staking-pool.account.near"
+              value={customPoolId}
+              onChange={(e) => setCustomPoolId(e.target.value.trim())}
+            />
+            <UpdatedButton
+              variant="rounded"
+              onClick={handleUseCustomPool}
+              disabled={!isCustomPoolValid || isValidatingCustomPool}
+            >
+              {isValidatingCustomPool ? "Checking..." : "Use pool"}
+            </UpdatedButton>
+          </div>
+          {!!customPoolError && (
+            <div className="text-xs text-red-500 mt-1">{customPoolError}</div>
+          )}
+        </div>
         <div className="mb-6">
           <div className="text-base text-[#9D9FA1] mb-2">
             NEAR Available{" "}
