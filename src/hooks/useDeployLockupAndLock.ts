@@ -215,9 +215,8 @@ export const useDeployLockupAndLock = () => {
   const retryFromCurrentStep = useCallback(() => {
     executeTransactions({
       numTransactions: requiredTransactions.length,
-      startAt: transactionStep,
     });
-  }, [executeTransactions, requiredTransactions.length, transactionStep]);
+  }, [executeTransactions, requiredTransactions.length]);
 
   const errorMessage = useMemo(() => {
     if (registerAndDeployLockupError) {
