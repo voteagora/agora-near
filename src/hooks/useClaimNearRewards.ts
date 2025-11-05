@@ -1,5 +1,5 @@
 import { useNear } from "@/contexts/NearContext";
-import { TESTNET_CONTRACTS } from "@/lib/contractConstants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -7,9 +7,10 @@ import { NEAR_CLAIM_PROOFS_QK } from "./useNearClaimProofs";
 import { useMarkProofAsClaimed } from "./useMarkProofAsClaimed";
 
 interface ClaimRewardArgs {
-  amount: string; // Balance in yocto NEAR
-  merkleProof: string[]; // Array of hash strings
-  projectId: string; // Project ID for marking as claimed
+  amount: string;
+  merkleProof: string[];
+  campaignId: number;
+  lockupContract: string;
 }
 
 export function useClaimNearRewards({
@@ -33,21 +34,23 @@ export function useClaimNearRewards({
     isPending: isClaiming,
     error: claimError,
   } = useMutation({
-    mutationFn: async ({ amount, merkleProof, projectId }: ClaimRewardArgs) => {
+    mutationFn: async ({
+      amount,
+      merkleProof,
+      campaignId,
+      lockupContract,
+    }: ClaimRewardArgs) => {
       if (!signedAccountId) {
         throw new Error("No account connected");
       }
 
-      const contractId = TESTNET_CONTRACTS.CLAIM_CONTRACT_ID;
+      const contractId = CONTRACTS.CLAIM_CONTRACT_ID;
       if (!contractId) {
         throw new Error("Claim contract not configured");
       }
 
-      // Convert string array to CryptoHash format expected by contract
       const formattedProof = merkleProof.map((hash) => {
-        // Remove '0x' prefix if present and ensure it's the right format
         const cleanHash = hash.startsWith("0x") ? hash.slice(2) : hash;
-        // Convert hex string to bytes array (assuming 32-byte hashes)
         const bytes = new Uint8Array(
           cleanHash.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) || []
         );
@@ -60,15 +63,16 @@ export function useClaimNearRewards({
         args: {
           amount,
           merkle_proof: formattedProof,
+          campaign_id: campaignId,
+          lockup_contract: lockupContract,
         },
         deposit: "1",
       });
 
-      // Mark proof as claimed after successful transaction
       if (result && result.transaction?.hash) {
         try {
           await markProofAsClaimed({
-            projectId,
+            campaignId,
             address: signedAccountId,
             txHash: result.transaction.hash,
           });

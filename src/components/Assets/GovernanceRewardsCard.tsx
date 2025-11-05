@@ -1,12 +1,14 @@
 import { ArrowRightIcon } from "lucide-react";
 import { memo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { AnimatedStars } from "./AnimatedStars";
 import { useNear } from "@/contexts/NearContext";
 import { useNearClaimProofs } from "@/hooks/useNearClaimProofs";
 import { UpdatedButton } from "@/components/Button";
 import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import LoadingSpinner from "../shared/LoadingSpinner";
+import GreenStar from "@/assets/green_star.svg";
 
 export const GovernanceRewardsCard = memo(() => {
   const { signedAccountId } = useNear();
