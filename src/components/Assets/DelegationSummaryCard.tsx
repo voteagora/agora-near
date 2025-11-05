@@ -1,15 +1,17 @@
 "use client";
 
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 import { UpdatedButton } from "../Button";
 import { useOpenDialog } from "../Dialogs/DialogProvider/DialogProvider";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export const DelegationSummaryCard = memo(() => {
   const { signedAccountId } = useNear();
   const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
   const openDialog = useOpenDialog();
+  const [isDismissed, setIsDismissed] = useState(false);
 
   const delegatee = accountInfo?.delegation?.delegatee;
   const hasActiveDelegation = !!delegatee;
@@ -26,11 +28,22 @@ export const DelegationSummaryCard = memo(() => {
     window.location.href = "/delegates";
   }, []);
 
-  if (!accountInfo) return null;
+  const handleDismiss = useCallback(() => {
+    setIsDismissed(true);
+  }, []);
+
+  if (!accountInfo || isDismissed) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-6 w-full">
-      <div className="flex items-start justify-between gap-4">
+    <div className="bg-white rounded-2xl border border-gray-200 p-6 w-full relative">
+      <button
+        onClick={handleDismiss}
+        className="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded-full transition-colors"
+        aria-label="Dismiss card"
+      >
+        <XMarkIcon className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+      </button>
+      <div className="flex items-start justify-between gap-4 pr-8">
         <div className="flex flex-col">
           <div className="text-sm text-gray-600 mb-1">Delegation</div>
           <div className="text-xl text-gray-900 font-medium">
