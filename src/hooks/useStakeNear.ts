@@ -19,6 +19,15 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
   const [withdrawingNearError, setWithdrawingNearError] =
     useState<Error | null>(null);
 
+  const [isUnstakingAll, setIsUnstakingAll] = useState(false);
+  const [isWithdrawingAll, setIsWithdrawingAll] = useState(false);
+  const [unstakingAllError, setUnstakingAllError] = useState<Error | null>(
+    null
+  );
+  const [withdrawingAllError, setWithdrawingAllError] = useState<Error | null>(
+    null
+  );
+
   const { mutateAsync: mutateStakeNear } = useWriteHOSContract({
     contractType: "LOCKUP",
   });
@@ -113,15 +122,71 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
     [mutateStakeNear, lockupAccountId, queryClient]
   );
 
+  const unstakeAll = useCallback(async () => {
+    try {
+      setIsUnstakingAll(true);
+      setUnstakingAllError(null);
+
+      await mutateStakeNear({
+        contractId: lockupAccountId,
+        methodCalls: [
+          {
+            methodName: "unstake_all",
+            args: {},
+          },
+        ],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
+      });
+    } catch (e) {
+      setUnstakingAllError(e as Error);
+    } finally {
+      setIsUnstakingAll(false);
+    }
+  }, [mutateStakeNear, lockupAccountId, queryClient]);
+
+  const withdrawAll = useCallback(async () => {
+    try {
+      setIsWithdrawingAll(true);
+      setWithdrawingAllError(null);
+
+      await mutateStakeNear({
+        contractId: lockupAccountId,
+        methodCalls: [
+          {
+            methodName: "withdraw_all_from_staking_pool",
+            args: {},
+          },
+        ],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
+      });
+    } catch (e) {
+      setWithdrawingAllError(e as Error);
+    } finally {
+      setIsWithdrawingAll(false);
+    }
+  }, [mutateStakeNear, lockupAccountId, queryClient]);
+
   return {
     stakeNear,
     unstakeNear,
+    unstakeAll,
     withdrawNear,
+    withdrawAll,
     isStakingNear,
     isUnstakingNear,
+    isUnstakingAll,
     isWithdrawingNear,
+    isWithdrawingAll,
     stakingNearError,
     unstakingNearError,
+    unstakingAllError,
     withdrawingNearError,
+    withdrawingAllError,
   };
 };
