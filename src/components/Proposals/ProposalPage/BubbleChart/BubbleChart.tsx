@@ -32,9 +32,15 @@ interface BubbleNode extends d3.SimulationNodeDatum {
 // Controls visual scaling of bubble sizes relative to voting power ratio
 const SCALING_EXPONENT = 0.4;
 const transformVotesToBubbleData = (
-  votes: ProposalVotingHistoryRecord[]
+  votes: ProposalVotingHistoryRecord[],
+  limit: number
 ): BubbleNode[] => {
-  const sortedVotes = votes.slice().slice(0, CHART_DIMENSIONS.maxVotes);
+  const sortedVotes = [...votes]
+    .sort(
+      (a, b) =>
+        Number((b as any)?.votingPower) - Number((a as any)?.votingPower)
+    )
+    .slice(0, limit);
 
   // Sanitize weights: coerce to number, ensure finite and non-negative
   const rawWeights = sortedVotes.map((v) => {
@@ -101,11 +107,10 @@ const BubbleNode = memo(({ node }: { node: BubbleNode }) => {
 
   const fontSize = useMemo(() => {
     const scaled = node.r / 4;
-    return Math.max(10, Math.min(scaled, 14));
+    return Math.max(8, Math.min(scaled, 14));
   }, [node.r]);
 
-  const shouldShowText = node.r >= 16;
-  const maxTextWidthPx = Math.max(50, node.r * 1.6);
+  const showText = node.r >= 14;
 
   return (
     <g
@@ -121,35 +126,23 @@ const BubbleNode = memo(({ node }: { node: BubbleNode }) => {
         style={{ fill: fillColor, transition: "fill 0.15s ease-out" }}
       />
 
-      {shouldShowText && (
-        <foreignObject
-          x={-node.r}
-          y={-node.r}
-          width={node.r * 2}
-          height={node.r * 2}
-          style={{ pointerEvents: "none", overflow: "hidden" }}
+      {showText && (
+        <text
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="#FFFFFF"
+          style={{
+            fontSize: `${fontSize}px`,
+            fontWeight: 600,
+            userSelect: "none",
+            pointerEvents: "none",
+            paintOrder: "stroke",
+            stroke: "rgba(0,0,0,0.5)",
+            strokeWidth: 1,
+          }}
         >
-          <div
-            className="flex items-center justify-center w-full h-full text-white"
-            style={{
-              fontSize: `${fontSize}px`,
-              whiteSpace: "nowrap",
-              textOverflow: "ellipsis",
-              overflow: "hidden",
-              textAlign: "center",
-              textShadow: "0 1px 2px rgba(0,0,0,0.5)",
-              padding: "2px",
-            }}
-            title={node.address}
-          >
-            <span
-              className="truncate"
-              style={{ maxWidth: `${maxTextWidthPx}px` }}
-            >
-              {node.address}
-            </span>
-          </div>
-        </foreignObject>
+          {node.address}
+        </text>
       )}
     </g>
   );
@@ -159,8 +152,12 @@ BubbleNode.displayName = "BubbleNode";
 
 export default function BubbleChart({
   votes,
+  disableZoom,
+  maxVotes,
 }: {
   votes: ProposalVotingHistoryRecord[];
+  disableZoom?: boolean;
+  maxVotes?: number;
 }) {
   const [nodes, setNodes] = useState<BubbleNode[]>([]);
   const [transform, setTransform] = useState(() =>
@@ -172,53 +169,68 @@ export default function BubbleChart({
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const defaultTransformRef = useRef<d3.ZoomTransform | null>(null);
+  const zoomRafIdRef = useRef<number | null>(null);
+  const pendingTransformRef = useRef<d3.ZoomTransform | null>(null);
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
 
-  const createZoom = useMemo(
-    () =>
-      d3
-        .zoom<SVGSVGElement, unknown>()
-        .scaleExtent([ZOOM_CONFIG.min, ZOOM_CONFIG.max])
-        .on("zoom", (event) => setTransform(event.transform)),
-    []
-  );
+  const effectiveMaxVotes =
+    maxVotes && maxVotes > 0 ? maxVotes : CHART_DIMENSIONS.maxVotes;
 
-  const handleZoom = (factor: number) => {
-    if (!svgRef.current) return;
-    const zoom = d3
-      .zoom<SVGSVGElement, unknown>()
-      .scaleExtent([ZOOM_CONFIG.min, ZOOM_CONFIG.max])
-      .on("zoom", (event) => setTransform(event.transform));
-
-    d3.select<SVGSVGElement, unknown>(svgRef.current)
-      .transition()
-      .duration(300)
-      .call((t) => zoom.scaleTo(t as any, transform.k + factor));
+  const handleZoom = (delta: number) => {
+    if (disableZoom || !svgRef.current || !zoomRef.current) return;
+    const nextScale = Math.max(
+      ZOOM_CONFIG.min,
+      Math.min(ZOOM_CONFIG.max, transform.k + delta)
+    );
+    const selection = d3.select<SVGSVGElement, unknown>(svgRef.current);
+    selection.interrupt().call(zoomRef.current.scaleTo as any, nextScale);
   };
 
   const handleReset = () => {
-    if (!svgRef.current || !defaultTransformRef.current) return;
+    if (
+      disableZoom ||
+      !svgRef.current ||
+      !defaultTransformRef.current ||
+      !zoomRef.current
+    )
+      return;
     d3.select<SVGSVGElement, unknown>(svgRef.current)
-      .transition()
-      .duration(300)
-      .call(createZoom.transform, defaultTransformRef.current);
+      .interrupt()
+      .call(zoomRef.current.transform as any, defaultTransformRef.current);
   };
 
-  const memoVotes = useMemo(() => votes || [], [votes]);
+  const votesKey = useMemo(() => {
+    if (!votes || votes.length === 0) return "";
+    const head = [...votes]
+      .sort(
+        (a, b) =>
+          Number((b as any)?.votingPower) - Number((a as any)?.votingPower)
+      )
+      .slice(0, effectiveMaxVotes);
+    return head
+      .map((v) => `${v.accountId}:${v.votingPower}:${v.voteOption}`)
+      .join("|");
+  }, [votes, effectiveMaxVotes]);
+  const prevVotesKeyRef = useRef<string>("");
 
-  // Effect 1: Process votes into nodes (doesn't need SVG ref)
+  // Effect 1: Process votes into nodes
   useEffect(() => {
-    try {
-      setHasMoreVotes(memoVotes.length > CHART_DIMENSIONS.maxVotes);
+    if (prevVotesKeyRef.current === votesKey) return;
+    prevVotesKeyRef.current = votesKey;
 
-      if (memoVotes.length === 0) {
-        setNodes([]);
+    try {
+      const length = votes?.length ?? 0;
+      setHasMoreVotes(length > effectiveMaxVotes);
+
+      if (length === 0) {
+        if (nodes.length !== 0) setNodes([]);
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
       }
 
-      const bubbleData = transformVotesToBubbleData(memoVotes);
+      const bubbleData = transformVotesToBubbleData(votes, effectiveMaxVotes);
       if (!bubbleData || bubbleData.length === 0) {
-        setNodes([]);
+        if (nodes.length !== 0) setNodes([]);
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
       }
@@ -232,97 +244,141 @@ export default function BubbleChart({
         .hierarchy<BubbleNode>({ children: bubbleData } as any)
         .sum((d) => d.value ?? 0);
 
-      const packedDataRaw = pack(root)
+      const packedData = pack(root)
         .leaves()
-        .map((d) => ({
-          ...d.data,
-          x: d.x,
-          y: d.y,
-          r: d.r,
-        })) as BubbleNode[];
+        .map((d) => ({ ...d.data, x: d.x, y: d.y, r: d.r })) as BubbleNode[];
 
-      const packedData = packedDataRaw.filter(
-        (d) =>
-          Number.isFinite(d.x) &&
-          Number.isFinite(d.y) &&
-          Number.isFinite(d.r) &&
-          (d.r as number) >= 0.01
-      );
-
-      let finalPackedData = packedData.length > 0 ? packedData : packedDataRaw;
-      if (finalPackedData.length === 0) {
-        setNodes([]);
+      if (packedData.length === 0) {
+        if (nodes.length !== 0) setNodes([]);
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
       }
 
-      const bounds = {
-        minX: d3.min(finalPackedData, (d) => (d.x ?? 0) - (d.r ?? 0)) || 0,
-        maxX:
-          d3.max(finalPackedData, (d) => (d.x ?? 0) + (d.r ?? 0)) ||
-          CHART_DIMENSIONS.width,
-        minY: d3.min(finalPackedData, (d) => (d.y ?? 0) - (d.r ?? 0)) || 0,
-        maxY:
-          d3.max(finalPackedData, (d) => (d.y ?? 0) + (d.r ?? 0)) ||
-          CHART_DIMENSIONS.height,
-      };
+      const minX = d3.min(packedData, (d) => (d.x ?? 0) - (d.r ?? 0)) || 0;
+      const maxX =
+        d3.max(packedData, (d) => (d.x ?? 0) + (d.r ?? 0)) ||
+        CHART_DIMENSIONS.width;
+      const minY = d3.min(packedData, (d) => (d.y ?? 0) - (d.r ?? 0)) || 0;
+      const maxY =
+        d3.max(packedData, (d) => (d.y ?? 0) + (d.r ?? 0)) ||
+        CHART_DIMENSIONS.height;
 
-      const dx = bounds.maxX - bounds.minX;
-      const dy = bounds.maxY - bounds.minY;
+      const dx = maxX - minX;
+      const dy = maxY - minY;
       const denom =
-        Math.max(dx / CHART_DIMENSIONS.width, dy / CHART_DIMENSIONS.height) || 1;
+        Math.max(dx / CHART_DIMENSIONS.width, dy / CHART_DIMENSIONS.height) ||
+        1;
       let scale = 1.5 / denom;
-      if (!Number.isFinite(scale) || scale <= 0) {
-        scale = 1;
-      }
-      const translateX =
-        (CHART_DIMENSIONS.width - scale * (bounds.minX + bounds.maxX)) / 2;
-      const translateY =
-        (CHART_DIMENSIONS.height - scale * (bounds.minY + bounds.maxY)) / 2;
+      if (!Number.isFinite(scale) || scale <= 0) scale = 1;
+      const translateX = (CHART_DIMENSIONS.width - scale * (minX + maxX)) / 2;
+      const translateY = (CHART_DIMENSIONS.height - scale * (minY + maxY)) / 2;
 
-      const defaultTransform = d3.zoomIdentity
+      const nextDefault = d3.zoomIdentity
         .translate(
           Number.isFinite(translateX) ? translateX : 0,
           Number.isFinite(translateY) ? translateY : 0
         )
         .scale(scale);
-      defaultTransformRef.current = defaultTransform;
-      setTransform(defaultTransform);
-      setNodes(finalPackedData);
+
+      defaultTransformRef.current = nextDefault;
+
+      setNodes((prev) => {
+        if (prev.length === packedData.length) {
+          let same = true;
+          for (let i = 0; i < prev.length; i++) {
+            const a = prev[i];
+            const b = packedData[i];
+            if (
+              a.address !== b.address ||
+              a.x !== b.x ||
+              a.y !== b.y ||
+              a.r !== b.r
+            ) {
+              same = false;
+              break;
+            }
+          }
+          if (same) return prev;
+        }
+        return packedData;
+      });
+
+      setTransform((prev) => {
+        if (
+          Math.abs(prev.x - nextDefault.x) < 0.1 &&
+          Math.abs(prev.y - nextDefault.y) < 0.1 &&
+          Math.abs(prev.k - nextDefault.k) < 0.001
+        ) {
+          return prev;
+        }
+        return nextDefault;
+      });
     } catch {
-      setNodes([]);
+      if (nodes.length !== 0) setNodes([]);
       setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
     }
-  }, [memoVotes]);
+  }, [votesKey, votes, effectiveMaxVotes]);
 
-  // Effect 2: Setup zoom behavior (needs SVG ref and nodes)
+  // Effect 2: Setup zoom behavior
   useEffect(() => {
     const svg = svgRef.current;
-    if (!svg || nodes.length === 0) return;
+    if (!svg || nodes.length === 0 || disableZoom) return;
 
     const zoom = d3
       .zoom<SVGSVGElement, undefined>()
       .scaleExtent([ZOOM_CONFIG.min, ZOOM_CONFIG.max])
-      .on("zoom", (event) => setTransform(event.transform));
+      .on("zoom", (event) => {
+        pendingTransformRef.current = event.transform;
+        if (zoomRafIdRef.current != null) return;
+        zoomRafIdRef.current = requestAnimationFrame(() => {
+          zoomRafIdRef.current = null;
+          const next = pendingTransformRef.current;
+          if (!next) return;
+          setTransform(next);
+        });
+      });
 
     const selection = d3.select<SVGSVGElement, undefined>(svg);
-    // Cancel any pending transitions to avoid stutter/freeze
     (selection as any).interrupt();
+    selection.on(".zoom", null);
+    zoomRef.current = zoom as any;
     selection.call(zoom as any);
-    (zoom as any).transform(selection, defaultTransformRef.current || d3.zoomIdentity);
+    (zoom as any).transform(
+      selection,
+      defaultTransformRef.current || d3.zoomIdentity
+    );
 
     return () => {
       zoom.on("zoom", null);
+      selection.on(".zoom", null);
+      if (zoomRafIdRef.current != null) {
+        cancelAnimationFrame(zoomRafIdRef.current);
+        zoomRafIdRef.current = null;
+      }
+      zoomRef.current = null;
+      pendingTransformRef.current = null;
     };
-  }, [nodes]);
+  }, [nodes.length, disableZoom]);
 
   return (
     <div className="relative w-full" ref={containerRef}>
       <div className="relative h-[230px]">
         <div className="absolute top-2 right-2 flex flex-col gap-1 z-10">
-          <ZoomButton onClick={() => handleZoom(ZOOM_CONFIG.step)} icon={Plus} label="Zoom in" />
-          <ZoomButton onClick={() => handleZoom(-ZOOM_CONFIG.step)} icon={Minus} label="Zoom out" />
-          <ZoomButton onClick={handleReset} icon={RotateCcw} label="Reset zoom" />
+          <ZoomButton
+            onClick={() => handleZoom(ZOOM_CONFIG.step)}
+            icon={Plus}
+            label="Zoom in"
+          />
+          <ZoomButton
+            onClick={() => handleZoom(-ZOOM_CONFIG.step)}
+            icon={Minus}
+            label="Zoom out"
+          />
+          <ZoomButton
+            onClick={handleReset}
+            icon={RotateCcw}
+            label="Reset zoom"
+          />
         </div>
 
         <svg
@@ -330,7 +386,9 @@ export default function BubbleChart({
           viewBox={`0 0 ${CHART_DIMENSIONS.width} ${CHART_DIMENSIONS.height}`}
           style={{ width: "100%", height: "100%" }}
         >
-          <g transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}>
+          <g
+            transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}
+          >
             {nodes.map((node) => (
               <BubbleNode key={node.address} node={node} />
             ))}
