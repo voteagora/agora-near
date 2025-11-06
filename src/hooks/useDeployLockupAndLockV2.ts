@@ -163,8 +163,6 @@ export const useDeployLockupAndLockV2 = () => {
 
       const txns = await buildTransactions(requiredTransactions);
 
-      console.log(`executing txns: ${JSON.stringify(txns, null, 2)}`);
-
       await signAndSendTransactions({
         transactions: txns,
       });
