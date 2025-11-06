@@ -9,10 +9,16 @@ import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvide
 import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useRefreshStakingPoolBalance } from "@/hooks/useRefreshStakingPoolBalance";
+import CopyableHumanAddress from "@/components/shared/CopyableHumanAddress";
+import { ExternalLink, Github } from "lucide-react";
 
 export default function LegacyOnboardingPage() {
   const openDialog = useOpenDialog();
-  const { signedAccountId, signIn } = useNear();
+  const { signedAccountId, signIn, networkId } = useNear();
+  const nearblocksBase =
+    networkId === "testnet"
+      ? "https://testnet.nearblocks.io"
+      : "https://nearblocks.io";
 
   const { lockupAccountId, isLoading: isLoadingLockup } = useLockupAccount();
 
@@ -143,22 +149,107 @@ export default function LegacyOnboardingPage() {
                 <CardTitle>Current Status</CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Account:</span>{" "}
-                  <span className="font-medium">{signedAccountId}</span>
+                <div className="text-sm flex items-center gap-2">
+                  <span className="text-muted-foreground">Account:</span>
+                  <CopyableHumanAddress
+                    address={signedAccountId}
+                    shouldTruncate={false}
+                  />
+                  <a
+                    href={`${nearblocksBase}/address/${signedAccountId}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center rounded-md border px-1.5 py-0.5 text-xs text-primary hover:bg-muted"
+                    aria-label="View account on NearBlocks"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
                 </div>
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Lockup:</span>{" "}
-                  <span className="font-medium">{lockupAccountId ?? "—"}</span>
+                <div className="text-sm flex items-center gap-2">
+                  <span className="text-muted-foreground">Lockup:</span>
+                  {lockupAccountId ? (
+                    <>
+                      <CopyableHumanAddress
+                        address={lockupAccountId}
+                        shouldTruncate={false}
+                      />
+                      <a
+                        href={`${nearblocksBase}/address/${lockupAccountId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center rounded-md border px-1.5 py-0.5 text-xs text-primary hover:bg-muted"
+                        aria-label="View lockup on NearBlocks"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    </>
+                  ) : (
+                    <span className="font-medium">—</span>
+                  )}
                 </div>
-                <div className="text-sm">
-                  <span className="text-muted-foreground">Staking Pool:</span>{" "}
-                  <span className="font-medium">{stakingPoolId ?? "—"}</span>
+                <div className="text-sm flex items-center gap-2">
+                  <span className="text-muted-foreground">Staking Pool:</span>
+                  {stakingPoolId ? (
+                    <>
+                      <CopyableHumanAddress
+                        address={stakingPoolId}
+                        shouldTruncate={false}
+                      />
+                      <a
+                        href={`${nearblocksBase}/address/${stakingPoolId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center rounded-md border px-1.5 py-0.5 text-xs text-primary hover:bg-muted"
+                        aria-label="View staking pool on NearBlocks"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    </>
+                  ) : (
+                    <span className="font-medium">—</span>
+                  )}
                 </div>
                 <Separator />
                 <div className="text-sm">
                   <span className="text-muted-foreground">Summary:</span>{" "}
                   <span className="font-medium">{statusText}</span>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {signedAccountId ? (
+                      <span className="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700">
+                        Wallet connected
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-600">
+                        Not connected
+                      </span>
+                    )}
+                    {isLoadingLockup ? (
+                      <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-600">
+                        Lockup loading
+                      </span>
+                    ) : lockupAccountId ? (
+                      <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                        Lockup set
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
+                        No lockup
+                      </span>
+                    )}
+                    {isLoadingPool ? (
+                      <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-600">
+                        Pool loading
+                      </span>
+                    ) : stakingPoolId ? (
+                      <span className="inline-flex items-center rounded-full border border-purple-200 bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-700">
+                        Pool selected
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-600">
+                        No pool selected
+                      </span>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -196,18 +287,19 @@ export default function LegacyOnboardingPage() {
                     voting power (veNEAR) directly.
                   </li>
                 </ol>
-                <p className="text-xs text-muted-foreground">
+                <div className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium leading-none text-amber-700 bg-amber-50 border-amber-200">
                   Note: Custom pools must be whitelisted for House of Stake. The
                   UI validates this automatically when entering a custom pool.
-                </p>
-                <p className="text-xs">
+                </div>
+                <p className="text-xs flex items-center gap-2">
                   Reference:{" "}
                   <a
                     href="https://github.com/voteagora/agora-near/wiki/How-to:-Lock-and-Stake-with-a-Custom-Staking-Pool"
                     target="_blank"
                     rel="noreferrer"
-                    className="underline text-primary"
+                    className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium leading-none text-gray-700 hover:bg-muted whitespace-nowrap"
                   >
+                    <Github className="h-3 w-3 relative top-px" />
                     Lock and Stake with a Custom Staking Pool
                   </a>
                 </p>
