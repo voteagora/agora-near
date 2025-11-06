@@ -17,6 +17,12 @@ import { StakingSubmitting } from "./StakingSubmitting";
 import { StakingSuccess } from "./StakingSuccess";
 import { StakingDisclosures } from "./StakingDisclosures";
 import Big from "big.js";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Info } from "lucide-react";
 
 export type StakingStep = "select_pool" | "stake";
 
@@ -351,16 +357,47 @@ export const StakingReview = ({
       </div>
       <div className="flex-1 flex flex-col justify-end gap-4">
         <div className="border rounded-lg p-3">
-          <button
-            onClick={() => {
-              const next = !showAdvanced;
-              console.log("[StakingReview] Toggle Advanced", { next });
-              setShowAdvanced(next);
-            }}
-            className="text-sm font-medium underline"
-          >
-            {showAdvanced ? "Hide advanced" : "Advanced"}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                const next = !showAdvanced;
+                console.log("[StakingReview] Toggle Advanced", { next });
+                setShowAdvanced(next);
+              }}
+              className="text-sm font-medium underline"
+            >
+              {showAdvanced ? "Hide advanced" : "Advanced"}
+            </button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center rounded-full p-1 hover:bg-muted"
+                  aria-label="About legacy pools"
+                >
+                  <Info className="h-4 w-4 text-[#9D9FA1]" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 text-sm">
+                <div className="space-y-2">
+                  <p className="font-medium text-gray-900">Legacy pools</p>
+                  <p className="text-secondary">
+                    If you previously staked via your lockup contract in a pool,
+                    use Advanced to:
+                  </p>
+                  <ul className="list-disc list-inside space-y-1 text-secondary">
+                    <li>Unstake all to start the cooldown.</li>
+                    <li>Withdraw all after the cooldown completes.</li>
+                    <li>Refresh balance to sync rewards/availability.</li>
+                    <li>
+                      Unselect the staking pool when balance is 0 to switch
+                      pools.
+                    </li>
+                  </ul>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
           {showAdvanced && (
             <div className="mt-3 flex flex-col gap-3">
               <div className="text-xs text-[#9D9FA1]">
