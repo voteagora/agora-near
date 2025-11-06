@@ -18,6 +18,7 @@ import { useCastVote } from "@/hooks/useCastVote";
 import { useCreateProposal } from "@/hooks/useCreateProposal";
 import { useDelegateAll } from "@/hooks/useDelegateAll";
 import { useLockNear } from "@/hooks/useLockNear";
+import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useProposalActions } from "@/hooks/useProposalActions";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { useProposals } from "@/hooks/useProposals";
@@ -33,18 +34,23 @@ import {
   STNEAR_TOKEN_CONTRACT,
   RNEAR_TOKEN_CONTRACT,
 } from "@/lib/constants";
+import { CONTRACTS } from "@/lib/contractConstants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { convertUnit } from "@fastnear/utils";
+import { Transaction } from "@hot-labs/near-connect/build/types/transactions";
 import Big from "big.js";
 import { utils } from "near-api-js";
 import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function VeNearDebugCards() {
-  const { signedAccountId, networkId } = useNear();
+  const { signedAccountId, signAndSendTransactions, viewMethod } = useNear();
   const { data: contractInfo, isLoading: isLoadingContractInfo } =
     useVenearStats();
   const { data: accountInfo, isLoading: isLoadingAccount } =
     useVenearAccountStats(signedAccountId);
+  const { lockupAccountId, isLoading: isLoadingLockupAccountId } =
+    useLockupAccount();
 
   const openDialog = useOpenDialog();
 
@@ -313,6 +319,203 @@ export default function VeNearDebugCards() {
     undelegate();
   };
 
+  const batchedOnboardWithNear = async () => {
+    try {
+      await signAndSendTransactions({
+        transactions: [
+          {
+            receiverId: CONTRACTS.VENEAR_CONTRACT_ID,
+            actions: [
+              {
+                type: "FunctionCall",
+                params: {
+                  methodName: "storage_deposit",
+                  args: { account_id: signedAccountId },
+                  gas: convertUnit("30 Tgas"),
+                  deposit: convertUnit(
+                    contractInfo?.storageDepositAmount || "0"
+                  ),
+                },
+              },
+              {
+                type: "FunctionCall",
+                params: {
+                  methodName: "deploy_lockup",
+                  args: {},
+                  gas: convertUnit("100 Tgas"),
+                  deposit: convertUnit(
+                    contractInfo?.lockupDeploymentCost || "0"
+                  ),
+                },
+              },
+            ],
+          },
+          {
+            receiverId: lockupAccountId || "",
+            actions: [
+              {
+                type: "Transfer",
+                params: {
+                  deposit: "100000000000000000000000",
+                },
+              },
+              {
+                type: "FunctionCall",
+                params: {
+                  methodName: "lock_near",
+                  args: {
+                    amount: "100000000000000000000000",
+                  },
+                  gas: convertUnit("100 Tgas"),
+                  deposit: convertUnit("1"),
+                },
+              },
+            ],
+          },
+        ],
+      });
+    } catch (e) {
+      console.error("Onboarding failed:", e);
+    }
+  };
+
+  const batchedOnboardWithLST = async () => {
+    try {
+      const minStorageDeposit = (await viewMethod({
+        contractId: LINEAR_TOKEN_CONTRACT,
+        method: "storage_balance_bounds",
+        args: {},
+      })) as
+        | {
+            min?: string;
+            max?: string;
+          }
+        | null
+        | undefined;
+
+      const ftTransferTransactions: Transaction[] = [
+        {
+          signerId: signedAccountId ?? "",
+          receiverId: LINEAR_TOKEN_CONTRACT,
+          actions: [
+            {
+              type: "FunctionCall",
+              params: {
+                methodName: "storage_deposit",
+                args: {
+                  account_id: lockupAccountId ?? "",
+                  registration_only: true,
+                },
+                gas: convertUnit("30 Tgas"),
+                deposit: minStorageDeposit?.min ?? convertUnit("0.01 NEAR"),
+              },
+            },
+          ],
+        },
+        {
+          signerId: signedAccountId ?? "",
+          receiverId: LINEAR_TOKEN_CONTRACT,
+          actions: [
+            {
+              type: "FunctionCall",
+              params: {
+                methodName: "ft_transfer",
+                args: {
+                  receiver_id: lockupAccountId || "",
+                  amount: "100000000000000000000000",
+                  memo: "",
+                },
+                gas: convertUnit("30 Tgas"),
+                deposit: convertUnit("1 yoctoNEAR"),
+              },
+            },
+          ],
+        },
+      ];
+
+      await signAndSendTransactions({
+        transactions: [
+          {
+            receiverId: CONTRACTS.VENEAR_CONTRACT_ID,
+            actions: [
+              {
+                type: "FunctionCall",
+                params: {
+                  methodName: "storage_deposit",
+                  args: { account_id: signedAccountId },
+                  gas: convertUnit("30 Tgas"),
+                  deposit: convertUnit(
+                    contractInfo?.storageDepositAmount || "0"
+                  ),
+                },
+              },
+              {
+                type: "FunctionCall",
+                params: {
+                  methodName: "deploy_lockup",
+                  args: {},
+                  gas: convertUnit("100 Tgas"),
+                  deposit: convertUnit(
+                    contractInfo?.lockupDeploymentCost || "0"
+                  ),
+                },
+              },
+            ],
+          },
+          ...ftTransferTransactions,
+          {
+            receiverId: lockupAccountId || "",
+            actions: [
+              {
+                type: "FunctionCall",
+                params: {
+                  methodName: "select_staking_pool",
+                  args: {
+                    staking_pool_account_id: LINEAR_TOKEN_CONTRACT,
+                  },
+                  gas: convertUnit("75 Tgas"),
+                  deposit: convertUnit("1"),
+                },
+              },
+            ],
+          },
+          {
+            receiverId: lockupAccountId || "",
+            actions: [
+              {
+                type: "FunctionCall",
+                params: {
+                  methodName: "refresh_staking_pool_balance",
+                  args: {},
+                  gas: convertUnit("75 Tgas"),
+                  deposit: convertUnit("1"),
+                },
+              },
+            ],
+          },
+          {
+            receiverId: lockupAccountId || "",
+            actions: [
+              {
+                type: "FunctionCall",
+                params: {
+                  methodName: "lock_near",
+                  args: {
+                    amount: "100000000000000000000000",
+                  },
+                  gas: convertUnit("100 Tgas"),
+                  deposit: convertUnit("1"),
+                },
+              },
+            ],
+          },
+        ],
+      });
+    } catch (e) {
+      console.error("Onboarding failed:", e);
+    }
+  };
+
   const renderContractInfo = () => (
     <Card className="flex flex-col grow">
       <CardHeader>
@@ -364,6 +567,18 @@ export default function VeNearDebugCards() {
       </CardHeader>
       <CardContent>
         <div className="my-2">
+          <Button
+            loading={isLoadingLockupAccountId}
+            onClick={batchedOnboardWithNear}
+          >
+            Batched onboard
+          </Button>
+          <Button
+            loading={isLoadingLockupAccountId}
+            onClick={batchedOnboardWithLST}
+          >
+            Batched LST onboard
+          </Button>
           <Button
             onClick={() =>
               openDialog({

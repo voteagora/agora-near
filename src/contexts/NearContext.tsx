@@ -4,6 +4,7 @@ import { getRpcUrl } from "@/lib/utils";
 import { convertUnit } from "@fastnear/utils";
 import {
   NetworkId,
+  Optional,
   setupWalletSelector,
   Transaction,
   WalletModuleFactory,
@@ -61,7 +62,7 @@ type CallContractsProps = {
 };
 
 interface TransactionsProps {
-  transactions: any[];
+  transactions: Array<Optional<Transaction, "signerId">>;
 }
 
 interface NearContextType {
