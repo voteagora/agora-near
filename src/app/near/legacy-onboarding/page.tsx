@@ -29,6 +29,11 @@ export default function LegacyOnboardingPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const onOpenStakingDialog = useCallback(() => {
+    console.log("[LegacyOnboarding] Open Staking dialog clicked", {
+      signedAccountId,
+      lockupAccountId,
+      stakingPoolId,
+    });
     openDialog({
       type: "NEAR_STAKING",
       className: "sm:w-[500px]",
@@ -36,9 +41,14 @@ export default function LegacyOnboardingPage() {
         source: "account_management",
       },
     });
-  }, [openDialog]);
+    console.log("[LegacyOnboarding] Staking dialog opened");
+  }, [openDialog, signedAccountId, lockupAccountId, stakingPoolId]);
 
   const onOpenLockDialog = useCallback(() => {
+    console.log("[LegacyOnboarding] Open Lock dialog clicked", {
+      signedAccountId,
+      lockupAccountId,
+    });
     openDialog({
       type: "NEAR_LOCK",
       className: "sm:w-[500px]",
@@ -46,22 +56,42 @@ export default function LegacyOnboardingPage() {
         source: "account_management",
       },
     });
-  }, [openDialog]);
+    console.log("[LegacyOnboarding] Lock dialog opened");
+  }, [openDialog, signedAccountId, lockupAccountId]);
 
   const onOpenUnlockDialog = useCallback(() => {
+    console.log("[LegacyOnboarding] Open Unlock dialog clicked", {
+      signedAccountId,
+      lockupAccountId,
+    });
     openDialog({
       type: "NEAR_UNLOCK",
       params: {},
     });
-  }, [openDialog]);
+    console.log("[LegacyOnboarding] Unlock dialog opened");
+  }, [openDialog, signedAccountId, lockupAccountId]);
 
   const onRefresh = useCallback(async () => {
-    if (!lockupAccountId) return;
+    console.log("[LegacyOnboarding] Refresh balance clicked", {
+      lockupAccountId,
+    });
+    if (!lockupAccountId) {
+      console.warn(
+        "[LegacyOnboarding] Refresh balance aborted: no lockupAccountId"
+      );
+      return;
+    }
     setIsRefreshing(true);
     try {
+      console.log("[LegacyOnboarding] Calling refresh_staking_pool_balance");
       await refreshStakingPoolBalanceAsync();
+      console.log("[LegacyOnboarding] Refresh balance completed");
+    } catch (e) {
+      console.error("[LegacyOnboarding] Refresh balance error", e);
+      throw e;
     } finally {
       setIsRefreshing(false);
+      console.log("[LegacyOnboarding] Refresh balance end");
     }
   }, [lockupAccountId, refreshStakingPoolBalanceAsync]);
 

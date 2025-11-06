@@ -45,15 +45,29 @@ export const EnterStakingAmount = ({
   const isCustomPoolValid = useMemo(() => !!customPoolId, [customPoolId]);
 
   const handleUseCustomPool = useCallback(async () => {
+    console.log("[EnterStakingAmount] Use custom pool clicked", {
+      customPoolId,
+      isCustomPoolValid,
+    });
     if (!isCustomPoolValid) return;
     setCustomPoolError("");
     setIsValidatingCustomPool(true);
     try {
+      console.log("[EnterStakingAmount] Validating whitelist for pool", {
+        customPoolId,
+      });
       const allowed = await isWhitelisted(customPoolId);
+      console.log("[EnterStakingAmount] Whitelist result", {
+        customPoolId,
+        allowed,
+      });
       if (!allowed) {
         setCustomPoolError("Pool is not whitelisted for House of Stake.");
         return;
       }
+      console.log("[EnterStakingAmount] Setting selected pool", {
+        id: customPoolId,
+      });
       setSelectedPool({
         id: customPoolId,
         contract: customPoolId,
@@ -62,10 +76,16 @@ export const EnterStakingAmount = ({
       setCustomPoolId(""); // Clear input after successful selection
     } finally {
       setIsValidatingCustomPool(false);
+      console.log("[EnterStakingAmount] Finished custom pool validation");
     }
   }, [customPoolId, isCustomPoolValid, isWhitelisted, setSelectedPool]);
 
   const handleContinue = useCallback(() => {
+    console.log("[EnterStakingAmount] Continue clicked", {
+      enteredAmount,
+      amountError,
+      selectedPool,
+    });
     if (!enteredAmount || !!amountError) return;
     onContinue(selectedPool);
   }, [enteredAmount, amountError, onContinue, selectedPool]);
@@ -111,7 +131,7 @@ export const EnterStakingAmount = ({
               onClick={handleUseCustomPool}
               disabled={!isCustomPoolValid || isValidatingCustomPool}
             >
-              {isValidatingCustomPool ? "Checking..." : "Use pool"}
+              {isValidatingCustomPool ? "Checking..." : "Use"}
             </UpdatedButton>
           </div>
           {!!customPoolError && (

@@ -92,13 +92,22 @@ export const StakingReview = ({
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
   const onRefreshStakingBalance = useCallback(async () => {
+    console.log("[StakingReview] Refresh balance clicked", {
+      lockupAccountId,
+      currentStakingPoolId,
+    });
     try {
       setIsRefreshing(true);
+      console.log("[StakingReview] Calling refresh_staking_pool_balance");
       await refreshStakingPoolBalanceAsync();
+      console.log("[StakingReview] Refresh balance completed");
+    } catch (e) {
+      console.error("[StakingReview] Refresh balance error", e);
+      throw e;
     } finally {
       setIsRefreshing(false);
     }
-  }, [refreshStakingPoolBalanceAsync]);
+  }, [refreshStakingPoolBalanceAsync, lockupAccountId, currentStakingPoolId]);
 
   // Detect whether we can unselect the staking pool (must have 0 deposited/staked)
   const { stakedBalance, isLoading: isLoadingStakedBalance } = useStakedBalance(
@@ -124,9 +133,15 @@ export const StakingReview = ({
   }, [currentStakingPoolId, isLoadingStakedBalance, stakedBalance]);
 
   const onUnselectStakingPool = useCallback(async () => {
+    console.log("[StakingReview] Unselect staking pool clicked", {
+      lockupAccountId,
+      currentStakingPoolId,
+      canUnselect,
+    });
     try {
       setIsUnselecting(true);
       setUnselectError(null);
+      console.log("[StakingReview] Calling unselect_staking_pool");
       await writeLockupContract({
         contractId: lockupAccountId ?? "",
         methodCalls: [
@@ -136,12 +151,14 @@ export const StakingReview = ({
           },
         ],
       });
+      console.log("[StakingReview] Unselect staking pool completed");
     } catch (e) {
+      console.error("[StakingReview] Unselect staking pool error", e);
       setUnselectError(e as Error);
     } finally {
       setIsUnselecting(false);
     }
-  }, [writeLockupContract, lockupAccountId]);
+  }, [writeLockupContract, lockupAccountId, currentStakingPoolId, canUnselect]);
 
   const stakeError = useMemo(() => {
     if (stakingNearError) {
@@ -178,34 +195,55 @@ export const StakingReview = ({
 
   const onStake = useCallback(
     async ({ startAtStep = 0 }: { startAtStep?: number }) => {
+      console.log("[StakingReview] onStake start", {
+        startAtStep,
+        requiredSteps,
+        selectedPool: selectedPool.contract,
+        lockupAccountId,
+        topUpAmount,
+      });
       try {
         setIsSubmitting(true);
 
         for (let i = startAtStep; i < requiredSteps.length; i++) {
           const step = requiredSteps[i];
           setStakingStep(i);
+          console.log("[StakingReview] executing step", { index: i, step });
 
           if (step === "select_pool") {
+            console.log("[StakingReview] step select_pool", {
+              stakingPoolId: selectedPool.contract,
+            });
             await selectStakingPoolAsync({
               stakingPoolId: selectedPool.contract,
             });
           } else if (step === "top_up") {
+            console.log("[StakingReview] step top_up", {
+              receiverId: lockupAccountId ?? "",
+              amount: topUpAmount,
+            });
             await transferNear({
               receiverId: lockupAccountId ?? "",
               amount: topUpAmount,
             });
           } else if (step === "lock") {
+            console.log("[StakingReview] step lock", { amount: topUpAmount });
             await lockNear({ amount: topUpAmount });
           } else if (step === "stake") {
+            console.log("[StakingReview] step stake", {
+              amount: enteredAmountYoctoNear,
+            });
             await stakeNear(enteredAmountYoctoNear);
           }
         }
 
         setIsStakeCompleted(true);
+        console.log("[StakingReview] onStake completed successfully");
       } catch (e) {
-        console.error(`Staking error: ${e}`);
+        console.error("[StakingReview] Staking error", e);
       } finally {
         setIsSubmitting(false);
+        console.log("[StakingReview] onStake end");
       }
     },
     [
@@ -314,7 +352,11 @@ export const StakingReview = ({
       <div className="flex-1 flex flex-col justify-end gap-4">
         <div className="border rounded-lg p-3">
           <button
-            onClick={() => setShowAdvanced((v) => !v)}
+            onClick={() => {
+              const next = !showAdvanced;
+              console.log("[StakingReview] Toggle Advanced", { next });
+              setShowAdvanced(next);
+            }}
             className="text-sm font-medium underline"
           >
             {showAdvanced ? "Hide advanced" : "Advanced"}
