@@ -93,6 +93,13 @@ interface NearContextType {
     amount: string;
     memo?: string;
   }) => Promise<any>;
+  buildTransferFungibleTokenTransaction: (options: {
+    accountId: string;
+    tokenContractId: string;
+    receiverId: string;
+    amount: string;
+    memo?: string;
+  }) => Promise<Transaction[]>;
 }
 
 export const NearContext = createContext<NearContextType>({
@@ -111,6 +118,7 @@ export const NearContext = createContext<NearContextType>({
   isInitialized: false,
   transferNear: async () => null,
   transferFungibleToken: async () => null,
+  buildTransferFungibleTokenTransaction: async () => [],
 });
 
 export const useNear = () => useContext(NearContext);
@@ -668,101 +676,20 @@ export const NearProvider: React.FC<NearProviderProps> = ({
     [nearConnector, selector, useNearConnect]
   );
 
-  /**
-   * Transfer fungible tokens to a recipient
-   * @param {Object} options - the options for the transfer
-   * @param {string} options.tokenContractId - the fungible token contract id
-   * @param {string} options.receiverId - the recipient's account id
-   * @param {string} options.amount - the amount to transfer
-   * @param {string} options.memo - optional memo for the transfer
-   * @returns {Promise<any>} - the transaction result
-   */
-  const transferFungibleToken = useCallback(
+  const buildTransferFungibleTokenTransaction = useCallback(
     async ({
+      accountId,
       tokenContractId,
       receiverId,
       amount,
       memo = "",
     }: {
+      accountId: string;
       tokenContractId: string;
       receiverId: string;
       amount: string;
       memo?: string;
     }) => {
-      if (useNearConnect) {
-        if (!nearConnector) return null;
-        const w = await nearConnector.wallet();
-
-        // Get the current account ID
-        const accountId = signedAccountId;
-        if (!accountId) {
-          throw new Error("No account selected");
-        }
-
-        const minStorageDeposit = (await viewMethod({
-          contractId: tokenContractId,
-          method: "storage_balance_bounds",
-          args: {},
-        })) as
-          | {
-              min?: string;
-              max?: string;
-            }
-          | null
-          | undefined;
-
-        const transactions: Transaction[] = [
-          {
-            signerId: accountId,
-            receiverId: tokenContractId,
-            actions: [
-              {
-                type: "FunctionCall",
-                params: {
-                  methodName: "storage_deposit",
-                  args: {
-                    account_id: receiverId,
-                    registration_only: true,
-                  },
-                  gas: convertUnit("30 Tgas"),
-                  deposit: minStorageDeposit?.min ?? convertUnit("0.01 NEAR"),
-                },
-              },
-            ],
-          },
-          {
-            signerId: accountId,
-            receiverId: tokenContractId,
-            actions: [
-              {
-                type: "FunctionCall",
-                params: {
-                  methodName: "ft_transfer",
-                  args: {
-                    receiver_id: receiverId,
-                    amount,
-                    memo,
-                  },
-                  gas: convertUnit("30 Tgas"),
-                  deposit: convertUnit("1 yoctoNEAR"),
-                },
-              },
-            ],
-          },
-        ];
-
-        return w.signAndSendTransactions({ transactions } as any);
-      }
-      if (!selector) return null;
-      const selectedWallet = await selector.wallet();
-
-      // Get the current account ID
-      const accountId = selector.store.getState().accounts[0]?.accountId;
-      if (!accountId) {
-        throw new Error("No account selected");
-      }
-
-      // Check the minimum storage deposit that's required
       const minStorageDeposit = (await viewMethod({
         contractId: tokenContractId,
         method: "storage_balance_bounds",
@@ -815,9 +742,78 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         },
       ];
 
+      return transactions;
+    },
+    [viewMethod]
+  );
+
+  /**
+   * Transfer fungible tokens to a recipient
+   * @param {Object} options - the options for the transfer
+   * @param {string} options.tokenContractId - the fungible token contract id
+   * @param {string} options.receiverId - the recipient's account id
+   * @param {string} options.amount - the amount to transfer
+   * @param {string} options.memo - optional memo for the transfer
+   * @returns {Promise<any>} - the transaction result
+   */
+  const transferFungibleToken = useCallback(
+    async ({
+      tokenContractId,
+      receiverId,
+      amount,
+      memo = "",
+    }: {
+      tokenContractId: string;
+      receiverId: string;
+      amount: string;
+      memo?: string;
+    }) => {
+      if (useNearConnect) {
+        if (!nearConnector) return null;
+        const w = await nearConnector.wallet();
+
+        // Get the current account ID
+        const accountId = signedAccountId;
+        if (!accountId) {
+          throw new Error("No account selected");
+        }
+
+        const transactions = await buildTransferFungibleTokenTransaction({
+          accountId,
+          tokenContractId,
+          receiverId,
+          amount,
+          memo,
+        });
+
+        return w.signAndSendTransactions({ transactions } as any);
+      }
+      if (!selector) return null;
+      const selectedWallet = await selector.wallet();
+
+      // Get the current account ID
+      const accountId = selector.store.getState().accounts[0]?.accountId;
+      if (!accountId) {
+        throw new Error("No account selected");
+      }
+
+      const transactions = await buildTransferFungibleTokenTransaction({
+        accountId,
+        tokenContractId,
+        receiverId,
+        amount,
+        memo,
+      });
+
       return selectedWallet.signAndSendTransactions({ transactions });
     },
-    [nearConnector, selector, useNearConnect, viewMethod, signedAccountId]
+    [
+      useNearConnect,
+      selector,
+      buildTransferFungibleTokenTransaction,
+      nearConnector,
+      signedAccountId,
+    ]
   );
 
   useEffect(() => {
@@ -846,6 +842,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         isInitialized,
         transferNear,
         transferFungibleToken,
+        buildTransferFungibleTokenTransaction,
       }}
     >
       {children}

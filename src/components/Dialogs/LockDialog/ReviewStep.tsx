@@ -6,7 +6,9 @@ import LockOpenIcon from "@/assets/Locking.png";
 import { UpdatedButton } from "@/components/Button";
 import { TransactionError } from "@/components/TransactionError";
 import { TooltipWithTap } from "@/components/ui/tooltip-with-tap";
-import { useDeployLockupAndLock } from "@/hooks/useDeployLockupAndLock";
+import { useDeployLockupAndLockV2 } from "@/hooks/useDeployLockupAndLockV2";
+import { trackEvent } from "@/lib/analytics";
+import { MixpanelEvents } from "@/lib/analytics/mixpanel";
 import { MIN_VERSION_FOR_LST_LOCKUP } from "@/lib/constants";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import Big from "big.js";
@@ -18,8 +20,6 @@ import { useLockProviderContext } from "../LockProvider";
 import { DepositTooltip } from "./DepositTooltip";
 import { DisclosuresContent } from "./DisclosuresContent";
 import { LiquidStakingTokenLockWarning } from "./LiquidStakingTokenLockWarning";
-import { MixpanelEvents } from "@/lib/analytics/mixpanel";
-import { trackEvent } from "@/lib/analytics";
 
 type ReviewStepProps = {
   handleEdit: () => void;
@@ -43,7 +43,6 @@ export const ReviewStep = memo(
       isLoading,
       venearAmount,
       depositTotal,
-      requiredTransactions,
       selectedToken,
       lockupAccountId,
       venearStorageCost,
@@ -68,16 +67,8 @@ export const ReviewStep = memo(
       }
     }, [depositTotal, lockedAmountYocto, selectedToken?.type]);
 
-    const {
-      transactionText,
-      transactionStep,
-      numTransactions,
-      isSubmitting,
-      isCompleted,
-      executeTransactions,
-      error,
-      retryFromCurrentStep,
-    } = useDeployLockupAndLock();
+    const { isSubmitting, isCompleted, executeTransactions, error } =
+      useDeployLockupAndLockV2();
 
     const handleShowDisclosures = useCallback(() => {
       setShowDisclosures(true);
@@ -110,12 +101,9 @@ export const ReviewStep = memo(
           amountYocto: utils.format.parseNearAmount(enteredAmount) ?? "0",
         },
       });
-      executeTransactions({
-        numTransactions: requiredTransactions.length,
-      });
+      executeTransactions();
     }, [
       executeTransactions,
-      requiredTransactions.length,
       enteredAmount,
       selectedToken?.metadata?.symbol,
       selectedToken?.type,
@@ -184,7 +172,7 @@ export const ReviewStep = memo(
             <Image src={LockClosedIcon} alt="coin" width={300} />
             <div className="flex flex-col">
               <p className="text-md text-[#9D9FA1] text-center">
-                {transactionText}
+                Successfully locked {selectedToken?.metadata?.name}
               </p>
               <div className="text-4xl font-bold text-gray-900 text-center">
                 <TokenAmount
@@ -235,7 +223,7 @@ export const ReviewStep = memo(
             <Image src={LockOpenIcon} alt="coin" width={300} height={300} />
             <div className="flex flex-col">
               <p className="text-md text-[#9D9FA1] text-center">
-                {transactionText}
+                {`Locking ${selectedToken?.metadata?.name}...`}
               </p>
               <div className="text-4xl font-bold text-gray-900 text-center">
                 <TokenAmount
@@ -253,15 +241,14 @@ export const ReviewStep = memo(
               </div>
               <div className="flex flex-row w-full justify-center items-center gap-2">
                 <span className="text-sm font-medium">
-                  Pending {transactionStep + 1} of {numTransactions} wallet
-                  signatures
+                  Pending wallet signature
                 </span>
                 <TooltipWithTap
                   content={
                     <div className="max-w-[300px] flex flex-col text-left p-3">
                       <h4 className="text-lg font-bold mb-2">
-                        You&apos;ll need to complete a few wallet signatures to
-                        complete setup.
+                        You&apos;ll need to sign several transactions to
+                        complete the lockup process.
                       </h4>
                       <p className="text-sm">
                         Depending on what you&apos;re locking, this may include:
@@ -297,7 +284,7 @@ export const ReviewStep = memo(
       return (
         <TransactionError
           message={error}
-          onRetry={retryFromCurrentStep}
+          onRetry={executeTransactions}
           onGoBack={handleEdit}
         />
       );
