@@ -197,7 +197,7 @@ export default function LegacyOnboardingPage() {
                 onClick={onRefresh}
                 disabled={!lockupAccountId || isRefreshing}
                 variant="secondary"
-                className="w-full sm:w-auto"
+                className="w-full sm:w-auto text-white"
               >
                 {isRefreshing ? "Refreshing..." : "Refresh balance"}
               </Button>
