@@ -603,21 +603,19 @@ export const NearProvider: React.FC<NearProviderProps> = ({
 
       const nonce = Buffer.from(nonceResponse.nonce, "hex");
 
-      const sanitizedMessage = message.replace(/[’”“]/g, (match) =>
-        match === "'" ? "'" : '"'
-      );
+      // Don't sanitize the message - sign it exactly as provided - it would break the signature verification
       if (useNearConnect) {
         if (!nearConnector) return;
         const w = await nearConnector.wallet();
         return (w as any).signMessage({
-          message: sanitizedMessage,
+          message,
           recipient,
           nonce,
         });
       }
       const selectedWallet = await selector!.wallet();
       return selectedWallet!.signMessage({
-        message: sanitizedMessage,
+        message,
         recipient,
         nonce,
       });

@@ -64,15 +64,26 @@ export default function DelegateStatementForm({
       notificationPreferences,
     } = values;
 
+    // Sanitize string fields to replace curly quotes with straight quotes
+    const sanitizeString = (str: string | undefined) => {
+      if (!str) return "";
+      return str.replace(/['""]/g, (match) =>
+        match === "'" ? "'" : '"'
+      );
+    };
+
     // User will only sign what they are seeing on the frontend
     const body = {
       address: signedAccountId,
-      twitter,
-      discord,
-      email,
-      warpcast,
-      statement: delegateStatement,
-      topIssues,
+      twitter: sanitizeString(twitter),
+      discord: sanitizeString(discord),
+      email: sanitizeString(email),
+      warpcast: sanitizeString(warpcast),
+      statement: sanitizeString(delegateStatement),
+      topIssues: topIssues.map(issue => ({
+        type: sanitizeString(issue.type),
+        value: sanitizeString(issue.value),
+      })),
       notificationPreferences,
       agreeCodeConduct: values.agreeCodeConduct,
     };
