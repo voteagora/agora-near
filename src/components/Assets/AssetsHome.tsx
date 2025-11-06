@@ -18,6 +18,7 @@ import { AssetsLandingPage } from "./AssetsLandingPage";
 import { GovernanceRewardsCard } from "./GovernanceRewardsCard";
 import { HoldingsSection } from "./HoldingsSection";
 import { VotingPowerCard } from "./VotingPowerCard";
+import { DelegationSummaryCard } from "./DelegationSummaryCard";
 
 export const AssetsHome = memo(() => {
   const { signedAccountId } = useNear();
@@ -146,6 +147,9 @@ export const AssetsHome = memo(() => {
         <div className="w-full sm:w-[30%] flex">
           <GovernanceRewardsCard />
         </div>
+      </div>
+      <div className="flex flex-col sm:px-6 -mt-2">
+        <DelegationSummaryCard />
       </div>
       <HoldingsSection />
     </div>

@@ -133,3 +133,6 @@ export const LEGACY_STAKING_DISMISSED_KEY =
   "agora-legacy-staking-banner-dismissed";
 
 export const DEFAULT_QUORUM_FLOOR_VENEAR = "7000000"; // 7M veNEAR
+
+export const STAKE_ENCOURAGEMENT_BANNER_DISMISS_KEY =
+  "agora-stake-encouragement-dismissed";

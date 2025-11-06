@@ -4,7 +4,6 @@ import Tenant from "./tenant/tenant";
 import { NANO_SECONDS_IN_DAY } from "./constants";
 import Big from "big.js";
 import { NEAR_NOMINATION_EXP } from "near-api-js/lib/utils/format";
-import { utils } from "near-api-js";
 import { baseApiUrl } from "./api/constants";
 
 export function cn(...inputs: ClassValue[]) {
@@ -123,6 +122,54 @@ export function humanizeNumberContact(n: number, digits: number): string {
     notation: "compact",
     maximumFractionDigits: digits,
   }).format(n);
+}
+
+/**
+ * Formats voting power numbers with intelligent scaling based on the maximum value.
+ * Uses B/M/K suffixes when appropriate and maintains 3 significant figures.
+ *
+ * @param value - The number to format
+ * @param maxValue - The maximum value in the set (used to determine scaling)
+ * @returns Formatted string with appropriate suffix
+ */
+export function formatVotingPower(value: number, maxValue: number): string {
+  // Determine the suffix based on the maximum value
+  let suffix = "";
+  let divisor = 1;
+
+  if (maxValue >= 1_000_000_000) {
+    suffix = "B";
+    divisor = 1_000_000_000;
+  } else if (maxValue >= 1_000_000) {
+    suffix = "M";
+    divisor = 1_000_000;
+  } else if (maxValue >= 1_000) {
+    suffix = "K";
+    divisor = 1_000;
+  }
+
+  // Divide the value by the divisor
+  const scaledValue = value / divisor;
+
+  // Round to 3 significant figures
+  let formattedValue: string;
+
+  if (scaledValue === 0) {
+    formattedValue = "0";
+  } else {
+    // Calculate number of decimal places needed for 3 sig figs
+    const magnitude = Math.floor(Math.log10(Math.abs(scaledValue)));
+    const decimalPlaces = Math.max(0, 2 - magnitude);
+
+    // Round to appropriate decimal places
+    formattedValue = scaledValue.toFixed(decimalPlaces);
+
+    if (formattedValue.includes(".")) {
+      formattedValue = formattedValue.replace(/\.?0+$/, "");
+    }
+  }
+
+  return formattedValue + suffix;
 }
 
 export function tokenToHumanNumber(amount: number, decimals: number) {

@@ -317,6 +317,13 @@ const faqs: FAQ[] = [
         contract is non-upgradable, making this behavior fixed for the lifetime
         of the V1 lockup contract. This will be addressed in a future version of
         House of Stake.
+        <br />
+        <br />
+        See the wiki{" "}
+        <ExternalLink href="https://github.com/voteagora/agora-near/wiki/How-To:-Withdrawing-NEAR-after-transferring-LST-to-Lockup-Contract">
+          here
+        </ExternalLink>{" "}
+        for more information.
       </Text>
     ),
   },

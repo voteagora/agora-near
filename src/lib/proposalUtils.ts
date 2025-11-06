@@ -28,19 +28,19 @@ export const isForGreaterThanAgainst = ({
 
 export function getProposalStatus({
   status,
-  totalVotingPower,
+  quorumAmount,
   forVotingPower,
   againstVotingPower,
 }: {
   status: string;
-  totalVotingPower: string;
+  quorumAmount: string;
   forVotingPower: string;
   againstVotingPower: string;
 }) {
   switch (status) {
     case ProposalStatus.Finished: {
       const quorumFulfilled = isQuorumFulfilled({
-        totalVotingPower,
+        quorumAmount,
         forVotingPower,
         againstVotingPower,
       });
@@ -88,7 +88,10 @@ export function getProposalStatusColor(proposalStatus: string) {
 }
 
 export const formatNearTime = (time: string | null | undefined) => {
-  return time ? format(Number(time) / 1000000, "h:mm aaa MMM dd, yyyy") : null;
+  if (!time) return null;
+  const date = new Date(Number(time) / 1000000);
+  // Uses local time zone; "O" provides a short offset (e.g. GMT+2)
+  return format(date, "h:mm aaa MMM dd, yyyy O");
 };
 
 export const getProposalTimes = ({
@@ -162,20 +165,19 @@ export const getTotalForAgainstVotes = (
 };
 
 export const isQuorumFulfilled = ({
-  totalVotingPower,
+  quorumAmount,
   forVotingPower,
   againstVotingPower,
 }: {
-  totalVotingPower: string;
+  quorumAmount: string;
   forVotingPower: string;
   againstVotingPower: string;
 }) => {
-  const quorum = getYoctoNearForQuorum(totalVotingPower);
   const totalForAgainstVotes = getTotalForAgainstVotes(
     forVotingPower,
     againstVotingPower
   );
-  return totalForAgainstVotes.gte(quorum);
+  return totalForAgainstVotes.gte(quorumAmount);
 };
 
 export const getVotingDays = ({

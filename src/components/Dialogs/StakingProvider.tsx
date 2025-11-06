@@ -220,7 +220,7 @@ export const StakingProvider = ({
       value={{
         currentStakingPoolId: stakingPoolId,
         selectedPool: preSelectedStakingPool ?? selectedPool,
-        hasAlreadySelectedStakingPool: !!preSelectedStakingPool,
+        hasAlreadySelectedStakingPool: !!stakingPoolId,
         setSelectedPool,
         enteredAmount,
         setEnteredAmount: setAmount,

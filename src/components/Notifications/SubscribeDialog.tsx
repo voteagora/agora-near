@@ -85,15 +85,26 @@ const SubscribeDialog = ({
       throw new Error("Email is required");
     }
 
+    // Sanitize string fields to replace curly quotes with straight quotes
+    const sanitizeString = (str: string | undefined | null) => {
+      if (!str) return str || "";
+      return str.replace(/['""]/g, (match) =>
+        match === "'" ? "'" : '"'
+      );
+    };
+
     const body = {
       address: signedAccountId,
-      email: emailToUse,
-      twitter: data?.twitter || "",
-      discord: data?.discord || "",
-      warpcast: data?.warpcast || "",
-      topIssues: data?.topIssues || [],
+      email: sanitizeString(emailToUse),
+      twitter: sanitizeString(data?.twitter),
+      discord: sanitizeString(data?.discord),
+      warpcast: sanitizeString(data?.warpcast),
+      topIssues: (data?.topIssues || []).map(issue => ({
+        type: sanitizeString(issue.type),
+        value: sanitizeString(issue.value),
+      })),
       agreeCodeConduct: true,
-      statement: data?.statement || "",
+      statement: sanitizeString(data?.statement),
       notification_preferences: {
         wants_proposal_created_email: wantsNotifications,
         wants_proposal_ending_soon_email: wantsNotifications,

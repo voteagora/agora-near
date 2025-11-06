@@ -1,16 +1,17 @@
-import TokenAmount from "@/components/shared/TokenAmount";
 import checkIcon from "@/assets/check.svg";
+import TokenAmount from "@/components/shared/TokenAmount";
+import { NEAR_TOKEN } from "@/lib/constants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import {
   getProposalTimes,
   getTotalForAgainstVotes,
-  getYoctoNearForQuorum,
   isQuorumFulfilled,
 } from "@/lib/proposalUtils";
-import Big from "big.js";
+import { formatVotingPower } from "@/lib/utils";
 import Image from "next/image";
 import { useMemo } from "react";
 import ProposalVoteBar from "./ProposalVoteBar";
+import Big from "big.js";
 
 const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
   const { createdTime, startTime, endTime } = getProposalTimes({
@@ -27,17 +28,33 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
     return row;
   }, [createdTime, startTime, endTime]);
 
-  const quorum = getYoctoNearForQuorum(
-    proposal.snapshot_and_state?.total_venear ?? "0"
-  );
+  const quorum = proposal.quorumAmountYoctoNear ?? "0";
+
   const hasMetQuorum = isQuorumFulfilled({
-    totalVotingPower: proposal.snapshot_and_state?.total_venear ?? "0",
+    quorumAmount: quorum,
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
   });
   const totalForAgainstVotes = getTotalForAgainstVotes(
     proposal.votes[0].total_venear,
     proposal.votes[1].total_venear
+  );
+
+  // Calculate max value for consistent scaling across all vote options
+  const forVotesNumber =
+    Number(proposal.votes[0].total_venear) / Math.pow(10, NEAR_TOKEN.decimals);
+  const againstVotesNumber =
+    Number(proposal.votes[1].total_venear) / Math.pow(10, NEAR_TOKEN.decimals);
+  const abstainVotesNumber =
+    proposal.voting_options.length > 2
+      ? Number(proposal.votes[2]?.total_venear ?? "0") /
+        Math.pow(10, NEAR_TOKEN.decimals)
+      : 0;
+
+  const maxVotes = Math.max(
+    forVotesNumber,
+    againstVotesNumber,
+    abstainVotesNumber
   );
 
   return (
@@ -49,6 +66,7 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
           <AmountAndPercent
             amount={proposal.votes[0].total_venear}
             total={proposal.total_votes.total_venear}
+            maxVotes={maxVotes}
           />
         </div>
         {proposal.voting_options.length > 2 && (
@@ -57,6 +75,7 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
             <AmountAndPercent
               amount={proposal.votes[2].total_venear}
               total={proposal.total_votes.total_venear}
+              maxVotes={maxVotes}
             />
           </div>
         )}
@@ -65,6 +84,7 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
           <AmountAndPercent
             amount={proposal.votes[1].total_venear}
             total={proposal.total_votes.total_venear}
+            maxVotes={maxVotes}
           />
         </div>
       </div>
@@ -82,7 +102,7 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
                 amount={totalForAgainstVotes.toFixed(0)}
                 hideCurrency
               />{" "}
-              / <TokenAmount amount={quorum.toFixed(0)} hideCurrency />
+              / <TokenAmount amount={quorum} hideCurrency />
               Required
             </p>
           </div>
@@ -120,9 +140,11 @@ export default ProposalPopover;
 function AmountAndPercent({
   amount,
   total,
+  maxVotes,
 }: {
   amount: string;
   total: string;
+  maxVotes: number;
 }) {
   const parsedTotal = Big(total);
   const parsedAmount = Big(amount);
@@ -131,10 +153,13 @@ function AmountAndPercent({
     ? "0"
     : parsedAmount.div(parsedTotal).mul(100).toFixed(2);
 
+  // Convert yocto NEAR to NEAR and format with the scaling
+  const amountNumber = Number(amount) / Math.pow(10, NEAR_TOKEN.decimals);
+  const formattedAmount = formatVotingPower(amountNumber, maxVotes);
+
   return (
     <span>
-      <TokenAmount amount={amount} hideCurrency />
-      {percent && `(${percent}%)`}
+      {formattedAmount} ({percent}%)
     </span>
   );
 }

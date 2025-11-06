@@ -1,10 +1,10 @@
 "use client";
 
-import { rgbStringToHex } from "@/lib/color";
 import { ChartSkeleton } from "@/components/Proposals/ProposalPage/ProposalChart/ProposalChart";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
+import { rgbStringToHex } from "@/lib/color";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
-import { formatNearTime, getYoctoNearForQuorum } from "@/lib/proposalUtils";
+import { formatNearTime } from "@/lib/proposalUtils";
 import Tenant from "@/lib/tenant/tenant";
 import {
   formatFullDate,
@@ -12,6 +12,7 @@ import {
   formatNumberWithScientificNotation,
   isScientificNotation,
 } from "@/lib/utils";
+import Big from "big.js";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import {
@@ -50,9 +51,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
       Number(proposal.voting_duration_ns)
     ).toString()
   );
-  const quorum = getYoctoNearForQuorum(
-    proposal.snapshot_and_state?.total_venear ?? "0"
-  );
+  const quorum = Big(proposal.quorumAmountYoctoNear ?? "0");
 
   const stackIds: { [key: string]: string } = {
     for: "1",
