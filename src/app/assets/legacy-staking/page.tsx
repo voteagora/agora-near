@@ -11,6 +11,7 @@ import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useRefreshStakingPoolBalance } from "@/hooks/useRefreshStakingPoolBalance";
 import CopyableHumanAddress from "@/components/shared/CopyableHumanAddress";
 import { ExternalLink, Github } from "lucide-react";
+import { HoldingsSection } from "@/components/Assets/HoldingsSection";
 
 export default function LegacyOnboardingPage() {
   const openDialog = useOpenDialog();
@@ -124,7 +125,7 @@ export default function LegacyOnboardingPage() {
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
             Manage existing staking positions from a custom pool and bring them
-            into House of Stake with a guided UI.
+            into House of Stake.
           </p>
         </div>
 
@@ -348,6 +349,9 @@ export default function LegacyOnboardingPage() {
             </Card>
           </>
         )}
+      </div>
+      <div className="w-full mx-auto max-w-6xl px-4 md:px-8">
+        <HoldingsSection />
       </div>
     </div>
   );

@@ -34,21 +34,6 @@ export const AssetsHome = memo(() => {
     enabled: true,
   });
 
-  const openDialog = useOpenDialog();
-
-  const handleLandingGetStarted = () => {
-    if (!signedAccountId) {
-      signIn();
-      return;
-    }
-    openDialog({
-      type: "NEAR_LOCK",
-      params: {
-        source: "onboarding",
-      },
-    });
-  };
-
   const shouldShowLSTWarning = useMemo(() => {
     // Your lockup version takes precedence if you have onboarded, otherwise use global lockup version
     const lockupVersionToCheck = accountInfo?.lockupVersion ?? lockupVersion;
