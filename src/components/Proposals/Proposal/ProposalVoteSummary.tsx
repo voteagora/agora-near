@@ -5,10 +5,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { ProposalInfo } from "@/lib/contracts/types/voting";
-import { getYoctoNearForQuorum } from "@/lib/proposalUtils";
-import { formatVotingPower } from "@/lib/utils";
 import { NEAR_TOKEN } from "@/lib/constants";
+import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { formatVotingPower } from "@/lib/utils";
 import { useState } from "react";
 import ProposalPopover from "./ProposalPopover";
 import ProposalStatusDetail from "./ProposalStatusDetail";
@@ -20,9 +19,6 @@ export default function ProposalVoteSummary({
   proposal: ProposalInfo;
 }) {
   const [showDetails, setShowDetails] = useState(false);
-  const quorum = getYoctoNearForQuorum(
-    proposal.snapshot_and_state?.total_venear ?? "0"
-  );
 
   // Convert yocto NEAR to NEAR for display
   const forVotesNumber =
@@ -57,7 +53,11 @@ export default function ProposalVoteSummary({
             </div>
             <ProposalVoteBar proposal={proposal} />
             <div className="text-secondary font-normal pb-2">
-              Quorum <TokenAmount amount={quorum.toFixed(0)} hideCurrency />
+              Quorum{" "}
+              <TokenAmount
+                amount={proposal.quorumAmountYoctoNear ?? "0"}
+                hideCurrency
+              />
             </div>
           </HoverCardTrigger>
           <div className="cursor-pointer flex flex-col gap-2 px-4">

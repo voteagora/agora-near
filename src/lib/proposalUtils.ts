@@ -28,19 +28,19 @@ export const isForGreaterThanAgainst = ({
 
 export function getProposalStatus({
   status,
-  totalVotingPower,
+  quorumAmount,
   forVotingPower,
   againstVotingPower,
 }: {
   status: string;
-  totalVotingPower: string;
+  quorumAmount: string;
   forVotingPower: string;
   againstVotingPower: string;
 }) {
   switch (status) {
     case ProposalStatus.Finished: {
       const quorumFulfilled = isQuorumFulfilled({
-        totalVotingPower,
+        quorumAmount,
         forVotingPower,
         againstVotingPower,
       });
@@ -165,20 +165,19 @@ export const getTotalForAgainstVotes = (
 };
 
 export const isQuorumFulfilled = ({
-  totalVotingPower,
+  quorumAmount,
   forVotingPower,
   againstVotingPower,
 }: {
-  totalVotingPower: string;
+  quorumAmount: string;
   forVotingPower: string;
   againstVotingPower: string;
 }) => {
-  const quorum = getYoctoNearForQuorum(totalVotingPower);
   const totalForAgainstVotes = getTotalForAgainstVotes(
     forVotingPower,
     againstVotingPower
   );
-  return totalForAgainstVotes.gte(quorum);
+  return totalForAgainstVotes.gte(quorumAmount);
 };
 
 export const getVotingDays = ({
