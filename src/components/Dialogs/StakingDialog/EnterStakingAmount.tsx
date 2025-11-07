@@ -11,6 +11,13 @@ import { useStakingProviderContext } from "../StakingProvider";
 import { StakingDialogHeader } from "./StakingDialogHeader";
 import { StakingOptionCard } from "./StakingOptionCard";
 import { useIsPoolWhitelisted } from "@/hooks/useIsPoolWhitelisted";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 
 type EnterStakingAmountProps = {
   onContinue: (selectedProvider: StakingPool) => void;
@@ -44,16 +51,38 @@ export const EnterStakingAmount = ({
   const [isValidatingCustomPool, setIsValidatingCustomPool] =
     useState<boolean>(false);
   const [customPoolError, setCustomPoolError] = useState<string>("");
+
+  // Basic NEAR account ID format validation
+  const isValidNearAccountId = (id: string) => {
+    if (!/^[a-z0-9._-]{2,64}$/.test(id)) return false;
+    if (id.startsWith(".") || id.endsWith(".")) return false;
+    return id
+      .split(".")
+      .every((part) => part.length >= 2 && /^[a-z0-9_-]+$/.test(part));
+  };
   const [showCustomPool, setShowCustomPool] = useState<boolean>(false);
 
-  const isCustomPoolValid = useMemo(() => !!customPoolId, [customPoolId]);
+  const isCustomPoolValid = useMemo(() => {
+    if (!customPoolId) return false;
+    return isValidNearAccountId(customPoolId);
+  }, [customPoolId]);
 
   const handleUseCustomPool = useCallback(async () => {
     console.log("[EnterStakingAmount] Use custom pool clicked", {
       customPoolId,
       isCustomPoolValid,
     });
-    if (!isCustomPoolValid) return;
+
+    // Format validation for pool and optional whitelist override
+    if (!isCustomPoolValid) {
+      setCustomPoolError("Enter a valid NEAR account ID for the staking pool.");
+      return;
+    }
+    if (whitelistContractId && !isValidNearAccountId(whitelistContractId)) {
+      setCustomPoolError("Invalid whitelist account ID format.");
+      return;
+    }
+
     setCustomPoolError("");
     setIsValidatingCustomPool(true);
     try {
@@ -82,7 +111,14 @@ export const EnterStakingAmount = ({
       setIsValidatingCustomPool(false);
       console.log("[EnterStakingAmount] Finished custom pool validation");
     }
-  }, [customPoolId, isCustomPoolValid, isWhitelisted, setSelectedPool]);
+  }, [
+    customPoolId,
+    isCustomPoolValid,
+    whitelistContractId,
+    isValidNearAccountId,
+    isWhitelisted,
+    setSelectedPool,
+  ]);
 
   const handleContinue = useCallback(() => {
     console.log("[EnterStakingAmount] Continue clicked", {
@@ -118,20 +154,30 @@ export const EnterStakingAmount = ({
         </div>
         {/* Custom pool entry - collapsed by default */}
         <div className="mb-6">
-          <button
-            type="button"
-            onClick={() => setShowCustomPool((v) => !v)}
-            className="text-sm text-[#9D9FA1] mb-2 flex items-center gap-2"
-          >
-            <span
-              className={`transition-transform ${showCustomPool ? "rotate-90" : ""}`}
-            >
-              ▸
-            </span>
-            {hasAlreadySelectedStakingPool
-              ? "Change to a custom staking pool"
-              : "Enter a custom staking pool"}
-          </button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={() => setShowCustomPool((v) => !v)}
+                  className="text-sm text-[#9D9FA1] mb-2 flex items-center gap-2"
+                >
+                  <span
+                    className={`transition-transform ${showCustomPool ? "rotate-90" : ""}`}
+                  >
+                    ▸
+                  </span>
+                  {hasAlreadySelectedStakingPool
+                    ? "Change to a custom staking pool"
+                    : "Enter a custom staking pool"}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Enter or change the staking pool account ID you want to use. We
+                will verify it against the selected whitelist.
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           {showCustomPool && (
             <>
               <div className="flex flex-col gap-2">
@@ -145,14 +191,39 @@ export const EnterStakingAmount = ({
                   <UpdatedButton
                     variant="rounded"
                     onClick={handleUseCustomPool}
-                    disabled={!isCustomPoolValid || isValidatingCustomPool}
+                    disabled={
+                      !isCustomPoolValid ||
+                      isValidatingCustomPool ||
+                      (whitelistContractId &&
+                        !isValidNearAccountId(whitelistContractId))
+                    }
                   >
                     {isValidatingCustomPool ? "Checking..." : "Use"}
                   </UpdatedButton>
                 </div>
+                {/* Inline format validation for pool */}
+                {customPoolId && !isValidNearAccountId(customPoolId) && (
+                  <div className="text-xs text-red-500">
+                    Invalid pool account ID format
+                  </div>
+                )}
                 <div className="flex flex-col gap-1">
-                  <label className="text-xs text-[#9D9FA1]">
+                  <label className="text-xs text-[#9D9FA1] flex items-center gap-1">
                     Whitelist contract (optional)
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="inline-flex items-center justify-center rounded-full p-1 hover:bg-muted">
+                            <Info className="h-3.5 w-3.5" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Supply a whitelist contract if your custom pool
+                          belongs to a legacy factory. We will validate the pool
+                          against this whitelist.
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </label>
                   <Input
                     type="text"
@@ -162,10 +233,19 @@ export const EnterStakingAmount = ({
                       setWhitelistContractId(e.target.value.trim())
                     }
                   />
-                  <div className="text-[11px] text-[#9D9FA1]">
-                    Using whitelist:{" "}
-                    {whitelistAccountId || "default from config"}
+                  <div className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none text-gray-700 bg-gray-50 border-gray-200 w-fit">
+                    Using whitelist:
+                    <span className="font-semibold">
+                      {whitelistAccountId || "default from config"}
+                    </span>
                   </div>
+                  {/* Inline format validation for whitelist */}
+                  {whitelistContractId &&
+                    !isValidNearAccountId(whitelistContractId) && (
+                      <div className="text-[11px] text-red-500">
+                        Invalid whitelist account ID format
+                      </div>
+                    )}
                 </div>
               </div>
               {!!customPoolError && (
