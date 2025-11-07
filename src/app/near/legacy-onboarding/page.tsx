@@ -88,7 +88,7 @@ export default function LegacyOnboardingPage() {
         </h1>
         <p className="text-sm text-muted-foreground mt-1">
           Manage existing staking positions from a custom pool and bring them
-          into House of Stake with a guided UI.
+          into House of Stake.
         </p>
       </div>
 
