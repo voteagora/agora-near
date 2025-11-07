@@ -1,16 +1,17 @@
 import { useNear } from "@/contexts/NearContext";
 import { useVenearConfig } from "./useVenearConfig";
 
-export const useIsPoolWhitelisted = () => {
+export const useIsPoolWhitelisted = (whitelistOverride?: string) => {
   const { viewMethod } = useNear();
   const { stakingPoolWhitelistId, isLoading } = useVenearConfig({
     enabled: true,
   });
+  const effectiveWhitelistId = whitelistOverride || stakingPoolWhitelistId;
 
   async function isWhitelisted(poolAccountId?: string) {
-    if (!stakingPoolWhitelistId || !poolAccountId) return false;
+    if (!effectiveWhitelistId || !poolAccountId) return false;
     const res = await viewMethod({
-      contractId: stakingPoolWhitelistId,
+      contractId: effectiveWhitelistId,
       method: "is_whitelisted",
       args: { staking_pool_account_id: poolAccountId },
     });
@@ -20,6 +21,6 @@ export const useIsPoolWhitelisted = () => {
   return {
     isWhitelisted,
     isLoading,
-    whitelistAccountId: stakingPoolWhitelistId,
+    whitelistAccountId: effectiveWhitelistId,
   };
 };

@@ -37,7 +37,10 @@ export const EnterStakingAmount = ({
   } = useStakingProviderContext();
 
   const [customPoolId, setCustomPoolId] = useState<string>("");
-  const { isWhitelisted } = useIsPoolWhitelisted();
+  const [whitelistContractId, setWhitelistContractId] = useState<string>("");
+  const { isWhitelisted, whitelistAccountId } = useIsPoolWhitelisted(
+    whitelistContractId || undefined
+  );
   const [isValidatingCustomPool, setIsValidatingCustomPool] =
     useState<boolean>(false);
   const [customPoolError, setCustomPoolError] = useState<string>("");
@@ -131,20 +134,39 @@ export const EnterStakingAmount = ({
           </button>
           {showCustomPool && (
             <>
-              <div className="flex gap-2 items-center">
-                <Input
-                  type="text"
-                  placeholder="staking-pool.account.near"
-                  value={customPoolId}
-                  onChange={(e) => setCustomPoolId(e.target.value.trim())}
-                />
-                <UpdatedButton
-                  variant="rounded"
-                  onClick={handleUseCustomPool}
-                  disabled={!isCustomPoolValid || isValidatingCustomPool}
-                >
-                  {isValidatingCustomPool ? "Checking..." : "Use"}
-                </UpdatedButton>
+              <div className="flex flex-col gap-2">
+                <div className="flex gap-2 items-center">
+                  <Input
+                    type="text"
+                    placeholder="staking-pool.account.near"
+                    value={customPoolId}
+                    onChange={(e) => setCustomPoolId(e.target.value.trim())}
+                  />
+                  <UpdatedButton
+                    variant="rounded"
+                    onClick={handleUseCustomPool}
+                    disabled={!isCustomPoolValid || isValidatingCustomPool}
+                  >
+                    {isValidatingCustomPool ? "Checking..." : "Use"}
+                  </UpdatedButton>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-[#9D9FA1]">
+                    Whitelist contract (optional)
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="whitelist.factory.near (optional)"
+                    value={whitelistContractId}
+                    onChange={(e) =>
+                      setWhitelistContractId(e.target.value.trim())
+                    }
+                  />
+                  <div className="text-[11px] text-[#9D9FA1]">
+                    Using whitelist:{" "}
+                    {whitelistAccountId || "default from config"}
+                  </div>
+                </div>
               </div>
               {!!customPoolError && (
                 <div className="text-xs text-red-500 mt-1">
