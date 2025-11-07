@@ -227,15 +227,17 @@ export const EnterStakingAmount = ({
                   </label>
                   <Input
                     type="text"
-                    placeholder="whitelist.factory.near (optional)"
+                    placeholder="whitelist.factory.near"
                     value={whitelistContractId}
                     onChange={(e) =>
                       setWhitelistContractId(e.target.value.trim())
                     }
                   />
-                  <div className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none text-gray-700 bg-gray-50 border-gray-200 w-fit">
-                    Using whitelist:
-                    <span className="font-semibold">
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-[11px] text-[#9D9FA1]">
+                      Using whitelist:
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none text-black bg-[#04e391] border-[#04e391] w-fit">
                       {whitelistAccountId || "default from config"}
                     </span>
                   </div>
