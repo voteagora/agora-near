@@ -1,0 +1,172 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Agora NEAR API",
+    "version": "1.0.0",
+    "description": "Public API for Agora NEAR governance platform",
+    "contact": {
+      "name": "Agora Team"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://near.agora.xyz",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/api/v1/proposals": {
+      "get": {
+        "summary": "List approved proposals",
+        "description": "Returns a paginated list of all approved proposals",
+        "operationId": "getProposals",
+        "tags": ["Proposals"],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of proposals to skip",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of proposals to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "proposals": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Proposal"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Proposal": {
+        "type": "object",
+        "description": "A governance proposal",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique proposal identifier"
+          },
+          "title": {
+            "type": "string",
+            "description": "Proposal title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Proposal description"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current proposal status",
+            "enum": ["pending", "active", "approved", "rejected", "executed"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the proposal was created"
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "description": "Number of items skipped"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of items returned"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items available"
+          }
+        },
+        "required": ["offset", "limit", "total"]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional error details"
+          },
+          "message": {
+            "type": "string",
+            "description": "Detailed error message"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Proposals",
+      "description": "Operations related to governance proposals"
+    }
+  ]
+}
