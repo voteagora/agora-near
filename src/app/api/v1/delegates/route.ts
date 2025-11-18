@@ -1,27 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { fetchPendingProposals } from "@/lib/api/proposal/requests";
+import { fetchDelegates } from "@/lib/api/delegates/requests";
 
 // Query parameter validation schema
 const querySchema = z.object({
   offset: z.coerce.number().int().min(0).default(0),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-  created_by: z.string().nullable().optional(),
+  order_by: z.string().nullable().optional(),
+  sorting_seed: z.coerce.number().int().default(0),
+  filter_by: z.string().nullable().optional(),
+  issue_type: z.string().nullable().optional(),
 });
 
 /**
- * GET /api/v1/proposals/pending
+ * GET /api/v1/delegates
  *
- * Public endpoint to list all pending proposals with pagination.
+ * Public endpoint to list all delegates with pagination and filtering.
  *
  * Query parameters:
- * - offset: Number of proposals to skip (default: 0)
- * - limit: Number of proposals to return (default: 20, max: 100)
- * - created_by: Optional filter to only return proposals created by a specific account
+ * - offset: Number of delegates to skip (default: 0)
+ * - limit: Number of delegates to return (default: 20, max: 100)
+ * - order_by: Sort order (e.g., "votingPower", "participationRate")
+ * - sorting_seed: Random seed for shuffling results (default: 0)
+ * - filter_by: Filter option (e.g., "endorsed")
+ * - issue_type: Filter by issue type
  *
  * Response format:
  * {
- *   proposals: Proposal[],
+ *   delegates: DelegateProfile[],
  *   pagination: {
  *     offset: number,
  *     limit: number,
@@ -37,7 +43,10 @@ export async function GET(request: NextRequest) {
     const validationResult = querySchema.safeParse({
       offset: searchParams.get("offset"),
       limit: searchParams.get("limit"),
-      created_by: searchParams.get("created_by"),
+      order_by: searchParams.get("order_by"),
+      sorting_seed: searchParams.get("sorting_seed"),
+      filter_by: searchParams.get("filter_by"),
+      issue_type: searchParams.get("issue_type"),
     });
 
     if (!validationResult.success) {
@@ -50,28 +59,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { offset, limit, created_by } = validationResult.data;
+    const { offset, limit, order_by, sorting_seed, filter_by, issue_type } =
+      validationResult.data;
 
     // Convert offset/limit to page-based pagination for backend API
     // Backend uses 1-based page numbering
     const page = Math.floor(offset / limit) + 1;
     const pageSize = limit;
 
-    // Fetch proposals from backend
-    const { proposals, count } = await fetchPendingProposals(
+    // Fetch delegates from backend
+    const { delegates, count } = await fetchDelegates(
       pageSize,
       page,
-      created_by
+      order_by || null,
+      sorting_seed,
+      filter_by || null,
+      issue_type || null
     );
 
     // Calculate the slice we need from the returned page
     // In case offset doesn't align perfectly with page boundaries
     const startIndex = offset % limit;
-    const slicedProposals = proposals.slice(startIndex, startIndex + limit);
+    const slicedDelegates = delegates.slice(startIndex, startIndex + limit);
 
     // Return response with pagination metadata
     return NextResponse.json({
-      proposals: slicedProposals,
+      delegates: slicedDelegates,
       pagination: {
         offset,
         limit,
@@ -79,11 +92,11 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error fetching pending proposals:", error);
+    console.error("Error fetching delegates:", error);
 
     return NextResponse.json(
       {
-        error: "Failed to fetch pending proposals",
+        error: "Failed to fetch delegates",
         message: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }

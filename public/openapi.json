@@ -254,6 +254,278 @@
           }
         }
       }
+    },
+    "/api/v1/delegates": {
+      "get": {
+        "summary": "List delegates",
+        "description": "Returns a paginated list of all delegates with optional filtering and sorting",
+        "operationId": "getDelegates",
+        "tags": [
+          "Delegates"
+        ],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of delegates to skip",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of delegates to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Field to order results by (e.g., 'votingPower', 'participationRate')",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sorting_seed",
+            "in": "query",
+            "description": "Random seed for shuffling results",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "filter_by",
+            "in": "query",
+            "description": "Filter option (e.g., 'endorsed')",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "issue_type",
+            "in": "query",
+            "description": "Filter by issue type (e.g., 'fundingAndGrants', 'houseOfStake')",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "delegates": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DelegateProfile"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/delegates/{address}": {
+      "get": {
+        "summary": "Get a specific delegate",
+        "description": "Returns detailed information about a specific delegate by their address",
+        "operationId": "getDelegate",
+        "tags": [
+          "Delegates"
+        ],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "description": "The delegate's NEAR account address",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "delegate.near"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "delegate": {
+                      "$ref": "#/components/schemas/DelegateProfile"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid address",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Delegate not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/delegates/{address}/voting-history": {
+      "get": {
+        "summary": "Get delegate voting history",
+        "description": "Returns the voting history for a specific delegate with pagination",
+        "operationId": "getDelegateVotingHistory",
+        "tags": [
+          "Delegates"
+        ],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "description": "The delegate's NEAR account address",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "delegate.near"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of votes to skip",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of votes to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "votes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/VoteHistory"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid address or query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -350,7 +622,13 @@
             "nullable": true
           }
         },
-        "required": ["id", "proposalId", "proposalTitle", "proposalDescription", "creatorId"]
+        "required": [
+          "id",
+          "proposalId",
+          "proposalTitle",
+          "proposalDescription",
+          "creatorId"
+        ]
       },
       "ProposalInfo": {
         "type": "object",
@@ -450,7 +728,16 @@
             "nullable": true
           }
         },
-        "required": ["id", "proposer_id", "creation_time_ns", "status", "total_votes", "votes", "voting_duration_ns", "voting_options"]
+        "required": [
+          "id",
+          "proposer_id",
+          "creation_time_ns",
+          "status",
+          "total_votes",
+          "votes",
+          "voting_duration_ns",
+          "voting_options"
+        ]
       },
       "Pagination": {
         "type": "object",
@@ -490,6 +777,139 @@
             "description": "Detailed error message"
           }
         }
+      },
+      "DelegateProfile": {
+        "type": "object",
+        "description": "Detailed profile information for a delegate",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Delegate's NEAR account address"
+          },
+          "twitter": {
+            "type": "string",
+            "description": "Twitter handle",
+            "nullable": true
+          },
+          "discord": {
+            "type": "string",
+            "description": "Discord username",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address",
+            "nullable": true
+          },
+          "warpcast": {
+            "type": "string",
+            "description": "Warpcast username",
+            "nullable": true
+          },
+          "topIssues": {
+            "type": "array",
+            "description": "Top issues the delegate cares about",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "nullable": true
+          },
+          "endorsed": {
+            "type": "boolean",
+            "description": "Whether the delegate is endorsed",
+            "nullable": true
+          },
+          "statement": {
+            "type": "string",
+            "description": "Delegate statement",
+            "nullable": true
+          },
+          "votingPower": {
+            "type": "string",
+            "description": "Total voting power",
+            "nullable": true
+          },
+          "participationRate": {
+            "type": "string",
+            "description": "Participation rate as a percentage",
+            "nullable": true
+          },
+          "numOfDelegators": {
+            "type": "string",
+            "description": "Number of delegators",
+            "nullable": true
+          },
+          "forCount": {
+            "type": "integer",
+            "description": "Number of votes in favor",
+            "nullable": true
+          },
+          "againstCount": {
+            "type": "integer",
+            "description": "Number of votes against",
+            "nullable": true
+          },
+          "abstainCount": {
+            "type": "integer",
+            "description": "Number of abstain votes",
+            "nullable": true
+          },
+          "delegatedFromCount": {
+            "type": "integer",
+            "description": "Number of delegations received",
+            "nullable": true
+          }
+        },
+        "required": [
+          "address"
+        ]
+      },
+      "VoteHistory": {
+        "type": "object",
+        "description": "A single vote record in a delegate's voting history",
+        "properties": {
+          "voteOption": {
+            "type": "string",
+            "description": "The option voted for"
+          },
+          "votingPower": {
+            "type": "string",
+            "description": "Voting power used for this vote"
+          },
+          "address": {
+            "type": "string",
+            "description": "Delegate's address"
+          },
+          "votedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the vote was cast"
+          },
+          "proposalId": {
+            "type": "string",
+            "description": "ID of the proposal voted on"
+          },
+          "proposalName": {
+            "type": "string",
+            "description": "Name of the proposal",
+            "nullable": true
+          }
+        },
+        "required": [
+          "voteOption",
+          "votingPower",
+          "address",
+          "votedAt",
+          "proposalId"
+        ]
       }
     }
   },
@@ -497,6 +917,10 @@
     {
       "name": "Proposals",
       "description": "Operations related to governance proposals"
+    },
+    {
+      "name": "Delegates",
+      "description": "Operations related to delegates"
     }
   ]
 }

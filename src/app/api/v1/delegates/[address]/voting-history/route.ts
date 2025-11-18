@@ -1,27 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { fetchPendingProposals } from "@/lib/api/proposal/requests";
+import { fetchVoteHistory } from "@/lib/api/delegates/requests";
 
 // Query parameter validation schema
 const querySchema = z.object({
   offset: z.coerce.number().int().min(0).default(0),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-  created_by: z.string().nullable().optional(),
 });
 
 /**
- * GET /api/v1/proposals/pending
+ * GET /api/v1/delegates/[address]/voting-history
  *
- * Public endpoint to list all pending proposals with pagination.
+ * Public endpoint to fetch voting history for a specific delegate.
+ *
+ * Path parameters:
+ * - address: The delegate's NEAR account address
  *
  * Query parameters:
- * - offset: Number of proposals to skip (default: 0)
- * - limit: Number of proposals to return (default: 20, max: 100)
- * - created_by: Optional filter to only return proposals created by a specific account
+ * - offset: Number of votes to skip (default: 0)
+ * - limit: Number of votes to return (default: 20, max: 100)
  *
  * Response format:
  * {
- *   proposals: Proposal[],
+ *   votes: VoteHistory[],
  *   pagination: {
  *     offset: number,
  *     limit: number,
@@ -29,15 +30,26 @@ const querySchema = z.object({
  *   }
  * }
  */
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { address: string } }
+) {
   try {
+    const { address } = params;
     const { searchParams } = new URL(request.url);
+
+    // Validate that address is provided
+    if (!address || typeof address !== "string" || address.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Delegate address is required" },
+        { status: 400 }
+      );
+    }
 
     // Parse and validate query parameters
     const validationResult = querySchema.safeParse({
       offset: searchParams.get("offset"),
       limit: searchParams.get("limit"),
-      created_by: searchParams.get("created_by"),
     });
 
     if (!validationResult.success) {
@@ -50,28 +62,24 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { offset, limit, created_by } = validationResult.data;
+    const { offset, limit } = validationResult.data;
 
     // Convert offset/limit to page-based pagination for backend API
     // Backend uses 1-based page numbering
     const page = Math.floor(offset / limit) + 1;
     const pageSize = limit;
 
-    // Fetch proposals from backend
-    const { proposals, count } = await fetchPendingProposals(
-      pageSize,
-      page,
-      created_by
-    );
+    // Fetch vote history from backend
+    const { votes, count } = await fetchVoteHistory(pageSize, page, address);
 
     // Calculate the slice we need from the returned page
     // In case offset doesn't align perfectly with page boundaries
     const startIndex = offset % limit;
-    const slicedProposals = proposals.slice(startIndex, startIndex + limit);
+    const slicedVotes = votes.slice(startIndex, startIndex + limit);
 
     // Return response with pagination metadata
     return NextResponse.json({
-      proposals: slicedProposals,
+      votes: slicedVotes,
       pagination: {
         offset,
         limit,
@@ -79,11 +87,11 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error fetching pending proposals:", error);
+    console.error("Error fetching voting history:", error);
 
     return NextResponse.json(
       {
-        error: "Failed to fetch pending proposals",
+        error: "Failed to fetch voting history",
         message: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
