@@ -71,10 +71,10 @@ export async function GET(request: NextRequest) {
     const { delegates, count } = await fetchDelegates(
       pageSize,
       page,
-      order_by || null,
+      order_by ?? null,
       sorting_seed,
-      filter_by || null,
-      issue_type || null
+      filter_by ?? null,
+      issue_type ?? null
     );
 
     // Calculate the slice we need from the returned page
@@ -82,9 +82,15 @@ export async function GET(request: NextRequest) {
     const startIndex = offset % limit;
     const slicedDelegates = delegates.slice(startIndex, startIndex + limit);
 
+    // Remove email field from delegates
+    const sanitizedDelegates = slicedDelegates.map((delegate) => {
+      const { email, ...rest } = delegate;
+      return rest;
+    });
+
     // Return response with pagination metadata
     return NextResponse.json({
-      delegates: slicedDelegates,
+      delegates: sanitizedDelegates,
       pagination: {
         offset,
         limit,

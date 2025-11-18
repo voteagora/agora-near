@@ -796,11 +796,6 @@
             "description": "Discord username",
             "nullable": true
           },
-          "email": {
-            "type": "string",
-            "description": "Email address",
-            "nullable": true
-          },
           "warpcast": {
             "type": "string",
             "description": "Warpcast username",
