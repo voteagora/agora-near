@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { fetchApprovedProposals } from "@/lib/api/proposal/requests";
+import { validateBearerToken } from "@/lib/apiAuth";
 
 // Query parameter validation schema
 const querySchema = z.object({
@@ -28,6 +29,12 @@ const querySchema = z.object({
  * }
  */
 export async function GET(request: NextRequest) {
+  // Validate bearer token
+  const authError = validateBearerToken(request);
+  if (authError) {
+    return authError;
+  }
+
   try {
     const { searchParams } = new URL(request.url);
 

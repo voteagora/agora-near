@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { fetchVoteHistory } from "@/lib/api/delegates/requests";
+import { validateBearerToken } from "@/lib/apiAuth";
 
 // Query parameter validation schema
 const querySchema = z.object({
@@ -34,6 +35,12 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { address: string } }
 ) {
+  // Validate bearer token
+  const authError = validateBearerToken(request);
+  if (authError) {
+    return authError;
+  }
+
   try {
     const { address } = params;
     const { searchParams } = new URL(request.url);

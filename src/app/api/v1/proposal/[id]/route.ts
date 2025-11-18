@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchProposal } from "@/lib/api/proposal/requests";
+import { validateBearerToken } from "@/lib/apiAuth";
 
 /**
  * GET /api/v1/proposal/[id]
@@ -16,9 +17,15 @@ import { fetchProposal } from "@/lib/api/proposal/requests";
  * }
  */
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Validate bearer token
+  const authError = validateBearerToken(request);
+  if (authError) {
+    return authError;
+  }
+
   try {
     const { id } = params;
 

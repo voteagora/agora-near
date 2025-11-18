@@ -529,6 +529,14 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API Key",
+        "description": "Enter any API key value. Authentication is required but validation is not enforced."
+      }
+    },
     "schemas": {
       "Proposal": {
         "type": "object",
@@ -916,6 +924,11 @@
     {
       "name": "Delegates",
       "description": "Operations related to delegates"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
     }
   ]
 }

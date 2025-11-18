@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDelegate } from "@/lib/api/delegates/requests";
+import { validateBearerToken } from "@/lib/apiAuth";
 
 /**
  * GET /api/v1/delegates/[address]
@@ -15,9 +16,15 @@ import { getDelegate } from "@/lib/api/delegates/requests";
  * }
  */
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { address: string } }
 ) {
+  // Validate bearer token
+  const authError = validateBearerToken(request);
+  if (authError) {
+    return authError;
+  }
+
   try {
     const { address } = params;
 
