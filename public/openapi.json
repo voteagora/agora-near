@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Agora NEAR API",
-    "version": "1.0.0",
-    "description": "Public API for Agora NEAR governance platform",
+    "version": "0.0.1",
+    "description": "This is an Alpha-Grade Public API for the Agora x NEAR governance platform.  A production release is expected in the future, subject to prioritization.  Until then, it is subject to change without guarantee of support or backwards compatibility, although best efforts will apply.",
     "contact": {
       "name": "Agora Team"
     }
@@ -24,7 +24,9 @@
         "summary": "List approved proposals",
         "description": "Returns a paginated list of all approved proposals",
         "operationId": "getProposals",
-        "tags": ["Proposals"],
+        "tags": [
+          "Proposals"
+        ],
         "parameters": [
           {
             "name": "offset",
@@ -94,37 +96,273 @@
           }
         }
       }
+    },
+    "/api/v1/proposal/{id}": {
+      "get": {
+        "summary": "Get a specific proposal",
+        "description": "Returns detailed information about a specific proposal by its numeric proposalId. Note: Use the 'proposalId' field from the proposals list, not the 'id' field (which is a base58 receipt ID).",
+        "operationId": "getProposal",
+        "tags": [
+          "Proposals"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The numeric proposal ID (use the proposalId field from the proposal object, not the id field)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "example": 123
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "proposal": {
+                      "$ref": "#/components/schemas/ProposalInfo"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid proposal ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Proposal not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
       "Proposal": {
         "type": "object",
-        "description": "A governance proposal",
+        "description": "A governance proposal (from /proposals endpoint)",
         "properties": {
           "id": {
             "type": "string",
-            "description": "Unique proposal identifier"
+            "description": "Database/receipt ID (base58-encoded string). Do not use for API calls.",
+            "example": "E9vt1WLrF8R8ZYE2WEkuyfTwF7zhMj1AAWLzFuE53LWC"
           },
-          "title": {
+          "proposalId": {
+            "type": "integer",
+            "description": "Numeric proposal ID used for routing and API calls",
+            "example": 123
+          },
+          "proposalTitle": {
             "type": "string",
             "description": "Proposal title"
           },
-          "description": {
+          "proposalDescription": {
             "type": "string",
             "description": "Proposal description"
+          },
+          "proposalUrl": {
+            "type": "string",
+            "description": "URL to the proposal details"
           },
           "status": {
             "type": "string",
             "description": "Current proposal status",
-            "enum": ["pending", "active", "approved", "rejected", "executed"]
+            "enum": [
+              "Created",
+              "Voting",
+              "Finished",
+              "Rejected"
+            ]
+          },
+          "creatorId": {
+            "type": "string",
+            "description": "Account ID of the proposal creator"
           },
           "createdAt": {
             "type": "string",
             "format": "date-time",
-            "description": "Timestamp when the proposal was created"
+            "description": "Timestamp when the proposal was created",
+            "nullable": true
+          },
+          "isApproved": {
+            "type": "boolean",
+            "description": "Whether the proposal is approved"
+          },
+          "isRejected": {
+            "type": "boolean",
+            "description": "Whether the proposal is rejected"
+          },
+          "forVotingPower": {
+            "type": "string",
+            "description": "Total voting power in favor"
+          },
+          "againstVotingPower": {
+            "type": "string",
+            "description": "Total voting power against"
+          },
+          "abstainVotingPower": {
+            "type": "string",
+            "description": "Total abstain voting power"
+          },
+          "totalVotingPower": {
+            "type": "string",
+            "description": "Total voting power",
+            "nullable": true
+          },
+          "votingStartTimeNs": {
+            "type": "string",
+            "description": "Voting start time in nanoseconds",
+            "nullable": true
+          },
+          "votingDurationNs": {
+            "type": "string",
+            "description": "Voting duration in nanoseconds",
+            "nullable": true
+          },
+          "votingCreatedAtNs": {
+            "type": "string",
+            "description": "Voting creation time in nanoseconds",
+            "nullable": true
+          },
+          "quorumAmountYoctoNear": {
+            "type": "string",
+            "description": "Quorum amount in yocto NEAR",
+            "nullable": true
           }
-        }
+        },
+        "required": ["id", "proposalId", "proposalTitle", "proposalDescription", "creatorId"]
+      },
+      "ProposalInfo": {
+        "type": "object",
+        "description": "On-chain proposal information (from /proposal/{id} endpoint)",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Numeric proposal ID",
+            "example": 15
+          },
+          "proposer_id": {
+            "type": "string",
+            "description": "Account ID of the proposal creator"
+          },
+          "creation_time_ns": {
+            "type": "string",
+            "description": "Creation time in nanoseconds"
+          },
+          "description": {
+            "type": "string",
+            "description": "Proposal description",
+            "nullable": true
+          },
+          "link": {
+            "type": "string",
+            "description": "Link to proposal details",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "description": "Proposal title",
+            "nullable": true
+          },
+          "rejected": {
+            "type": "boolean",
+            "description": "Whether the proposal is rejected"
+          },
+          "reviewer_id": {
+            "type": "string",
+            "description": "Account ID of the reviewer",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "description": "Current proposal status",
+            "enum": [
+              "Created",
+              "Rejected",
+              "Approved",
+              "Voting",
+              "Finished"
+            ]
+          },
+          "total_votes": {
+            "type": "object",
+            "description": "Total voting statistics",
+            "properties": {
+              "total_venear": {
+                "type": "string",
+                "description": "Total veNEAR voting power"
+              },
+              "total_votes": {
+                "type": "integer",
+                "description": "Total number of votes cast"
+              }
+            }
+          },
+          "votes": {
+            "type": "array",
+            "description": "Vote statistics per voting option",
+            "items": {
+              "type": "object",
+              "properties": {
+                "total_venear": {
+                  "type": "string"
+                },
+                "total_votes": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "voting_duration_ns": {
+            "type": "string",
+            "description": "Voting duration in nanoseconds"
+          },
+          "voting_options": {
+            "type": "array",
+            "description": "Available voting options",
+            "items": {
+              "type": "string"
+            }
+          },
+          "voting_start_time_ns": {
+            "type": "string",
+            "description": "Voting start time in nanoseconds",
+            "nullable": true
+          }
+        },
+        "required": ["id", "proposer_id", "creation_time_ns", "status", "total_votes", "votes", "voting_duration_ns", "voting_options"]
       },
       "Pagination": {
         "type": "object",
@@ -142,7 +380,11 @@
             "description": "Total number of items available"
           }
         },
-        "required": ["offset", "limit", "total"]
+        "required": [
+          "offset",
+          "limit",
+          "total"
+        ]
       },
       "Error": {
         "type": "object",
