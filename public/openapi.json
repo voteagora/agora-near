@@ -19,11 +19,11 @@
     }
   ],
   "paths": {
-    "/api/v1/proposals": {
+    "/api/v1/proposals/approved": {
       "get": {
         "summary": "List approved proposals",
         "description": "Returns a paginated list of all approved proposals",
-        "operationId": "getProposals",
+        "operationId": "getApprovedProposals",
         "tags": [
           "Proposals"
         ],
@@ -49,6 +49,94 @@
               "minimum": 1,
               "maximum": 100,
               "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "proposals": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Proposal"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/proposals/pending": {
+      "get": {
+        "summary": "List pending proposals",
+        "description": "Returns a paginated list of all pending proposals (awaiting approval)",
+        "operationId": "getPendingProposals",
+        "tags": [
+          "Proposals"
+        ],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of proposals to skip",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of proposals to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "created_by",
+            "in": "query",
+            "description": "Filter proposals by creator account ID",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "house.meta-pool-dao.near"
             }
           }
         ],

@@ -16,14 +16,6 @@ import { JsonRpcProvider } from "near-api-js/lib/providers";
 import { CONTRACTS } from "@/lib/contractConstants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 
-export const fetchProposalById = async (proposalId: string) => {
-  const response = await axios.get<Proposal>(
-    `${Endpoint.Proposals}/${proposalId}`
-  );
-
-  return response.data;
-};
-
 export const fetchApprovedProposals = async (
   pageSize: number,
   currentPage: number

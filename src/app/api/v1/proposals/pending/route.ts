@@ -1,21 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { fetchApprovedProposals } from "@/lib/api/proposal/requests";
+import { fetchPendingProposals } from "@/lib/api/proposal/requests";
 
 // Query parameter validation schema
 const querySchema = z.object({
   offset: z.coerce.number().int().min(0).default(0),
   limit: z.coerce.number().int().min(1).max(100).default(20),
+  created_by: z.string().optional(),
 });
 
 /**
- * GET /api/v1/proposals
+ * GET /api/v1/proposals/pending
  *
- * Public endpoint to list all approved proposals with pagination.
+ * Public endpoint to list all pending proposals with pagination.
  *
  * Query parameters:
  * - offset: Number of proposals to skip (default: 0)
  * - limit: Number of proposals to return (default: 20, max: 100)
+ * - created_by: Optional filter to only return proposals created by a specific account
  *
  * Response format:
  * {
@@ -35,6 +37,7 @@ export async function GET(request: NextRequest) {
     const validationResult = querySchema.safeParse({
       offset: searchParams.get("offset"),
       limit: searchParams.get("limit"),
+      created_by: searchParams.get("created_by"),
     });
 
     if (!validationResult.success) {
@@ -47,7 +50,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { offset, limit } = validationResult.data;
+    const { offset, limit, created_by } = validationResult.data;
 
     // Convert offset/limit to page-based pagination for backend API
     // Backend uses 1-based page numbering
@@ -55,7 +58,11 @@ export async function GET(request: NextRequest) {
     const pageSize = limit;
 
     // Fetch proposals from backend
-    const { proposals, count } = await fetchApprovedProposals(pageSize, page);
+    const { proposals, count } = await fetchPendingProposals(
+      pageSize,
+      page,
+      created_by
+    );
 
     // Calculate the slice we need from the returned page
     // In case offset doesn't align perfectly with page boundaries
@@ -72,11 +79,11 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error fetching proposals:", error);
+    console.error("Error fetching pending proposals:", error);
 
     return NextResponse.json(
       {
-        error: "Failed to fetch proposals",
+        error: "Failed to fetch pending proposals",
         message: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }
