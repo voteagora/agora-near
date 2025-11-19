@@ -507,7 +507,7 @@ const faqs: FAQ[] = [
         <ExternalLink href="https://github.com/voteagora/agora-near/wiki/How-to:-Unlock-NEAR-in-veNEAR-Alpha-Contracts">
           CLI
         </ExternalLink>, or there is a{" "}
-        <ExternalLink href="https://github.com/voteagora/agora-near/wiki/How-to:-Unlock-NEAR-in-veNEAR-Alpha-Contracts">
+        <ExternalLink href="https://unlock.houseofstake.dev/">
           Web UI
         </ExternalLink>.
       </Text>
