@@ -499,7 +499,7 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: "proposal-start-timing",
+    id: "proposal-alpha-unstake",
     question: "How do I unstake from the alpha contracts?",
     answer: (
       <Text>
