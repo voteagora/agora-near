@@ -8,16 +8,6 @@
       "name": "Agora Team"
     }
   },
-  "servers": [
-    {
-      "url": "http://localhost:3000",
-      "description": "Local development server"
-    },
-    {
-      "url": "https://near.agora.xyz",
-      "description": "Production server"
-    }
-  ],
   "paths": {
     "/api/v1/proposals/approved": {
       "get": {
