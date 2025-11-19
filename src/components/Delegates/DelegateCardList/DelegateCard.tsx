@@ -35,7 +35,7 @@ const DelegateCard = ({
         <div className="flex flex-col gap-4 h-full rounded-xl bg-wash border border-line shadow-newDefault">
           <div className="flex flex-col gap-4 justify-center pt-4">
             <div className="border-b border-line px-4 pb-4 flex flex-row gap-2 items-center">
-              <span className="truncate max-w-[120px]" title={delegate.address}>
+              <span className="truncate max-w-[280px]" title={delegate.address}>
                 {delegate.address}
               </span>
               {endorsed && <EndorsedTooltip />}
