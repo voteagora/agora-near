@@ -1,0 +1,924 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Agora NEAR API",
+    "version": "0.0.1",
+    "description": "This is an Alpha-Grade Public API for the Agora x NEAR governance platform.  A production release is expected in the future, subject to prioritization.  Until then, it is subject to change without guarantee of support or backwards compatibility, although best efforts will apply.",
+    "contact": {
+      "name": "Agora Team"
+    }
+  },
+  "paths": {
+    "/api/v1/proposals/approved": {
+      "get": {
+        "summary": "List approved proposals",
+        "description": "Returns a paginated list of all approved proposals",
+        "operationId": "getApprovedProposals",
+        "tags": [
+          "Proposals"
+        ],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of proposals to skip",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of proposals to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "proposals": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Proposal"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/proposals/pending": {
+      "get": {
+        "summary": "List pending proposals",
+        "description": "Returns a paginated list of all pending proposals (awaiting approval)",
+        "operationId": "getPendingProposals",
+        "tags": [
+          "Proposals"
+        ],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of proposals to skip",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of proposals to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "created_by",
+            "in": "query",
+            "description": "Filter proposals by creator account ID",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "house.meta-pool-dao.near"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "proposals": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Proposal"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/proposal/{id}": {
+      "get": {
+        "summary": "Get a specific proposal",
+        "description": "Returns detailed information about a specific proposal by its numeric proposalId. Note: Use the 'proposalId' field from the proposals list, not the 'id' field (which is a base58 receipt ID).",
+        "operationId": "getProposal",
+        "tags": [
+          "Proposals"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The numeric proposal ID (use the proposalId field from the proposal object, not the id field)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "example": 123
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "proposal": {
+                      "$ref": "#/components/schemas/ProposalInfo"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid proposal ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Proposal not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/delegates": {
+      "get": {
+        "summary": "List delegates",
+        "description": "Returns a paginated list of all delegates with optional filtering and sorting",
+        "operationId": "getDelegates",
+        "tags": [
+          "Delegates"
+        ],
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of delegates to skip",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of delegates to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "order_by",
+            "in": "query",
+            "description": "Field to order results by (e.g., 'votingPower', 'participationRate')",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sorting_seed",
+            "in": "query",
+            "description": "Random seed for shuffling results",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "filter_by",
+            "in": "query",
+            "description": "Filter option (e.g., 'endorsed')",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "issue_type",
+            "in": "query",
+            "description": "Filter by issue type (e.g., 'fundingAndGrants', 'houseOfStake')",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "delegates": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DelegateProfile"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/delegates/{address}": {
+      "get": {
+        "summary": "Get a specific delegate",
+        "description": "Returns detailed information about a specific delegate by their address",
+        "operationId": "getDelegate",
+        "tags": [
+          "Delegates"
+        ],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "description": "The delegate's NEAR account address",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "delegate.near"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "delegate": {
+                      "$ref": "#/components/schemas/DelegateProfile"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid address",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Delegate not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/delegates/{address}/voting-history": {
+      "get": {
+        "summary": "Get delegate voting history",
+        "description": "Returns the voting history for a specific delegate with pagination",
+        "operationId": "getDelegateVotingHistory",
+        "tags": [
+          "Delegates"
+        ],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "description": "The delegate's NEAR account address",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "delegate.near"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of votes to skip",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of votes to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "votes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/VoteHistory"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid address or query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API Key",
+        "description": "Enter any API key value. Authentication is required but validation is not enforced."
+      }
+    },
+    "schemas": {
+      "Proposal": {
+        "type": "object",
+        "description": "A governance proposal (from /proposals endpoint)",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Database/receipt ID (base58-encoded string). Do not use for API calls.",
+            "example": "E9vt1WLrF8R8ZYE2WEkuyfTwF7zhMj1AAWLzFuE53LWC"
+          },
+          "proposalId": {
+            "type": "integer",
+            "description": "Numeric proposal ID used for routing and API calls",
+            "example": 123
+          },
+          "proposalTitle": {
+            "type": "string",
+            "description": "Proposal title"
+          },
+          "proposalDescription": {
+            "type": "string",
+            "description": "Proposal description"
+          },
+          "proposalUrl": {
+            "type": "string",
+            "description": "URL to the proposal details"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current proposal status",
+            "enum": [
+              "Created",
+              "Voting",
+              "Finished",
+              "Rejected"
+            ]
+          },
+          "creatorId": {
+            "type": "string",
+            "description": "Account ID of the proposal creator"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the proposal was created",
+            "nullable": true
+          },
+          "isApproved": {
+            "type": "boolean",
+            "description": "Whether the proposal is approved"
+          },
+          "isRejected": {
+            "type": "boolean",
+            "description": "Whether the proposal is rejected"
+          },
+          "forVotingPower": {
+            "type": "string",
+            "description": "Total voting power in favor"
+          },
+          "againstVotingPower": {
+            "type": "string",
+            "description": "Total voting power against"
+          },
+          "abstainVotingPower": {
+            "type": "string",
+            "description": "Total abstain voting power"
+          },
+          "totalVotingPower": {
+            "type": "string",
+            "description": "Total voting power",
+            "nullable": true
+          },
+          "votingStartTimeNs": {
+            "type": "string",
+            "description": "Voting start time in nanoseconds",
+            "nullable": true
+          },
+          "votingDurationNs": {
+            "type": "string",
+            "description": "Voting duration in nanoseconds",
+            "nullable": true
+          },
+          "votingCreatedAtNs": {
+            "type": "string",
+            "description": "Voting creation time in nanoseconds",
+            "nullable": true
+          },
+          "quorumAmountYoctoNear": {
+            "type": "string",
+            "description": "Quorum amount in yocto NEAR",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "proposalId",
+          "proposalTitle",
+          "proposalDescription",
+          "creatorId"
+        ]
+      },
+      "ProposalInfo": {
+        "type": "object",
+        "description": "On-chain proposal information (from /proposal/{id} endpoint)",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Numeric proposal ID",
+            "example": 15
+          },
+          "proposer_id": {
+            "type": "string",
+            "description": "Account ID of the proposal creator"
+          },
+          "creation_time_ns": {
+            "type": "string",
+            "description": "Creation time in nanoseconds"
+          },
+          "description": {
+            "type": "string",
+            "description": "Proposal description",
+            "nullable": true
+          },
+          "link": {
+            "type": "string",
+            "description": "Link to proposal details",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "description": "Proposal title",
+            "nullable": true
+          },
+          "rejected": {
+            "type": "boolean",
+            "description": "Whether the proposal is rejected"
+          },
+          "reviewer_id": {
+            "type": "string",
+            "description": "Account ID of the reviewer",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "description": "Current proposal status",
+            "enum": [
+              "Created",
+              "Rejected",
+              "Approved",
+              "Voting",
+              "Finished"
+            ]
+          },
+          "total_votes": {
+            "type": "object",
+            "description": "Total voting statistics",
+            "properties": {
+              "total_venear": {
+                "type": "string",
+                "description": "Total veNEAR voting power"
+              },
+              "total_votes": {
+                "type": "integer",
+                "description": "Total number of votes cast"
+              }
+            }
+          },
+          "votes": {
+            "type": "array",
+            "description": "Vote statistics per voting option",
+            "items": {
+              "type": "object",
+              "properties": {
+                "total_venear": {
+                  "type": "string"
+                },
+                "total_votes": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "voting_duration_ns": {
+            "type": "string",
+            "description": "Voting duration in nanoseconds"
+          },
+          "voting_options": {
+            "type": "array",
+            "description": "Available voting options",
+            "items": {
+              "type": "string"
+            }
+          },
+          "voting_start_time_ns": {
+            "type": "string",
+            "description": "Voting start time in nanoseconds",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "proposer_id",
+          "creation_time_ns",
+          "status",
+          "total_votes",
+          "votes",
+          "voting_duration_ns",
+          "voting_options"
+        ]
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "offset": {
+            "type": "integer",
+            "description": "Number of items skipped"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of items returned"
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of items available"
+          }
+        },
+        "required": [
+          "offset",
+          "limit",
+          "total"
+        ]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional error details"
+          },
+          "message": {
+            "type": "string",
+            "description": "Detailed error message"
+          }
+        }
+      },
+      "DelegateProfile": {
+        "type": "object",
+        "description": "Detailed profile information for a delegate",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "Delegate's NEAR account address"
+          },
+          "twitter": {
+            "type": "string",
+            "description": "Twitter handle",
+            "nullable": true
+          },
+          "discord": {
+            "type": "string",
+            "description": "Discord username",
+            "nullable": true
+          },
+          "warpcast": {
+            "type": "string",
+            "description": "Warpcast username",
+            "nullable": true
+          },
+          "topIssues": {
+            "type": "array",
+            "description": "Top issues the delegate cares about",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            },
+            "nullable": true
+          },
+          "endorsed": {
+            "type": "boolean",
+            "description": "Whether the delegate is endorsed",
+            "nullable": true
+          },
+          "statement": {
+            "type": "string",
+            "description": "Delegate statement",
+            "nullable": true
+          },
+          "votingPower": {
+            "type": "string",
+            "description": "Total voting power",
+            "nullable": true
+          },
+          "participationRate": {
+            "type": "string",
+            "description": "Participation rate as a percentage",
+            "nullable": true
+          },
+          "numOfDelegators": {
+            "type": "string",
+            "description": "Number of delegators",
+            "nullable": true
+          },
+          "forCount": {
+            "type": "integer",
+            "description": "Number of votes in favor",
+            "nullable": true
+          },
+          "againstCount": {
+            "type": "integer",
+            "description": "Number of votes against",
+            "nullable": true
+          },
+          "abstainCount": {
+            "type": "integer",
+            "description": "Number of abstain votes",
+            "nullable": true
+          },
+          "delegatedFromCount": {
+            "type": "integer",
+            "description": "Number of delegations received",
+            "nullable": true
+          }
+        },
+        "required": [
+          "address"
+        ]
+      },
+      "VoteHistory": {
+        "type": "object",
+        "description": "A single vote record in a delegate's voting history",
+        "properties": {
+          "voteOption": {
+            "type": "string",
+            "description": "The option voted for"
+          },
+          "votingPower": {
+            "type": "string",
+            "description": "Voting power used for this vote"
+          },
+          "address": {
+            "type": "string",
+            "description": "Delegate's address"
+          },
+          "votedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the vote was cast"
+          },
+          "proposalId": {
+            "type": "string",
+            "description": "ID of the proposal voted on"
+          },
+          "proposalName": {
+            "type": "string",
+            "description": "Name of the proposal",
+            "nullable": true
+          }
+        },
+        "required": [
+          "voteOption",
+          "votingPower",
+          "address",
+          "votedAt",
+          "proposalId"
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Proposals",
+      "description": "Operations related to governance proposals"
+    },
+    {
+      "name": "Delegates",
+      "description": "Operations related to delegates"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}
