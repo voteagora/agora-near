@@ -33,7 +33,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => (
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <MixpanelProvider>
           <PageContainer>
-            <Toaster />
+            <Toaster position="bottom-right" />
             {children}
           </PageContainer>
         </MixpanelProvider>

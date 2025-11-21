@@ -12,6 +12,7 @@ type NearLockDialogProps = {
   closeDialog: () => void;
   source: LockDialogSource;
   preSelectedTokenId?: string;
+  customStakingPoolId?: string;
 };
 
 export const NearLockDialog = (props: NearLockDialogProps) => {
@@ -23,9 +24,10 @@ export const NearLockDialog = (props: NearLockDialogProps) => {
       event_data: {
         source: props.source,
         preSelectedTokenId: props.preSelectedTokenId,
+        customStakingPoolId: props.customStakingPoolId,
       },
     });
-  }, [props.source, props.preSelectedTokenId]);
+  }, [props.source, props.preSelectedTokenId, props.customStakingPoolId]);
 
   if (tenant.isMaintenanceMode) {
     return <MaintenanceDialog closeDialog={props.closeDialog} />;
@@ -35,6 +37,7 @@ export const NearLockDialog = (props: NearLockDialogProps) => {
     <LockProvider
       source={props.source}
       preSelectedTokenId={props.preSelectedTokenId}
+      customStakingPoolId={props.customStakingPoolId}
     >
       <LockDialogContent closeDialog={props.closeDialog} />
     </LockProvider>

@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
 import TokenAmount from "../shared/TokenAmount";
 import { LINEAR_POOL, STNEAR_POOL, RNEAR_POOL } from "@/lib/constants";
+import nearAssetIcon from "@/assets/near_icon.jpg";
 
 export const VeNearStakedAssetRow = ({
   stakedBalance,
@@ -23,7 +24,14 @@ export const VeNearStakedAssetRow = ({
       return RNEAR_POOL.metadata;
     }
 
-    return null;
+    // Fallback for custom staking pools
+    return {
+      name: stakingPoolId,
+      symbol: "NEAR",
+      icon: nearAssetIcon,
+      decimals: 24,
+      isCustomPool: true,
+    };
   }, [stakingPoolId]);
 
   const columns = useMemo(() => {
