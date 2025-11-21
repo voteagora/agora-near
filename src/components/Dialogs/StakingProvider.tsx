@@ -197,9 +197,14 @@ export const StakingProvider = ({
   }, [maxStakingAmount, walletBalance]);
 
   const amountInStakingToken = useMemo(() => {
+    const exchangeRate = exchangeRateMap[selectedPool.id];
+    // If no exchange rate (custom pool), assume 1:1 and return yocto
+    if (!exchangeRate) {
+      return enteredAmountYoctoNear;
+    }
     return convertNearToStakingToken(
       enteredAmountYoctoNear,
-      exchangeRateMap[selectedPool.id]
+      exchangeRate
     );
   }, [enteredAmountYoctoNear, exchangeRateMap, selectedPool.id]);
 

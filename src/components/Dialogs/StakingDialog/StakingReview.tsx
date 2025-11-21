@@ -11,6 +11,8 @@ import { useRefreshStakingPoolBalance } from "@/hooks/useRefreshStakingPoolBalan
 import { useStakedBalance } from "@/hooks/useStakedBalance";
 import { useWriteHOSContract } from "@/hooks/useWriteHOSContract";
 import { yoctoNearToUsdFormatted } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
+import { NEAR_BALANCE_QK } from "@/hooks/useBalance";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingSubmitting } from "./StakingSubmitting";
@@ -50,6 +52,8 @@ export const StakingReview = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDisclosures, setShowDisclosures] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const needsToSelectPool = useMemo(
     () =>
@@ -184,7 +188,9 @@ export const StakingReview = ({
     try {
       const max = Big(maxStakingAmount ?? "0");
       const desired = Big(enteredAmountYoctoNear ?? "0");
-      return desired.gt(max) ? desired.minus(max).toFixed(0) : "0";
+      // Add 0.001 NEAR buffer to ensure we cover any dust discrepancies
+      const buffer = Big(10).pow(21); 
+      return desired.gt(max) ? desired.minus(max).plus(buffer).toFixed(0) : "0";
     } catch {
       return "0";
     }
@@ -248,6 +254,8 @@ export const StakingReview = ({
 
         setIsStakeCompleted(true);
         console.log("[StakingReview] onStake completed successfully");
+        // Invalidate wallet balance to update UI immediately
+        queryClient.invalidateQueries({ queryKey: [NEAR_BALANCE_QK] });
       } catch (e) {
         console.error("[StakingReview] Staking error", e);
       } finally {
@@ -359,134 +367,6 @@ export const StakingReview = ({
         </div>
       </div>
       <div className="flex-1 flex flex-col justify-end gap-4">
-        <div className="border rounded-lg p-3">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                const next = !showAdvanced;
-                console.log("[StakingReview] Toggle Advanced", { next });
-                setShowAdvanced(next);
-              }}
-              className="text-sm font-medium underline"
-            >
-              {showAdvanced ? "Hide advanced" : "Advanced"}
-            </button>
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center rounded-full p-1 hover:bg-muted"
-                  aria-label="About legacy pools"
-                >
-                  <Info className="h-4 w-4 text-[#9D9FA1]" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 text-sm">
-                <div className="space-y-2">
-                  <p className="font-medium text-gray-900">Legacy pools</p>
-                  <p className="text-secondary">
-                    If you previously staked via your lockup contract in a pool,
-                    use Advanced to:
-                  </p>
-                  <ul className="list-disc list-inside space-y-1 text-secondary">
-                    <li>Unstake all to start the cooldown.</li>
-                    <li>Withdraw all after the cooldown completes.</li>
-                    <li>Refresh balance to sync rewards/availability.</li>
-                    <li>
-                      Unselect the staking pool when balance is 0 to switch
-                      pools.
-                    </li>
-                  </ul>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-          {showAdvanced && (
-            <div className="mt-3 flex flex-col gap-3">
-              <div className="text-xs text-[#9D9FA1]">
-                Manage your staked funds via your lockup contract
-              </div>
-
-              <div className="text-xs">
-                {currentStakingPoolId ? (
-                  <>
-                    Selected pool:{" "}
-                    <span className="font-medium">{currentStakingPoolId}</span>
-                  </>
-                ) : (
-                  <>No staking pool selected</>
-                )}
-              </div>
-
-              <div className="flex gap-2">
-                <UpdatedButton
-                  onClick={onRefreshStakingBalance}
-                  isLoading={isRefreshing}
-                  variant="rounded"
-                >
-                  Refresh balance
-                </UpdatedButton>
-                <UpdatedButton
-                  onClick={unstakeAll}
-                  isLoading={isUnstakingAll}
-                  variant="rounded"
-                >
-                  Unstake all
-                </UpdatedButton>
-                <UpdatedButton
-                  onClick={withdrawAll}
-                  isLoading={isWithdrawingAll}
-                  variant="rounded"
-                >
-                  Withdraw all
-                </UpdatedButton>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <div className="text-xs text-[#9D9FA1]">
-                  To change your staking pool, you must have 0 deposited balance
-                  in the current pool.
-                </div>
-                <div className="flex gap-2 items-center">
-                  <UpdatedButton
-                    onClick={onUnselectStakingPool}
-                    isLoading={isUnselecting}
-                    disabled={!canUnselect}
-                    variant="rounded"
-                  >
-                    Unselect staking pool
-                  </UpdatedButton>
-                  {!canUnselect && currentStakingPoolId && (
-                    <div className="text-xs text-[#9D9FA1]">
-                      Unstake and withdraw all first, then Refresh balance.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {refreshStakingPoolBalanceError && (
-                <div className="text-xs text-red-500">
-                  {refreshStakingPoolBalanceError.message}
-                </div>
-              )}
-              {unstakingAllError && (
-                <div className="text-xs text-red-500">
-                  {unstakingAllError.message}
-                </div>
-              )}
-              {withdrawingAllError && (
-                <div className="text-xs text-red-500">
-                  {withdrawingAllError.message}
-                </div>
-              )}
-              {unselectError && (
-                <div className="text-xs text-red-500">
-                  {unselectError.message}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
 
         <UpdatedButton
           isLoading={isStakingNear}
