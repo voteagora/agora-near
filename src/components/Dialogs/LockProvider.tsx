@@ -78,6 +78,8 @@ type LockProviderContextType = {
   venearGlobalLockupVersion: number | undefined;
   // YoctoNEAR per 1 unit of selected LST (stNEAR/liNEAR) if applicable
   lstPriceYocto?: string;
+  customStakingPoolId?: string;
+  setCustomStakingPoolId: (poolId: string | undefined) => void;
 };
 
 export const LockProviderContext = createContext<LockProviderContextType>({
@@ -113,6 +115,8 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   venearAccountLockupVersion: undefined,
   venearGlobalLockupVersion: undefined,
   lstPriceYocto: undefined,
+  customStakingPoolId: undefined,
+  setCustomStakingPoolId: () => {},
 });
 
 export const useLockProviderContext = () => {
@@ -125,6 +129,7 @@ type LockProviderProps = {
   onLockSuccess?: () => void;
   source: LockDialogSource;
   preSelectedTokenId?: string;
+  customStakingPoolId?: string;
 };
 
 export const LockProvider = ({
@@ -133,6 +138,7 @@ export const LockProvider = ({
   onLockSuccess,
   source,
   preSelectedTokenId,
+  customStakingPoolId: initialCustomStakingPoolId,
 }: LockProviderProps) => {
   const { signedAccountId, networkId } = useNear();
 
@@ -155,6 +161,9 @@ export const LockProvider = ({
   const [enteredAmount, setEnteredAmount] = useState<string>("");
   const [isLockingMax, setIsLockingMax] = useState<boolean>(false);
   const [amountError, setAmountError] = useState<string | null>(null);
+  const [customStakingPoolId, setCustomStakingPoolId] = useState<
+    string | undefined
+  >(initialCustomStakingPoolId);
 
   const {
     data: fungibleTokensResponse,
@@ -565,12 +574,19 @@ export const LockProvider = ({
   const requiredTransactions = useMemo(() => {
     const transactions: LockTransaction[] = [];
 
-    if (!venearAccountInfo) {
+    const isDeployingLockup = !venearAccountInfo;
+
+    if (isDeployingLockup) {
       // Requires deploying lockup
+      // Note: if customStakingPoolId is provided, select_staking_pool will be batched here
       transactions.push("deploy_lockup");
     }
 
-    if (selectedToken?.type === "lst" && !stakingPoolId) {
+    // Only add select_staking_pool as a separate transaction if:
+    // 1. We're NOT deploying with a custom pool (which already batches it), AND
+    // 2. Either it's an LST without a pool OR an existing lockup with a custom pool change
+    const shouldBatchPoolSelection = isDeployingLockup && customStakingPoolId;
+    if (!shouldBatchPoolSelection && ((selectedToken?.type === "lst" && !stakingPoolId) || customStakingPoolId)) {
       transactions.push("select_staking_pool");
     }
 
@@ -597,6 +613,7 @@ export const LockProvider = ({
     stakingPoolId,
     transferAmountYocto,
     venearAccountInfo,
+    customStakingPoolId,
   ]);
 
   const getAmountToLock = useCallback(async () => {
@@ -679,6 +696,8 @@ export const LockProvider = ({
           venearAccountInfo?.lockupVersion ?? undefined,
         venearGlobalLockupVersion: veNearLockupVersion,
         lstPriceYocto,
+        customStakingPoolId,
+        setCustomStakingPoolId,
       }}
     >
       {children}

@@ -3,8 +3,11 @@ import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useReadHOSContract } from "@/hooks/useReadHOSContract";
 import { useStakingPoolExchangeRates } from "@/hooks/useStakingPoolExchangeRates";
 import { useStakingPoolStats } from "@/hooks/useStakingPoolStats";
-import { LINEAR_POOL, STNEAR_POOL, RNEAR_POOL } from "@/lib/constants";
+import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
+import { useNear } from "@/contexts/NearContext";
+import { LINEAR_POOL, STNEAR_POOL, RNEAR_POOL, DEFAULT_GAS_RESERVE, NEAR_TOKEN_METADATA } from "@/lib/constants";
 import { StakingPool } from "@/lib/types";
+import { useBalance } from "@/hooks/useBalance";
 import {
   convertNearToStakingToken,
   convertStakingTokenToNear,
@@ -46,6 +49,9 @@ type StakingProviderContextType = {
   poolStats: Record<string, { apy: number; totalVolumeYocto: string }>;
   source: StakingSource;
   hasAlreadySelectedStakingPool: boolean;
+  customStakingPoolId?: string;
+  walletBalance?: string;
+  totalAvailableToStake: string;
 };
 
 const StakingContext = createContext<StakingProviderContextType>({
@@ -68,6 +74,8 @@ const StakingContext = createContext<StakingProviderContextType>({
   enteredAmountYoctoNear: "0",
   source: "onboarding",
   hasAlreadySelectedStakingPool: false,
+  customStakingPoolId: undefined,
+  totalAvailableToStake: "0",
 });
 
 export const useStakingProviderContext = () => {
@@ -78,12 +86,14 @@ type StakingProviderProps = {
   children: React.ReactNode;
   prefilledAmount?: string;
   source: StakingSource;
+  customStakingPoolId?: string;
 };
 
 export const StakingProvider = ({
   children,
   prefilledAmount,
   source,
+  customStakingPoolId,
 }: StakingProviderProps) => {
   const supportedPools = useMemo(() => getSupportedPools(), []);
   const [enteredAmount, setEnteredAmount] = useState(prefilledAmount ?? "");
@@ -91,6 +101,9 @@ export const StakingProvider = ({
   const [selectedPool, setSelectedPool] = useState<StakingPool>(
     supportedPools[0]
   );
+
+  const { signedAccountId } = useNear();
+  const { nearBalance: walletBalance } = useBalance(signedAccountId);
 
   const {
     lockupAccountId,
@@ -100,6 +113,8 @@ export const StakingProvider = ({
 
   const { exchangeRateMap, isLoading: isLoadingStakingPools } =
     useStakingPoolExchangeRates({ pools: supportedPools });
+
+  const { data: venearAccountInfo } = useVenearAccountInfo(signedAccountId);
 
   const [
     {
@@ -113,6 +128,7 @@ export const StakingProvider = ({
       methodName: "get_liquid_owners_balance" as const,
       config: {
         args: {},
+        enabled: !!lockupAccountId && !!venearAccountInfo,
       },
     },
   ]);
@@ -122,7 +138,16 @@ export const StakingProvider = ({
   });
 
   const preSelectedStakingPool = useMemo(() => {
-    return supportedPools.find((pool) => pool.contract === stakingPoolId);
+    if (!stakingPoolId) return undefined;
+    const supported = supportedPools.find((pool) => pool.contract === stakingPoolId);
+    if (supported) return supported;
+
+    // If it's a custom pool not in supported list, create a temporary pool object
+    return {
+      id: stakingPoolId,
+      contract: stakingPoolId,
+      metadata: NEAR_TOKEN_METADATA, // Fallback metadata
+    } as StakingPool;
   }, [stakingPoolId, supportedPools]);
 
   const { stats, error: stakingPoolStatsError } = useStakingPoolStats({
@@ -161,6 +186,16 @@ export const StakingProvider = ({
     return utils.format.parseNearAmount(enteredAmount) || "0";
   }, [enteredAmount, isStakingMax, maxStakingAmount]);
 
+  const totalAvailableToStake = useMemo(() => {
+    const lockupBalance = Big(maxStakingAmount ?? "0");
+    const wallet = Big(walletBalance ?? "0");
+    // Reserve gas from wallet balance if using it
+    const walletAvailable = wallet.minus(DEFAULT_GAS_RESERVE);
+    const safeWalletAvailable = walletAvailable.gt(0) ? walletAvailable : Big(0);
+    
+    return lockupBalance.plus(safeWalletAvailable).toFixed();
+  }, [maxStakingAmount, walletBalance]);
+
   const amountInStakingToken = useMemo(() => {
     return convertNearToStakingToken(
       enteredAmountYoctoNear,
@@ -178,23 +213,22 @@ export const StakingProvider = ({
       return "Please enter a valid amount";
     }
 
-    // Check if amount exceeds maximum available
+    // Check if amount exceeds total available (lockup + wallet)
     if (
-      maxStakingAmount &&
-      Big(enteredAmountYoctoNear).gt(Big(maxStakingAmount))
+      Big(enteredAmountYoctoNear).gt(Big(totalAvailableToStake))
     ) {
       return "Amount exceeds available balance";
     }
 
     return null;
-  }, [enteredAmount, enteredAmountYoctoNear, maxStakingAmount]);
+  }, [enteredAmount, enteredAmountYoctoNear, totalAvailableToStake]);
 
   const onStakeMax = useCallback(() => {
-    if (maxStakingAmount) {
-      setEnteredAmount(convertYoctoToNear(maxStakingAmount));
+    if (totalAvailableToStake) {
+      setEnteredAmount(convertYoctoToNear(totalAvailableToStake));
       setIsStakingMax(true);
     }
-  }, [maxStakingAmount]);
+  }, [totalAvailableToStake]);
 
   const resetForm = useCallback(() => {
     setEnteredAmount("");
@@ -237,6 +271,9 @@ export const StakingProvider = ({
         enteredAmountYoctoNear,
         amountInStakingToken,
         source,
+        customStakingPoolId,
+        walletBalance: walletBalance ?? undefined,
+        totalAvailableToStake,
       }}
     >
       {children}

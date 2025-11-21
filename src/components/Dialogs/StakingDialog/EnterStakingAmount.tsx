@@ -18,6 +18,10 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
+import toast from "react-hot-toast";
+import { useLockupAccount } from "@/hooks/useLockupAccount";
+import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
+import { useStakedBalance } from "@/hooks/useStakedBalance";
 
 type EnterStakingAmountProps = {
   onContinue: (selectedProvider: StakingPool) => void;
@@ -41,9 +45,13 @@ export const EnterStakingAmount = ({
     source,
     hasAlreadySelectedStakingPool,
     isStakingMax,
+    customStakingPoolId: prefilledCustomPoolId,
+    totalAvailableToStake,
   } = useStakingProviderContext();
 
-  const [customPoolId, setCustomPoolId] = useState<string>("");
+  const [customPoolId, setCustomPoolId] = useState<string>(
+    prefilledCustomPoolId ?? ""
+  );
   const [whitelistContractId, setWhitelistContractId] = useState<string>("");
   const { isWhitelisted, whitelistAccountId } = useIsPoolWhitelisted(
     whitelistContractId || undefined
@@ -51,6 +59,17 @@ export const EnterStakingAmount = ({
   const [isValidatingCustomPool, setIsValidatingCustomPool] =
     useState<boolean>(false);
   const [customPoolError, setCustomPoolError] = useState<string>("");
+
+  // Lockup and current staking pool context to show current staked balance
+  const { lockupAccountId } = useLockupAccount();
+  const { stakingPoolId: currentPoolId } = useCurrentStakingPoolId({
+    lockupAccountId: lockupAccountId ?? "",
+    enabled: !!lockupAccountId,
+  });
+  const { stakedBalance } = useStakedBalance({
+    stakingPoolId: currentPoolId,
+    accountId: lockupAccountId,
+  });
 
   // Basic NEAR account ID format validation
   const isValidNearAccountId = (id: string) => {
@@ -60,7 +79,13 @@ export const EnterStakingAmount = ({
       .split(".")
       .every((part) => part.length >= 2 && /^[a-z0-9_-]+$/.test(part));
   };
-  const [showCustomPool, setShowCustomPool] = useState<boolean>(false);
+  const isCustomPoolSelected = useMemo(() => {
+    return !pools.some((p) => p.id === selectedPool.id);
+  }, [pools, selectedPool]);
+
+  const [showCustomPool, setShowCustomPool] = useState<boolean>(
+    !!prefilledCustomPoolId || isCustomPoolSelected
+  );
 
   const isCustomPoolValid = useMemo(() => {
     if (!customPoolId) return false;
@@ -76,10 +101,12 @@ export const EnterStakingAmount = ({
     // Format validation for pool and optional whitelist override
     if (!isCustomPoolValid) {
       setCustomPoolError("Enter a valid NEAR account ID for the staking pool.");
+      toast.error("Invalid pool account ID format.");
       return;
     }
     if (whitelistContractId && !isValidNearAccountId(whitelistContractId)) {
       setCustomPoolError("Invalid whitelist account ID format.");
+      toast.error("Invalid whitelist account ID format.");
       return;
     }
 
@@ -96,6 +123,7 @@ export const EnterStakingAmount = ({
       });
       if (!allowed) {
         setCustomPoolError("Pool is not whitelisted for House of Stake.");
+        toast.error("Pool is not whitelisted for House of Stake.");
         return;
       }
       console.log("[EnterStakingAmount] Setting selected pool", {
@@ -106,6 +134,9 @@ export const EnterStakingAmount = ({
         contract: customPoolId,
         metadata: NEAR_TOKEN_METADATA,
       } as StakingPool);
+      toast.success(
+        `Selected pool: ${customPoolId}. Continue to Stake to apply this pool.`
+      );
       setCustomPoolId(""); // Clear input after successful selection
     } finally {
       setIsValidatingCustomPool(false);
@@ -181,6 +212,25 @@ export const EnterStakingAmount = ({
           {showCustomPool && (
             <>
               <div className="flex flex-col gap-2">
+                {/* Selected pool badge and current staked summary */}
+                <div className="mt-1 flex items-center gap-2">
+                  <span className="text-[11px] text-[#9D9FA1]">Selected:</span>
+                  <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none text-black bg-gray-100 border-gray-200 w-fit">
+                    {selectedPool?.contract}
+                  </span>
+                </div>
+                {currentPoolId && (
+                  <div className="text-[11px] text-[#9D9FA1]">
+                    Current pool:{" "}
+                    <span className="font-medium text-gray-700">
+                      {currentPoolId}
+                    </span>{" "}
+                    · Currently staked:{" "}
+                    <span className="font-medium text-gray-700">
+                      <TokenAmount amount={stakedBalance ?? "0"} hideCurrency />
+                    </span>
+                  </div>
+                )}
                 <div className="flex gap-2 items-center">
                   <Input
                     type="text"
@@ -261,10 +311,10 @@ export const EnterStakingAmount = ({
         <div className="mb-6">
           <div className="text-base text-[#9D9FA1] mb-2">
             NEAR Available{" "}
-            <TokenAmount amount={maxStakingAmount ?? "0"} hideCurrency />
+            <TokenAmount amount={totalAvailableToStake ?? "0"} hideCurrency />
           </div>
 
-          {(!maxStakingAmount || Big(maxStakingAmount).lte(0)) && (
+          {(!totalAvailableToStake || Big(totalAvailableToStake).lte(0)) && (
             <div className="mb-3">
               <div className="bg-white border border-gray-200 rounded-lg p-3">
                 <p className="text-sm text-[#9D9FA1]">
@@ -296,7 +346,7 @@ export const EnterStakingAmount = ({
                     // Override value for display purposes when staking max
                     isStakingMax
                       ? formatNumber(
-                          maxStakingAmount ?? "0",
+                          totalAvailableToStake ?? "0",
                           NEAR_TOKEN.decimals
                         )
                       : enteredAmount
@@ -306,7 +356,7 @@ export const EnterStakingAmount = ({
                 />
                 <button
                   onClick={onStakeMax}
-                  disabled={!maxStakingAmount || Big(maxStakingAmount).lte(0)}
+                  disabled={!totalAvailableToStake || Big(totalAvailableToStake).lte(0)}
                   className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200"
                 >
                   Max

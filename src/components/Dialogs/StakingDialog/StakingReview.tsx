@@ -51,7 +51,11 @@ export const StakingReview = ({
   const [showDisclosures, setShowDisclosures] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  const needsToSelectPool = useRef(!currentStakingPoolId);
+  const needsToSelectPool = useMemo(
+    () =>
+      !currentStakingPoolId || currentStakingPoolId !== selectedPool.contract,
+    [currentStakingPoolId, selectedPool.contract]
+  );
 
   const { price, isLoading: isLoadingNearPrice } = usePrice();
   const [isStakeCompleted, setIsStakeCompleted] = useState(false);
@@ -188,12 +192,11 @@ export const StakingReview = ({
 
   const requiredSteps = useMemo(() => {
     const steps: (StakingStep | "top_up" | "lock")[] = [];
-    if (needsToSelectPool.current) {
+    if (needsToSelectPool) {
       steps.push("select_pool");
     }
     if (Big(topUpAmount).gt(0)) {
       steps.push("top_up");
-      steps.push("lock");
     }
     steps.push("stake");
     return steps;

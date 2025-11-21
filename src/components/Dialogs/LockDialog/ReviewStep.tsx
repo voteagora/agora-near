@@ -51,6 +51,7 @@ export const ReviewStep = memo(
       venearAccountLockupVersion,
       venearGlobalLockupVersion,
       lstPriceYocto,
+      customStakingPoolId,
     } = useLockProviderContext();
 
     // Determine if the just-locked amount leaves any liquid NEAR available to stake.
@@ -370,6 +371,17 @@ export const ReviewStep = memo(
                   minimumFractionDigits={4}
                   className="font-bold"
                 />
+              </div>
+            </>
+          )}
+          {customStakingPoolId && (
+            <>
+              <div className="border-t border-gray-200"></div>
+              <div className="flex flex-row justify-between items-center py-4">
+                <span className="font-bold text-primary">Staking Pool</span>
+                <span className="font-medium text-sm text-gray-900">
+                  {customStakingPoolId}
+                </span>
               </div>
             </>
           )}
