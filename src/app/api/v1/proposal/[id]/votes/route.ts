@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { fetchVoteHistory } from "@/lib/api/delegates/requests";
+import { fetchProposalVotes } from "@/lib/api/proposal/requests";
 import { validateBearerToken } from "@/lib/apiAuth";
 
 // Query parameter validation schema
@@ -10,12 +10,13 @@ const querySchema = z.object({
 });
 
 /**
- * GET /api/v1/delegates/[address]/voting-history
+ * GET /api/v1/proposal/[id]/votes
  *
- * Public endpoint to fetch voting history for a specific delegate.
+ * Public endpoint to fetch votes for a specific proposal by its numeric proposalId.
+ * Returns a paginated list of all votes cast on the proposal.
  *
  * Path parameters:
- * - address: The delegate's NEAR account address
+ * - id: The numeric proposal ID (from the proposalId field, not the base58 id field)
  *
  * Query parameters:
  * - offset: Number of votes to skip (default: 0)
@@ -23,7 +24,7 @@ const querySchema = z.object({
  *
  * Response format:
  * {
- *   votes: VoteHistory[],
+ *   votes: ProposalVote[],
  *   pagination: {
  *     offset: number,
  *     limit: number,
@@ -33,7 +34,7 @@ const querySchema = z.object({
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { address: string } }
+  { params }: { params: { id: string } }
 ) {
   // Validate bearer token
   const authError = validateBearerToken(request);
@@ -42,17 +43,24 @@ export async function GET(
   }
 
   try {
-    const { address } = params;
+    const { id } = params;
     const { searchParams } = new URL(request.url);
 
-    // Validate that address is provided
-    if (
-      !address ||
-      typeof address !== "string" ||
-      address.trim().length === 0
-    ) {
+    // Validate that id is provided and is a valid number
+    if (!id || typeof id !== "string" || id.trim().length === 0) {
       return NextResponse.json(
-        { error: "Delegate address is required" },
+        { error: "Proposal ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const proposalId = parseInt(id, 10);
+    if (isNaN(proposalId) || proposalId < 0) {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid proposal ID. Must be a non-negative integer (use proposalId field, not id field).",
+        },
         { status: 400 }
       );
     }
@@ -80,8 +88,8 @@ export async function GET(
     const page = Math.floor(offset / limit) + 1;
     const pageSize = limit;
 
-    // Fetch vote history from backend
-    const { votes, count } = await fetchVoteHistory(pageSize, page, address);
+    // Fetch votes from backend
+    const { votes, count } = await fetchProposalVotes(id, pageSize, page);
 
     // Calculate the slice we need from the returned page
     // In case offset doesn't align perfectly with page boundaries
@@ -98,11 +106,11 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error("Error fetching voting history:", error);
+    console.error("Error fetching proposal votes:", error);
 
     return NextResponse.json(
       {
-        error: "Failed to fetch voting history",
+        error: "Failed to fetch proposal votes",
         message: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 }

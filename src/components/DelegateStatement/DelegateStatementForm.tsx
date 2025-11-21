@@ -67,9 +67,7 @@ export default function DelegateStatementForm({
     // Sanitize string fields to replace curly quotes with straight quotes
     const sanitizeString = (str: string | undefined) => {
       if (!str) return "";
-      return str.replace(/['""]/g, (match) =>
-        match === "'" ? "'" : '"'
-      );
+      return str.replace(/['""]/g, (match) => (match === "'" ? "'" : '"'));
     };
 
     // User will only sign what they are seeing on the frontend
@@ -80,7 +78,7 @@ export default function DelegateStatementForm({
       email: sanitizeString(email),
       warpcast: sanitizeString(warpcast),
       statement: sanitizeString(delegateStatement),
-      topIssues: topIssues.map(issue => ({
+      topIssues: topIssues.map((issue) => ({
         type: sanitizeString(issue.type),
         value: sanitizeString(issue.value),
       })),

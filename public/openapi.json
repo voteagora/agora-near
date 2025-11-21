@@ -245,6 +245,95 @@
         }
       }
     },
+    "/api/v1/proposal/{id}/votes": {
+      "get": {
+        "summary": "Get votes for a proposal",
+        "description": "Returns a paginated list of all votes cast on a specific proposal",
+        "operationId": "getProposalVotes",
+        "tags": [
+          "Proposals"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The numeric proposal ID (use the proposalId field from the proposal object, not the id field)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "example": 123
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of votes to skip",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of votes to return",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "votes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ProposalVote"
+                      }
+                    },
+                    "pagination": {
+                      "$ref": "#/components/schemas/Pagination"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid proposal ID or query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/delegates": {
       "get": {
         "summary": "List delegates",
@@ -902,6 +991,35 @@
           "address",
           "votedAt",
           "proposalId"
+        ]
+      },
+      "ProposalVote": {
+        "type": "object",
+        "description": "A single vote cast on a proposal",
+        "properties": {
+          "accountId": {
+            "type": "string",
+            "description": "Account ID of the voter"
+          },
+          "votingPower": {
+            "type": "string",
+            "description": "Voting power used for this vote"
+          },
+          "voteOption": {
+            "type": "string",
+            "description": "The option voted for (e.g., 'For', 'Against', 'Abstain')"
+          },
+          "votedAt": {
+            "type": "integer",
+            "description": "Timestamp when the vote was cast (in nanoseconds)",
+            "example": 1699564800000000000
+          }
+        },
+        "required": [
+          "accountId",
+          "votingPower",
+          "voteOption",
+          "votedAt"
         ]
       }
     }

@@ -88,9 +88,7 @@ const SubscribeDialog = ({
     // Sanitize string fields to replace curly quotes with straight quotes
     const sanitizeString = (str: string | undefined | null) => {
       if (!str) return str || "";
-      return str.replace(/['""]/g, (match) =>
-        match === "'" ? "'" : '"'
-      );
+      return str.replace(/['""]/g, (match) => (match === "'" ? "'" : '"'));
     };
 
     const body = {
@@ -99,7 +97,7 @@ const SubscribeDialog = ({
       twitter: sanitizeString(data?.twitter),
       discord: sanitizeString(data?.discord),
       warpcast: sanitizeString(data?.warpcast),
-      topIssues: (data?.topIssues || []).map(issue => ({
+      topIssues: (data?.topIssues || []).map((issue) => ({
         type: sanitizeString(issue.type),
         value: sanitizeString(issue.value),
       })),
