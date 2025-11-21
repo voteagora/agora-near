@@ -46,7 +46,11 @@ export async function GET(
     const { searchParams } = new URL(request.url);
 
     // Validate that address is provided
-    if (!address || typeof address !== "string" || address.trim().length === 0) {
+    if (
+      !address ||
+      typeof address !== "string" ||
+      address.trim().length === 0
+    ) {
       return NextResponse.json(
         { error: "Delegate address is required" },
         { status: 400 }

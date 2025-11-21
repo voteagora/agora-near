@@ -506,13 +506,15 @@ const faqs: FAQ[] = [
         You can use a{" "}
         <ExternalLink href="https://github.com/voteagora/agora-near/wiki/How-to:-Unlock-NEAR-in-veNEAR-Alpha-Contracts">
           CLI
-        </ExternalLink>, or there is a{" "}
+        </ExternalLink>
+        , or there is a{" "}
         <ExternalLink href="https://unlock.houseofstake.dev/">
           Web UI
-        </ExternalLink>.
+        </ExternalLink>
+        .
       </Text>
     ),
-  }
+  },
 ];
 
 const InfoFAQ = () => {

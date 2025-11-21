@@ -29,7 +29,11 @@ export async function GET(
     const { address } = params;
 
     // Validate that address is provided
-    if (!address || typeof address !== "string" || address.trim().length === 0) {
+    if (
+      !address ||
+      typeof address !== "string" ||
+      address.trim().length === 0
+    ) {
       return NextResponse.json(
         { error: "Delegate address is required" },
         { status: 400 }
