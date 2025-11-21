@@ -84,7 +84,7 @@ export const EnterStakingAmount = ({
   }, [pools, selectedPool]);
 
   const [showCustomPool, setShowCustomPool] = useState<boolean>(
-    !!prefilledCustomPoolId || isCustomPoolSelected
+    (!!prefilledCustomPoolId || isCustomPoolSelected) && !hasAlreadySelectedStakingPool
   );
 
   const isCustomPoolValid = useMemo(() => {
@@ -93,11 +93,6 @@ export const EnterStakingAmount = ({
   }, [customPoolId]);
 
   const handleUseCustomPool = useCallback(async () => {
-    console.log("[EnterStakingAmount] Use custom pool clicked", {
-      customPoolId,
-      isCustomPoolValid,
-    });
-
     // Format validation for pool and optional whitelist override
     if (!isCustomPoolValid) {
       setCustomPoolError("Enter a valid NEAR account ID for the staking pool.");
@@ -113,22 +108,12 @@ export const EnterStakingAmount = ({
     setCustomPoolError("");
     setIsValidatingCustomPool(true);
     try {
-      console.log("[EnterStakingAmount] Validating whitelist for pool", {
-        customPoolId,
-      });
       const allowed = await isWhitelisted(customPoolId);
-      console.log("[EnterStakingAmount] Whitelist result", {
-        customPoolId,
-        allowed,
-      });
       if (!allowed) {
         setCustomPoolError("Pool is not whitelisted for House of Stake.");
         toast.error("Pool is not whitelisted for House of Stake.");
         return;
       }
-      console.log("[EnterStakingAmount] Setting selected pool", {
-        id: customPoolId,
-      });
       setSelectedPool({
         id: customPoolId,
         contract: customPoolId,
@@ -140,7 +125,6 @@ export const EnterStakingAmount = ({
       setCustomPoolId(""); // Clear input after successful selection
     } finally {
       setIsValidatingCustomPool(false);
-      console.log("[EnterStakingAmount] Finished custom pool validation");
     }
   }, [
     customPoolId,
@@ -152,11 +136,6 @@ export const EnterStakingAmount = ({
   ]);
 
   const handleContinue = useCallback(() => {
-    console.log("[EnterStakingAmount] Continue clicked", {
-      enteredAmount,
-      amountError,
-      selectedPool,
-    });
     if (!enteredAmount || !!amountError) return;
     onContinue(selectedPool);
   }, [enteredAmount, amountError, onContinue, selectedPool]);
@@ -170,20 +149,88 @@ export const EnterStakingAmount = ({
             Stake assets and get liquid rewards
           </h1>
         </div>
+        {hasAlreadySelectedStakingPool && (
+          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-3 items-start">
+            <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-blue-700">
+              <p className="font-medium mb-1">Staking Pool Bound</p>
+              <p>
+                Your lockup is currently bound to{" "}
+                <span className="font-mono font-bold">
+                  {currentPoolId || selectedPool.contract}
+                </span>
+                . To switch pools, you must first unstake and withdraw all
+                funds.
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-4 mb-6">
           {pools.map((pool) => (
-            <StakingOptionCard
+            <div
               key={pool.id}
-              isEnabled={!hasAlreadySelectedStakingPool}
-              isSelected={selectedPool.id === pool.id}
-              onSelect={() => setSelectedPool(pool)}
-              tokenMetadata={pool.metadata}
-              apy={poolStats[pool.id]?.apy}
-              totalVolumeYocto={poolStats[pool.id]?.totalVolumeYocto ?? "-"}
-            />
+              className={
+                hasAlreadySelectedStakingPool ? "opacity-50 grayscale" : ""
+              }
+            >
+              <StakingOptionCard
+                isEnabled={!hasAlreadySelectedStakingPool}
+                isSelected={selectedPool.id === pool.id}
+                onSelect={() => setSelectedPool(pool)}
+                tokenMetadata={pool.metadata}
+                apy={poolStats[pool.id]?.apy}
+                totalVolumeYocto={poolStats[pool.id]?.totalVolumeYocto ?? "-"}
+              />
+            </div>
           ))}
         </div>
-        {/* Custom pool entry - collapsed by default */}
+
+        {/* Active Custom Pool Card */}
+        {hasAlreadySelectedStakingPool && selectedPool.id === selectedPool.contract && (
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-[#9D9FA1] mb-2">
+              Active Custom Pool
+            </h3>
+            <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-2">
+                  {selectedPool.metadata?.icon && (
+                    <Image
+                      src={selectedPool.metadata.icon}
+                      alt={selectedPool.metadata.symbol}
+                      width={24}
+                      height={24}
+                      className="rounded-full border border-gray-200 bg-white"
+                    />
+                  )}
+                  <span className="font-semibold text-gray-900">
+                    {selectedPool.metadata?.symbol === "NEAR"
+                      ? selectedPool.contract
+                      : selectedPool.metadata?.symbol}
+                  </span>
+                  <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full uppercase tracking-wider font-medium">
+                    Custom
+                  </span>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-[#9D9FA1]">Currently Staked</div>
+                  <div className="font-medium">
+                    <TokenAmount amount={stakedBalance ?? "0"} />
+                  </div>
+                </div>
+              </div>
+              <div className="text-xs text-[#9D9FA1]">
+                Pool ID:{" "}
+                <span className="font-mono text-gray-600">
+                  {selectedPool.contract}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Custom pool entry / Change Pool */}
         <div className="mb-6">
           <TooltipProvider>
             <Tooltip>
@@ -199,7 +246,7 @@ export const EnterStakingAmount = ({
                     ▸
                   </span>
                   {hasAlreadySelectedStakingPool
-                    ? "Change to a custom staking pool"
+                    ? "Change custom staking pool"
                     : "Enter a custom staking pool"}
                 </button>
               </TooltipTrigger>
@@ -213,31 +260,54 @@ export const EnterStakingAmount = ({
             <>
               <div className="flex flex-col gap-2">
                 {/* Selected pool badge and current staked summary */}
-                <div className="mt-1 flex items-center gap-2">
-                  <span className="text-[11px] text-[#9D9FA1]">Selected:</span>
-                  <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none text-black bg-gray-100 border-gray-200 w-fit">
-                    {selectedPool?.contract}
-                  </span>
-                </div>
-                {currentPoolId && (
-                  <div className="text-[11px] text-[#9D9FA1]">
-                    Current pool:{" "}
-                    <span className="font-medium text-gray-700">
-                      {currentPoolId}
-                    </span>{" "}
-                    · Currently staked:{" "}
-                    <span className="font-medium text-gray-700">
-                      <TokenAmount amount={stakedBalance ?? "0"} hideCurrency />
+                {!hasAlreadySelectedStakingPool && (
+                  <div className="mt-1 flex items-center gap-2">
+                    <span className="text-[11px] text-[#9D9FA1]">
+                      Selected:
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none text-black bg-gray-100 border-gray-200 w-fit">
+                      {selectedPool?.contract}
                     </span>
                   </div>
                 )}
+
                 <div className="flex gap-2 items-center">
-                  <Input
-                    type="text"
-                    placeholder="staking-pool.account.near"
-                    value={customPoolId}
-                    onChange={(e) => setCustomPoolId(e.target.value.trim())}
-                  />
+                  <div className="flex-1">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="w-full">
+                            <Input
+                              type="text"
+                              placeholder="staking-pool.account.near"
+                              value={customPoolId}
+                              onChange={(e) =>
+                                setCustomPoolId(e.target.value.trim())
+                              }
+                              disabled={
+                                hasAlreadySelectedStakingPool &&
+                                Big(stakedBalance ?? "0").gt(0)
+                              }
+                              className={
+                                hasAlreadySelectedStakingPool &&
+                                Big(stakedBalance ?? "0").gt(0)
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : ""
+                              }
+                            />
+                          </div>
+                        </TooltipTrigger>
+                        {hasAlreadySelectedStakingPool &&
+                          Big(stakedBalance ?? "0").gt(0) && (
+                            <TooltipContent>
+                              You cannot change pools while you have staked funds.
+                              Please unstake first.
+                            </TooltipContent>
+                          )}
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+
                   <UpdatedButton
                     variant="rounded"
                     onClick={handleUseCustomPool}
@@ -245,7 +315,9 @@ export const EnterStakingAmount = ({
                       !isCustomPoolValid ||
                       isValidatingCustomPool ||
                       (whitelistContractId &&
-                        !isValidNearAccountId(whitelistContractId))
+                        !isValidNearAccountId(whitelistContractId)) ||
+                      (hasAlreadySelectedStakingPool &&
+                        Big(stakedBalance ?? "0").gt(0))
                     }
                   >
                     {isValidatingCustomPool ? "Checking..." : "Use"}
@@ -281,6 +353,10 @@ export const EnterStakingAmount = ({
                     value={whitelistContractId}
                     onChange={(e) =>
                       setWhitelistContractId(e.target.value.trim())
+                    }
+                    disabled={
+                      hasAlreadySelectedStakingPool &&
+                      Big(stakedBalance ?? "0").gt(0)
                     }
                   />
                   <div className="mt-2 flex items-center gap-2">
