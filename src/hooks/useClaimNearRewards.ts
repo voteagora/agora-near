@@ -5,6 +5,7 @@ import { useCallback, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { NEAR_CLAIM_PROOFS_QK } from "./useNearClaimProofs";
 import { useMarkProofAsClaimed } from "./useMarkProofAsClaimed";
+import { convertUnit } from "@fastnear/utils";
 
 interface ClaimRewardArgs {
   amount: string;
@@ -13,15 +14,18 @@ interface ClaimRewardArgs {
   lockupContract: string;
 }
 
+interface BatchClaimRewardsArgs {
+  claims: ClaimRewardArgs[];
+}
+
 export function useClaimNearRewards({
   onSuccess,
 }: { onSuccess?: () => void } = {}) {
-  const { signedAccountId, callMethod } = useNear();
+  const { signedAccountId, signAndSendTransactions, viewMethod } = useNear();
   const queryClient = useQueryClient();
   const { markProofAsClaimed } = useMarkProofAsClaimed();
 
   const onClaimSuccess = useCallback(() => {
-    // Invalidate the claim proofs query to refetch updated data
     queryClient.invalidateQueries({
       queryKey: [NEAR_CLAIM_PROOFS_QK, signedAccountId],
     });
@@ -30,16 +34,11 @@ export function useClaimNearRewards({
   }, [queryClient, signedAccountId, onSuccess]);
 
   const {
-    mutateAsync: claimReward,
+    mutateAsync: batchClaimRewards,
     isPending: isClaiming,
     error: claimError,
   } = useMutation({
-    mutationFn: async ({
-      amount,
-      merkleProof,
-      campaignId,
-      lockupContract,
-    }: ClaimRewardArgs) => {
+    mutationFn: async ({ claims }: BatchClaimRewardsArgs) => {
       if (!signedAccountId) {
         throw new Error("No account connected");
       }
@@ -49,50 +48,87 @@ export function useClaimNearRewards({
         throw new Error("Claim contract not configured");
       }
 
-      const formattedProof = merkleProof.map((hash) => {
-        const cleanHash = hash.startsWith("0x") ? hash.slice(2) : hash;
-        const bytes = new Uint8Array(
-          cleanHash.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) || []
-        );
-        return Array.from(bytes);
-      });
-
-      const result = await callMethod({
-        contractId,
-        method: "claim",
-        args: {
-          amount,
-          merkle_proof: formattedProof,
-          campaign_id: campaignId,
-          lockup_contract: lockupContract,
-        },
-        deposit: "1",
-      });
-
-      if (result && result.transaction?.hash) {
-        try {
-          await markProofAsClaimed({
-            campaignId,
-            address: signedAccountId,
-            txHash: result.transaction.hash,
+      const claimChecks = await Promise.all(
+        claims.map(async (claim) => {
+          const hasClaimed = await viewMethod({
+            contractId,
+            method: "has_claimed",
+            args: {
+              campaign_id: Number(claim.campaignId),
+              account_id: signedAccountId,
+            },
           });
-        } catch (error) {
-          console.error("Failed to mark proof as claimed:", error);
-          // Don't throw here - the claim was successful, just the marking failed
+          return { claim, hasClaimed };
+        })
+      );
+
+      const unclaimedItems = claimChecks
+        .filter(({ hasClaimed }) => !hasClaimed)
+        .map(({ claim }) => claim);
+
+      if (unclaimedItems.length === 0) {
+        throw new Error("All rewards have already been claimed");
+      }
+
+      if (unclaimedItems.length < claims.length) {
+        const alreadyClaimedCount = claims.length - unclaimedItems.length;
+        console.warn(
+          `${alreadyClaimedCount} reward(s) have already been claimed and will be skipped`
+        );
+      }
+
+      const transactions = unclaimedItems.map((claim) => ({
+        receiverId: contractId,
+        actions: [
+          {
+            type: "FunctionCall" as const,
+            params: {
+              methodName: "claim",
+              args: {
+                amount: claim.amount,
+                merkle_proof: claim.merkleProof,
+                campaign_id: Number(claim.campaignId),
+                lockup_contract: claim.lockupContract,
+              },
+              gas: convertUnit("100 Tgas"),
+              deposit: "0",
+            },
+          },
+        ],
+      }));
+
+      const results = await signAndSendTransactions({ transactions });
+
+      if (results && results.length > 0) {
+        for (let i = 0; i < results.length; i++) {
+          const result = results[i];
+          const claim = unclaimedItems[i];
+
+          if (result && result.transaction?.hash) {
+            try {
+              await markProofAsClaimed({
+                campaignId: claim.campaignId,
+                address: signedAccountId,
+                txHash: result.transaction.hash,
+              });
+            } catch (error) {
+              console.error("Failed to mark proof as claimed:", error);
+            }
+          }
         }
       }
 
-      return result;
+      return results;
     },
     onSuccess: onClaimSuccess,
   });
 
   return useMemo(
     () => ({
-      claimReward,
+      batchClaimRewards,
       isClaiming,
       error: claimError,
     }),
-    [claimReward, isClaiming, claimError]
+    [batchClaimRewards, isClaiming, claimError]
   );
 }

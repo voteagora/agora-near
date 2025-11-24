@@ -23,8 +23,8 @@ const getContractConfig = (): ContractConfig => {
 
   const DEV_VENEAR_CONTRACT_ID = "vt.voteagora.near";
   const DEV_VOTING_CONTRACT_ID = "vote-dev.voteagora.near";
-  const DEV_CLAIM_CONTRACT_ID = "claim.voteagora.near";
-  
+  const DEV_CLAIM_CONTRACT_ID = "maskc.voteagora.near";
+
   // Otherwise, use environment-specific config
   switch (process.env.NEXT_PUBLIC_AGORA_ENV) {
     case "prod":

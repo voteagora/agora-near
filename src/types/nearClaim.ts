@@ -17,6 +17,9 @@ export interface ClaimProof {
   };
   proofData: {
     proof: string[];
+    campaignId: number;
+    lockup: string;
+    amount: string;
   } | null;
 }
 
