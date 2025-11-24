@@ -15,7 +15,7 @@ export function useMarkProofAsClaimed() {
         txHash,
       }: MarkProofAsClaimedArgs) => {
         const response = await fetch(
-          `/api/near/claim/proofs/${campaignId}/${address}`,
+          `/api/near/claim/${campaignId}/${address}`,
           {
             method: "POST",
             headers: {

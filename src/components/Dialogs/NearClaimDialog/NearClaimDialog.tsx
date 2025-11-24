@@ -24,10 +24,10 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
   >("initial");
   const [claimedAmount, setClaimedAmount] = useState<string>("0");
 
-  const { claimReward, isClaiming } = useClaimNearRewards({
+  const { batchClaimRewards, isClaiming } = useClaimNearRewards({
     onSuccess: () => {
       setCurrentStep("success");
-      refetch(); // Refresh the proofs data
+      refetch();
     },
   });
 
@@ -37,25 +37,30 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
     setCurrentStep("processing");
 
     try {
-      let totalClaimed = BigInt(0);
-
-      for (const proof of proofs) {
+      const claims = proofs.map((proof) => {
         if (!proof.proofData?.proof) {
           throw new Error(`No merkle proof available`);
         }
 
-        await claimReward({
-          amount: proof.amount, // Amount in yocto NEAR from the API
+        return {
+          amount: proof.proofData?.amount,
           merkleProof: proof.proofData.proof,
-          campaignId: proof.campaignId,
-          lockupContract: proof.lockup,
-        });
+          campaignId: proof.proofData.campaignId,
+          lockupContract: proof.proofData.lockup,
+        };
+      });
 
-        totalClaimed += BigInt(proof.amount);
-        toast.success(`Claimed ${convertYoctoToNear(proof.amount, 2)} NEAR`);
-      }
+      await batchClaimRewards({ claims });
+
+      const totalClaimed = proofs.reduce(
+        (sum, proof) => sum + BigInt(proof.amount),
+        BigInt(0)
+      );
 
       setClaimedAmount(totalClaimed.toString());
+      toast.success(
+        `Claimed ${convertYoctoToNear(totalClaimed.toString(), 2)} NEAR`
+      );
     } catch (error) {
       console.error("Failed to claim rewards:", error);
       toast.error(
@@ -210,7 +215,6 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
               className="flex items-center justify-between p-3 border border-line rounded-lg"
             >
               <div>
-                <p className="font-medium text-primary">{proof.project.name}</p>
                 <p className="text-sm text-secondary">
                   {convertYoctoToNear(proof.amount, 2)} NEAR
                 </p>
