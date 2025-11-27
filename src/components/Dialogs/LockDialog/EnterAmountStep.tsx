@@ -65,13 +65,12 @@ export const EnterAmountStep = ({
   const [customPoolInput, setCustomPoolInput] = useState(
     customStakingPoolId || ""
   );
-  const [whitelistContractId, setWhitelistContractId] = useState("");
   const [isValidatingPool, setIsValidatingPool] = useState(false);
   const [poolError, setPoolError] = useState<string | null>(null);
   const [isPoolValid, setIsPoolValid] = useState(!!customStakingPoolId);
   const [showCustomPool, setShowCustomPool] = useState(!!customStakingPoolId);
 
-  const { isWhitelisted, whitelistAccountId } = useIsPoolWhitelisted(whitelistContractId || undefined);
+  const { isWhitelisted, whitelistAccountId } = useIsPoolWhitelisted();
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -109,8 +108,8 @@ export const EnterAmountStep = ({
         throw new Error("Invalid account ID format");
       }
 
-      if (whitelistContractId && !whitelistContractId.endsWith(".near") && !whitelistContractId.endsWith(".testnet")) {
-        throw new Error("Invalid whitelist account ID format");
+      if (!customPoolInput.endsWith(".near") && !customPoolInput.endsWith(".testnet")) {
+        throw new Error("Invalid account ID format");
       }
 
       const whitelisted = await isWhitelisted(customPoolInput);
@@ -128,7 +127,7 @@ export const EnterAmountStep = ({
     } finally {
       setIsValidatingPool(false);
     }
-  }, [customPoolInput, whitelistContractId, isWhitelisted, setCustomStakingPoolId]);
+  }, [customPoolInput, isWhitelisted, setCustomStakingPoolId]);
 
   // Reset validation when input changes
   useEffect(() => {
@@ -279,11 +278,11 @@ export const EnterAmountStep = ({
                   >
                     ▸
                   </span>
-                  Enter a custom staking pool
+                  Enter a specific validator
                 </button>
               </TooltipTrigger>
               <TooltipContent>
-                Enter or change the staking pool account ID you want to use. We
+                Enter the staking pool account ID you want to use. We
                 will verify it against the selected whitelist.
               </TooltipContent>
             </Tooltip>
@@ -340,46 +339,13 @@ export const EnterAmountStep = ({
               </div>
               {poolError && <p className="text-xs text-red-500">{poolError}</p>}
 
-              <div className="flex flex-col gap-1 mt-2">
-                <label className="text-xs text-[#9D9FA1] flex items-center gap-1">
-                  Whitelist contract (optional)
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex items-center justify-center rounded-full p-1 hover:bg-muted cursor-pointer">
-                          <InformationCircleIcon className="h-3.5 w-3.5" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        Supply a whitelist contract if your custom pool belongs to
-                        a legacy factory. We will validate the pool against this
-                        whitelist.
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </label>
-                <Input
-                  type="text"
-                  placeholder="whitelist.factory.near"
-                  value={whitelistContractId}
-                  onChange={(e) => setWhitelistContractId(e.target.value.trim())}
-                  className="text-sm"
-                />
-                <div className="mt-2 flex items-center gap-2">
-                  <span className="text-[11px] text-[#9D9FA1]">
-                    Using whitelist:
-                  </span>
-                  <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none text-black bg-[#04e391] border-[#04e391] w-fit">
-                    {whitelistAccountId || "default from config"}
-                  </span>
-                </div>
-                {/* Inline format validation for whitelist */}
-                {whitelistContractId &&
-                  (!whitelistContractId.endsWith(".near") && !whitelistContractId.endsWith(".testnet")) && (
-                    <div className="text-[11px] text-red-500">
-                      Invalid whitelist account ID format
-                    </div>
-                  )}
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-[11px] text-[#9D9FA1]">
+                  Using whitelist:
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none text-black bg-[#04e391] border-[#04e391] w-fit">
+                  {whitelistAccountId || "default from config"}
+                </span>
               </div>
             </div>
           )}
