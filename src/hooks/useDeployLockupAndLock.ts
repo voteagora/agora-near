@@ -157,6 +157,9 @@ export const useDeployLockupAndLock = () => {
       transferAmountYocto,
       transferFungibleToken,
       transferNear,
+      customStakingPoolId,
+      signedAccountId,
+      callContracts,
     ]
   );
 
