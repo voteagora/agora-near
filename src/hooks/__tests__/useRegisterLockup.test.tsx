@@ -66,6 +66,7 @@ describe("useRegisterLockup", () => {
       isInitialized: true,
       transferNear: vi.fn(),
       transferFungibleToken: vi.fn(),
+      buildTransferFungibleTokenTransaction: vi.fn(),
     });
 
     mockUseWriteHOSContract.mockReturnValue({

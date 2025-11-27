@@ -107,6 +107,8 @@ describe("useDeployLockupAndLock", () => {
       lockupStorageCost: "2000000000000000000000000",
       venearAccountLockupVersion: 1,
       venearGlobalLockupVersion: 1,
+      customStakingPoolId: undefined,
+      setCustomStakingPoolId: vi.fn(),
     };
 
     const result = { ...defaults, ...overrides };
@@ -144,6 +146,7 @@ describe("useDeployLockupAndLock", () => {
       getAccessKeys: vi.fn(),
       callContracts: vi.fn(),
       signMessage: vi.fn(),
+      buildTransferFungibleTokenTransaction: vi.fn(),
       networkId: "testnet",
       isInitialized: true,
     });
