@@ -145,7 +145,7 @@ export const EnterStakingAmount = ({
           <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-3 flex gap-3 items-start">
             <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-blue-700">
-              <p className="font-medium mb-1">Staking Pool Bound</p>
+              <p className="font-medium mb-1">Staking Pool Selected</p>
               <p>
                 Your lockup is currently bound to{" "}
                 <span className="font-mono font-bold">
@@ -182,7 +182,7 @@ export const EnterStakingAmount = ({
         {hasAlreadySelectedStakingPool && selectedPool.id === selectedPool.contract && (
           <div className="mb-6">
             <h3 className="text-sm font-medium text-[#9D9FA1] mb-2">
-              Active Custom Pool
+              Active Staking Pool
             </h3>
             <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
               <div className="flex justify-between items-start mb-2">
@@ -202,7 +202,7 @@ export const EnterStakingAmount = ({
                       : selectedPool.metadata?.symbol}
                   </span>
                   <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full uppercase tracking-wider font-medium">
-                    Custom
+                    External
                   </span>
                 </div>
                 <div className="text-right">
@@ -243,12 +243,12 @@ export const EnterStakingAmount = ({
                     ▸
                   </span>
                   {hasAlreadySelectedStakingPool
-                    ? "Custom staking pool locked"
-                    : "Enter a custom staking pool"}
+                    ? "Staking pool locked"
+                    : "Delegate to a specific validator"}
                 </button>
               </TooltipTrigger>
               <TooltipContent>
-                Enter or change the staking pool account ID you want to use. We
+                Enter the staking pool account ID you want to use. We
                 will verify it against the selected whitelist.
               </TooltipContent>
             </Tooltip>
