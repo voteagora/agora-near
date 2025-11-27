@@ -56,7 +56,7 @@ export const AssetsHome = memo(() => {
               Bring your legacy staked tokens into House of Stake for governance
             </p>
           </div>
-          <Link href="/near/legacy-onboarding">
+          <Link href="/legacy-onboarding">
             <UpdatedButton variant="rounded" className="whitespace-nowrap">
               Get Started
             </UpdatedButton>
