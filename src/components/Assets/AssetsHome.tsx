@@ -3,6 +3,8 @@
 import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 import { useVenearConfig } from "@/hooks/useVenearConfig";
+import { useLockupAccount } from "@/hooks/useLockupAccount";
+import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import {
   MIN_VERSION_FOR_LST_LOCKUP,
   LEGACY_STAKING_DISMISSED_KEY,
@@ -32,6 +34,12 @@ export const AssetsHome = memo(() => {
 
   const { lockupVersion, isLoading: isLoadingVenearConfig } = useVenearConfig({
     enabled: true,
+  });
+
+  const { lockupAccountId } = useLockupAccount();
+  const { stakingPoolId } = useCurrentStakingPoolId({
+    lockupAccountId: lockupAccountId ?? "",
+    enabled: !!lockupAccountId,
   });
 
   const openDialog = useOpenDialog();
@@ -79,7 +87,7 @@ export const AssetsHome = memo(() => {
                     Have tokens staked in a custom pool?
                   </h3>
                   <p className="text-sm text-black/80">
-                    Bring your legacy staked tokens into House of Stake for
+                    Bring your staked tokens into House of Stake for
                     governance.
                   </p>
                 </div>
@@ -94,7 +102,7 @@ export const AssetsHome = memo(() => {
                   <button
                     onClick={() => setLegacyDismissed(true)}
                     className="p-1 hover:bg-black/5 rounded-md"
-                    aria-label="Dismiss legacy banner"
+                    aria-label="Dismiss banner"
                   >
                     <XMarkIcon className="w-5 h-5 text-black" />
                   </button>
@@ -111,7 +119,8 @@ export const AssetsHome = memo(() => {
   return (
     <div className="flex flex-col w-full min-h-screen">
       {/* Legacy Staked Tokens CTA */}
-      {!isLegacyDismissed && (
+      {/* Staked Tokens CTA - Only show if no pool is selected */}
+      {!isLegacyDismissed && !stakingPoolId && (
         <div className="w-full mt-4">
           <div
             className="relative flex flex-col border border-black shadow-lg rounded-lg p-4"
@@ -123,7 +132,7 @@ export const AssetsHome = memo(() => {
                   Have tokens staked in a custom pool?
                 </h3>
                 <p className="text-sm text-black/80">
-                  Bring your legacy staked tokens into House of Stake for
+                  Bring your staked tokens into House of Stake for
                   governance.
                 </p>
               </div>
@@ -139,7 +148,7 @@ export const AssetsHome = memo(() => {
                 <button
                   onClick={() => setLegacyDismissed(true)}
                   className="p-1 hover:bg-black/5 rounded-md"
-                  aria-label="Dismiss legacy banner"
+                  aria-label="Dismiss banner"
                 >
                   <XMarkIcon className="w-5 h-5 text-black" />
                 </button>
