@@ -67,7 +67,7 @@ type LockProviderContextType = {
   depositTotal: string;
   requiredTransactions: LockTransaction[];
   transferAmountYocto?: string;
-  getAmountToLock: () => Promise<string | undefined>;
+  getAmountToLock: () => string | undefined;
   maxAmountToLock?: string;
   amountError: string | null;
   resetForm: () => void;
@@ -106,7 +106,7 @@ export const LockProviderContext = createContext<LockProviderContextType>({
   depositTotal: "0",
   requiredTransactions: [],
   transferAmountYocto: "0",
-  getAmountToLock: () => Promise.resolve("0"),
+  getAmountToLock: () => "0",
   amountError: null,
   resetForm: () => {},
   source: "onboarding",
@@ -212,14 +212,11 @@ export const LockProvider = ({
 
   const { stakingPools, isLoading: isLoadingStakingPools } = useStakingPool();
 
-  const {
-    availableToLock: availableToLockInLockup,
-    refetchAvailableToLock,
-    isLoadingAvailableToLock,
-  } = useAvailableToLock({
-    lockupAccountId,
-    enabled: !!venearAccountInfo,
-  });
+  const { availableToLock: availableToLockInLockup, isLoadingAvailableToLock } =
+    useAvailableToLock({
+      lockupAccountId,
+      enabled: !!venearAccountInfo,
+    });
 
   const venearAmount = useMemo(() => {
     if (!isValidNearAmount(enteredAmount) || !selectedToken) {
@@ -616,28 +613,17 @@ export const LockProvider = ({
     customStakingPoolId,
   ]);
 
-  const getAmountToLock = useCallback(async () => {
+  const getAmountToLock = useCallback(() => {
     // Lock all when onboarding
     if (source === "onboarding") {
       return undefined;
     }
 
-    const { data: liquidNearInLockup } = await refetchAvailableToLock();
-
     const targetLockAmount =
       selectedToken?.type === "lst" ? venearAmount : enteredAmountYocto;
 
-    // For sanity, return min of available to lock and desired amount
-    return Big(targetLockAmount ?? "0").lt(Big(liquidNearInLockup ?? "0"))
-      ? targetLockAmount
-      : liquidNearInLockup;
-  }, [
-    enteredAmountYocto,
-    refetchAvailableToLock,
-    selectedToken?.type,
-    source,
-    venearAmount,
-  ]);
+    return targetLockAmount;
+  }, [enteredAmountYocto, selectedToken?.type, source, venearAmount]);
 
   // Select the first token by default or the pre-selected token if provided
   useEffect(() => {

@@ -13,6 +13,7 @@ import { NEAR_BALANCE_QK } from "./useBalance";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { CONTRACTS } from "@/lib/contractConstants";
 
+/** @deprecated Please use useDeployLockupAndLockV2 instead */
 export const useDeployLockupAndLock = () => {
   const {
     lockupAccountId,
@@ -136,7 +137,7 @@ export const useDeployLockupAndLock = () => {
           await refreshStakingPoolBalanceAsync();
           break;
         case "lock_near": {
-          const amountToLock = await getAmountToLock();
+          const amountToLock = getAmountToLock();
           await lockNear({
             amount: amountToLock,
           });

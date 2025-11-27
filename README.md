@@ -4,9 +4,23 @@
 
 2. Hit up the Discord and make sure that you get a local copy of the `.env.local` file. This is required to run the application locally. Then run the development server:
 3. Run `yarn`
-4. `yarn dev`
+4. `yarn start` / `yarn start:dev`
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## API Documentation
+
+The API documentation is available via Swagger UI when running the development server:
+
+- **API Docs UI**: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
+- **OpenAPI Spec**: [http://localhost:3000/openapi.json](http://localhost:3000/openapi.json)
+
+The OpenAPI specification is located at `public/openapi.json` and documents all available REST API endpoints.
+
+### Available Endpoints
+
+- `GET /api/v1/proposals` - List approved proposals with pagination
+  - Query params: `offset` (default: 0), `limit` (default: 20, max: 100)
 
 ## Environment Variables
 

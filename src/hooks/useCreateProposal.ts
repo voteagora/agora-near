@@ -4,9 +4,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { MixpanelEvents } from "@/lib/analytics/mixpanel";
 import { trackEvent } from "@/lib/analytics";
 import Big from "big.js";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { useWriteHOSContract } from "./useWriteHOSContract";
+
+const NEAR_STORAGE_BYTE_COST = "10000000000000000000";
 
 type Props = {
   baseFee: string;
@@ -42,16 +44,23 @@ export const useCreateProposal = ({
     onSuccess: onProposalCreateSuccess,
   });
 
-  const totalDeposit = useMemo(() => {
-    // TODO: Proper calculation is to take size of JSON stringified metadata * storage cost per byte and add some padding
-    return Big(baseFee)
-      .plus(storageFee)
-      .plus("100000000000000000000000")
-      .toFixed();
-  }, [baseFee, storageFee]);
+  const calculateDeposit = useCallback(
+    (metadata: ProposalMetadata) => {
+      const metadataJson = JSON.stringify(metadata);
+      const metadataBytes = new TextEncoder().encode(metadataJson).length;
+      const storageAddedCost = Big(NEAR_STORAGE_BYTE_COST).mul(metadataBytes);
+      return Big(baseFee)
+        .plus(storageFee)
+        .plus("50000000000000000000000")
+        .plus(storageAddedCost)
+        .toFixed();
+    },
+    [baseFee]
+  );
 
   const createProposal = useCallback(
     (metadata: ProposalMetadata) => {
+      const deposit = calculateDeposit(metadata);
       return mutateCreateProposal({
         contractId: CONTRACTS.VOTING_CONTRACT_ID,
         methodCalls: [
@@ -59,16 +68,17 @@ export const useCreateProposal = ({
             methodName: "create_proposal",
             args: { metadata },
             gas: "100 Tgas",
-            deposit: totalDeposit,
+            deposit,
           },
         ],
       });
     },
-    [mutateCreateProposal, totalDeposit]
+    [mutateCreateProposal, calculateDeposit]
   );
 
   const createProposalAsync = useCallback(
     (metadata: ProposalMetadata) => {
+      const deposit = calculateDeposit(metadata);
       return mutateCreateProposalAsync({
         contractId: CONTRACTS.VOTING_CONTRACT_ID,
         methodCalls: [
@@ -76,12 +86,12 @@ export const useCreateProposal = ({
             methodName: "create_proposal",
             args: { metadata },
             gas: "100 Tgas",
-            deposit: totalDeposit,
+            deposit,
           },
         ],
       });
     },
-    [mutateCreateProposalAsync, totalDeposit]
+    [mutateCreateProposalAsync, calculateDeposit]
   );
 
   return {

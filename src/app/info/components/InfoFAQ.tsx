@@ -498,6 +498,23 @@ const faqs: FAQ[] = [
       </Text>
     ),
   },
+  {
+    id: "proposal-alpha-unstake",
+    question: "How do I unstake from the alpha contracts?",
+    answer: (
+      <Text>
+        You can use a{" "}
+        <ExternalLink href="https://github.com/voteagora/agora-near/wiki/How-to:-Unlock-NEAR-in-veNEAR-Alpha-Contracts">
+          CLI
+        </ExternalLink>
+        , or there is a{" "}
+        <ExternalLink href="https://unlock.houseofstake.dev/">
+          Web UI
+        </ExternalLink>
+        .
+      </Text>
+    ),
+  },
 ];
 
 const InfoFAQ = () => {

@@ -110,7 +110,9 @@ export const DesktopProfileDropDown = ({ accountId, signOut }: Props) => {
                 <NearAvatar accountId={accountId} size={28} />
                 <div className="hidden lg:inline">
                   {accountId && (
-                    <span className="truncate max-w-[140px]">{accountId}</span>
+                    <span className="truncate max-w-[140px] block">
+                      {accountId}
+                    </span>
                   )}
                 </div>
               </div>
