@@ -1,5 +1,12 @@
-import { isQuorumFulfilled, getProposalStatus, getTotalVotes } from "../proposalUtils";
-import { ProposalDisplayStatus, ProposalStatus } from "../contracts/types/voting";
+import {
+  isQuorumFulfilled,
+  getProposalStatus,
+  getTotalVotes,
+} from "../proposalUtils";
+import {
+  ProposalDisplayStatus,
+  ProposalStatus,
+} from "../contracts/types/voting";
 
 describe("proposalUtils", () => {
   describe("getTotalVotes", () => {
