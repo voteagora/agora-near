@@ -100,11 +100,8 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
               <Image width="12" height="12" src={checkIcon} alt="check icon" />
             )}
             <p className="text-xs font-semibold text-secondary">
-              <TokenAmount
-                amount={totalVotes.toFixed(0)}
-                hideCurrency
-              />{" "}
-              / <TokenAmount amount={quorum} hideCurrency />
+              <TokenAmount amount={totalVotes.toFixed(0)} hideCurrency /> /{" "}
+              <TokenAmount amount={quorum} hideCurrency />
               Required
             </p>
           </div>

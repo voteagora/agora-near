@@ -165,9 +165,7 @@ export const getTotalVotes = (
   againstVotingPower: string,
   abstainVotingPower: string
 ) => {
-  return Big(forVotingPower)
-    .plus(againstVotingPower)
-    .plus(abstainVotingPower);
+  return Big(forVotingPower).plus(againstVotingPower).plus(abstainVotingPower);
 };
 
 export const isQuorumFulfilled = ({
