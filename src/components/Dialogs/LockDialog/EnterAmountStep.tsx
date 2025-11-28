@@ -51,8 +51,6 @@ export const EnterAmountStep = ({
     accountId: lockupAccountId,
   });
 
-
-
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEnteredAmount(value);
@@ -72,14 +70,8 @@ export const EnterAmountStep = ({
     );
   }, [venearAmount]);
 
-
-
-
   const shouldDisableButton =
-    !enteredAmount ||
-    Number(enteredAmount) === 0 ||
-    isLoading ||
-    !!amountError;
+    !enteredAmount || Number(enteredAmount) === 0 || isLoading || !!amountError;
 
   const showConversion = useMemo(() => {
     return selectedToken?.type === "lst" && !!lstPriceYocto;
@@ -192,8 +184,6 @@ export const EnterAmountStep = ({
           </div>
         </div>
       </div>
-
-
 
       <div className="flex flex-col gap-1 text-sm">
         <div className="flex flex-row justify-between">

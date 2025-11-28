@@ -80,7 +80,8 @@ export const EnterStakingAmount = ({
   }, [pools, selectedPool]);
 
   const [showCustomPool, setShowCustomPool] = useState<boolean>(
-    (!!prefilledCustomPoolId || isCustomPoolSelected) && !hasAlreadySelectedStakingPool
+    (!!prefilledCustomPoolId || isCustomPoolSelected) &&
+      !hasAlreadySelectedStakingPool
   );
 
   const isCustomPoolValid = useMemo(() => {
@@ -118,12 +119,7 @@ export const EnterStakingAmount = ({
     } finally {
       setIsValidatingCustomPool(false);
     }
-  }, [
-    customPoolId,
-    isCustomPoolValid,
-    isWhitelisted,
-    setSelectedPool,
-  ]);
+  }, [customPoolId, isCustomPoolValid, isWhitelisted, setSelectedPool]);
 
   const handleContinue = useCallback(() => {
     if (!enteredAmount || !!amountError) return;
@@ -177,48 +173,51 @@ export const EnterStakingAmount = ({
         </div>
 
         {/* Active Custom Pool Card */}
-        {hasAlreadySelectedStakingPool && selectedPool.id === selectedPool.contract && (
-          <div className="mb-6">
-            <h3 className="text-sm font-medium text-[#9D9FA1] mb-2">
-              Active Staking Pool
-            </h3>
-            <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  {selectedPool.metadata?.icon && (
-                    <Image
-                      src={selectedPool.metadata.icon}
-                      alt={selectedPool.metadata.symbol}
-                      width={24}
-                      height={24}
-                      className="rounded-full border border-gray-200 bg-white"
-                    />
-                  )}
-                  <span className="font-semibold text-gray-900">
-                    {selectedPool.metadata?.symbol === "NEAR"
-                      ? selectedPool.contract
-                      : selectedPool.metadata?.symbol}
-                  </span>
-                  <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full uppercase tracking-wider font-medium">
-                    Custom / Independent
-                  </span>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs text-[#9D9FA1]">Currently Staked</div>
-                  <div className="font-medium">
-                    <TokenAmount amount={stakedBalance ?? "0"} />
+        {hasAlreadySelectedStakingPool &&
+          selectedPool.id === selectedPool.contract && (
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-[#9D9FA1] mb-2">
+                Active Staking Pool
+              </h3>
+              <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center gap-2">
+                    {selectedPool.metadata?.icon && (
+                      <Image
+                        src={selectedPool.metadata.icon}
+                        alt={selectedPool.metadata.symbol}
+                        width={24}
+                        height={24}
+                        className="rounded-full border border-gray-200 bg-white"
+                      />
+                    )}
+                    <span className="font-semibold text-gray-900">
+                      {selectedPool.metadata?.symbol === "NEAR"
+                        ? selectedPool.contract
+                        : selectedPool.metadata?.symbol}
+                    </span>
+                    <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full uppercase tracking-wider font-medium">
+                      Custom / Independent
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-[#9D9FA1]">
+                      Currently Staked
+                    </div>
+                    <div className="font-medium">
+                      <TokenAmount amount={stakedBalance ?? "0"} />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="text-xs text-[#9D9FA1]">
-                Pool ID:{" "}
-                <span className="font-mono text-gray-600">
-                  {selectedPool.contract}
-                </span>
+                <div className="text-xs text-[#9D9FA1]">
+                  Pool ID:{" "}
+                  <span className="font-mono text-gray-600">
+                    {selectedPool.contract}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Custom pool entry / Change Pool */}
         <div className="mb-6">
@@ -246,8 +245,8 @@ export const EnterStakingAmount = ({
                 </button>
               </TooltipTrigger>
               <TooltipContent>
-                Enter the staking pool account ID you want to use. We
-                will verify it against the whitelist.
+                Enter the staking pool account ID you want to use. We will
+                verify it against the whitelist.
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -295,15 +294,15 @@ export const EnterStakingAmount = ({
                         {hasAlreadySelectedStakingPool &&
                           Big(stakedBalance ?? "0").gt(0) && (
                             <TooltipContent>
-                              You cannot change pools while you have staked funds.
-                              Please unstake first.
+                              You cannot change pools while you have staked
+                              funds. Please unstake first.
                             </TooltipContent>
                           )}
                       </Tooltip>
                     </TooltipProvider>
                   </div>
 
-                    <UpdatedButton
+                  <UpdatedButton
                     variant="rounded"
                     onClick={handleUseCustomPool}
                     disabled={
@@ -341,7 +340,9 @@ export const EnterStakingAmount = ({
         </div>
         <div className="mb-6">
           <div className="text-base text-[#9D9FA1] mb-2">
-            Total Available <span className="text-xs font-normal">(Wallet + Lockup)</span> <TokenAmount amount={totalAvailableToStake ?? "0"} hideCurrency />
+            Total Available{" "}
+            <span className="text-xs font-normal">(Wallet + Lockup)</span>{" "}
+            <TokenAmount amount={totalAvailableToStake ?? "0"} hideCurrency />
           </div>
 
           {(!totalAvailableToStake || Big(totalAvailableToStake).lte(0)) && (
@@ -386,7 +387,9 @@ export const EnterStakingAmount = ({
                 />
                 <button
                   onClick={onStakeMax}
-                  disabled={!totalAvailableToStake || Big(totalAvailableToStake).lte(0)}
+                  disabled={
+                    !totalAvailableToStake || Big(totalAvailableToStake).lte(0)
+                  }
                   className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200"
                 >
                   Max

@@ -35,7 +35,12 @@ export const useDeployLockupAndLock = () => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const { transferNear, transferFungibleToken, callContracts, signedAccountId } = useNear();
+  const {
+    transferNear,
+    transferFungibleToken,
+    callContracts,
+    signedAccountId,
+  } = useNear();
 
   const { registerAndDeployLockupAsync, error: registerAndDeployLockupError } =
     useRegisterLockup({});

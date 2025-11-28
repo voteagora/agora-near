@@ -583,7 +583,10 @@ export const LockProvider = ({
     // 1. We're NOT deploying with a custom pool (which already batches it), AND
     // 2. Either it's an LST without a pool OR an existing lockup with a custom pool change
     const shouldBatchPoolSelection = isDeployingLockup && customStakingPoolId;
-    if (!shouldBatchPoolSelection && ((selectedToken?.type === "lst" && !stakingPoolId) || customStakingPoolId)) {
+    if (
+      !shouldBatchPoolSelection &&
+      ((selectedToken?.type === "lst" && !stakingPoolId) || customStakingPoolId)
+    ) {
       transactions.push("select_staking_pool");
     }
 

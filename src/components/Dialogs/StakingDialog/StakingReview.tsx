@@ -62,11 +62,7 @@ export const StakingReview = ({
     return yoctoNearToUsdFormatted(enteredAmountYoctoNear, String(price));
   }, [enteredAmountYoctoNear, price]);
 
-  const {
-    stakeNear,
-    isStakingNear,
-    stakingNearError,
-  } = useStakeNear({
+  const { stakeNear, isStakingNear, stakingNearError } = useStakeNear({
     lockupAccountId: lockupAccountId ?? "",
   });
 
@@ -80,10 +76,6 @@ export const StakingReview = ({
     useSelectStakingPool({
       lockupAccountId: lockupAccountId ?? "",
     });
-
-
-
-
 
   const stakeError = useMemo(() => {
     if (stakingNearError) {
@@ -100,7 +92,7 @@ export const StakingReview = ({
       const max = Big(maxStakingAmount ?? "0");
       const desired = Big(enteredAmountYoctoNear ?? "0");
       // Add 0.001 NEAR buffer to ensure we cover any dust discrepancies
-      const buffer = Big(10).pow(21); 
+      const buffer = Big(10).pow(21);
       return desired.gt(max) ? desired.minus(max).plus(buffer).toFixed(0) : "0";
     } catch {
       return "0";
@@ -281,7 +273,6 @@ export const StakingReview = ({
         </div>
       </div>
       <div className="flex-1 flex flex-col justify-end gap-4">
-
         <UpdatedButton
           isLoading={isStakingNear}
           onClick={onStake}

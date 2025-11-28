@@ -5,7 +5,13 @@ import { useStakingPoolExchangeRates } from "@/hooks/useStakingPoolExchangeRates
 import { useStakingPoolStats } from "@/hooks/useStakingPoolStats";
 
 import { useNear } from "@/contexts/NearContext";
-import { LINEAR_POOL, STNEAR_POOL, RNEAR_POOL, DEFAULT_GAS_RESERVE, NEAR_TOKEN_METADATA } from "@/lib/constants";
+import {
+  LINEAR_POOL,
+  STNEAR_POOL,
+  RNEAR_POOL,
+  DEFAULT_GAS_RESERVE,
+  NEAR_TOKEN_METADATA,
+} from "@/lib/constants";
 import { StakingPool } from "@/lib/types";
 import { useBalance } from "@/hooks/useBalance";
 import {
@@ -114,8 +120,6 @@ export const StakingProvider = ({
   const { exchangeRateMap, isLoading: isLoadingStakingPools } =
     useStakingPoolExchangeRates({ pools: supportedPools });
 
-
-
   const [
     {
       data: maxStakingAmount,
@@ -139,7 +143,9 @@ export const StakingProvider = ({
 
   const preSelectedStakingPool = useMemo(() => {
     if (!stakingPoolId) return undefined;
-    const supported = supportedPools.find((pool) => pool.contract === stakingPoolId);
+    const supported = supportedPools.find(
+      (pool) => pool.contract === stakingPoolId
+    );
     if (supported) return supported;
 
     // If it's a custom pool not in supported list, create a temporary pool object
@@ -191,8 +197,10 @@ export const StakingProvider = ({
     const wallet = Big(walletBalance ?? "0");
     // Reserve gas from wallet balance if using it
     const walletAvailable = wallet.minus(DEFAULT_GAS_RESERVE);
-    const safeWalletAvailable = walletAvailable.gt(0) ? walletAvailable : Big(0);
-    
+    const safeWalletAvailable = walletAvailable.gt(0)
+      ? walletAvailable
+      : Big(0);
+
     return lockupBalance.plus(safeWalletAvailable).toFixed();
   }, [maxStakingAmount, walletBalance]);
 
@@ -202,10 +210,7 @@ export const StakingProvider = ({
     if (!exchangeRate) {
       return enteredAmountYoctoNear;
     }
-    return convertNearToStakingToken(
-      enteredAmountYoctoNear,
-      exchangeRate
-    );
+    return convertNearToStakingToken(enteredAmountYoctoNear, exchangeRate);
   }, [enteredAmountYoctoNear, exchangeRateMap, selectedPool.id]);
 
   const amountError = useMemo(() => {
@@ -219,9 +224,7 @@ export const StakingProvider = ({
     }
 
     // Check if amount exceeds total available (lockup + wallet)
-    if (
-      Big(enteredAmountYoctoNear).gt(Big(totalAvailableToStake))
-    ) {
+    if (Big(enteredAmountYoctoNear).gt(Big(totalAvailableToStake))) {
       return "Amount exceeds available balance";
     }
 

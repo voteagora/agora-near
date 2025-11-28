@@ -87,8 +87,7 @@ export const AssetsHome = memo(() => {
                     Have tokens staked in a staking pool?
                   </h3>
                   <p className="text-sm text-black/80">
-                    Bring your staked tokens into House of Stake for
-                    governance.
+                    Bring your staked tokens into House of Stake for governance.
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -132,8 +131,7 @@ export const AssetsHome = memo(() => {
                   Have tokens staked in a staking pool?
                 </h3>
                 <p className="text-sm text-black/80">
-                  Bring your staked tokens into House of Stake for
-                  governance.
+                  Bring your staked tokens into House of Stake for governance.
                 </p>
               </div>
               <div className="flex items-center gap-2">
