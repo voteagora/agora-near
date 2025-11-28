@@ -278,12 +278,12 @@ export const EnterAmountStep = ({
                   >
                     ▸
                   </span>
-                  Enter a specific validator
+                  Enter staking pool account ID
                 </button>
               </TooltipTrigger>
               <TooltipContent>
                 Enter the staking pool account ID you want to use. We
-                will verify it against the selected whitelist.
+                will verify it against the whitelist.
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
