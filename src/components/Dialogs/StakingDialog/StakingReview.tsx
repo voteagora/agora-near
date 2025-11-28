@@ -339,9 +339,11 @@ export const StakingReview = ({
         <div className="flex justify-between items-start">
           <div>
             <h2 className="text-md font-semibold mb-1">Amount staking</h2>
-            <div className="text-sm text-[#9D9FA1]">
-              {`${selectedStats?.apy?.toFixed(2) ?? "-"}% APY (Estimated)`}
-            </div>
+            {!!selectedStats?.apy && (
+              <div className="text-sm text-[#9D9FA1]">
+                {`${selectedStats.apy.toFixed(2)}% APY (Estimated)`}
+              </div>
+            )}
           </div>
           <div className="text-right">
             <div className="text-md font-bold text-gray-900 mb-1">
