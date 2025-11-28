@@ -3,7 +3,7 @@ import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useReadHOSContract } from "@/hooks/useReadHOSContract";
 import { useStakingPoolExchangeRates } from "@/hooks/useStakingPoolExchangeRates";
 import { useStakingPoolStats } from "@/hooks/useStakingPoolStats";
-import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
+
 import { useNear } from "@/contexts/NearContext";
 import { LINEAR_POOL, STNEAR_POOL, RNEAR_POOL, DEFAULT_GAS_RESERVE, NEAR_TOKEN_METADATA } from "@/lib/constants";
 import { StakingPool } from "@/lib/types";
@@ -114,7 +114,7 @@ export const StakingProvider = ({
   const { exchangeRateMap, isLoading: isLoadingStakingPools } =
     useStakingPoolExchangeRates({ pools: supportedPools });
 
-  const { data: venearAccountInfo } = useVenearAccountInfo(signedAccountId);
+
 
   const [
     {

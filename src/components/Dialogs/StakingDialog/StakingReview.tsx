@@ -7,24 +7,15 @@ import { usePrice } from "@/hooks/usePrice";
 import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
 import { useStakeNear } from "@/hooks/useStakeNear";
 import { useLockNear } from "@/hooks/useLockNear";
-import { useRefreshStakingPoolBalance } from "@/hooks/useRefreshStakingPoolBalance";
-import { useStakedBalance } from "@/hooks/useStakedBalance";
-import { useWriteHOSContract } from "@/hooks/useWriteHOSContract";
 import { yoctoNearToUsdFormatted } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { NEAR_BALANCE_QK } from "@/hooks/useBalance";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingSubmitting } from "./StakingSubmitting";
 import { StakingSuccess } from "./StakingSuccess";
 import { StakingDisclosures } from "./StakingDisclosures";
 import Big from "big.js";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Info } from "lucide-react";
 
 export type StakingStep = "select_pool" | "stake";
 
@@ -51,7 +42,6 @@ export const StakingReview = ({
   const [stakingStep, setStakingStep] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDisclosures, setShowDisclosures] = useState(false);
-  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -76,12 +66,6 @@ export const StakingReview = ({
     stakeNear,
     isStakingNear,
     stakingNearError,
-    unstakeAll,
-    withdrawAll,
-    isUnstakingAll,
-    isWithdrawingAll,
-    unstakingAllError,
-    withdrawingAllError,
   } = useStakeNear({
     lockupAccountId: lockupAccountId ?? "",
   });
@@ -97,82 +81,9 @@ export const StakingReview = ({
       lockupAccountId: lockupAccountId ?? "",
     });
 
-  // Refresh staking pool balance (e.g., to surface rewards or post-cooldown availability)
-  const {
-    refreshStakingPoolBalanceAsync,
-    error: refreshStakingPoolBalanceError,
-  } = useRefreshStakingPoolBalance({
-    lockupAccountId: lockupAccountId ?? "",
-  });
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const onRefreshStakingBalance = useCallback(async () => {
-    console.log("[StakingReview] Refresh balance clicked", {
-      lockupAccountId,
-      currentStakingPoolId,
-    });
-    try {
-      setIsRefreshing(true);
-      console.log("[StakingReview] Calling refresh_staking_pool_balance");
-      await refreshStakingPoolBalanceAsync();
-      console.log("[StakingReview] Refresh balance completed");
-    } catch (e) {
-      console.error("[StakingReview] Refresh balance error", e);
-      throw e;
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [refreshStakingPoolBalanceAsync, lockupAccountId, currentStakingPoolId]);
 
-  // Detect whether we can unselect the staking pool (must have 0 deposited/staked)
-  const { stakedBalance, isLoading: isLoadingStakedBalance } = useStakedBalance(
-    {
-      stakingPoolId: currentStakingPoolId,
-      accountId: lockupAccountId,
-    }
-  );
 
-  const { mutateAsync: writeLockupContract } = useWriteHOSContract({
-    contractType: "LOCKUP",
-  });
-  const [isUnselecting, setIsUnselecting] = useState(false);
-  const [unselectError, setUnselectError] = useState<Error | null>(null);
 
-  const canUnselect = useMemo(() => {
-    if (!currentStakingPoolId) return false;
-    try {
-      return !isLoadingStakedBalance && Big(stakedBalance ?? "0").eq(0);
-    } catch {
-      return false;
-    }
-  }, [currentStakingPoolId, isLoadingStakedBalance, stakedBalance]);
-
-  const onUnselectStakingPool = useCallback(async () => {
-    console.log("[StakingReview] Unselect staking pool clicked", {
-      lockupAccountId,
-      currentStakingPoolId,
-      canUnselect,
-    });
-    try {
-      setIsUnselecting(true);
-      setUnselectError(null);
-      console.log("[StakingReview] Calling unselect_staking_pool");
-      await writeLockupContract({
-        contractId: lockupAccountId ?? "",
-        methodCalls: [
-          {
-            methodName: "unselect_staking_pool",
-            args: {},
-          },
-        ],
-      });
-      console.log("[StakingReview] Unselect staking pool completed");
-    } catch (e) {
-      console.error("[StakingReview] Unselect staking pool error", e);
-      setUnselectError(e as Error);
-    } finally {
-      setIsUnselecting(false);
-    }
-  }, [writeLockupContract, lockupAccountId, currentStakingPoolId, canUnselect]);
 
   const stakeError = useMemo(() => {
     if (stakingNearError) {
@@ -206,7 +117,7 @@ export const StakingReview = ({
     }
     steps.push("stake");
     return steps;
-  }, [topUpAmount]);
+  }, [topUpAmount, needsToSelectPool]);
 
   const onStake = useCallback(
     async ({ startAtStep = 0 }: { startAtStep?: number }) => {
@@ -273,6 +184,7 @@ export const StakingReview = ({
       lockupAccountId,
       topUpAmount,
       transferNear,
+      queryClient,
     ]
   );
 

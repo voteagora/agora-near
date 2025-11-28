@@ -38,7 +38,6 @@ export const EnterStakingAmount = ({
     enteredAmount,
     setEnteredAmount,
     onStakeMax,
-    maxStakingAmount,
     amountError,
     selectedPool,
     setSelectedPool,
@@ -122,7 +121,6 @@ export const EnterStakingAmount = ({
   }, [
     customPoolId,
     isCustomPoolValid,
-    isValidNearAccountId,
     isWhitelisted,
     setSelectedPool,
   ]);

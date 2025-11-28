@@ -11,24 +11,15 @@ import { ArrowDownIcon } from "@heroicons/react/20/solid";
 import {
   ChevronDownIcon,
   InformationCircleIcon,
-  CheckCircleIcon,
-  XCircleIcon,
 } from "@heroicons/react/24/outline";
 import Big from "big.js";
 import { utils } from "near-api-js";
-import { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo } from "react";
 import { AssetIcon } from "../../common/AssetIcon";
 import TokenAmount from "../../shared/TokenAmount";
 import { useLockProviderContext } from "../LockProvider";
 
 import { useStakedBalance } from "@/hooks/useStakedBalance";
-import toast from "react-hot-toast";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
 
 type EnterAmountStepProps = {
   openAssetSelector: () => void;
@@ -55,7 +46,7 @@ export const EnterAmountStep = ({
     stakingPoolId,
   } = useLockProviderContext();
 
-  const { stakedBalance } = useStakedBalance({
+  useStakedBalance({
     stakingPoolId,
     accountId: lockupAccountId,
   });
