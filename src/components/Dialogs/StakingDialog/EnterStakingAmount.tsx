@@ -200,7 +200,7 @@ export const EnterStakingAmount = ({
                       : selectedPool.metadata?.symbol}
                   </span>
                   <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full uppercase tracking-wider font-medium">
-                    External
+                    Custom / Independent
                   </span>
                 </div>
                 <div className="text-right">
