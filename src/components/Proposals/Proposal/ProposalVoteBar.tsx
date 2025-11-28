@@ -28,16 +28,16 @@ export default function ProposalVoteBar({
               className="min-w-[1px] bg-positive h-[10px]"
             ></div>
           )}
-          {abstainVotes > 0 && (
-            <div
-              style={{ flex: abstainVotes / totalVotes }}
-              className="min-w-[1px] bg-secondary h-[10px]"
-            ></div>
-          )}
           {againstVotes > 0 && (
             <div
               style={{ flex: againstVotes / totalVotes }}
               className="min-w-[1px] bg-negative h-[10px]"
+            ></div>
+          )}
+          {abstainVotes > 0 && (
+            <div
+              style={{ flex: abstainVotes / totalVotes }}
+              className="min-w-[1px] bg-secondary h-[10px]"
             ></div>
           )}
         </>
