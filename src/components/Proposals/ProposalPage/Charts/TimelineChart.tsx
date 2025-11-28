@@ -252,7 +252,12 @@ const CustomTooltip = ({ active, payload, label, quorum }: any) => {
       (a, b) => voteOrder.indexOf(a.name) - voteOrder.indexOf(b.name)
     );
 
-    const quorumVotes = BigInt(forVotes.value) + BigInt(againstVotes.value);
+    const abstainVotes = payload.find((p: any) => p.name === "Abstain");
+
+    const quorumVotes =
+      BigInt(forVotes.value) +
+      BigInt(againstVotes.value) +
+      BigInt(abstainVotes.value);
 
     return (
       <div className="bg-neutral p-3 border border-line rounded-lg shadow-newDefault">
