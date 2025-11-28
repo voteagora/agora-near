@@ -10,6 +10,7 @@ export const ProposalStatusText = memo(
       quorumAmount: proposal.quorumAmountYoctoNear ?? "0",
       forVotingPower: proposal.forVotingPower ?? "0",
       againstVotingPower: proposal.againstVotingPower ?? "0",
+      abstainVotingPower: proposal.abstainVotingPower ?? "0",
     });
 
     const { text } = getProposalStatusColor(status);
