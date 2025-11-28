@@ -1,4 +1,3 @@
-import { VOTING_THRESHOLDS } from "@/lib/constants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 
 export default function ProposalVoteBar({
@@ -13,6 +12,12 @@ export default function ProposalVoteBar({
   const abstainVotes = Number(proposal.votes[2]?.total_venear ?? "0");
   const totalVotes = Number(proposal.total_votes.total_venear);
 
+  // Threshold is at 50% of for+against votes (abstain doesn't count)
+  const thresholdPosition =
+    totalVotes > 0 && forVotes + againstVotes > 0
+      ? ((forVotes + againstVotes) / 2 / totalVotes) * 100
+      : 50;
+
   return (
     <div id="chartContainer" className="relative flex items-stretch gap-x-0.5">
       {hasVotes ? (
@@ -23,16 +28,16 @@ export default function ProposalVoteBar({
               className="min-w-[1px] bg-positive h-[10px]"
             ></div>
           )}
-          {abstainVotes > 0 && (
-            <div
-              style={{ flex: abstainVotes / totalVotes }}
-              className="min-w-[1px] bg-secondary h-[10px]"
-            ></div>
-          )}
           {againstVotes > 0 && (
             <div
               style={{ flex: againstVotes / totalVotes }}
               className="min-w-[1px] bg-negative h-[10px]"
+            ></div>
+          )}
+          {abstainVotes > 0 && (
+            <div
+              style={{ flex: abstainVotes / totalVotes }}
+              className="min-w-[1px] bg-secondary h-[10px]"
             ></div>
           )}
         </>
@@ -41,7 +46,7 @@ export default function ProposalVoteBar({
       )}
       <div
         className="bg-primary h-4 w-[2px] absolute -top-[3px] z-50"
-        style={{ left: `${VOTING_THRESHOLDS.SIMPLE_MAJORITY}%` }} // Assume simple majority for now
+        style={{ left: `${thresholdPosition}%` }}
       />
     </div>
   );

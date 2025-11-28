@@ -33,6 +33,7 @@ export default function ProposalStatusDetail({
     quorumAmount: quorum,
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
+    abstainVotingPower: proposal.votes[2]?.total_venear ?? "0",
   });
 
   const isDefeated = status === ProposalDisplayStatus.Defeated;
@@ -43,6 +44,7 @@ export default function ProposalStatusDetail({
     quorumAmount: quorum,
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
+    abstainVotingPower: proposal.votes[2]?.total_venear ?? "0",
   });
 
   return (
