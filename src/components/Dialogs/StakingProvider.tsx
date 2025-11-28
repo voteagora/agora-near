@@ -128,7 +128,7 @@ export const StakingProvider = ({
       methodName: "get_liquid_owners_balance" as const,
       config: {
         args: {},
-        enabled: !!lockupAccountId && !!venearAccountInfo,
+        enabled: !!lockupAccountId,
       },
     },
   ]);
