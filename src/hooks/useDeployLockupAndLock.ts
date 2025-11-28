@@ -25,6 +25,7 @@ export const useDeployLockupAndLock = () => {
     lockNear,
     getAmountToLock,
     lockingNearError,
+    customStakingPoolId,
   } = useLockProviderContext();
 
   const [transactionText, setTransactionText] = useState<string>("");
@@ -34,7 +35,12 @@ export const useDeployLockupAndLock = () => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const { transferNear, transferFungibleToken } = useNear();
+  const {
+    transferNear,
+    transferFungibleToken,
+    callContracts,
+    signedAccountId,
+  } = useNear();
 
   const { registerAndDeployLockupAsync, error: registerAndDeployLockupError } =
     useRegisterLockup({});
@@ -73,12 +79,44 @@ export const useDeployLockupAndLock = () => {
   const executeTransaction = useCallback(
     async (transaction: LockTransaction) => {
       switch (transaction) {
-        case "deploy_lockup":
-          await registerAndDeployLockupAsync(
-            storageDepositAmount ?? "",
-            lockupDeploymentCost ?? ""
-          );
+        case "deploy_lockup": {
+          // Special case: if we have a customStakingPoolId, we need to batch both
+          // deploy_lockup (on factory) and select_staking_pool (on lockup) in ONE transaction
+          // to avoid losing state when wallet redirects
+          if (customStakingPoolId && lockupAccountId) {
+            await callContracts({
+              contractCalls: {
+                [CONTRACTS.VENEAR_CONTRACT_ID]: [
+                  {
+                    methodName: "storage_deposit",
+                    args: { account_id: signedAccountId },
+                    deposit: storageDepositAmount ?? "0",
+                  },
+                  {
+                    methodName: "deploy_lockup",
+                    args: {},
+                    deposit: lockupDeploymentCost ?? "0",
+                    gas: "100 Tgas",
+                  },
+                ],
+                [lockupAccountId]: [
+                  {
+                    methodName: "select_staking_pool",
+                    args: { staking_pool_account_id: customStakingPoolId },
+                    deposit: "1",
+                    gas: "75 Tgas",
+                  },
+                ],
+              },
+            });
+          } else {
+            await registerAndDeployLockupAsync(
+              storageDepositAmount ?? "",
+              lockupDeploymentCost ?? ""
+            );
+          }
           break;
+        }
         case "transfer_ft": {
           await transferFungibleToken({
             tokenContractId: selectedToken?.accountId ?? "",
@@ -96,7 +134,8 @@ export const useDeployLockupAndLock = () => {
         }
         case "select_staking_pool":
           await selectStakingPoolAsync({
-            stakingPoolId: selectedToken?.accountId ?? "",
+            stakingPoolId:
+              customStakingPoolId ?? selectedToken?.accountId ?? "",
           });
           break;
         case "refresh_balance":
@@ -124,6 +163,9 @@ export const useDeployLockupAndLock = () => {
       transferAmountYocto,
       transferFungibleToken,
       transferNear,
+      customStakingPoolId,
+      signedAccountId,
+      callContracts,
     ]
   );
 

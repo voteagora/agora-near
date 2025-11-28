@@ -19,6 +19,15 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
   const [withdrawingNearError, setWithdrawingNearError] =
     useState<Error | null>(null);
 
+  const [isUnstakingAll, setIsUnstakingAll] = useState(false);
+  const [isWithdrawingAll, setIsWithdrawingAll] = useState(false);
+  const [unstakingAllError, setUnstakingAllError] = useState<Error | null>(
+    null
+  );
+  const [withdrawingAllError, setWithdrawingAllError] = useState<Error | null>(
+    null
+  );
+
   const { mutateAsync: mutateStakeNear } = useWriteHOSContract({
     contractType: "LOCKUP",
   });
@@ -28,9 +37,11 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
   const stakeNear = useCallback(
     async (amount: string) => {
       try {
+        console.log("[stakeNear] start", { lockupAccountId, amount });
         setIsStakingNear(true);
         setStakingNearError(null);
 
+        console.log("[stakeNear] calling deposit_and_stake");
         await mutateStakeNear({
           contractId: lockupAccountId,
           methodCalls: [
@@ -41,17 +52,27 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
           ],
         });
 
+        console.log("[stakeNear] invalidating READ_NEAR_CONTRACT_QK", {
+          contractId: lockupAccountId,
+          key: READ_NEAR_CONTRACT_QK,
+        });
         queryClient.invalidateQueries({
           queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
         });
 
+        console.log("[stakeNear] invalidating STAKED_BALANCE_QK", {
+          contractId: lockupAccountId,
+          key: STAKED_BALANCE_QK,
+        });
         queryClient.invalidateQueries({
           queryKey: [STAKED_BALANCE_QK, lockupAccountId],
         });
       } catch (e) {
+        console.error("[stakeNear] error", e);
         setStakingNearError(e as Error);
       } finally {
         setIsStakingNear(false);
+        console.log("[stakeNear] end");
       }
     },
     [mutateStakeNear, lockupAccountId, queryClient]
@@ -60,9 +81,11 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
   const unstakeNear = useCallback(
     async (amount: string) => {
       try {
+        console.log("[unstakeNear] start", { lockupAccountId, amount });
         setIsUnstakingNear(true);
         setUnstakingNearError(null);
 
+        console.log("[unstakeNear] calling unstake");
         await mutateStakeNear({
           contractId: lockupAccountId,
           methodCalls: [
@@ -73,13 +96,19 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
           ],
         });
 
+        console.log("[unstakeNear] invalidating READ_NEAR_CONTRACT_QK", {
+          contractId: lockupAccountId,
+          key: READ_NEAR_CONTRACT_QK,
+        });
         queryClient.invalidateQueries({
           queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
         });
       } catch (e) {
+        console.error("[unstakeNear] error", e);
         setUnstakingNearError(e as Error);
       } finally {
         setIsUnstakingNear(false);
+        console.log("[unstakeNear] end");
       }
     },
     [mutateStakeNear, lockupAccountId, queryClient]
@@ -88,9 +117,11 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
   const withdrawNear = useCallback(
     async (amount: string) => {
       try {
+        console.log("[withdrawNear] start", { lockupAccountId, amount });
         setIsWithdrawingNear(true);
         setWithdrawingNearError(null);
 
+        console.log("[withdrawNear] calling withdraw_from_staking_pool");
         await mutateStakeNear({
           contractId: lockupAccountId,
           methodCalls: [
@@ -101,27 +132,105 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
           ],
         });
 
+        console.log("[withdrawNear] invalidating READ_NEAR_CONTRACT_QK", {
+          contractId: lockupAccountId,
+          key: READ_NEAR_CONTRACT_QK,
+        });
         queryClient.invalidateQueries({
           queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
         });
       } catch (e) {
+        console.error("[withdrawNear] error", e);
         setWithdrawingNearError(e as Error);
       } finally {
         setIsWithdrawingNear(false);
+        console.log("[withdrawNear] end");
       }
     },
     [mutateStakeNear, lockupAccountId, queryClient]
   );
 
+  const unstakeAll = useCallback(async () => {
+    try {
+      console.log("[unstakeAll] start", { lockupAccountId });
+      setIsUnstakingAll(true);
+      setUnstakingAllError(null);
+
+      console.log("[unstakeAll] calling unstake_all");
+      await mutateStakeNear({
+        contractId: lockupAccountId,
+        methodCalls: [
+          {
+            methodName: "unstake_all",
+            args: {},
+          },
+        ],
+      });
+
+      console.log("[unstakeAll] invalidating READ_NEAR_CONTRACT_QK", {
+        contractId: lockupAccountId,
+        key: READ_NEAR_CONTRACT_QK,
+      });
+      console.log("[withdrawAll] invalidating READ_NEAR_CONTRACT_QK", {
+        contractId: lockupAccountId,
+        key: READ_NEAR_CONTRACT_QK,
+      });
+      queryClient.invalidateQueries({
+        queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
+      });
+    } catch (e) {
+      console.error("[unstakeAll] error", e);
+      setUnstakingAllError(e as Error);
+    } finally {
+      setIsUnstakingAll(false);
+      console.log("[unstakeAll] end");
+    }
+  }, [mutateStakeNear, lockupAccountId, queryClient]);
+
+  const withdrawAll = useCallback(async () => {
+    try {
+      console.log("[withdrawAll] start", { lockupAccountId });
+      setIsWithdrawingAll(true);
+      setWithdrawingAllError(null);
+
+      console.log("[withdrawAll] calling withdraw_all_from_staking_pool");
+      await mutateStakeNear({
+        contractId: lockupAccountId,
+        methodCalls: [
+          {
+            methodName: "withdraw_all_from_staking_pool",
+            args: {},
+          },
+        ],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
+      });
+    } catch (e) {
+      console.error("[withdrawAll] error", e);
+      setWithdrawingAllError(e as Error);
+    } finally {
+      setIsWithdrawingAll(false);
+      console.log("[withdrawAll] end");
+    }
+  }, [mutateStakeNear, lockupAccountId, queryClient]);
+
   return {
     stakeNear,
     unstakeNear,
+    unstakeAll,
     withdrawNear,
+    withdrawAll,
     isStakingNear,
     isUnstakingNear,
+    isUnstakingAll,
     isWithdrawingNear,
+    isWithdrawingAll,
     stakingNearError,
     unstakingNearError,
+    unstakingAllError,
     withdrawingNearError,
+    withdrawingAllError,
   };
 };

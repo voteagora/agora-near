@@ -6,12 +6,16 @@ import { useNear } from "@/contexts/NearContext";
 import { usePrice } from "@/hooks/usePrice";
 import { useSelectStakingPool } from "@/hooks/useSelectStakingPool";
 import { useStakeNear } from "@/hooks/useStakeNear";
+import { useLockNear } from "@/hooks/useLockNear";
 import { yoctoNearToUsdFormatted } from "@/lib/utils";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { NEAR_BALANCE_QK } from "@/hooks/useBalance";
+import { useCallback, useMemo, useState } from "react";
 import { useStakingProviderContext } from "../StakingProvider";
 import { StakingSubmitting } from "./StakingSubmitting";
 import { StakingSuccess } from "./StakingSuccess";
 import { StakingDisclosures } from "./StakingDisclosures";
+import Big from "big.js";
 
 export type StakingStep = "select_pool" | "stake";
 
@@ -32,15 +36,20 @@ export const StakingReview = ({
     lockupAccountId,
     resetForm,
     currentStakingPoolId,
+    maxStakingAmount,
   } = useStakingProviderContext();
 
   const [stakingStep, setStakingStep] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDisclosures, setShowDisclosures] = useState(false);
 
-  const needsToSelectPool = useRef(!currentStakingPoolId);
+  const queryClient = useQueryClient();
 
-  const { networkId } = useNear();
+  const needsToSelectPool = useMemo(
+    () =>
+      !currentStakingPoolId || currentStakingPoolId !== selectedPool.contract,
+    [currentStakingPoolId, selectedPool.contract]
+  );
 
   const { price, isLoading: isLoadingNearPrice } = usePrice();
   const [isStakeCompleted, setIsStakeCompleted] = useState(false);
@@ -57,6 +66,12 @@ export const StakingReview = ({
     lockupAccountId: lockupAccountId ?? "",
   });
 
+  const { lockNear } = useLockNear({
+    lockupAccountId: lockupAccountId ?? "",
+  });
+
+  const { transferNear } = useNear();
+
   const { selectStakingPoolAsync, error: selectStakingPoolError } =
     useSelectStakingPool({
       lockupAccountId: lockupAccountId ?? "",
@@ -72,47 +87,96 @@ export const StakingReview = ({
     return null;
   }, [stakingNearError, selectStakingPoolError]);
 
+  const topUpAmount = useMemo(() => {
+    try {
+      const max = Big(maxStakingAmount ?? "0");
+      const desired = Big(enteredAmountYoctoNear ?? "0");
+      // Add 0.001 NEAR buffer to ensure we cover any dust discrepancies
+      const buffer = Big(10).pow(21);
+      return desired.gt(max) ? desired.minus(max).plus(buffer).toFixed(0) : "0";
+    } catch {
+      return "0";
+    }
+  }, [enteredAmountYoctoNear, maxStakingAmount]);
+
   const requiredSteps = useMemo(() => {
-    const steps: StakingStep[] = [];
-    if (needsToSelectPool.current) {
+    const steps: (StakingStep | "top_up" | "lock")[] = [];
+    if (needsToSelectPool) {
       steps.push("select_pool");
+    }
+    if (Big(topUpAmount).gt(0)) {
+      steps.push("top_up");
     }
     steps.push("stake");
     return steps;
-  }, []);
+  }, [topUpAmount, needsToSelectPool]);
 
   const onStake = useCallback(
     async ({ startAtStep = 0 }: { startAtStep?: number }) => {
+      console.log("[StakingReview] onStake start", {
+        startAtStep,
+        requiredSteps,
+        selectedPool: selectedPool.contract,
+        lockupAccountId,
+        topUpAmount,
+      });
       try {
         setIsSubmitting(true);
 
         for (let i = startAtStep; i < requiredSteps.length; i++) {
           const step = requiredSteps[i];
           setStakingStep(i);
+          console.log("[StakingReview] executing step", { index: i, step });
 
           if (step === "select_pool") {
+            console.log("[StakingReview] step select_pool", {
+              stakingPoolId: selectedPool.contract,
+            });
             await selectStakingPoolAsync({
               stakingPoolId: selectedPool.contract,
             });
+          } else if (step === "top_up") {
+            console.log("[StakingReview] step top_up", {
+              receiverId: lockupAccountId ?? "",
+              amount: topUpAmount,
+            });
+            await transferNear({
+              receiverId: lockupAccountId ?? "",
+              amount: topUpAmount,
+            });
+          } else if (step === "lock") {
+            console.log("[StakingReview] step lock", { amount: topUpAmount });
+            await lockNear({ amount: topUpAmount });
           } else if (step === "stake") {
+            console.log("[StakingReview] step stake", {
+              amount: enteredAmountYoctoNear,
+            });
             await stakeNear(enteredAmountYoctoNear);
           }
         }
 
         setIsStakeCompleted(true);
+        console.log("[StakingReview] onStake completed successfully");
+        // Invalidate wallet balance to update UI immediately
+        queryClient.invalidateQueries({ queryKey: [NEAR_BALANCE_QK] });
       } catch (e) {
-        console.error(`Staking error: ${e}`);
+        console.error("[StakingReview] Staking error", e);
       } finally {
         setIsSubmitting(false);
+        console.log("[StakingReview] onStake end");
       }
     },
     [
       enteredAmountYoctoNear,
-      networkId,
       requiredSteps,
       selectStakingPoolAsync,
       selectedPool.contract,
       stakeNear,
+      lockNear,
+      lockupAccountId,
+      topUpAmount,
+      transferNear,
+      queryClient,
     ]
   );
 
@@ -179,9 +243,11 @@ export const StakingReview = ({
         <div className="flex justify-between items-start">
           <div>
             <h2 className="text-md font-semibold mb-1">Amount staking</h2>
-            <div className="text-sm text-[#9D9FA1]">
-              {`${selectedStats?.apy?.toFixed(2) ?? "-"}% APY (Estimated)`}
-            </div>
+            {!!selectedStats?.apy && (
+              <div className="text-sm text-[#9D9FA1]">
+                {`${selectedStats.apy.toFixed(2)}% APY (Estimated)`}
+              </div>
+            )}
           </div>
           <div className="text-right">
             <div className="text-md font-bold text-gray-900 mb-1">

@@ -52,6 +52,7 @@ export type NearLockDialogType = {
   params: {
     source: LockDialogSource;
     preSelectedTokenId?: string;
+    customStakingPoolId?: string;
   };
 };
 
@@ -61,6 +62,7 @@ export type StakingDialogType = {
   params: {
     prefilledAmount?: string;
     source: StakingSource;
+    customStakingPoolId?: string;
   };
 };
 

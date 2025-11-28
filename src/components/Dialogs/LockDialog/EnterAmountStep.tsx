@@ -19,6 +19,8 @@ import { AssetIcon } from "../../common/AssetIcon";
 import TokenAmount from "../../shared/TokenAmount";
 import { useLockProviderContext } from "../LockProvider";
 
+import { useStakedBalance } from "@/hooks/useStakedBalance";
+
 type EnterAmountStepProps = {
   openAssetSelector: () => void;
   handleReview: () => void;
@@ -40,13 +42,19 @@ export const EnterAmountStep = ({
     amountError,
     isLockingMax,
     lstPriceYocto,
+    lockupAccountId,
+    stakingPoolId,
   } = useLockProviderContext();
+
+  useStakedBalance({
+    stakingPoolId,
+    accountId: lockupAccountId,
+  });
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setEnteredAmount(value);
   };
-
   const onMaxPressed = useCallback(() => {
     onLockMax();
   }, [onLockMax]);
@@ -75,7 +83,6 @@ export const EnterAmountStep = ({
     const symbol = selectedToken?.metadata?.symbol ?? "";
     return `1 ${symbol} ≈ ${nearPerLst} NEAR`;
   }, [lstPriceYocto, selectedToken?.metadata?.symbol, showConversion]);
-
   return (
     <div className="flex flex-col gap-6 h-full w-full">
       <p className="text-2xl font-bold text-left text-primary">

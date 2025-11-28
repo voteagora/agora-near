@@ -139,6 +139,7 @@ export type TokenMetadata = {
   symbol: string;
   decimals: number;
   icon: string | StaticImageData;
+  isCustomPool?: boolean;
 };
 
 export type TokenWithBalance = {
