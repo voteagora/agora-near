@@ -4,7 +4,7 @@ import { NEAR_TOKEN } from "@/lib/constants";
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import {
   getProposalTimes,
-  getTotalForAgainstVotes,
+  getTotalVotes,
   isQuorumFulfilled,
 } from "@/lib/proposalUtils";
 import { formatVotingPower } from "@/lib/utils";
@@ -34,10 +34,12 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
     quorumAmount: quorum,
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
+    abstainVotingPower: proposal.votes[2]?.total_venear ?? "0",
   });
-  const totalForAgainstVotes = getTotalForAgainstVotes(
+  const totalVotes = getTotalVotes(
     proposal.votes[0].total_venear,
-    proposal.votes[1].total_venear
+    proposal.votes[1].total_venear,
+    proposal.votes[2]?.total_venear ?? "0"
   );
 
   // Calculate max value for consistent scaling across all vote options
@@ -99,7 +101,7 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
             )}
             <p className="text-xs font-semibold text-secondary">
               <TokenAmount
-                amount={totalForAgainstVotes.toFixed(0)}
+                amount={totalVotes.toFixed(0)}
                 hideCurrency
               />{" "}
               / <TokenAmount amount={quorum} hideCurrency />
