@@ -51,7 +51,8 @@ export async function GET(
     }
 
     // Remove email field from delegate
-    const { email, ...sanitizedDelegate } = delegate;
+    const sanitizedDelegate = { ...delegate } as Record<string, unknown>;
+    delete (sanitizedDelegate as any).email;
 
     // Return the delegate
     return NextResponse.json({

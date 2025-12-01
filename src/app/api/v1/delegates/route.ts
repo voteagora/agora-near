@@ -91,7 +91,8 @@ export async function GET(request: NextRequest) {
 
     // Remove email field from delegates
     const sanitizedDelegates = slicedDelegates.map((delegate) => {
-      const { email, ...rest } = delegate;
+      const rest = { ...delegate } as Record<string, unknown>;
+      delete (rest as any).email;
       return rest;
     });
 

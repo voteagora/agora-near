@@ -1,4 +1,4 @@
-export function Logo(props) {
+export function Logo() {
   return (
     <svg
       width="16"

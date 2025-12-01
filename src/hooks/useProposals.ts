@@ -29,7 +29,7 @@ export function useProposals({
       })) as ProposalInfo[];
       return result;
     },
-    [viewMethod]
+    [viewMethod, pageSize]
   );
 
   const {

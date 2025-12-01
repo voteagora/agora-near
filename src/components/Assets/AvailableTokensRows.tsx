@@ -1,6 +1,5 @@
 import { memo, useCallback } from "react";
 import { LINEAR_TOKEN_CONTRACT, STNEAR_TOKEN_CONTRACT } from "@/lib/constants";
-import { useNear } from "@/contexts/NearContext";
 import { TokenWithBalance } from "@/lib/types";
 import TokenAmount from "../shared/TokenAmount";
 import { AssetRow } from "./AssetRow";
@@ -13,8 +12,6 @@ interface AvailableTokenRowProps {
 
 export const AvailableTokenRow = memo<AvailableTokenRowProps>(
   ({ token, stakingPoolId, onLockDialog }) => {
-    const { networkId } = useNear();
-
     const handleManageStaking = useCallback(
       (tokenAccountId: string) => {
         let url = "";
@@ -30,7 +27,7 @@ export const AvailableTokenRow = memo<AvailableTokenRowProps>(
           window.open(url, "_blank");
         }
       },
-      [networkId]
+      []
     );
 
     const handleLockDialog = useCallback(

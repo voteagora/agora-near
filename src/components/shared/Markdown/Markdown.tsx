@@ -73,9 +73,7 @@ export default function Markdown({ content }: { content: string }) {
           "data-color-mode": "light",
         }}
         components={{
-          h2: ({ node, ...props }) => (
-            <h1 className="text-primary" {...props} />
-          ),
+          h2: ({ ...props }) => <h1 className="text-primary" {...props} />,
         }}
       />
     </div>

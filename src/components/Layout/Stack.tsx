@@ -25,25 +25,7 @@ type Props = {
   children: ReactNode;
 };
 
-function Stack({
-  className,
-  gap,
-  alignItems,
-  justifyContent,
-  children,
-}: Props) {
-  const gapClass = gap ? `gap-${gap}` : "";
-
-  return (
-    <div
-      className={`flex ${justifyContent} ${alignItems} ${gapClass} ${
-        className || ""
-      }`}
-    >
-      {children}
-    </div>
-  );
-}
+// Removed unused Stack component
 
 export function VStack(props: Props) {
   const { className, gap, alignItems, justifyContent, children, onClick } =

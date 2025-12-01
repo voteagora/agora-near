@@ -99,7 +99,7 @@ export type UnlockDialogType = {
 
 export type EncourageConnectWalletDialogType = {
   type: "ENCOURAGE_CONNECT_WALLET";
-  params: {};
+  params: Record<string, never>;
 };
 
 export type SubscribeDialogType = {
@@ -175,7 +175,7 @@ export const dialogs: DialogDefinitions<DialogType> = {
   NEAR_UNLOCK: (_, closeDialog) => {
     return <UnlockDialog closeDialog={closeDialog} />;
   },
-  ENCOURAGE_CONNECT_WALLET: ({}, closeDialog) => (
+  ENCOURAGE_CONNECT_WALLET: (_, closeDialog) => (
     <EncourageConnectWalletDialog closeDialog={closeDialog} />
   ),
   NEAR_SUBSCRIBE: ({ type }, closeDialog) => {

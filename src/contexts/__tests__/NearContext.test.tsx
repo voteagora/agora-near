@@ -1,4 +1,4 @@
-import { NetworkId } from "@near-wallet-selector/core";
+import { NetworkId, Optional, Transaction } from "@near-wallet-selector/core";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { ReactNode } from "react";
 import {
@@ -847,10 +847,20 @@ describe("NearContext", () => {
         expect(result.current.isInitialized).toBe(true);
       });
 
-      const transactions = [
+      const transactions: Array<Optional<Transaction, "signerId">> = [
         {
           receiverId: "contract.testnet",
-          actions: [{ type: "FunctionCall", params: {} }],
+          actions: [
+            {
+              type: "FunctionCall",
+              params: {
+                methodName: "test_method",
+                args: {},
+                gas: "0",
+                deposit: "0",
+              },
+            },
+          ],
         },
       ];
 

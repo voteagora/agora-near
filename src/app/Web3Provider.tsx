@@ -20,7 +20,6 @@ const queryClient = new QueryClient({
 });
 
 const { ui } = Tenant.current();
-const shouldHideAgoraBranding = ui.hideAgoraBranding;
 const shouldHideAgoraFooter = ui.hideAgoraFooter;
 
 const networkId = "mainnet";

@@ -18,7 +18,6 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DraftProposalsList } from "./DraftProposalsList";
 import { toast } from "react-hot-toast";
-import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 
 const Loader = () => {

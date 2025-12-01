@@ -54,8 +54,7 @@ export const useCreateProposal = ({
         .plus("50000000000000000000000")
         .plus(storageAddedCost)
         .toFixed();
-    },
-    [baseFee]
+    }, [baseFee, storageFee]
   );
 
   const createProposal = useCallback(

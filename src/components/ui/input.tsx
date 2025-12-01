@@ -47,7 +47,11 @@ const InputDescription = React.forwardRef<
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => {
   return (
-    <p className={cn("text-sm text-muted-foreground", className)} {...props} />
+    <p
+      ref={ref}
+      className={cn("text-sm text-muted-foreground", className)}
+      {...props}
+    />
   );
 });
 InputDescription.displayName = "InputDescription";
