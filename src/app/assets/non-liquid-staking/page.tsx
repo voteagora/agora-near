@@ -157,10 +157,10 @@ export default function LegacyOnboardingPage() {
       <div className="container mx-auto max-w-3xl flex flex-col gap-8">
         <div className="flex flex-col gap-4">
           <h1 className="text-3xl font-bold tracking-tight">
-            Independent Staking Pools
+            Non-liquid Staking Pools
           </h1>
           <p className="text-muted-foreground text-lg">
-            Manage your staking positions with independent staking pools.
+            Manage your staking positions with non-liquid staking pools.
           </p>
         </div>
 
