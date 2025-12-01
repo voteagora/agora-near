@@ -177,7 +177,7 @@ export const EnterStakingAmount = ({
           selectedPool.id === selectedPool.contract && (
             <div className="mb-6">
               <h3 className="text-sm font-medium text-[#9D9FA1] mb-2">
-                Active Staking Pool
+                Active Non-liquid Staking Pool
               </h3>
               <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
                 <div className="flex justify-between items-start mb-2">
@@ -197,7 +197,7 @@ export const EnterStakingAmount = ({
                         : selectedPool.metadata?.symbol}
                     </span>
                     <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full uppercase tracking-wider font-medium">
-                      Custom / Independent
+                      Non-liquid
                     </span>
                   </div>
                   <div className="text-right">

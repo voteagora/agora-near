@@ -150,7 +150,7 @@ export const AssetsLandingPage = memo(
           </div>
           <div className="mb-8 lg:mb-16 px-4 lg:px-0">
             <p className="text-sm sm:text-base lg:text-sm text-gray-500">
-              *Source of APY comes from independent staking pools and is subject
+              *Source of APY comes from non-liquid staking pools and is subject
               to change. For up to date APY, please refer to the staking pools
               directly.
             </p>
