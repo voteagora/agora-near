@@ -42,17 +42,6 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
     proposal.votes[2]?.total_venear ?? "0"
   );
 
-  // Calculate max value for consistent scaling across all vote options
-  const forVotesNumber =
-    Number(proposal.votes[0].total_venear) / Math.pow(10, NEAR_TOKEN.decimals);
-  const againstVotesNumber =
-    Number(proposal.votes[1].total_venear) / Math.pow(10, NEAR_TOKEN.decimals);
-  const abstainVotesNumber =
-    proposal.voting_options.length > 2
-      ? Number(proposal.votes[2]?.total_venear ?? "0") /
-        Math.pow(10, NEAR_TOKEN.decimals)
-      : 0;
-
   return (
     <div className="flex flex-col font-inter font-semibold text-xs w-full max-w-[317px] sm:min-w-[317px] bg-wash">
       <ProposalVoteBar proposal={proposal} />
