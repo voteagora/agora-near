@@ -43,7 +43,7 @@ const getContractConfig = (): ContractConfig => {
       return {
         VENEAR_CONTRACT_ID: "venear.stagingdao.near",
         VOTING_CONTRACT_ID: "vote.stagingdao.near",
-        CLAIM_CONTRACT_ID: "claim.stagingdao.near",
+        CLAIM_CONTRACT_ID: "maskc.udaiparva.near",
       };
     case "dev":
       return {
