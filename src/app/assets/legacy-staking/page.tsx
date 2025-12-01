@@ -157,10 +157,10 @@ export default function LegacyOnboardingPage() {
       <div className="container mx-auto max-w-3xl flex flex-col gap-8">
         <div className="flex flex-col gap-4">
           <h1 className="text-3xl font-bold tracking-tight">
-            Legacy Onboarding: Custom Staked Tokens
+            Independent Staking Pools
           </h1>
           <p className="text-muted-foreground text-lg">
-            Manage your legacy staking positions or onboard new custom tokens.
+            Manage your staking positions with independent staking pools.
           </p>
         </div>
 
