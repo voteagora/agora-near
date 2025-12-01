@@ -25,7 +25,7 @@ import { UpdatedButton } from "@/components/Button";
 import { getRpcUrl } from "@/lib/utils";
 import { providers } from "near-api-js";
 
-export default function LegacyOnboardingPage() {
+export default function NonLiquidOnboardingPage() {
   const openDialog = useOpenDialog();
   const { signedAccountId, networkId } = useNear();
   const nearblocksBase =
