@@ -136,7 +136,6 @@ function AmountAndPercent({
 
   return (
     <span>
-      
       {formattedAmount} ({percent}%)
     </span>
   );
