@@ -10,7 +10,7 @@ export default function ProposalDescription({
   proposal: ProposalInfo;
 }) {
   return (
-    <div className="flex flex-col gap-4 w-full">
+    <div className="flex flex-col gap-4 w-full min-w-0">
       <div className="flex-col items-start">
         <div className="text-xs font-semibold text-secondary flex items-center">
           Proposal by {proposal.proposer_id}
@@ -29,7 +29,7 @@ export default function ProposalDescription({
             </a>
           )}
         </div>
-        <h2 className="font-black text-2xl text-primary break-words">{proposal.title}</h2>
+        <h2 className="font-black text-2xl text-primary max-w-full" style={{ overflowWrap: 'anywhere' }}>{proposal.title}</h2>
       </div>
       {proposal.status !== ProposalStatus.Created &&
         proposal.status !== ProposalStatus.Rejected && (
