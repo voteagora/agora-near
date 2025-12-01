@@ -84,7 +84,7 @@ export const AssetsHome = memo(() => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <h3 className="text-lg sm:text-xl font-bold text-black mb-1">
-                    Have tokens staked in a staking pool?
+                    Have tokens staked in a non-liquid staking pool?
                   </h3>
                   <p className="text-sm text-black/80">
                     Bring your staked tokens into House of Stake for governance.
@@ -128,14 +128,14 @@ export const AssetsHome = memo(() => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-black mb-1">
-                  Have tokens staked in a staking pool?
+                  Have tokens staked in a non-liquid staking pool?
                 </h3>
                 <p className="text-sm text-black/80">
                   Bring your staked tokens into House of Stake for governance.
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Link href="/assets/legacy-staking">
+                <Link href="/assets/non-liquid-staking">
                   <UpdatedButton
                     variant="rounded"
                     className="whitespace-nowrap !border-black"

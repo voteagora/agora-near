@@ -246,7 +246,7 @@ export const EnterStakingAmount = ({
               </TooltipTrigger>
               <TooltipContent>
                 Enter the staking pool account ID you want to use. We will
-                verify it against the whitelist.
+                verify it against the contract whitelist.
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -323,7 +323,7 @@ export const EnterStakingAmount = ({
                 )}
                 <div className="mt-2 flex items-center gap-2">
                   <span className="text-[11px] text-[#9D9FA1]">
-                    Using whitelist:
+                    Contract whitelist:
                   </span>
                   <span className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium leading-none text-black bg-[#04e391] border-[#04e391] w-fit">
                     {whitelistAccountId || "default from config"}
