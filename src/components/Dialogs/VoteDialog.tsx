@@ -6,7 +6,6 @@ import { useEffect, memo } from "react";
 import toast from "react-hot-toast";
 
 export function LoadingVote() {
-
   return (
     <div className="flex flex-col w-full">
       {/* Image placeholder intentionally omitted */}

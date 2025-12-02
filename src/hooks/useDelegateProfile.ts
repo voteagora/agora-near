@@ -6,7 +6,6 @@ import { DelegateProfile } from "@/lib/api/delegates/types";
 export const QK_DELEGATE_PROFILE = "delegateProfile";
 
 export const useDelegateProfile = ({ accountId }: { accountId?: string }) => {
-
   return useQuery({
     queryKey: [QK_DELEGATE_PROFILE, accountId],
     queryFn: async () => {

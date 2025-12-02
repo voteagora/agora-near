@@ -12,23 +12,20 @@ interface AvailableTokenRowProps {
 
 export const AvailableTokenRow = memo<AvailableTokenRowProps>(
   ({ token, stakingPoolId, onLockDialog }) => {
-    const handleManageStaking = useCallback(
-      (tokenAccountId: string) => {
-        let url = "";
+    const handleManageStaking = useCallback((tokenAccountId: string) => {
+      let url = "";
 
-        // Determine the correct URL based on the token
-        if (tokenAccountId === LINEAR_TOKEN_CONTRACT) {
-          url = "https://app.linearprotocol.org/";
-        } else if (tokenAccountId === STNEAR_TOKEN_CONTRACT) {
-          url = "https://www.metapool.app/stake/?token=near";
-        }
+      // Determine the correct URL based on the token
+      if (tokenAccountId === LINEAR_TOKEN_CONTRACT) {
+        url = "https://app.linearprotocol.org/";
+      } else if (tokenAccountId === STNEAR_TOKEN_CONTRACT) {
+        url = "https://www.metapool.app/stake/?token=near";
+      }
 
-        if (url) {
-          window.open(url, "_blank");
-        }
-      },
-      []
-    );
+      if (url) {
+        window.open(url, "_blank");
+      }
+    }, []);
 
     const handleLockDialog = useCallback(
       (tokenAccountId?: string) => {

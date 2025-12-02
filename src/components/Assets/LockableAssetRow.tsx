@@ -16,7 +16,6 @@ interface LockableAssetRowProps {
 
 export const LockableAssetRow = memo<LockableAssetRowProps>(
   ({ token, stakingPoolId, onLockClick }) => {
-
     const handleManageStaking = useCallback((tokenAccountId: string) => {
       let url = "";
 

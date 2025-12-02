@@ -89,7 +89,9 @@ export function DelegateActions({ delegate }: DelegateActionsProps) {
               </span>
             </TooltipTrigger>
             {hasNotRegistered && (
-              <TooltipContent>This user hasn&apos;t registered yet</TooltipContent>
+              <TooltipContent>
+                This user hasn&apos;t registered yet
+              </TooltipContent>
             )}
           </Tooltip>
         </TooltipProvider>
