@@ -121,7 +121,7 @@ export const AssetRow = memo(
       <tr
         className={`border-b border-gray-100 last:border-b-0 ${className || ""}`}
       >
-        <td className="py-4 pr-16 w-1 whitespace-nowrap">
+        <td className="py-4 pr-16 w-1 whitespace-nowrap min-w-0 overflow-hidden">
           <div className="flex items-center gap-3">
             <div className="relative w-10 h-10 flex-shrink-0">
               <div className="w-10 h-10 rounded-full overflow-hidden">
@@ -148,7 +148,7 @@ export const AssetRow = memo(
               )}
             </div>
             <div className="flex flex-col">
-              <span className="font-medium text-gray-900">
+              <span className="font-medium text-gray-900 break-words">
                 {metadata?.name}
               </span>
             </div>
