@@ -134,7 +134,7 @@ export const AssetRow = memo(
                 />
               </div>
               {metadata?.isCustomPool && (
-                <TooltipWithTap content="Custom / Independent Staking Pool">
+                <TooltipWithTap content="Non-liquid Staking Pool">
                   <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-black rounded-full border-2 border-white flex items-center justify-center cursor-pointer">
                     <svg
                       className="w-2.5 h-2.5 text-white"
