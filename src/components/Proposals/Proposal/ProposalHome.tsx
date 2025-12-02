@@ -43,8 +43,10 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
   return (
     <div className="flex flex-col items-center mt-12">
       <div className="flex gap-8 lg:gap-16 justify-between items-start max-w-desktop w-full flex-col md:flex-row md:items-start md:justify-between">
-        <ProposalDescription proposal={proposalWithQuorum} />
-        <div className="w-full md:max-w-[24rem]">
+        <div className="flex-1 min-w-0">
+          <ProposalDescription proposal={proposalWithQuorum} />
+        </div>
+        <div className="flex-1 min-w-0">
           <ProposalVoteResult proposal={proposalWithQuorum} config={config} />
         </div>
       </div>
