@@ -121,7 +121,7 @@ export const AssetRow = memo(
       <tr
         className={`border-b border-gray-100 last:border-b-0 ${className || ""}`}
       >
-        <td className="py-4 pr-16 w-1 whitespace-nowrap">
+        <td className="py-4 pr-16 w-1 whitespace-nowrap min-w-0 overflow-hidden">
           <div className="flex items-center gap-3">
             <div className="relative w-10 h-10 flex-shrink-0">
               <div className="w-10 h-10 rounded-full overflow-hidden">
@@ -134,7 +134,7 @@ export const AssetRow = memo(
                 />
               </div>
               {metadata?.isCustomPool && (
-                <TooltipWithTap content="Custom / Independent Staking Pool">
+                <TooltipWithTap content="Non-liquid Staking Pool">
                   <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-black rounded-full border-2 border-white flex items-center justify-center cursor-pointer">
                     <svg
                       className="w-2.5 h-2.5 text-white"
@@ -148,7 +148,7 @@ export const AssetRow = memo(
               )}
             </div>
             <div className="flex flex-col">
-              <span className="font-medium text-gray-900">
+              <span className="font-medium text-gray-900 break-words">
                 {metadata?.name}
               </span>
             </div>
