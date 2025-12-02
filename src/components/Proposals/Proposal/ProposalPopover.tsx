@@ -42,23 +42,6 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
     proposal.votes[2]?.total_venear ?? "0"
   );
 
-  // Calculate max value for consistent scaling across all vote options
-  const forVotesNumber =
-    Number(proposal.votes[0].total_venear) / Math.pow(10, NEAR_TOKEN.decimals);
-  const againstVotesNumber =
-    Number(proposal.votes[1].total_venear) / Math.pow(10, NEAR_TOKEN.decimals);
-  const abstainVotesNumber =
-    proposal.voting_options.length > 2
-      ? Number(proposal.votes[2]?.total_venear ?? "0") /
-        Math.pow(10, NEAR_TOKEN.decimals)
-      : 0;
-
-  const maxVotes = Math.max(
-    forVotesNumber,
-    againstVotesNumber,
-    abstainVotesNumber
-  );
-
   return (
     <div className="flex flex-col font-inter font-semibold text-xs w-full max-w-[317px] sm:min-w-[317px] bg-wash">
       <ProposalVoteBar proposal={proposal} />
@@ -68,7 +51,6 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
           <AmountAndPercent
             amount={proposal.votes[0].total_venear}
             total={proposal.total_votes.total_venear}
-            maxVotes={maxVotes}
           />
         </div>
         {proposal.voting_options.length > 2 && (
@@ -77,7 +59,6 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
             <AmountAndPercent
               amount={proposal.votes[2].total_venear}
               total={proposal.total_votes.total_venear}
-              maxVotes={maxVotes}
             />
           </div>
         )}
@@ -86,7 +67,6 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
           <AmountAndPercent
             amount={proposal.votes[1].total_venear}
             total={proposal.total_votes.total_venear}
-            maxVotes={maxVotes}
           />
         </div>
       </div>
@@ -139,11 +119,9 @@ export default ProposalPopover;
 function AmountAndPercent({
   amount,
   total,
-  maxVotes,
 }: {
   amount: string;
   total: string;
-  maxVotes: number;
 }) {
   const parsedTotal = Big(total);
   const parsedAmount = Big(amount);
@@ -154,7 +132,7 @@ function AmountAndPercent({
 
   // Convert yocto NEAR to NEAR and format with the scaling
   const amountNumber = Number(amount) / Math.pow(10, NEAR_TOKEN.decimals);
-  const formattedAmount = formatVotingPower(amountNumber, maxVotes);
+  const formattedAmount = formatVotingPower(amountNumber, amountNumber);
 
   return (
     <span>

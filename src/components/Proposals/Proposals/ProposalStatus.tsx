@@ -17,12 +17,12 @@ export default function ProposalStatus({ proposal }: { proposal: Proposal }) {
   const againstVotesNumber =
     Number(againstVotes) / Math.pow(10, NEAR_TOKEN.decimals);
 
-  // Determine the maximum value for consistent scaling
-  const maxVotes = Math.max(forVotesNumber, againstVotesNumber);
-
-  // Format both values with the same scale
-  const formattedForVotes = formatVotingPower(forVotesNumber, maxVotes);
-  const formattedAgainstVotes = formatVotingPower(againstVotesNumber, maxVotes);
+  // Format both values independently
+  const formattedForVotes = formatVotingPower(forVotesNumber, forVotesNumber);
+  const formattedAgainstVotes = formatVotingPower(
+    againstVotesNumber,
+    againstVotesNumber
+  );
 
   return (
     <div className="flex flex-col items-end gap-1 justify-center">
