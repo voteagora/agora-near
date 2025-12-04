@@ -21,6 +21,7 @@ interface FAQ {
 }
 
 // Reusable components for consistent styling
+
 const Text = ({ children }: { children: ReactNode }) => (
   <p className="leading-relaxed">{children}</p>
 );
