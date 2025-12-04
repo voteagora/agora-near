@@ -25,8 +25,6 @@ type Props = {
   children: ReactNode;
 };
 
-
-
 export function VStack(props: Props) {
   const { className, gap, alignItems, justifyContent, children, onClick } =
     props;

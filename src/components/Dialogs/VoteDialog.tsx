@@ -8,7 +8,6 @@ import toast from "react-hot-toast";
 export function LoadingVote() {
   return (
     <div className="flex flex-col w-full">
-
       <div className="mb-2 text-2xl font-black text-primary">
         Casting your vote
       </div>
