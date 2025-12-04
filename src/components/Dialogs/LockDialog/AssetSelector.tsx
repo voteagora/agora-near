@@ -8,16 +8,27 @@ import { Skeleton } from "../../ui/skeleton";
 
 type AssetSelectorProps = {
   handleTokenSelect: (token: TokenWithBalance) => void;
+  onBack: () => void;
 };
 
-export const AssetSelector = ({ handleTokenSelect }: AssetSelectorProps) => {
+export const AssetSelector = ({ handleTokenSelect, onBack }: AssetSelectorProps) => {
   const { availableTokens } = useLockProviderContext();
   const { price, isLoading: isLoadingPrice } = usePrice();
 
   return (
     <div className="flex flex-col items-center w-full bg-neutral w-full h-full">
-      <div className="flex justify-start w-full mb-6">
+      <div className="flex items-center justify-between w-full mb-6">
+        <button
+          onClick={onBack}
+          className="flex items-center justify-center w-10 h-10 bg-black rounded-full text-white hover:bg-gray-800 transition-colors"
+          aria-label="Go back"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+        </button>
         <h2 className="text-2xl font-bold text-primary">Select Asset</h2>
+        <div className="w-10"></div> {/* Spacer for centering title */}
       </div>
       <div className="flex flex-col gap-2 w-full">
         {availableTokens.map((token: TokenWithBalance, index: number) => {
