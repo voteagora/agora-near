@@ -523,7 +523,7 @@ const InfoFAQ = () => {
   const faqId = searchParams?.get("item");
   const isValidFaqId = faqId && faqs.some((faq) => faq.id === faqId);
   const [openItem, setOpenItem] = useState<string | undefined>(
-    isValidFaqId ? faqId : undefined
+    isValidFaqId ? faqId : undefined,
   );
 
   useEffect(() => {
