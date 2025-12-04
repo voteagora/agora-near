@@ -537,7 +537,7 @@ const faqs: FAQ[] = [
             Use the{" "}
             <Link
               className="text-primary underline hover:text-secondary font-medium"
-              href="/legacy-onboarding"
+              href="/assets/non-liquid-staking"
             >
               Non-Liquid Staking Pools page
             </Link>{" "}
