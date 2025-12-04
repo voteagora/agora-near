@@ -531,7 +531,7 @@ const faqs: FAQ[] = [
 
         <div className="mt-4">
           <p className="font-semibold mb-3 text-base">
-            How to Bring Non-Liquid Staking Pool Tokens into House of Stake
+            How to Stake with Non-Liquid Pools
           </p>
           <Text>
             Use the{" "}
@@ -541,10 +541,34 @@ const faqs: FAQ[] = [
             >
               Non-Liquid Staking Pools page
             </Link>{" "}
-            which provides a guided workflow:
+            to manage your positions.
+          </Text>
+          
+          <div className="mt-4 mb-6">
+            <p className="font-medium mb-2 text-sm text-gray-700 uppercase tracking-wide">
+              Option A: Migrating from an External Wallet
+            </p>
+            <Text>
+              If your tokens are currently staked in your personal wallet (e.g., MyNearWallet, Meteor), 
+              you cannot transfer the stake directly. You must:
+            </Text>
+            <ul className="list-decimal list-inside space-y-2 mt-2 pl-2">
+              <li>Unstake your tokens using your current wallet interface.</li>
+              <li>Wait for the release period (typically 2-3 days).</li>
+              <li>Withdraw the tokens to your wallet balance.</li>
+              <li>Deposit the liquid NEAR into your House of Stake lockup.</li>
+              <li>Select your desired Non-Liquid Staking Pool and stake.</li>
+            </ul>
+          </div>
+
+          <p className="font-medium mb-2 text-sm text-gray-700 uppercase tracking-wide">
+            Option B: Switching Pools within House of Stake
+          </p>
+          <Text>
+            If you already have funds in your House of Stake lockup and want to switch pools:
           </Text>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-4 mt-4">
           <StepCard title="1. Unstake from your current pool">
             Use the Staking dialog&apos;s Advanced section to unstake all tokens
             from your current pool.
