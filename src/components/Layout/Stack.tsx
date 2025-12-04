@@ -25,7 +25,7 @@ type Props = {
   children: ReactNode;
 };
 
-// Removed unused Stack component
+
 
 export function VStack(props: Props) {
   const { className, gap, alignItems, justifyContent, children, onClick } =

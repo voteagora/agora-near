@@ -50,13 +50,9 @@ export async function GET(
       );
     }
 
-    // Remove email field from delegate
-    const sanitizedDelegate = { ...delegate } as Record<string, unknown>;
-    delete (sanitizedDelegate as any).email;
-
     // Return the delegate
     return NextResponse.json({
-      delegate: sanitizedDelegate,
+      delegate,
     });
   } catch (error) {
     console.error("Error fetching delegate:", error);
