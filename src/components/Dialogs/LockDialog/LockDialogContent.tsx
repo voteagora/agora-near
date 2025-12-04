@@ -114,6 +114,7 @@ export function LockDialogContent({ closeDialog }: DialogContentProps) {
     isAssetSelectorOpen,
     openAssetSelector,
     proceedToStaking,
+    closeAssetSelector,
   ]);
 
   if (isLoading) {
