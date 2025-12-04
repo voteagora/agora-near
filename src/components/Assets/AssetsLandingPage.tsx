@@ -127,11 +127,11 @@ export const AssetsLandingPage = memo(
                 </UpdatedButton>
               </div>
 
-              <div className="flex flex-row gap-2 lg:gap-6 order-2 lg:order-2 justify-center lg:justify-start mx-auto lg:mx-0">
-                <div className="w-[160px] sm:w-[200px] lg:w-[300px] h-[280px] sm:h-[320px] lg:h-[400px] lg:mb-4">
+              <div className="flex flex-col md:flex-row gap-2 lg:gap-6 order-2 lg:order-2 justify-center lg:justify-start mx-auto lg:mx-0">
+                <div className="w-full md:w-[200px] lg:w-[300px] h-[280px] sm:h-[320px] lg:h-[400px] lg:mb-4">
                   <LockTokensCard apy={lockApy} />
                 </div>
-                <div className="w-[160px] sm:w-[200px] lg:w-[300px] h-[280px] sm:h-[320px] lg:h-[400px] lg:mt-4 flex grow">
+                <div className="w-full md:w-[200px] lg:w-[300px] h-[280px] sm:h-[320px] lg:h-[400px] lg:mt-4 flex grow">
                   <StakingRewardsCard
                     apy={maxStakingApy}
                     isLoadingApy={isLoadingStakingPoolStats}
