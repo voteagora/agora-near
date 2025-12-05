@@ -10,7 +10,6 @@ interface NearAvatarProps {
 }
 
 export default function NearAvatar({
-  accountId,
   className = "",
   size = 44,
 }: NearAvatarProps) {

@@ -223,14 +223,14 @@ export default function BubbleChart({
       setHasMoreVotes(length > effectiveMaxVotes);
 
       if (length === 0) {
-        if (nodes.length !== 0) setNodes([]);
+        setNodes((prev) => (prev.length !== 0 ? [] : prev));
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
       }
 
       const bubbleData = transformVotesToBubbleData(votes, effectiveMaxVotes);
       if (!bubbleData || bubbleData.length === 0) {
-        if (nodes.length !== 0) setNodes([]);
+        setNodes((prev) => (prev.length !== 0 ? [] : prev));
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
       }
@@ -249,7 +249,7 @@ export default function BubbleChart({
         .map((d) => ({ ...d.data, x: d.x, y: d.y, r: d.r })) as BubbleNode[];
 
       if (packedData.length === 0) {
-        if (nodes.length !== 0) setNodes([]);
+        setNodes((prev) => (prev.length !== 0 ? [] : prev));
         setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
         return;
       }
@@ -314,7 +314,7 @@ export default function BubbleChart({
         return nextDefault;
       });
     } catch {
-      if (nodes.length !== 0) setNodes([]);
+      setNodes((prev) => (prev.length !== 0 ? [] : prev));
       setTransform(d3.zoomIdentity.translate(0, 0).scale(1));
     }
   }, [votesKey, votes, effectiveMaxVotes]);

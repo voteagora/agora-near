@@ -4,18 +4,10 @@ import { useCastVote } from "@/hooks/useCastVote";
 import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import { useEffect, memo } from "react";
 import toast from "react-hot-toast";
-import Tenant from "@/lib/tenant/tenant";
 
 export function LoadingVote() {
-  const { ui } = Tenant.current();
-
   return (
     <div className="flex flex-col w-full">
-      {/* <Image
-        src={ui.assets.pending}
-        className="w-full mb-3"
-        alt="Vote pending"
-      /> */}
       <div className="mb-2 text-2xl font-black text-primary">
         Casting your vote
       </div>
@@ -79,7 +71,14 @@ function NearVoteDialogComponent({
     };
 
     castVoteOnMount();
-  }, []);
+  }, [
+    castVote,
+    closeDialog,
+    config?.vote_storage_fee,
+    preSelectedVote,
+    proposal?.id,
+    proposal?.snapshot_and_state?.snapshot.block_height,
+  ]);
 
   return <LoadingVote />;
 }

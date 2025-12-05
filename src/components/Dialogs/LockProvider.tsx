@@ -140,17 +140,11 @@ export const LockProvider = ({
   preSelectedTokenId,
   customStakingPoolId: initialCustomStakingPoolId,
 }: LockProviderProps) => {
-  const { signedAccountId, networkId } = useNear();
+  const { signedAccountId } = useNear();
 
-  const linearTokenContractId = useMemo(
-    () => LINEAR_TOKEN_CONTRACT,
-    [networkId]
-  );
+  const linearTokenContractId = useMemo(() => LINEAR_TOKEN_CONTRACT, []);
 
-  const stNearTokenContractId = useMemo(
-    () => STNEAR_TOKEN_CONTRACT,
-    [networkId]
-  );
+  const stNearTokenContractId = useMemo(() => STNEAR_TOKEN_CONTRACT, []);
 
   const rNearTokenContractId = RNEAR_TOKEN_CONTRACT;
 

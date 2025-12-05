@@ -1,6 +1,5 @@
 import { memo, useCallback } from "react";
 import { LINEAR_TOKEN_CONTRACT, STNEAR_TOKEN_CONTRACT } from "@/lib/constants";
-import { useNear } from "@/contexts/NearContext";
 import { TokenWithBalance } from "@/lib/types";
 import TokenAmount from "../shared/TokenAmount";
 import { AssetRow } from "./AssetRow";
@@ -13,25 +12,20 @@ interface AvailableTokenRowProps {
 
 export const AvailableTokenRow = memo<AvailableTokenRowProps>(
   ({ token, stakingPoolId, onLockDialog }) => {
-    const { networkId } = useNear();
+    const handleManageStaking = useCallback((tokenAccountId: string) => {
+      let url = "";
 
-    const handleManageStaking = useCallback(
-      (tokenAccountId: string) => {
-        let url = "";
+      // Determine the correct URL based on the token
+      if (tokenAccountId === LINEAR_TOKEN_CONTRACT) {
+        url = "https://app.linearprotocol.org/";
+      } else if (tokenAccountId === STNEAR_TOKEN_CONTRACT) {
+        url = "https://www.metapool.app/stake/?token=near";
+      }
 
-        // Determine the correct URL based on the token
-        if (tokenAccountId === LINEAR_TOKEN_CONTRACT) {
-          url = "https://app.linearprotocol.org/";
-        } else if (tokenAccountId === STNEAR_TOKEN_CONTRACT) {
-          url = "https://www.metapool.app/stake/?token=near";
-        }
-
-        if (url) {
-          window.open(url, "_blank");
-        }
-      },
-      [networkId]
-    );
+      if (url) {
+        window.open(url, "_blank");
+      }
+    }, []);
 
     const handleLockDialog = useCallback(
       (tokenAccountId?: string) => {

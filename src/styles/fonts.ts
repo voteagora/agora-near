@@ -1,4 +1,4 @@
-import { NextFont, NextFontWithVariable } from "next/dist/compiled/@next/font";
+import { NextFontWithVariable } from "next/dist/compiled/@next/font";
 import { Inter } from "next/font/google";
 import { Rajdhani } from "next/font/google";
 import { Chivo_Mono } from "next/font/google";

@@ -61,7 +61,7 @@ export default function ProposalChart({
         )}
         {tabIndex === 1 && (
           <div className="tab-panel">
-            <TreeMapChart proposal={proposal} votes={votes} />
+            <TreeMapChart votes={votes} />
           </div>
         )}
         {tabIndex === 2 && (

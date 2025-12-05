@@ -21,6 +21,7 @@ interface FAQ {
 }
 
 // Reusable components for consistent styling
+
 const Text = ({ children }: { children: ReactNode }) => (
   <p className="leading-relaxed">{children}</p>
 );
@@ -543,14 +544,15 @@ const faqs: FAQ[] = [
             </Link>{" "}
             to manage your positions.
           </Text>
-          
+
           <div className="mt-4 mb-6">
             <p className="font-medium mb-2 text-sm text-gray-700 uppercase tracking-wide">
               Option A: Migrating from an External Wallet
             </p>
             <Text>
-              If your tokens are currently staked in your personal wallet (e.g., MyNearWallet, Meteor), 
-              you cannot transfer the stake directly. You must:
+              If your tokens are currently staked in your personal wallet (e.g.,
+              MyNearWallet, Meteor), you cannot transfer the stake directly. You
+              must:
             </Text>
             <ul className="list-decimal list-inside space-y-2 mt-2 pl-2">
               <li>Unstake your tokens using your current wallet interface.</li>
@@ -565,7 +567,8 @@ const faqs: FAQ[] = [
             Option B: Switching Pools within House of Stake
           </p>
           <Text>
-            If you already have funds in your House of Stake lockup and want to switch pools:
+            If you already have funds in your House of Stake lockup and want to
+            switch pools:
           </Text>
         </div>
         <div className="space-y-4 mt-4">

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { NextRequest } from "next/server";
 import { ImageResponse } from "next/og";
 import { LogoPill } from "@/app/api/images/og/assets/shared";
@@ -38,8 +39,8 @@ export async function GET(req: NextRequest) {
           flexWrap: "nowrap",
         }}
       >
-        {/* @ts-ignore */}
-        <img src={bg} style={{ position: "absolute" }} />
+        {/* @ts-expect-error OG ImageResponse allows ArrayBuffer src for <img> */}
+        <img src={bg} style={{ position: "absolute" }} alt="background" />
         <div tw="flex h-full w-full px-[76px] pt-[70px] pb-[110px]">
           <div tw="flex flex-col justify-between h-full w-full">
             <LogoPill />

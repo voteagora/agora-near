@@ -7,7 +7,6 @@ import Tenant from "@/lib/tenant/tenant";
 import { rgbStringToHex } from "@/lib/color";
 import { Plus, Minus, RotateCcw } from "lucide-react";
 import { ProposalVotingHistoryRecord } from "@/lib/api/proposal/types";
-import { ProposalInfo } from "@/lib/contracts/types/voting";
 
 // TreeMap constants
 const CHART_DIMENSIONS = {
@@ -152,10 +151,8 @@ const ZoomButton = memo(
 ZoomButton.displayName = "ZoomButton";
 
 export default function TreeMapChart({
-  proposal,
   votes,
 }: {
-  proposal: ProposalInfo;
   votes: ProposalVotingHistoryRecord[];
 }) {
   const [nodes, setNodes] = useState<TreeNode[]>([]);

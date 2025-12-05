@@ -28,7 +28,7 @@ const sdk = new NodeSDK({
   metricReader: new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter(),
   }),
-  // @ts-ignore
+  // @ts-expect-error OpenTelemetry NodeSDK missing spanProcessors typing
   spanProcessors: [new SimpleSpanProcessor(new OTLPTraceExporter())],
 });
 sdk.start();

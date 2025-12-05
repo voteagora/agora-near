@@ -4,7 +4,7 @@ import Tenant from "@/lib/tenant/tenant";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function generateMetadata({}) {
+export async function generateMetadata() {
   const { ui } = Tenant.current();
   const page = ui.page("delegates");
   const { title, description } = page!.meta;

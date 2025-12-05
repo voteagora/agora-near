@@ -4,7 +4,6 @@ import {
   STNEAR_TOKEN_CONTRACT,
   RNEAR_TOKEN_CONTRACT,
 } from "@/lib/constants";
-import { useNear } from "@/contexts/NearContext";
 import { TokenWithBalance } from "@/lib/types";
 import TokenAmount from "../shared/TokenAmount";
 import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
@@ -17,8 +16,6 @@ interface LockableAssetRowProps {
 
 export const LockableAssetRow = memo<LockableAssetRowProps>(
   ({ token, stakingPoolId, onLockClick }) => {
-    const { networkId } = useNear();
-
     const handleManageStaking = useCallback((tokenAccountId: string) => {
       let url = "";
 
