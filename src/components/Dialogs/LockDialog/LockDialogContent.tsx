@@ -80,7 +80,12 @@ export function LockDialogContent({ closeDialog }: DialogContentProps) {
 
   const content = useMemo(() => {
     if (isAssetSelectorOpen) {
-      return <AssetSelector handleTokenSelect={handleTokenSelect} />;
+      return (
+        <AssetSelector
+          handleTokenSelect={handleTokenSelect}
+          onBack={closeAssetSelector}
+        />
+      );
     }
 
     if (currentStep === 1) {
@@ -114,6 +119,7 @@ export function LockDialogContent({ closeDialog }: DialogContentProps) {
     isAssetSelectorOpen,
     openAssetSelector,
     proceedToStaking,
+    closeAssetSelector,
   ]);
 
   if (isLoading) {

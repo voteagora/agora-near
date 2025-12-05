@@ -119,13 +119,13 @@ export const EnterAmountStep = ({
           </div>
         </div>
       </div>
-      <div className="relative flex h-[150px] flex-col border border-line rounded-lg">
-        <div className="flex-1 flex">
-          <div className="flex flex-row w-full items-center p-4">
-            <div className="flex-1">
+      <div className="relative flex h-auto sm:h-[150px] min-h-[180px] sm:min-h-[150px] flex-col border border-line rounded-xl">
+        <div className="flex-1 flex flex-col">
+          <div className="flex flex-col sm:flex-row w-full items-start sm:items-center p-4 gap-3 sm:gap-0">
+            <div className="flex-shrink-0 w-full sm:w-auto">
               <button
                 onClick={openAssetSelector}
-                className="flex flex-row items-center gap-2 bg-[#F2F1EA] px-3 py-1.5 rounded-md hover:bg-opacity-80"
+                className="flex flex-row items-center gap-2 bg-[#F2F1EA] px-3 py-1.5 rounded-md hover:bg-opacity-80 w-full sm:w-auto justify-center sm:justify-start"
               >
                 <AssetIcon
                   icon={selectedToken?.metadata?.icon ?? ""}
@@ -137,7 +137,7 @@ export const EnterAmountStep = ({
                 <ChevronDownIcon className="w-4 h-4 text-primary" />
               </button>
             </div>
-            <div className="flex-1 grow flex flex-row max-w-[350px] overflow-hidden">
+            <div className="flex-1 flex flex-row w-full min-w-0 overflow-hidden">
               <Input
                 type="text"
                 placeholder="0"
@@ -148,16 +148,16 @@ export const EnterAmountStep = ({
                     : enteredAmount
                 }
                 onChange={handleAmountChange}
-                className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0 pr-2"
               />
+              <button
+                onClick={onMaxPressed}
+                disabled={!maxAmountToLock || Big(maxAmountToLock).lte(0)}
+                className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200 flex-shrink-0"
+              >
+                Max
+              </button>
             </div>
-            <button
-              onClick={onMaxPressed}
-              disabled={!maxAmountToLock || Big(maxAmountToLock).lte(0)}
-              className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200"
-            >
-              Max
-            </button>
           </div>
         </div>
         {showConversion && (
@@ -165,7 +165,7 @@ export const EnterAmountStep = ({
             {conversionText}
           </div>
         )}
-        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+        <div className="absolute left-1/2 top-[64%] sm:top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
           <div className="w-8 h-8 flex items-center justify-center bg-neutral border border-line rounded-full">
             <ArrowDownIcon className="w-4 h-4 text-primary" />
           </div>

@@ -357,8 +357,8 @@ export const EnterStakingAmount = ({
           )}
 
           <div className="relative">
-            <div className="flex items-center justify-between rounded-lg border border-gray-200 p-4">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between rounded-lg border border-gray-200 p-4 gap-3 sm:gap-0">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <Image
                   src={NEAR_TOKEN_METADATA.icon}
                   alt="NEAR"
@@ -369,7 +369,7 @@ export const EnterStakingAmount = ({
                 <span className="font-medium">NEAR</span>
               </div>
 
-              <div className="flex items-center ml-2">
+              <div className="flex items-center flex-1 sm:ml-2 min-w-0">
                 <Input
                   type="text"
                   placeholder="0"
@@ -383,14 +383,14 @@ export const EnterStakingAmount = ({
                       : enteredAmount
                   }
                   onChange={(e) => setEnteredAmount(e.target.value)}
-                  className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0 pr-2"
                 />
                 <button
                   onClick={onStakeMax}
                   disabled={
                     !totalAvailableToStake || Big(totalAvailableToStake).lte(0)
                   }
-                  className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200"
+                  className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200 flex-shrink-0"
                 >
                   Max
                 </button>

@@ -475,6 +475,137 @@ const faqs: FAQ[] = [
     ),
   },
   {
+    id: "non-liquid-staking-pools",
+    question:
+      "What are Non-Liquid Staking Pools and how do I bring them into House of Stake?",
+    answer: (
+      <div className="space-y-6">
+        <Text>
+          Non-Liquid Staking Pools are traditional NEAR staking pools that
+          don&apos;t provide liquid staking tokens (like liNEAR or stNEAR). If
+          you have NEAR staked with one of these pools, you can still
+          participate in House of Stake governance by bringing those staked
+          tokens into the system.
+        </Text>
+        <Text>
+          House of Stake now supports whitelisted Non-Liquid Staking Pools,
+          allowing you to stake directly with any pool on the whitelist rather
+          than only the liquid staking providers. This is useful if you:
+        </Text>
+        <ul className="list-disc list-inside space-y-2 pl-4">
+          <li>Already have tokens staked with a specific validator</li>
+          <li>Prefer a particular staking pool for your own reasons</li>
+          <li>
+            Want to support a specific validator while participating in
+            governance
+          </li>
+        </ul>
+
+        <div className="mt-4">
+          <p className="font-semibold mb-3 text-base">
+            How the Staking Pool Whitelist Works
+          </p>
+          <Text>
+            House of Stake uses a whitelist contract to control which staking
+            pools can be used with lockup contracts. This security measure
+            ensures that only trusted, verified staking pools can receive
+            delegated funds. When you select a staking pool, the lockup contract
+            verifies the pool is whitelisted before allowing the selection.
+          </Text>
+          <div className="mt-4 space-y-3">
+            <Text>
+              The whitelist contract address is configured in the veNEAR
+              contract and can be viewed via the{" "}
+              <Code>staking_pool_whitelist_account_id</Code> field in the{" "}
+              <Code>get_config</Code> response. The whitelist is governed by
+              House of Stake, and new pools can be added through the governance
+              proposal process.
+            </Text>
+            <Text>
+              When you enter a pool account ID in the UI, the system
+              automatically checks the whitelist to verify the pool is allowed.
+              If a pool is not whitelisted, you will see an error message and
+              won&apos;t be able to select it.
+            </Text>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <p className="font-semibold mb-3 text-base">
+            How to Stake with Non-Liquid Pools
+          </p>
+          <Text>
+            Use the{" "}
+            <Link
+              className="text-primary underline hover:text-secondary font-medium"
+              href="/assets/non-liquid-staking"
+            >
+              Non-Liquid Staking Pools page
+            </Link>{" "}
+            to manage your positions.
+          </Text>
+          
+          <div className="mt-4 mb-6">
+            <p className="font-medium mb-2 text-sm text-gray-700 uppercase tracking-wide">
+              Option A: Migrating from an External Wallet
+            </p>
+            <Text>
+              If your tokens are currently staked in your personal wallet (e.g., MyNearWallet, Meteor), 
+              you cannot transfer the stake directly. You must:
+            </Text>
+            <ul className="list-decimal list-inside space-y-2 mt-2 pl-2">
+              <li>Unstake your tokens using your current wallet interface.</li>
+              <li>Wait for the release period (typically 2-3 days).</li>
+              <li>Withdraw the tokens to your wallet balance.</li>
+              <li>Deposit the liquid NEAR into your House of Stake lockup.</li>
+              <li>Select your desired Non-Liquid Staking Pool and stake.</li>
+            </ul>
+          </div>
+
+          <p className="font-medium mb-2 text-sm text-gray-700 uppercase tracking-wide">
+            Option B: Switching Pools within House of Stake
+          </p>
+          <Text>
+            If you already have funds in your House of Stake lockup and want to switch pools:
+          </Text>
+        </div>
+        <div className="space-y-4 mt-4">
+          <StepCard title="1. Unstake from your current pool">
+            Use the Staking dialog&apos;s Advanced section to unstake all tokens
+            from your current pool.
+          </StepCard>
+          <StepCard title="2. Wait for cooldown">
+            After unstaking, wait for the pool&apos;s cooldown period (typically
+            2-3 epochs) before you can withdraw.
+          </StepCard>
+          <StepCard title="3. Withdraw to your lockup">
+            Once cooldown is complete, use Advanced → Withdraw all to bring
+            tokens back to your lockup contract.
+          </StepCard>
+          <StepCard title="4. Refresh your balance">
+            Click Refresh balance to sync your lockup and surface any available
+            rewards or withdrawal balance.
+          </StepCard>
+          <StepCard title="5. Unselect the old pool">
+            When your deposited amount in the pool is 0, use Advanced → Unselect
+            staking pool to clear your pool selection.
+          </StepCard>
+          <StepCard title="6. Select your preferred pool">
+            Use the Staking dialog to select a new pool. You can choose any
+            whitelisted pool, including Non-Liquid Staking Pools.
+          </StepCard>
+        </div>
+        <Callout variant="info">
+          <p className="leading-relaxed italic">
+            If you have a preferred staking pool that is not currently
+            whitelisted, you can create a governance proposal to request its
+            addition to the whitelist.
+          </p>
+        </Callout>
+      </div>
+    ),
+  },
+  {
     id: "only-one-lst-position",
     question: "Why can't I lock more than one LST position?",
     answer: (

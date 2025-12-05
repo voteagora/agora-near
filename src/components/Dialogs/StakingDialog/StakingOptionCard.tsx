@@ -40,7 +40,7 @@ export const StakingOptionCard = ({
       </div>
       <div className="flex flex-col">
         <div className="text-xs text-[#676767]">EST. APY</div>
-        <div className="text-4xl font-light">
+        <div className="text-3xl sm:text-4xl font-light break-words">
           {apy ? `${apy.toFixed(2)}%` : <span className="text-lg">-</span>}
         </div>
       </div>
