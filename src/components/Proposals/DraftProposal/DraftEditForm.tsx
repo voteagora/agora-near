@@ -15,7 +15,15 @@ import { Controller, useFormContext } from "react-hook-form";
 import TokenAmount from "@/components/shared/TokenAmount";
 import Big from "big.js";
 import { VotingConfig } from "@/lib/contracts/types/voting";
+import { ProposalType } from "@/lib/proposalMetadata";
 import { FormValues } from "./DraftProposalPage";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const errorTextStyle = "text-sm text-negative mt-1";
 
@@ -192,6 +200,62 @@ function DraftDetailsForm() {
             )}
           </div>
         )}
+        <div className="flex flex-col gap-4 border-t border-line pt-4 mt-2">
+          <h4 className="text-xs font-semibold text-secondary">Configuration</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-medium text-tertiary mb-1 block">
+                Proposal Type
+              </label>
+              <Controller
+                control={control}
+                name="proposalType"
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger className="w-full bg-white">
+                      <SelectValue placeholder="Select a proposal type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={ProposalType.Standard}>
+                        Standard
+                      </SelectItem>
+                      <SelectItem value={ProposalType.Tactical}>
+                        Tactical
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+            {watch("proposalType") === ProposalType.Tactical ? (
+              <div>
+                <label className="text-xs font-medium text-tertiary mb-1 block">
+                  Quorum Threshold
+                </label>
+                <Controller
+                  control={control}
+                  name="quorumThreshold"
+                  render={({ field }) => (
+                    <InputBox
+                      type="number"
+                      placeholder="e.g. 100000"
+                      error={!!errors.quorumThreshold}
+                      {...field}
+                    />
+                  )}
+                />
+                {errors.quorumThreshold ? (
+                  <p className={errorTextStyle}>
+                    {errors.quorumThreshold.message}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        </div>
       </div>
     </VStack>
   );
