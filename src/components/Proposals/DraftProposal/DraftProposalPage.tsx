@@ -15,6 +15,10 @@ import {
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { DraftProposalStage } from "@/lib/api/proposal/types";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
+import {
+  encodeMetadata,
+  ProposalType,
+} from "@/lib/proposalMetadata";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeftIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -36,6 +40,8 @@ const formSchema = z.object({
       })
     )
     .min(2, "At least two options are required"),
+  proposalType: z.nativeEnum(ProposalType).default(ProposalType.Standard),
+  quorumThreshold: z.coerce.number().optional(),
 });
 
 // Strict validation used only on submission
@@ -57,6 +63,8 @@ const submitSchema = z.object({
       })
     )
     .min(2, "At least two options are required"),
+  proposalType: z.nativeEnum(ProposalType),
+  quorumThreshold: z.coerce.number().optional(),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -145,7 +153,13 @@ const DraftProposalsPageContent = memo(
 
     const handleSubmit = useCallback(() => {
       handleSubmitForm(
-        async ({ title, description, link }) => {
+        async ({
+          title,
+          description,
+          link,
+          proposalType,
+          quorumThreshold,
+        }) => {
           if (step === 1) {
             setStep(2);
             updateDraft({
@@ -163,6 +177,8 @@ const DraftProposalsPageContent = memo(
             description,
             link,
             options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
+            proposalType,
+            quorumThreshold,
           });
 
           if (!submitValidation.success) {
@@ -176,9 +192,20 @@ const DraftProposalsPageContent = memo(
           }
 
           try {
+            const finalDescription = encodeMetadata(
+              description || "",
+              {
+                proposalType: proposalType || ProposalType.Standard,
+                quorumThreshold:
+                  proposalType === ProposalType.Tactical
+                    ? quorumThreshold
+                    : undefined,
+              }
+            );
+
             const transactionResult = await createProposalAsync({
               title: title || null,
-              description: description || null,
+              description: finalDescription || null,
               link: link || null,
               voting_options: NEAR_VOTING_OPTIONS,
             });
@@ -220,6 +247,8 @@ const DraftProposalsPageContent = memo(
           description: draft.description || "",
           link: draft.proposalUrl || "",
           options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
+          proposalType: ProposalType.Standard, // Default for existing drafts without metadata
+          quorumThreshold: undefined,
         });
       }
     }, [draft, reset, isDirty]);
@@ -378,6 +407,8 @@ const DraftProposalsPageContent = memo(
                 description: draft.description || "",
                 link: draft.proposalUrl || "",
                 options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
+                proposalType: ProposalType.Standard,
+                quorumThreshold: undefined,
               });
             }}
           />
@@ -467,6 +498,8 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
       description: "",
       link: "",
       options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
+      proposalType: ProposalType.Standard,
+      quorumThreshold: undefined,
     },
     mode: "onSubmit",
   });
