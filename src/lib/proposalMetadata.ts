@@ -11,7 +11,7 @@ export enum ProposalType {
 export interface ProposalMetadataConfig {
   proposalType: ProposalType;
   // Optional override for quorum threshold (e.g., number of votes or token amount)
-  quorumThreshold?: number; 
+  quorumThreshold?: number;
 }
 
 const METADATA_START_TAG = "```json:metadata";
@@ -43,7 +43,7 @@ export const decodeMetadata = (
   fullDescription: string
 ): { metadata: ProposalMetadataConfig | null; description: string } => {
   const match = fullDescription.match(METADATA_REGEX);
-  
+
   if (!match) {
     return { metadata: null, description: fullDescription };
   }

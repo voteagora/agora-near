@@ -201,7 +201,9 @@ function DraftDetailsForm() {
           </div>
         )}
         <div className="flex flex-col gap-4 border-t border-line pt-4 mt-2">
-          <h4 className="text-xs font-semibold text-secondary">Configuration</h4>
+          <h4 className="text-xs font-semibold text-secondary">
+            Configuration
+          </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-medium text-tertiary mb-1 block">

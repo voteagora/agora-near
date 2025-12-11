@@ -15,10 +15,7 @@ import {
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { DraftProposalStage } from "@/lib/api/proposal/types";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
-import {
-  encodeMetadata,
-  ProposalType,
-} from "@/lib/proposalMetadata";
+import { encodeMetadata, ProposalType } from "@/lib/proposalMetadata";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeftIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -153,13 +150,7 @@ const DraftProposalsPageContent = memo(
 
     const handleSubmit = useCallback(() => {
       handleSubmitForm(
-        async ({
-          title,
-          description,
-          link,
-          proposalType,
-          quorumThreshold,
-        }) => {
+        async ({ title, description, link, proposalType, quorumThreshold }) => {
           if (step === 1) {
             setStep(2);
             updateDraft({
@@ -192,16 +183,13 @@ const DraftProposalsPageContent = memo(
           }
 
           try {
-            const finalDescription = encodeMetadata(
-              description || "",
-              {
-                proposalType: proposalType || ProposalType.Standard,
-                quorumThreshold:
-                  proposalType === ProposalType.Tactical
-                    ? quorumThreshold
-                    : undefined,
-              }
-            );
+            const finalDescription = encodeMetadata(description || "", {
+              proposalType: proposalType || ProposalType.Standard,
+              quorumThreshold:
+                proposalType === ProposalType.Tactical
+                  ? quorumThreshold
+                  : undefined,
+            });
 
             const transactionResult = await createProposalAsync({
               title: title || null,

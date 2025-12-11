@@ -20,7 +20,8 @@ describe("proposalMetadata", () => {
     });
 
     it("should replace existing metadata block", () => {
-      const description = "Original description\n\n```json:metadata\n{\"proposalType\": \"Old\"}\n```";
+      const description =
+        'Original description\n\n```json:metadata\n{"proposalType": "Old"}\n```';
       const metadata = {
         proposalType: ProposalType.Tactical,
         quorumThreshold: 100,
@@ -65,18 +66,17 @@ describe("proposalMetadata", () => {
     });
 
     it("should handle malformed json gracefully", () => {
-        const description = `Body
+      const description = `Body
         
 \`\`\`json:metadata
 {
   "invalid": json:
 }
 \`\`\``;
-    
-          const { metadata } =
-            decodeMetadata(description);
-    
-          expect(metadata).toBeNull();
+
+      const { metadata } = decodeMetadata(description);
+
+      expect(metadata).toBeNull();
     });
   });
 });
