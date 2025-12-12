@@ -1,5 +1,5 @@
 
-import { WalletSelector, Wallet } from "@near-wallet-selector/core";
+import { Wallet } from "@near-wallet-selector/core";
 
 export class MockWalletSelector {
   isSignedIn() {
