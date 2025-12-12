@@ -70,6 +70,7 @@ function DraftDetailsForm() {
             <InputBox
               placeholder={"I'd like to propose..."}
               error={!!errors.title}
+              disabled={displayMode === "preview"}
               {...field}
             />
           )}
@@ -181,6 +182,7 @@ function DraftDetailsForm() {
             <InputBox
               placeholder={"https://gov.near.org/your-proposal"}
               error={!!errors.link}
+              disabled={displayMode === "preview"}
               {...field}
             />
           )}
@@ -205,95 +207,98 @@ function DraftDetailsForm() {
           <h4 className="text-xs font-semibold text-secondary">
             Configuration
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-medium text-tertiary mb-1 block">
-                Proposal Type
-              </label>
-              <Controller
-                control={control}
-                name="proposalType"
-                render={({ field }) => (
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <SelectTrigger className="w-full bg-white">
-                      <SelectValue placeholder="Select a proposal type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={ProposalType.Standard}>
-                        Standard
-                      </SelectItem>
-                      <SelectItem value={ProposalType.Tactical}>
-                        Tactical
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-            {watch("proposalType") === ProposalType.Tactical ? (
-              <div className="space-y-4 pt-4 border-t border-line">
-                <div>
-                  <label className="text-xs font-medium text-tertiary mb-1 block">
-                    Quorum Threshold
-                  </label>
-                  <Controller
-                    control={control}
-                    name="quorumThreshold"
-                    render={({ field }) => (
-                      <InputBox
-                        type="number"
-                        min="0"
-                        placeholder="e.g. 10000"
-                        error={!!errors.quorumThreshold}
-                        {...field}
-                        onKeyDown={(e) => {
-                          if (e.key === "-" || e.key === "e") {
-                            e.preventDefault();
-                          }
-                        }}
-                      />
-                    )}
-                  />
-                  {errors.quorumThreshold ? (
-                    <p className={errorTextStyle}>
-                      {errors.quorumThreshold.message}
-                    </p>
-                  ) : null}
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-tertiary mb-1 block">
-                    Approval Threshold
-                  </label>
-                  <Controller
-                    control={control}
-                    name="approvalThreshold"
-                    render={({ field }) => (
-                      <InputBox
-                        type="number"
-                        min="0"
-                        placeholder="e.g. 5000"
-                        error={!!errors.approvalThreshold}
-                        {...field}
-                        onKeyDown={(e) => {
-                          if (e.key === "-" || e.key === "e") {
-                            e.preventDefault();
-                          }
-                        }}
-                      />
-                    )}
-                  />
-                  {errors.approvalThreshold ? (
-                    <p className={errorTextStyle}>
-                      {errors.approvalThreshold.message}
-                    </p>
-                  ) : null}
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-tertiary mb-1 block">
+                  Proposal Type
+                </label>
+                <Controller
+                  control={control}
+                  name="proposalType"
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={displayMode === "preview"}
+                    >
+                      <SelectTrigger className="w-full bg-white">
+                        <SelectValue placeholder="Select a proposal type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={ProposalType.Standard}>
+                          Standard
+                        </SelectItem>
+                        <SelectItem value={ProposalType.Tactical}>
+                          Tactical
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
-            ) : null}
-          </div>
+              {watch("proposalType") === ProposalType.Tactical ? (
+                <div className="space-y-4 pt-4 border-t border-line">
+                  <div>
+                    <label className="text-xs font-medium text-tertiary mb-1 block">
+                      Quorum Threshold
+                    </label>
+                    <Controller
+                      control={control}
+                      name="quorumThreshold"
+                      render={({ field }) => (
+                        <InputBox
+                          type="number"
+                          min="0"
+                          disabled={displayMode === "preview"}
+                          placeholder="e.g. 10000"
+                          error={!!errors.quorumThreshold}
+                          {...field}
+                          onKeyDown={(e) => {
+                            if (e.key === "-" || e.key === "e") {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                    {errors.quorumThreshold ? (
+                      <p className={errorTextStyle}>
+                        {errors.quorumThreshold.message}
+                      </p>
+                    ) : null}
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-tertiary mb-1 block">
+                      Approval Threshold
+                    </label>
+                    <Controller
+                      control={control}
+                      name="approvalThreshold"
+                      render={({ field }) => (
+                        <InputBox
+                          type="number"
+                          min="0"
+                          disabled={displayMode === "preview"}
+                          placeholder="e.g. 5000"
+                          error={!!errors.approvalThreshold}
+                          {...field}
+                          onKeyDown={(e) => {
+                            if (e.key === "-" || e.key === "e") {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                    {errors.approvalThreshold ? (
+                      <p className={errorTextStyle}>
+                        {errors.approvalThreshold.message}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+            </div>
         </div>
       </div>
     </VStack>
@@ -311,6 +316,7 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
     const {
       handleSubmit,
       getValues,
+      trigger,
       formState: { isValid, isDirty },
     } = useFormContext<FormValues>();
 
@@ -320,11 +326,13 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
       // Validate Tactical thresholds before saving to prevent bad data
       const currentValues = getValues();
       if (currentValues.proposalType === ProposalType.Tactical) {
-        if (
-          (currentValues.quorumThreshold ?? 0) <= 0 ||
-          (currentValues.approvalThreshold ?? 0) <= 0
-        ) {
-          toast.error("Thresholds must be positive numbers to save.");
+        const isTacticalValid = await trigger([
+          "quorumThreshold",
+          "approvalThreshold",
+        ]);
+
+        if (!isTacticalValid) {
+          toast.error("Please fix the threshold errors before saving.");
           return;
         }
       }

@@ -45,6 +45,25 @@ const formSchema = z.object({
   proposalType: z.nativeEnum(ProposalType).default(ProposalType.Standard),
   quorumThreshold: z.coerce.number().optional(),
   approvalThreshold: z.coerce.number().optional(),
+}).superRefine((data, ctx) => {
+  if (data.proposalType === ProposalType.Tactical) {
+    if (!data.quorumThreshold || data.quorumThreshold <= 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "A positive quorum threshold is required for Tactical proposals",
+        path: ["quorumThreshold"],
+      });
+    }
+    if (!data.approvalThreshold || data.approvalThreshold <= 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "A positive approval threshold is required for Tactical proposals",
+        path: ["approvalThreshold"],
+      });
+    }
+  }
 });
 
 // Strict validation used only on submission
