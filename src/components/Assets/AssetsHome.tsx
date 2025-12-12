@@ -6,6 +6,8 @@ import { useVenearConfig } from "@/hooks/useVenearConfig";
 import { MIN_VERSION_FOR_LST_LOCKUP } from "@/lib/constants";
 import { memo, useMemo } from "react";
 import { LiquidStakingTokenLockWarning } from "../Dialogs/LockDialog/LiquidStakingTokenLockWarning";
+import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
+import { UpdatedButton } from "@/components/Button";
 import AgoraLoader from "../shared/AgoraLoader/AgoraLoader";
 import { AssetsLandingPage } from "./AssetsLandingPage";
 import { GovernanceRewardsCard } from "./GovernanceRewardsCard";
@@ -14,13 +16,28 @@ import { VotingPowerCard } from "./VotingPowerCard";
 import { DelegationSummaryCard } from "./DelegationSummaryCard";
 
 export const AssetsHome = memo(() => {
-  const { signedAccountId } = useNear();
+  const { signedAccountId, signIn } = useNear();
   const { data: accountInfo, isLoading: isLoadingAccount } =
     useVenearAccountInfo(signedAccountId);
 
   const { lockupVersion, isLoading: isLoadingVenearConfig } = useVenearConfig({
     enabled: true,
   });
+
+  const openDialog = useOpenDialog();
+
+  const handleLandingGetStarted = () => {
+    if (!signedAccountId) {
+      signIn();
+      return;
+    }
+    openDialog({
+      type: "NEAR_LOCK",
+      params: {
+        source: "onboarding",
+      },
+    });
+  };
 
   const shouldShowLSTWarning = useMemo(() => {
     // Your lockup version takes precedence if you have onboarded, otherwise use global lockup version
@@ -55,6 +72,15 @@ export const AssetsHome = memo(() => {
                   governance
                 </p>
               </div>
+              <div className="flex items-center gap-2">
+                <UpdatedButton
+                  variant="rounded"
+                  className="whitespace-nowrap !border-black"
+                  onClick={handleLandingGetStarted}
+                >
+                  Connect Wallet
+                </UpdatedButton>
+              </div>
             </div>
           </div>
         </div>
@@ -78,6 +104,15 @@ export const AssetsHome = memo(() => {
               <p className="text-sm text-black/80">
                 Lock your NEAR and get active in governance
               </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <UpdatedButton
+                variant="rounded"
+                className="whitespace-nowrap !border-black"
+                onClick={handleLandingGetStarted}
+              >
+                Lock & Stake
+              </UpdatedButton>
             </div>
           </div>
         </div>
