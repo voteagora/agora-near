@@ -45,6 +45,7 @@ const formSchema = z.object({
     .min(2, "At least two options are required"),
   proposalType: z.nativeEnum(ProposalType).default(ProposalType.Standard),
   quorumThreshold: z.coerce.number().optional(),
+  approvalThreshold: z.coerce.number().optional(),
 });
 
 // Strict validation used only on submission
@@ -68,6 +69,7 @@ const submitSchema = z.object({
     .min(2, "At least two options are required"),
   proposalType: z.nativeEnum(ProposalType),
   quorumThreshold: z.coerce.number().optional(),
+  approvalThreshold: z.coerce.number().optional(),
 }).superRefine((data, ctx) => {
   if (data.proposalType === ProposalType.Tactical) {
     if (!data.quorumThreshold || data.quorumThreshold <= 0) {
@@ -76,6 +78,14 @@ const submitSchema = z.object({
         message:
           "A positive quorum threshold is required for Tactical proposals",
         path: ["quorumThreshold"],
+      });
+    }
+    if (!data.approvalThreshold || data.approvalThreshold <= 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "A positive approval threshold is required for Tactical proposals",
+        path: ["approvalThreshold"],
       });
     }
   }
@@ -167,7 +177,7 @@ const DraftProposalsPageContent = memo(
 
     const handleSubmit = useCallback(() => {
       handleSubmitForm(
-        async ({ title, description, link, proposalType, quorumThreshold }) => {
+        async ({ title, description, link, proposalType, quorumThreshold, approvalThreshold }) => {
           if (step === 1) {
             setStep(2);
             updateDraft({
@@ -205,6 +215,10 @@ const DraftProposalsPageContent = memo(
               quorumThreshold:
                 proposalType === ProposalType.Tactical
                   ? quorumThreshold
+                  : undefined,
+              approvalThreshold:
+                proposalType === ProposalType.Tactical
+                  ? approvalThreshold
                   : undefined,
             });
 
@@ -258,6 +272,7 @@ const DraftProposalsPageContent = memo(
           options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
           proposalType: metadata?.proposalType || ProposalType.Standard,
           quorumThreshold: metadata?.quorumThreshold,
+          approvalThreshold: metadata?.approvalThreshold,
         });
       }
     }, [draft, reset, isDirty]);

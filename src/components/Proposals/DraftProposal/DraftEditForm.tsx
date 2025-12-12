@@ -236,26 +236,51 @@ function DraftDetailsForm() {
             </div>
             {watch("proposalType") === ProposalType.Tactical ? (
               <div>
-                <label className="text-xs font-medium text-tertiary mb-1 block">
-                  Quorum Threshold
-                </label>
-                <Controller
-                  control={control}
-                  name="quorumThreshold"
-                  render={({ field }) => (
-                    <InputBox
-                      type="number"
-                      placeholder="e.g. 100000"
-                      error={!!errors.quorumThreshold}
-                      {...field}
-                    />
-                  )}
-                />
-                {errors.quorumThreshold ? (
-                  <p className={errorTextStyle}>
-                    {errors.quorumThreshold.message}
-                  </p>
-                ) : null}
+              <div className="space-y-4 pt-4 border-t border-line">
+                <div>
+                  <label className="text-xs font-medium text-tertiary mb-1 block">
+                    Quorum Threshold
+                  </label>
+                  <Controller
+                    control={control}
+                    name="quorumThreshold"
+                    render={({ field }) => (
+                      <InputBox
+                        type="number"
+                        placeholder="e.g. 10000"
+                        error={!!errors.quorumThreshold}
+                        {...field}
+                      />
+                    )}
+                  />
+                  {errors.quorumThreshold ? (
+                    <p className={errorTextStyle}>
+                      {errors.quorumThreshold.message}
+                    </p>
+                  ) : null}
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-tertiary mb-1 block">
+                    Approval Threshold
+                  </label>
+                  <Controller
+                    control={control}
+                    name="approvalThreshold"
+                    render={({ field }) => (
+                      <InputBox
+                        type="number"
+                        placeholder="e.g. 5000"
+                        error={!!errors.approvalThreshold}
+                        {...field}
+                      />
+                    )}
+                  />
+                  {errors.approvalThreshold ? (
+                    <p className={errorTextStyle}>
+                      {errors.approvalThreshold.message}
+                    </p>
+                  ) : null}
+                </div>
               </div>
             ) : null}
           </div>

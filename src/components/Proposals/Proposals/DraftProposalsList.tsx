@@ -7,12 +7,23 @@ import { DraftProposal, DraftProposalStage } from "@/lib/api/proposal/types";
 import { formatDistanceToNow } from "date-fns";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { decodeMetadata, ProposalType } from "@/lib/proposalMetadata";
 import { useMemo } from "react";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 function DraftProposalCard({ draft }: { draft: DraftProposal }) {
   const router = useRouter();
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    // Prevent navigation if clicking inside popover
+    if ((e.target as HTMLElement).closest('[data-radix-popper-content-wrapper]')) {
+      return;
+    }
     router.push(`/proposals/drafts/${draft.id}`);
   };
 
@@ -29,6 +40,14 @@ function DraftProposalCard({ draft }: { draft: DraftProposal }) {
     }
   };
 
+  const formatStage = (stage: string) => {
+    return stage.replace(/_/g, " ");
+  };
+
+  const { metadata, description: cleanDescription } = decodeMetadata(
+    draft.description || ""
+  );
+
   return (
     <div
       className="border-b border-line p-6 hover:bg-wash cursor-pointer transition-colors"
@@ -38,18 +57,58 @@ function DraftProposalCard({ draft }: { draft: DraftProposal }) {
         <h3 className="text-lg font-semibold text-primary hover:text-secondary transition-colors">
           {draft.title || "Untitled Draft"}
         </h3>
-        <span
-          className={cn(
-            "px-2 py-1 text-xs font-medium rounded-full border",
-            getStageColor(draft.stage)
+        <div className="flex items-center gap-2">
+          {metadata?.proposalType === ProposalType.Tactical && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  className="px-2 py-1 text-xs font-semibold rounded-full border bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200 transition-colors cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  TACTICAL
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" onClick={(e) => e.stopPropagation()}>
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-primary">Tactical Proposal</h4>
+                  <p className="text-sm text-secondary">
+                    This proposal includes custom configuration metadata.
+                  </p>
+                  <div className="flex flex-col gap-1 border-t pt-2 mt-2">
+                    {metadata.quorumThreshold && (
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-secondary">Quorum Threshold:</span>
+                        <span className="font-medium text-primary">
+                          {metadata.quorumThreshold.toLocaleString()} votes
+                        </span>
+                      </div>
+                    )}
+                    {metadata.approvalThreshold && (
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-secondary">Approval Threshold:</span>
+                        <span className="font-medium text-primary">
+                          {metadata.approvalThreshold.toLocaleString()} votes
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
-        >
-          {draft.stage}
-        </span>
+          <span
+            className={cn(
+              "px-2 py-1 text-xs font-medium rounded-full border",
+              getStageColor(draft.stage)
+            )}
+          >
+            {formatStage(draft.stage)}
+          </span>
+        </div>
       </div>
 
       <p className="text-sm text-secondary mb-3 line-clamp-2">
-        {draft.description || "No description provided"}
+        {cleanDescription || "No description provided"}
       </p>
 
       <div className="flex justify-between items-center text-xs text-tertiary">
