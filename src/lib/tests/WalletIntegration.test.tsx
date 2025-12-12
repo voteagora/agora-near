@@ -1,8 +1,8 @@
 
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { NearContext, NearProvider, useNear } from "@/contexts/NearContext";
+import { NearProvider, useNear } from "@/contexts/NearContext";
 import { MockWalletSelector } from "@/lib/tests/MockWalletSelector";
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { vi, describe, it, expect } from "vitest";
 
 // Partially mock the wallet selector setup
 vi.mock("@near-wallet-selector/core", async () => {
