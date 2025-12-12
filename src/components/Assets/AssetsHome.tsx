@@ -3,13 +3,9 @@
 import { useNear } from "@/contexts/NearContext";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
 import { useVenearConfig } from "@/hooks/useVenearConfig";
-import { useLockupAccount } from "@/hooks/useLockupAccount";
-import {
-  MIN_VERSION_FOR_LST_LOCKUP,
-} from "@/lib/constants";
+import { MIN_VERSION_FOR_LST_LOCKUP } from "@/lib/constants";
 import { memo, useMemo } from "react";
 import { LiquidStakingTokenLockWarning } from "../Dialogs/LockDialog/LiquidStakingTokenLockWarning";
-import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import AgoraLoader from "../shared/AgoraLoader/AgoraLoader";
 import { AssetsLandingPage } from "./AssetsLandingPage";
 import { GovernanceRewardsCard } from "./GovernanceRewardsCard";
@@ -25,10 +21,6 @@ export const AssetsHome = memo(() => {
   const { lockupVersion, isLoading: isLoadingVenearConfig } = useVenearConfig({
     enabled: true,
   });
-
-  const { lockupAccountId } = useLockupAccount();
-
-  const openDialog = useOpenDialog();
 
   const shouldShowLSTWarning = useMemo(() => {
     // Your lockup version takes precedence if you have onboarded, otherwise use global lockup version
@@ -114,4 +106,3 @@ export const AssetsHome = memo(() => {
 });
 
 AssetsHome.displayName = "AssetsHome";
-
