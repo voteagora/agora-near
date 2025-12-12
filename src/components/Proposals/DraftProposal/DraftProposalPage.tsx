@@ -30,41 +30,43 @@ import { toast } from "react-hot-toast";
 import { z } from "zod";
 import DraftEditForm, { DraftEditFormRef } from "./DraftEditForm";
 
-const formSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  // Allow saving drafts without enforcing link validation
-  link: z.string().optional().or(z.literal("")),
-  options: z
-    .array(
-      z.object({
-        title: z.string().min(1, "Option title is required"),
-      })
-    )
-    .min(2, "At least two options are required"),
-  proposalType: z.nativeEnum(ProposalType).default(ProposalType.Standard),
-  quorumThreshold: z.coerce.number().optional(),
-  approvalThreshold: z.coerce.number().optional(),
-}).superRefine((data, ctx) => {
-  if (data.proposalType === ProposalType.Tactical) {
-    if (!data.quorumThreshold || data.quorumThreshold <= 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message:
-          "A positive quorum threshold is required for Tactical proposals",
-        path: ["quorumThreshold"],
-      });
+const formSchema = z
+  .object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "Description is required"),
+    // Allow saving drafts without enforcing link validation
+    link: z.string().optional().or(z.literal("")),
+    options: z
+      .array(
+        z.object({
+          title: z.string().min(1, "Option title is required"),
+        })
+      )
+      .min(2, "At least two options are required"),
+    proposalType: z.nativeEnum(ProposalType).default(ProposalType.Standard),
+    quorumThreshold: z.coerce.number().optional(),
+    approvalThreshold: z.coerce.number().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.proposalType === ProposalType.Tactical) {
+      if (!data.quorumThreshold || data.quorumThreshold <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            "A positive quorum threshold is required for Tactical proposals",
+          path: ["quorumThreshold"],
+        });
+      }
+      if (!data.approvalThreshold || data.approvalThreshold <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            "A positive approval threshold is required for Tactical proposals",
+          path: ["approvalThreshold"],
+        });
+      }
     }
-    if (!data.approvalThreshold || data.approvalThreshold <= 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message:
-          "A positive approval threshold is required for Tactical proposals",
-        path: ["approvalThreshold"],
-      });
-    }
-  }
-});
+  });
 
 // Strict validation used only on submission
 const submitSchema = z
