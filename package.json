@@ -84,7 +84,7 @@
     "mixpanel-browser": "^2.71.0",
     "near-abi": "^0.2.0",
     "near-api-js": "^5.1.1",
-    "next": "14.1.4",
+    "next": "14.2.35",
     "nuqs": "^2.3.1",
     "pino-pretty": "^10.0.1",
     "postcss": "8.4.23",
