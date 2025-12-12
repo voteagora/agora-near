@@ -62,6 +62,17 @@ const submitSchema = z.object({
     .min(2, "At least two options are required"),
   proposalType: z.nativeEnum(ProposalType),
   quorumThreshold: z.coerce.number().optional(),
+}).superRefine((data, ctx) => {
+  if (data.proposalType === ProposalType.Tactical) {
+    if (!data.quorumThreshold || data.quorumThreshold <= 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "A positive quorum threshold is required for Tactical proposals",
+        path: ["quorumThreshold"],
+      });
+    }
+  }
 });
 
 export type FormValues = z.infer<typeof formSchema>;
