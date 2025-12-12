@@ -48,6 +48,24 @@ export const AssetsHome = memo(() => {
   if (!accountInfo) {
     return (
       <div className="flex flex-col w-full min-h-screen">
+        <div className="w-full mt-4">
+          <div
+            className="flex flex-col border border-black shadow-lg rounded-lg p-4"
+            style={{ backgroundColor: "#00E391" }}
+          >
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-black mb-1">
+                  Boosted rewards of up to 7.5% on veNEAR available now
+                </h3>
+                <p className="text-sm text-black/80">
+                  Connect your wallet to lock up your NEAR and get active in
+                  governance
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
         <AssetsLandingPage shouldShowLSTWarning={shouldShowLSTWarning} />
       </div>
     );
@@ -55,6 +73,23 @@ export const AssetsHome = memo(() => {
 
   return (
     <div className="flex flex-col w-full min-h-screen">
+      <div className="w-full mt-4">
+        <div
+          className="flex flex-col border border-black shadow-lg rounded-lg p-4"
+          style={{ backgroundColor: "#00E391" }}
+        >
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg sm:text-xl font-bold text-black mb-1">
+                Boosted rewards of up to 7.5% on veNEAR available now
+              </h3>
+              <p className="text-sm text-black/80">
+                Lock your NEAR and get active in governance
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
       {shouldShowLSTWarning && (
         <div className="w-full bg-[#F9F8F7] border-b border-gray-200 px-4 py-3 mt-4 rounded-2xl">
           <div className="mx-auto">
