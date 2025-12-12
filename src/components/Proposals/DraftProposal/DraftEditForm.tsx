@@ -15,7 +15,9 @@ import { Controller, useFormContext } from "react-hook-form";
 import TokenAmount from "@/components/shared/TokenAmount";
 import Big from "big.js";
 import { VotingConfig } from "@/lib/contracts/types/voting";
-import { ProposalType } from "@/lib/proposalMetadata";
+import { encodeMetadata, ProposalType } from "@/lib/proposalMetadata";
+
+
 import { FormValues } from "./DraftProposalPage";
 import {
   Select,
@@ -286,7 +288,14 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
               id: draft.id,
               data: {
                 title: formValues.title.trim(),
-                description: formValues.description.trim(),
+                description: encodeMetadata(formValues.description.trim(), {
+                  proposalType:
+                    formValues.proposalType || ProposalType.Standard,
+                  quorumThreshold:
+                    formValues.proposalType === ProposalType.Tactical
+                      ? formValues.quorumThreshold
+                      : undefined,
+                }),
                 proposalUrl: formValues.link?.trim() || undefined,
                 votingOptions: { options: NEAR_VOTING_OPTIONS },
               },

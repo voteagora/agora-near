@@ -15,7 +15,13 @@ import {
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { DraftProposalStage } from "@/lib/api/proposal/types";
 import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
-import { encodeMetadata, ProposalType } from "@/lib/proposalMetadata";
+import {
+  decodeMetadata,
+  encodeMetadata,
+  ProposalType,
+} from "@/lib/proposalMetadata";
+
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeftIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -241,13 +247,17 @@ const DraftProposalsPageContent = memo(
 
     useEffect(() => {
       if (draft && !isDirty) {
+        const { metadata, description: cleanDescription } = decodeMetadata(
+          draft.description || ""
+        );
+
         reset({
           title: draft.title || "",
-          description: draft.description || "",
+          description: cleanDescription,
           link: draft.proposalUrl || "",
           options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
-          proposalType: ProposalType.Standard, // Default for existing drafts without metadata
-          quorumThreshold: undefined,
+          proposalType: metadata?.proposalType || ProposalType.Standard,
+          quorumThreshold: metadata?.quorumThreshold,
         });
       }
     }, [draft, reset, isDirty]);
