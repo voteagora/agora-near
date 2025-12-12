@@ -10,9 +10,9 @@ export enum ProposalType {
 
 export interface ProposalMetadataConfig {
   proposalType: ProposalType;
-  // Optional override for quorum threshold 
+  // Optional override for quorum threshold
   quorumThreshold?: number;
-  // Optional override for approval threshold 
+  // Optional override for approval threshold
   approvalThreshold?: number;
 }
 

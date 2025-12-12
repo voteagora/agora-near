@@ -17,7 +17,6 @@ import Big from "big.js";
 import { VotingConfig } from "@/lib/contracts/types/voting";
 import { encodeMetadata, ProposalType } from "@/lib/proposalMetadata";
 
-
 import { FormValues } from "./DraftProposalPage";
 import {
   Select,

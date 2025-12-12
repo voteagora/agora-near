@@ -21,7 +21,9 @@ function DraftProposalCard({ draft }: { draft: DraftProposal }) {
 
   const handleClick = (e: React.MouseEvent) => {
     // Prevent navigation if clicking inside popover
-    if ((e.target as HTMLElement).closest('[data-radix-popper-content-wrapper]')) {
+    if (
+      (e.target as HTMLElement).closest("[data-radix-popper-content-wrapper]")
+    ) {
       return;
     }
     router.push(`/proposals/drafts/${draft.id}`);
@@ -68,16 +70,23 @@ function DraftProposalCard({ draft }: { draft: DraftProposal }) {
                   TACTICAL
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-80" onClick={(e) => e.stopPropagation()}>
+              <PopoverContent
+                className="w-80"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="space-y-2">
-                  <h4 className="font-semibold text-primary">Tactical Proposal</h4>
+                  <h4 className="font-semibold text-primary">
+                    Tactical Proposal
+                  </h4>
                   <p className="text-sm text-secondary">
                     This proposal includes custom configuration metadata.
                   </p>
                   <div className="flex flex-col gap-1 border-t pt-2 mt-2">
                     {metadata.quorumThreshold && (
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-secondary">Quorum Threshold:</span>
+                        <span className="text-secondary">
+                          Quorum Threshold:
+                        </span>
                         <span className="font-medium text-primary">
                           {metadata.quorumThreshold.toLocaleString()} votes
                         </span>
@@ -85,7 +94,9 @@ function DraftProposalCard({ draft }: { draft: DraftProposal }) {
                     )}
                     {metadata.approvalThreshold && (
                       <div className="flex justify-between items-center text-sm">
-                        <span className="text-secondary">Approval Threshold:</span>
+                        <span className="text-secondary">
+                          Approval Threshold:
+                        </span>
                         <span className="font-medium text-primary">
                           {metadata.approvalThreshold.toLocaleString()} votes
                         </span>

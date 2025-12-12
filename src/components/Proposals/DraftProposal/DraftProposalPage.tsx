@@ -21,7 +21,6 @@ import {
   ProposalType,
 } from "@/lib/proposalMetadata";
 
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeftIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -49,47 +48,49 @@ const formSchema = z.object({
 });
 
 // Strict validation used only on submission
-const submitSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  link: z
-    .string()
-    .min(1, "Link is required")
-    .url("Must be a valid URL")
-    .refine((url) => url.includes("https://gov.near.org/"), {
-      message:
-        "Proposal links must be from https://gov.near.org/. Create a forum post first to gather community support.",
-    }),
-  options: z
-    .array(
-      z.object({
-        title: z.string().min(1, "Option title is required"),
-      })
-    )
-    .min(2, "At least two options are required"),
-  proposalType: z.nativeEnum(ProposalType),
-  quorumThreshold: z.coerce.number().optional(),
-  approvalThreshold: z.coerce.number().optional(),
-}).superRefine((data, ctx) => {
-  if (data.proposalType === ProposalType.Tactical) {
-    if (!data.quorumThreshold || data.quorumThreshold <= 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+const submitSchema = z
+  .object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "Description is required"),
+    link: z
+      .string()
+      .min(1, "Link is required")
+      .url("Must be a valid URL")
+      .refine((url) => url.includes("https://gov.near.org/"), {
         message:
-          "A positive quorum threshold is required for Tactical proposals",
-        path: ["quorumThreshold"],
-      });
+          "Proposal links must be from https://gov.near.org/. Create a forum post first to gather community support.",
+      }),
+    options: z
+      .array(
+        z.object({
+          title: z.string().min(1, "Option title is required"),
+        })
+      )
+      .min(2, "At least two options are required"),
+    proposalType: z.nativeEnum(ProposalType),
+    quorumThreshold: z.coerce.number().optional(),
+    approvalThreshold: z.coerce.number().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.proposalType === ProposalType.Tactical) {
+      if (!data.quorumThreshold || data.quorumThreshold <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            "A positive quorum threshold is required for Tactical proposals",
+          path: ["quorumThreshold"],
+        });
+      }
+      if (!data.approvalThreshold || data.approvalThreshold <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            "A positive approval threshold is required for Tactical proposals",
+          path: ["approvalThreshold"],
+        });
+      }
     }
-    if (!data.approvalThreshold || data.approvalThreshold <= 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message:
-          "A positive approval threshold is required for Tactical proposals",
-        path: ["approvalThreshold"],
-      });
-    }
-  }
-});
+  });
 
 export type FormValues = z.infer<typeof formSchema>;
 
@@ -177,7 +178,14 @@ const DraftProposalsPageContent = memo(
 
     const handleSubmit = useCallback(() => {
       handleSubmitForm(
-        async ({ title, description, link, proposalType, quorumThreshold, approvalThreshold }) => {
+        async ({
+          title,
+          description,
+          link,
+          proposalType,
+          quorumThreshold,
+          approvalThreshold,
+        }) => {
           if (step === 1) {
             setStep(2);
             updateDraft({
