@@ -1,5 +1,7 @@
 import { useNear } from "@/contexts/NearContext";
 import { CONTRACTS } from "@/lib/contractConstants";
+import { MerkleProof } from "@/lib/contracts/types/common";
+import { VAccount } from "@/lib/contracts/types/venear";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useFetchProof } from "./useFetchProof";
@@ -13,6 +15,7 @@ interface CastVoteArgs {
   voteIndex: number;
   voteStorageFee: string;
   blockId: number;
+  proof?: [MerkleProof, VAccount];
 }
 
 export function useCastVote({ onSuccess }: { onSuccess?: () => void }) {
@@ -48,18 +51,26 @@ export function useCastVote({ onSuccess }: { onSuccess?: () => void }) {
       voteIndex,
       voteStorageFee,
       blockId,
+      proof,
     }: CastVoteArgs) => {
       if (!signedAccountId) {
         throw new Error("No account connected");
       }
 
-      const proof = await fetchProof(signedAccountId, blockId);
+      let merkleProof: MerkleProof;
+      let vAccount: VAccount;
 
-      if (!proof) {
-        throw new Error("Account merkle proof not found");
+      if (proof) {
+        [merkleProof, vAccount] = proof;
+      } else {
+        const proof = await fetchProof(signedAccountId, blockId);
+
+        if (!proof) {
+          throw new Error("Account merkle proof not found");
+        }
+
+        [merkleProof, vAccount] = proof;
       }
-
-      const [merkleProof, vAccount] = proof;
 
       return mutateVote({
         contractId: CONTRACTS.VOTING_CONTRACT_ID,
