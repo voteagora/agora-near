@@ -245,9 +245,15 @@ function DraftDetailsForm() {
                     render={({ field }) => (
                       <InputBox
                         type="number"
+                        min="0"
                         placeholder="e.g. 10000"
                         error={!!errors.quorumThreshold}
                         {...field}
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e") {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     )}
                   />
@@ -267,9 +273,15 @@ function DraftDetailsForm() {
                     render={({ field }) => (
                       <InputBox
                         type="number"
+                        min="0"
                         placeholder="e.g. 5000"
                         error={!!errors.approvalThreshold}
                         {...field}
+                        onKeyDown={(e) => {
+                          if (e.key === "-" || e.key === "e") {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     )}
                   />
@@ -298,11 +310,24 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
 
     const {
       handleSubmit,
+      getValues,
       formState: { isValid, isDirty },
     } = useFormContext<FormValues>();
 
     const handleSave = async () => {
       if (!isDirty) return;
+
+      // Validate Tactical thresholds before saving to prevent bad data
+      const currentValues = getValues();
+      if (currentValues.proposalType === ProposalType.Tactical) {
+        if (
+          (currentValues.quorumThreshold ?? 0) <= 0 ||
+          (currentValues.approvalThreshold ?? 0) <= 0
+        ) {
+          toast.error("Thresholds must be positive numbers to save.");
+          return;
+        }
+      }
 
       handleSubmit(
         (formValues) => {
@@ -317,6 +342,10 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
                   quorumThreshold:
                     formValues.proposalType === ProposalType.Tactical
                       ? formValues.quorumThreshold
+                      : undefined,
+                  approvalThreshold:
+                    formValues.proposalType === ProposalType.Tactical
+                      ? formValues.approvalThreshold
                       : undefined,
                 }),
                 proposalUrl: formValues.link?.trim() || undefined,
