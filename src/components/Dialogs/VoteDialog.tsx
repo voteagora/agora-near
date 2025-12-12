@@ -132,7 +132,9 @@ function NearVoteDialogComponent({
     return (
       <div className="flex flex-col w-full items-center justify-center p-8 gap-4">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <div className="text-secondary text-sm">Preparing vote transaction...</div>
+        <div className="text-secondary text-sm">
+          Preparing vote transaction...
+        </div>
       </div>
     );
   }
@@ -173,4 +175,3 @@ function NearVoteDialogComponent({
 }
 
 export const NearVoteDialog = memo(NearVoteDialogComponent);
-

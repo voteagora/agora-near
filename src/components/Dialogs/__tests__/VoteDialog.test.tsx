@@ -1,4 +1,3 @@
-
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { NearVoteDialog } from "../VoteDialog";
 import { vi, describe, it, expect, beforeEach } from "vitest";
@@ -54,7 +53,7 @@ describe("NearVoteDialog", () => {
 
   it("fetches proof on mount and shows confirmation", async () => {
     mockFetchProof.mockResolvedValue(["mockProof", "mockVAccount"]);
-    
+
     render(
       <NearVoteDialog
         proposal={mockProposal}
@@ -65,11 +64,13 @@ describe("NearVoteDialog", () => {
     );
 
     // Should show loading state initially
-    expect(screen.getByText("Preparing vote transaction...")).toBeInTheDocument();
+    expect(
+      screen.getByText("Preparing vote transaction...")
+    ).toBeInTheDocument();
 
     // specific wait for the text to disappear or new text to appear
     await waitFor(() => {
-        expect(screen.getByText("Confirm Vote")).toBeInTheDocument();
+      expect(screen.getByText("Confirm Vote")).toBeInTheDocument();
     });
 
     expect(screen.getByText("Yes")).toBeInTheDocument();
@@ -79,16 +80,18 @@ describe("NearVoteDialog", () => {
     mockFetchProof.mockResolvedValue(null);
 
     render(
-        <NearVoteDialog
-          proposal={mockProposal}
-          config={mockConfig}
-          closeDialog={mockCloseDialog}
-          preSelectedVote={0}
-        />
-      );
+      <NearVoteDialog
+        proposal={mockProposal}
+        config={mockConfig}
+        closeDialog={mockCloseDialog}
+        preSelectedVote={0}
+      />
+    );
 
     await waitFor(() => {
-        expect(screen.getByText("Error: Failed to fetch merkle proof")).toBeInTheDocument();
+      expect(
+        screen.getByText("Error: Failed to fetch merkle proof")
+      ).toBeInTheDocument();
     });
   });
 
@@ -97,16 +100,16 @@ describe("NearVoteDialog", () => {
     mockFetchProof.mockResolvedValue(mockProof);
 
     render(
-        <NearVoteDialog
-          proposal={mockProposal}
-          config={mockConfig}
-          closeDialog={mockCloseDialog}
-          preSelectedVote={0}
-        />
-      );
+      <NearVoteDialog
+        proposal={mockProposal}
+        config={mockConfig}
+        closeDialog={mockCloseDialog}
+        preSelectedVote={0}
+      />
+    );
 
     await waitFor(() => {
-        expect(screen.getByText("Confirm Vote")).toBeInTheDocument();
+      expect(screen.getByText("Confirm Vote")).toBeInTheDocument();
     });
 
     fireEvent.click(screen.getByText("Sign & Vote"));
