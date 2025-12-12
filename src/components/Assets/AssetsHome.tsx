@@ -68,8 +68,9 @@ export const AssetsHome = memo(() => {
                   Boosted rewards of up to 7.5% on veNEAR available now
                 </h3>
                 <p className="text-sm text-black/80">
-                  Connect your wallet to lock up your NEAR and get active in
-                  governance
+                  {signedAccountId
+                    ? "Lock your NEAR and get active in governance"
+                    : "Connect your wallet to lock up your NEAR and get active in governance"}
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -78,7 +79,7 @@ export const AssetsHome = memo(() => {
                   className="whitespace-nowrap !border-black"
                   onClick={handleLandingGetStarted}
                 >
-                  Connect Wallet
+                  {signedAccountId ? "Lock & Stake" : "Connect Wallet"}
                 </UpdatedButton>
               </div>
             </div>
