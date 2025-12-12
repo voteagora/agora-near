@@ -235,7 +235,6 @@ function DraftDetailsForm() {
               />
             </div>
             {watch("proposalType") === ProposalType.Tactical ? (
-              <div>
               <div className="space-y-4 pt-4 border-t border-line">
                 <div>
                   <label className="text-xs font-medium text-tertiary mb-1 block">

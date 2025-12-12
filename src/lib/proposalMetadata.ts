@@ -10,13 +10,16 @@ export enum ProposalType {
 
 export interface ProposalMetadataConfig {
   proposalType: ProposalType;
-  // Optional override for quorum threshold (e.g., number of votes or token amount)
+  // Optional override for quorum threshold 
   quorumThreshold?: number;
+  // Optional override for approval threshold 
+  approvalThreshold?: number;
 }
 
 const METADATA_START_TAG = "```json:metadata";
 const METADATA_END_TAG = "```";
-const METADATA_REGEX = /```json:metadata\n([\s\S]*?)\n```/;
+// Regex updated to be more robust: allows optional whitespace/newlines around JSON content
+const METADATA_REGEX = /```json:metadata\s*([\s\S]*?)\s*```/;
 
 /**
  * Encodes metadata into the proposal description using a JSON markdown block.
