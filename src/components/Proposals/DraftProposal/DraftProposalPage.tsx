@@ -243,11 +243,11 @@ const DraftProposalsPageContent = memo(
             const finalDescription = encodeMetadata(description || "", {
               proposalType: proposalType || ProposalType.Standard,
               quorumThreshold:
-                proposalType !== ProposalType.Standard
+                proposalType === ProposalType.Tactical
                   ? quorumThreshold
                   : undefined,
               approvalThreshold:
-                proposalType !== ProposalType.Standard
+                proposalType === ProposalType.Tactical
                   ? approvalThreshold
                   : undefined,
             });

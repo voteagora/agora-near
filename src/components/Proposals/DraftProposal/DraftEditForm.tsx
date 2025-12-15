@@ -379,11 +379,11 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
                   proposalType:
                     formValues.proposalType || ProposalType.Standard,
                   quorumThreshold:
-                    formValues.proposalType !== ProposalType.Standard
+                    formValues.proposalType === ProposalType.Tactical
                       ? formValues.quorumThreshold
                       : undefined,
                   approvalThreshold:
-                    formValues.proposalType !== ProposalType.Standard
+                    formValues.proposalType === ProposalType.Tactical
                       ? formValues.approvalThreshold
                       : undefined,
                 }),
