@@ -231,12 +231,18 @@ function DraftDetailsForm() {
                       <SelectItem value={ProposalType.Tactical}>
                         Tactical
                       </SelectItem>
+                      <SelectItem value={ProposalType.SimpleMajority}>
+                        Simple Majority
+                      </SelectItem>
+                      <SelectItem value={ProposalType.SuperMajority}>
+                        2/3 Super Majority
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 )}
               />
             </div>
-            {watch("proposalType") === ProposalType.Tactical ? (
+            {watch("proposalType") !== ProposalType.Standard ? (
               <div className="space-y-4 pt-4 border-t border-line">
                 <div>
                   <label className="text-xs font-medium text-tertiary mb-1 block">
@@ -323,9 +329,9 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
     const handleSave = async () => {
       if (!isDirty) return;
 
-      // Validate Tactical thresholds before saving to prevent bad data
+      // Validate thresholds before saving to prevent bad data
       const currentValues = getValues();
-      if (currentValues.proposalType === ProposalType.Tactical) {
+      if (currentValues.proposalType !== ProposalType.Standard) {
         const isTacticalValid = await trigger([
           "quorumThreshold",
           "approvalThreshold",
@@ -348,11 +354,11 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
                   proposalType:
                     formValues.proposalType || ProposalType.Standard,
                   quorumThreshold:
-                    formValues.proposalType === ProposalType.Tactical
+                    formValues.proposalType !== ProposalType.Standard
                       ? formValues.quorumThreshold
                       : undefined,
                   approvalThreshold:
-                    formValues.proposalType === ProposalType.Tactical
+                    formValues.proposalType !== ProposalType.Standard
                       ? formValues.approvalThreshold
                       : undefined,
                 }),
@@ -418,6 +424,36 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
                 <TokenAmount amount={totalDeposit} minimumFractionDigits={2} />.
               </li>
             </ul>
+          </div>
+          <div className="bg-wash rounded-xl border border-line p-6 mt-6">
+            <h2 className="text-xl font-bold mb-4 text-primary">
+              How to pick your type
+            </h2>
+            <div className="space-y-4 text-sm text-secondary">
+              <div>
+                <h3 className="font-semibold text-primary">Simple Majority</h3>
+                <p>
+                  Requires &gt; 50% of participating votes (excluding
+                  abstentions) to pass. Best for general decisions.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-primary">
+                  2/3 Super Majority
+                </h3>
+                <p>
+                  Requires &ge; 66.6% of participating votes to pass. Use for
+                  critical changes or constitutional amendments.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-primary">Tactical</h3>
+                <p>
+                  Allows enabling custom quorum and approval thresholds. Use
+                  when standard rules do not apply.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </HStack>

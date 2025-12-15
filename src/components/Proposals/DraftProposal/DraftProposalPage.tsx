@@ -48,12 +48,12 @@ const formSchema = z
     approvalThreshold: z.coerce.number().optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.proposalType === ProposalType.Tactical) {
+    if (data.proposalType !== ProposalType.Standard) {
       if (!data.quorumThreshold || data.quorumThreshold <= 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
-            "A positive quorum threshold is required for Tactical proposals",
+            "A positive quorum threshold is required for non-standard proposals",
           path: ["quorumThreshold"],
         });
       }
@@ -61,7 +61,7 @@ const formSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
-            "A positive approval threshold is required for Tactical proposals",
+            "A positive approval threshold is required for non-standard proposals",
           path: ["approvalThreshold"],
         });
       }
@@ -93,12 +93,12 @@ const submitSchema = z
     approvalThreshold: z.coerce.number().optional(),
   })
   .superRefine((data, ctx) => {
-    if (data.proposalType === ProposalType.Tactical) {
+    if (data.proposalType !== ProposalType.Standard) {
       if (!data.quorumThreshold || data.quorumThreshold <= 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
-            "A positive quorum threshold is required for Tactical proposals",
+            "A positive quorum threshold is required for non-standard proposals",
           path: ["quorumThreshold"],
         });
       }
@@ -106,7 +106,7 @@ const submitSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message:
-            "A positive approval threshold is required for Tactical proposals",
+            "A positive approval threshold is required for non-standard proposals",
           path: ["approvalThreshold"],
         });
       }
@@ -185,6 +185,7 @@ const DraftProposalsPageContent = memo(
       handleSubmit: handleSubmitForm,
       watch,
       setError,
+      getValues,
     } = useFormContext<FormValues>();
 
     const [title, description, link] = watch(["title", "description", "link"]);
@@ -242,11 +243,11 @@ const DraftProposalsPageContent = memo(
             const finalDescription = encodeMetadata(description || "", {
               proposalType: proposalType || ProposalType.Standard,
               quorumThreshold:
-                proposalType === ProposalType.Tactical
+                proposalType !== ProposalType.Standard
                   ? quorumThreshold
                   : undefined,
               approvalThreshold:
-                proposalType === ProposalType.Tactical
+                proposalType !== ProposalType.Standard
                   ? approvalThreshold
                   : undefined,
             });
@@ -455,14 +456,8 @@ const DraftProposalsPageContent = memo(
             config={config}
             votingDuration={votingDuration}
             onSaveSuccess={() => {
-              reset({
-                title: draft.title || "",
-                description: draft.description || "",
-                link: draft.proposalUrl || "",
-                options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
-                proposalType: ProposalType.Standard,
-                quorumThreshold: undefined,
-              });
+              const currentValues = getValues();
+              reset(currentValues);
             }}
           />
         ) : (

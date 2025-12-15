@@ -6,6 +6,8 @@
 export enum ProposalType {
   Standard = "Standard",
   Tactical = "Tactical",
+  SimpleMajority = "SimpleMajority",
+  SuperMajority = "SuperMajority",
 }
 
 export interface ProposalMetadataConfig {
