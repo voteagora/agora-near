@@ -78,7 +78,7 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
 
                       {metadata.proposalType === ProposalType.SuperMajority && (
                         <p className="text-sm text-secondary">
-                          Requires &ge; 66% of participating votes to pass.
+                          Requires &ge; 2/3 of participating votes to pass.
                         </p>
                       )}
 

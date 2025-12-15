@@ -30,15 +30,17 @@ export default function ProposalStatusDetail({
 }) {
   const { metadata } = decodeMetadata(proposal.description || "");
   let quorum = proposal.quorumAmountYoctoNear ?? "0";
-  if (metadata?.quorumThreshold) {
-    const parsed = parseNearAmount(metadata.quorumThreshold.toString());
-    if (parsed) quorum = parsed;
-  }
-
   let approvalThreshold: string | undefined = undefined;
-  if (metadata?.approvalThreshold) {
-    const parsed = parseNearAmount(metadata.approvalThreshold.toString());
-    if (parsed) approvalThreshold = parsed;
+
+  if (metadata) {
+    if (metadata.quorumThreshold) {
+      quorum = parseNearAmount(metadata.quorumThreshold.toString()) || quorum;
+    }
+    if (metadata.approvalThreshold) {
+      approvalThreshold =
+        parseNearAmount(metadata.approvalThreshold.toString()) ||
+        approvalThreshold;
+    }
   }
 
   const status = getProposalStatus({

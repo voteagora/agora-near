@@ -322,7 +322,7 @@ function DraftDetailsForm() {
                       <div className="p-3 bg-neutral-100 rounded-lg border border-line text-sm text-secondary font-medium">
                         {watch("proposalType") === ProposalType.SimpleMajority
                           ? "Simple Majority (> 50% Participating)"
-                          : "Super Majority (>= 66% Participating)"}
+                          : "Super Majority (>= 2/3 Participating)"}
                       </div>
                     </div>
                   </>
