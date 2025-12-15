@@ -242,68 +242,93 @@ function DraftDetailsForm() {
                 )}
               />
             </div>
-            {watch("proposalType") !== ProposalType.Standard ? (
+            {watch("proposalType") !== ProposalType.Standard && (
               <div className="space-y-4 pt-4 border-t border-line">
-                <div>
-                  <label className="text-xs font-medium text-tertiary mb-1 block">
-                    Quorum Threshold
-                  </label>
-                  <Controller
-                    control={control}
-                    name="quorumThreshold"
-                    render={({ field }) => (
-                      <InputBox
-                        type="number"
-                        min="0"
-                        disabled={displayMode === "preview"}
-                        placeholder="e.g. 10000"
-                        error={!!errors.quorumThreshold}
-                        {...field}
-                        onKeyDown={(e) => {
-                          if (e.key === "-" || e.key === "e") {
-                            e.preventDefault();
-                          }
-                        }}
+                {watch("proposalType") === ProposalType.Tactical ? (
+                  <>
+                    <div>
+                      <label className="text-xs font-medium text-tertiary mb-1 block">
+                        Quorum Threshold
+                      </label>
+                      <Controller
+                        control={control}
+                        name="quorumThreshold"
+                        render={({ field }) => (
+                          <InputBox
+                            type="number"
+                            min="0"
+                            disabled={displayMode === "preview"}
+                            placeholder="e.g. 10000"
+                            error={!!errors.quorumThreshold}
+                            {...field}
+                            onKeyDown={(e) => {
+                              if (e.key === "-" || e.key === "e") {
+                                e.preventDefault();
+                              }
+                            }}
+                          />
+                        )}
                       />
-                    )}
-                  />
-                  {errors.quorumThreshold ? (
-                    <p className={errorTextStyle}>
-                      {errors.quorumThreshold.message}
-                    </p>
-                  ) : null}
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-tertiary mb-1 block">
-                    Approval Threshold
-                  </label>
-                  <Controller
-                    control={control}
-                    name="approvalThreshold"
-                    render={({ field }) => (
-                      <InputBox
-                        type="number"
-                        min="0"
-                        disabled={displayMode === "preview"}
-                        placeholder="e.g. 5000"
-                        error={!!errors.approvalThreshold}
-                        {...field}
-                        onKeyDown={(e) => {
-                          if (e.key === "-" || e.key === "e") {
-                            e.preventDefault();
-                          }
-                        }}
+                      {errors.quorumThreshold ? (
+                        <p className={errorTextStyle}>
+                          {errors.quorumThreshold.message}
+                        </p>
+                      ) : null}
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-tertiary mb-1 block">
+                        Approval Threshold
+                      </label>
+                      <Controller
+                        control={control}
+                        name="approvalThreshold"
+                        render={({ field }) => (
+                          <InputBox
+                            type="number"
+                            min="0"
+                            disabled={displayMode === "preview"}
+                            placeholder="e.g. 5000"
+                            error={!!errors.approvalThreshold}
+                            {...field}
+                            onKeyDown={(e) => {
+                              if (e.key === "-" || e.key === "e") {
+                                e.preventDefault();
+                              }
+                            }}
+                          />
+                        )}
                       />
-                    )}
-                  />
-                  {errors.approvalThreshold ? (
-                    <p className={errorTextStyle}>
-                      {errors.approvalThreshold.message}
-                    </p>
-                  ) : null}
-                </div>
+                      {errors.approvalThreshold ? (
+                        <p className={errorTextStyle}>
+                          {errors.approvalThreshold.message}
+                        </p>
+                      ) : null}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="opacity-70">
+                      <label className="text-xs font-medium text-tertiary mb-1 block">
+                        Quorum Threshold
+                      </label>
+                      <div className="p-3 bg-neutral-100 rounded-lg border border-line text-sm text-secondary font-medium">
+                        Default
+                      </div>
+                    </div>
+                    <div className="opacity-70">
+                      <label className="text-xs font-medium text-tertiary mb-1 block">
+                        Approval Threshold
+                      </label>
+                      <div className="p-3 bg-neutral-100 rounded-lg border border-line text-sm text-secondary font-medium">
+                        {watch("proposalType") === ProposalType.SimpleMajority
+                          ? "Simple Majority (> 50% Participating)"
+                          : "Super Majority (>= 66% Participating)"}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </div>

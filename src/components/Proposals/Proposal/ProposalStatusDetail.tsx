@@ -48,6 +48,7 @@ export default function ProposalStatusDetail({
     againstVotingPower: proposal.votes[1].total_venear,
     abstainVotingPower: proposal.votes[2]?.total_venear ?? "0",
     approvalThreshold,
+    proposalType: metadata?.proposalType,
   });
 
   const isDefeated = status === ProposalDisplayStatus.Defeated;

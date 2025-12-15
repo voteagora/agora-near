@@ -33,6 +33,7 @@ export function getProposalStatus({
   againstVotingPower,
   abstainVotingPower,
   approvalThreshold,
+  proposalType,
 }: {
   status: string;
   quorumAmount: string;
@@ -40,6 +41,7 @@ export function getProposalStatus({
   againstVotingPower: string;
   abstainVotingPower: string;
   approvalThreshold?: string;
+  proposalType?: string;
 }) {
   switch (status) {
     case ProposalStatus.Finished: {
@@ -51,9 +53,24 @@ export function getProposalStatus({
       });
 
       let passedApproval = false;
+      const totalVotes = getTotalVotes(
+        forVotingPower,
+        againstVotingPower,
+        abstainVotingPower
+      );
+
+      // Priority 1: Manual Approval Threshold (Tactical)
       if (approvalThreshold && Big(approvalThreshold).gt(0)) {
         passedApproval = Big(forVotingPower).gte(approvalThreshold);
-      } else {
+      }
+      // Priority 2: 2/3 Super Majority (Dynamic)
+      else if (proposalType === "SuperMajority") {
+        // >= 66.66% meant as 2/3 of participating votes
+        // For >= Total * 2 / 3
+        passedApproval = Big(forVotingPower).gte(totalVotes.mul(2).div(3));
+      }
+      // Priority 3: Simple Majority / Standard (For > Against)
+      else {
         passedApproval = isForGreaterThanAgainst({
           forVotingPower,
           againstVotingPower,
