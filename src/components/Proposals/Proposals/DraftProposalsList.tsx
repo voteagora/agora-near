@@ -60,53 +60,55 @@ function DraftProposalCard({ draft }: { draft: DraftProposal }) {
           {draft.title || "Untitled Draft"}
         </h3>
         <div className="flex items-center gap-2">
-          {metadata?.proposalType === ProposalType.Tactical && (
-            <Popover>
-              <PopoverTrigger asChild>
-                <button
-                  className="px-2 py-1 text-xs font-semibold rounded-full border bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200 transition-colors cursor-pointer"
+          {metadata?.proposalType &&
+            metadata.proposalType !== ProposalType.Standard && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    className="px-2 py-1 text-xs font-semibold rounded-full border bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200 transition-colors cursor-pointer uppercase"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {metadata.proposalType.replace(/([A-Z])/g, " $1").trim()}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-80"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  TACTICAL
-                </button>
-              </PopoverTrigger>
-              <PopoverContent
-                className="w-80"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-primary">
-                    Tactical Proposal
-                  </h4>
-                  <p className="text-sm text-secondary">
-                    This proposal includes custom configuration metadata.
-                  </p>
-                  <div className="flex flex-col gap-1 border-t pt-2 mt-2">
-                    {metadata.quorumThreshold && (
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-secondary">
-                          Quorum Threshold:
-                        </span>
-                        <span className="font-medium text-primary">
-                          {metadata.quorumThreshold.toLocaleString()} votes
-                        </span>
-                      </div>
-                    )}
-                    {metadata.approvalThreshold && (
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-secondary">
-                          Approval Threshold:
-                        </span>
-                        <span className="font-medium text-primary">
-                          {metadata.approvalThreshold.toLocaleString()} votes
-                        </span>
-                      </div>
-                    )}
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-primary">
+                      {metadata.proposalType.replace(/([A-Z])/g, " $1").trim()}{" "}
+                      Proposal
+                    </h4>
+                    <p className="text-sm text-secondary">
+                      This proposal includes custom configuration metadata.
+                    </p>
+                    <div className="flex flex-col gap-1 border-t pt-2 mt-2">
+                      {metadata.quorumThreshold && (
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-secondary">
+                            Quorum Threshold:
+                          </span>
+                          <span className="font-medium text-primary">
+                            {metadata.quorumThreshold.toLocaleString()} votes
+                          </span>
+                        </div>
+                      )}
+                      {metadata.approvalThreshold && (
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-secondary">
+                            Approval Threshold:
+                          </span>
+                          <span className="font-medium text-primary">
+                            {metadata.approvalThreshold.toLocaleString()} votes
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          )}
+                </PopoverContent>
+              </Popover>
+            )}
           <span
             className={cn(
               "px-2 py-1 text-xs font-medium rounded-full border",
