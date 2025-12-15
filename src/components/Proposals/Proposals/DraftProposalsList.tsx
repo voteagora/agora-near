@@ -80,31 +80,51 @@ function DraftProposalCard({ draft }: { draft: DraftProposal }) {
                       {metadata.proposalType.replace(/([A-Z])/g, " $1").trim()}{" "}
                       Proposal
                     </h4>
-                    <p className="text-sm text-secondary">
-                      This proposal includes custom configuration metadata.
-                    </p>
-                    <div className="flex flex-col gap-1 border-t pt-2 mt-2">
-                      {metadata.quorumThreshold && (
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-secondary">
-                            Quorum Threshold:
-                          </span>
-                          <span className="font-medium text-primary">
-                            {metadata.quorumThreshold.toLocaleString()} votes
-                          </span>
+
+                    {metadata.proposalType === ProposalType.SimpleMajority && (
+                      <p className="text-sm text-secondary">
+                        Requires &gt; 50% of participating votes (S&gt;N) to
+                        pass.
+                      </p>
+                    )}
+
+                    {metadata.proposalType === ProposalType.SuperMajority && (
+                      <p className="text-sm text-secondary">
+                        Requires &ge; 66% of participating votes to pass.
+                      </p>
+                    )}
+
+                    {metadata.proposalType === ProposalType.Tactical && (
+                      <>
+                        <p className="text-sm text-secondary">
+                          This proposal includes custom configuration metadata.
+                        </p>
+                        <div className="flex flex-col gap-1 border-t pt-2 mt-2">
+                          {metadata.quorumThreshold && (
+                            <div className="flex justify-between items-center text-sm">
+                              <span className="text-secondary">
+                                Quorum Threshold:
+                              </span>
+                              <span className="font-medium text-primary">
+                                {metadata.quorumThreshold.toLocaleString()}{" "}
+                                votes
+                              </span>
+                            </div>
+                          )}
+                          {metadata.approvalThreshold && (
+                            <div className="flex justify-between items-center text-sm">
+                              <span className="text-secondary">
+                                Approval Threshold:
+                              </span>
+                              <span className="font-medium text-primary">
+                                {metadata.approvalThreshold.toLocaleString()}{" "}
+                                votes
+                              </span>
+                            </div>
+                          )}
                         </div>
-                      )}
-                      {metadata.approvalThreshold && (
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-secondary">
-                            Approval Threshold:
-                          </span>
-                          <span className="font-medium text-primary">
-                            {metadata.approvalThreshold.toLocaleString()} votes
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                      </>
+                    )}
                   </div>
                 </PopoverContent>
               </Popover>
