@@ -218,7 +218,7 @@ function DraftDetailsForm() {
                 render={({ field }) => (
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                     disabled={displayMode === "preview"}
                   >
                     <SelectTrigger className="w-full bg-white">
@@ -426,10 +426,10 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
             </ul>
           </div>
           <div className="bg-wash rounded-xl border border-line p-6 mt-6">
-            <h2 className="text-xl font-bold mb-4 text-primary">
+            <h2 className="text-2xl font-extrabold mb-4 text-primary">
               How to pick your type
             </h2>
-            <div className="space-y-4 text-sm text-secondary">
+            <div className="space-y-4 text-sm text-muted-foreground">
               <div>
                 <h3 className="font-semibold text-primary">Simple Majority</h3>
                 <p>
