@@ -1,8 +1,7 @@
 ## Getting Started
 
 1. Git clone this repo
-
-2. Hit up the Discord and make sure that you get a local copy of the `.env.local` file. This is required to run the application locally. Then run the development server:
+2. Hit up the [Discord](https://discord.com/invite/nearprotocol) and make sure that you get a local copy of the `.env.local` file. This is required to run the application locally. Then run the development server:
 3. Run `yarn`
 4. `yarn start` / `yarn start:dev`
 
