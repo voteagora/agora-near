@@ -31,7 +31,7 @@ const getContractConfig = (): ContractConfig => {
       return {
         VENEAR_CONTRACT_ID: "venear.dao",
         VOTING_CONTRACT_ID: "vote.dao",
-        CLAIM_CONTRACT_ID: "claim.dao",
+        CLAIM_CONTRACT_ID: "rewards-claims2.sputnik-dao.near",
       };
     case "august-prod":
       return {
