@@ -32,12 +32,14 @@ export function getProposalStatus({
   forVotingPower,
   againstVotingPower,
   abstainVotingPower,
+  approvalThreshold,
 }: {
   status: string;
   quorumAmount: string;
   forVotingPower: string;
   againstVotingPower: string;
   abstainVotingPower: string;
+  approvalThreshold?: string;
 }) {
   switch (status) {
     case ProposalStatus.Finished: {
@@ -47,11 +49,18 @@ export function getProposalStatus({
         againstVotingPower,
         abstainVotingPower,
       });
-      const forGreaterThanAgainst = isForGreaterThanAgainst({
-        forVotingPower,
-        againstVotingPower,
-      });
-      return quorumFulfilled && forGreaterThanAgainst
+
+      let passedApproval = false;
+      if (approvalThreshold && Big(approvalThreshold).gt(0)) {
+        passedApproval = Big(forVotingPower).gte(approvalThreshold);
+      } else {
+        passedApproval = isForGreaterThanAgainst({
+          forVotingPower,
+          againstVotingPower,
+        });
+      }
+
+      return quorumFulfilled && passedApproval
         ? ProposalDisplayStatus.Succeeded
         : ProposalDisplayStatus.Defeated;
     }
