@@ -13,13 +13,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { utils } from "near-api-js";
 
 export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
   const router = useRouter();
 
   const { config, votingDuration } = useProposalConfig();
   const { signedAccountId } = useNear();
-  const { metadata, description: cleanDescription } = decodeMetadata(
+  const { description: cleanDescription } = decodeMetadata(
     proposal.description || ""
   );
 
@@ -45,15 +46,15 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
         <section className="px-4 flex-1 w-full">
           <div className="flex items-center gap-3 mb-1">
             <h1 className="text-2xl font-bold">{proposal.title}</h1>
-            {metadata?.proposalType &&
-              metadata.proposalType !== ProposalType.Standard && (
+            {proposal.proposalType &&
+              proposal.proposalType !== ProposalType.Standard && (
                 <Popover>
                   <PopoverTrigger asChild>
                     <button
                       className="px-2 py-1 text-xs font-semibold rounded-full border bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200 transition-colors cursor-pointer uppercase"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      {metadata.proposalType.replace(/([A-Z])/g, " $1").trim()}
+                      {proposal.proposalType.replace(/([A-Z])/g, " $1").trim()}
                     </button>
                   </PopoverTrigger>
                   <PopoverContent
@@ -62,13 +63,13 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
                   >
                     <div className="space-y-2">
                       <h4 className="font-semibold text-primary">
-                        {metadata.proposalType
+                        {proposal.proposalType
                           .replace(/([A-Z])/g, " $1")
                           .trim()}{" "}
                         Proposal
                       </h4>
 
-                      {metadata.proposalType ===
+                      {proposal.proposalType ===
                         ProposalType.SimpleMajority && (
                         <p className="text-sm text-secondary">
                           Requires &gt; 50% of participating votes (S&gt;N) to
@@ -76,37 +77,45 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
                         </p>
                       )}
 
-                      {metadata.proposalType === ProposalType.SuperMajority && (
+                      {proposal.proposalType === ProposalType.SuperMajority && (
                         <p className="text-sm text-secondary">
                           Requires &ge; 2/3 of participating votes to pass.
                         </p>
                       )}
 
-                      {metadata.proposalType === ProposalType.Tactical && (
+                      {proposal.proposalType === ProposalType.Tactical && (
                         <>
                           <p className="text-sm text-secondary">
                             This proposal includes custom configuration
                             metadata.
                           </p>
                           <div className="flex flex-col gap-1 border-t pt-2 mt-2">
-                            {metadata.quorumThreshold && (
+                            {proposal.quorumAmountYoctoNear && (
                               <div className="flex justify-between items-center text-sm">
                                 <span className="text-secondary">
                                   Quorum Threshold:
                                 </span>
                                 <span className="font-medium text-primary">
-                                  {metadata.quorumThreshold.toLocaleString()}{" "}
+                                  {parseInt(
+                                    utils.format.formatNearAmount(
+                                      proposal.quorumAmountYoctoNear
+                                    )
+                                  ).toLocaleString()}{" "}
                                   votes
                                 </span>
                               </div>
                             )}
-                            {metadata.approvalThreshold && (
+                            {proposal.approvalThreshold && (
                               <div className="flex justify-between items-center text-sm">
                                 <span className="text-secondary">
                                   Approval Threshold:
                                 </span>
                                 <span className="font-medium text-primary">
-                                  {metadata.approvalThreshold.toLocaleString()}{" "}
+                                  {parseInt(
+                                    utils.format.formatNearAmount(
+                                      proposal.approvalThreshold
+                                    )
+                                  ).toLocaleString()}{" "}
                                   votes
                                 </span>
                               </div>

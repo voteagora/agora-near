@@ -18,8 +18,6 @@ import { cn } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
 import ProposalTimeStatus from "../Proposals/ProposalTimeStatus";
 import { QuorumExplanation } from "./QuorumExplanation";
-import { decodeMetadata } from "@/lib/proposalMetadata";
-import { parseNearAmount } from "near-api-js/lib/utils/format";
 
 export default function ProposalStatusDetail({
   proposal,
@@ -28,20 +26,8 @@ export default function ProposalStatusDetail({
   proposal: ProposalInfo;
   className?: string;
 }) {
-  const { metadata } = decodeMetadata(proposal.description || "");
-  let quorum = proposal.quorumAmountYoctoNear ?? "0";
-  let approvalThreshold: string | undefined = undefined;
-
-  if (metadata) {
-    if (metadata.quorumThreshold) {
-      quorum = parseNearAmount(metadata.quorumThreshold.toString()) || quorum;
-    }
-    if (metadata.approvalThreshold) {
-      approvalThreshold =
-        parseNearAmount(metadata.approvalThreshold.toString()) ||
-        approvalThreshold;
-    }
-  }
+  const quorum = proposal.quorumAmountYoctoNear ?? "0";
+  const approvalThreshold = proposal.approvalThreshold;
 
   const status = getProposalStatus({
     status: proposal.status,
@@ -50,7 +36,7 @@ export default function ProposalStatusDetail({
     againstVotingPower: proposal.votes[1].total_venear,
     abstainVotingPower: proposal.votes[2]?.total_venear ?? "0",
     approvalThreshold,
-    proposalType: metadata?.proposalType,
+    proposalType: proposal.proposalType,
   });
 
   const isDefeated = status === ProposalDisplayStatus.Defeated;
