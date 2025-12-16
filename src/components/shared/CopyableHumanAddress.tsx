@@ -41,6 +41,7 @@ function CopyableHumanAddress({
     <div
       className={cn(
         "flex flex-row gap-1 items-center cursor-pointer group text-primary",
+        shouldTruncate && "max-w-[280px]",
         className
       )}
       onClick={(e) => {
@@ -51,12 +52,10 @@ function CopyableHumanAddress({
       }}
       title={address}
     >
-      <span
-        className={cn(shouldTruncate && "truncate max-w-[280px]")}
-      >
+      <span className={cn(shouldTruncate && "truncate min-w-0")}>
         {displayAddress()}
       </span>
-      <div className="flex flex-shrink">
+      <div className="flex flex-shrink-0">
         {isInCopiedState ? (
           <CheckCircleIcon className="text-green-600 w-3 h-3" />
         ) : (
