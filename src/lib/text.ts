@@ -7,3 +7,12 @@ export const cleanString = (text: string) => {
     .replace(/#{1,6}\s/g, "") // Removes Markdown headings
     .replace(/\n/g, " "); // Replaces newlines with space
 };
+
+export const truncateMiddle = (
+  str: string,
+  startLen: number = 6,
+  endLen: number = 6
+) => {
+  if (str.length <= startLen + endLen) return str;
+  return `${str.slice(0, startLen)}...${str.slice(-endLen)}`;
+};
