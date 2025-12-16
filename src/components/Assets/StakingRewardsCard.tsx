@@ -44,13 +44,13 @@ export const StakingRewardsCard = memo(
                 <span className="text-xs sm:text-sm lg:text-sm text-white">
                   APY*
                 </span>
-              <Link
-              href="/info"
-              className="flex items-center font-medium hover:opacity-80 transition-opacity gap-2 mt-2"
-            >
-              Learn More
-              <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
-            </Link>
+                <Link
+                  href="/info"
+                  className="flex items-center font-medium hover:opacity-80 transition-opacity gap-2 mt-2"
+                >
+                  Learn More
+                  <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
+                </Link>
               </div>
             </div>
             <div className="flex flex-row w-full justify-center">
