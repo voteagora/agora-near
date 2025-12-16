@@ -1,7 +1,7 @@
 import { useLiquidWalletTokens } from "@/hooks/useAvailableTokens";
 import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
-import { filterDust } from "@/lib/tokenUtils";
+import { filterDust, removeDeposit } from "@/lib/tokenUtils";
 import { memo, useMemo } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { LockableAssetRow } from "./LockableAssetRow";
@@ -34,7 +34,7 @@ export const WalletHoldings = memo(
       () =>
         walletTokens.map((token) => ({
           ...token,
-          balance: filterDust({ amount: token.balance }),
+          balance: removeDeposit({ amount: filterDust({ amount: token.balance })}),
         })),
       [walletTokens]
     );

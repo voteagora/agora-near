@@ -9,3 +9,14 @@ export const filterDust = ({
   dustThreshold?: number;
 }) =>
   Big(amount).div(NEAR_NOMINATION.toString()).gte(dustThreshold) ? amount : "0";
+
+export const removeDeposit = ({
+  amount,
+  depositAmount = 0.200,
+}: {
+  amount: string;
+  depositAmount?: number;
+}) => {
+  const lockableBalance = Big(amount).minus(Big(depositAmount).times(NEAR_NOMINATION.toString()));
+  return lockableBalance.gte(0) ? lockableBalance.toString() : "0";
+}
