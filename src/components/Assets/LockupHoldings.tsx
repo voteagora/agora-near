@@ -16,10 +16,15 @@ import { VeNearStakedAssetRow } from "./VeNearStakedAssetRow";
 interface LockupHoldingsProps {
   openLockDialog: (preSelectedTokenId?: string | null) => void;
   openStakingDialog: () => void;
+  openUnstakeDialog: () => void;
 }
 
 export const LockupHoldings = memo(
-  ({ openLockDialog, openStakingDialog }: LockupHoldingsProps) => {
+  ({
+    openLockDialog,
+    openStakingDialog,
+    openUnstakeDialog,
+  }: LockupHoldingsProps) => {
     const { signedAccountId } = useNear();
 
     const { lockupAccountId, isLoading: isLoadingLockupAccountId } =
@@ -151,6 +156,7 @@ export const LockupHoldings = memo(
           <VeNearStakedAssetRow
             stakingPoolId={stakingPoolId}
             stakedBalance={stakedBalance ?? "0"}
+            onUnstakeClick={openUnstakeDialog}
           />
         )}
       </>
