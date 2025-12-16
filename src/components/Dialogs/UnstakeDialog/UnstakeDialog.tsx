@@ -5,14 +5,12 @@ import { useCurrentStakingPoolId } from "@/hooks/useCurrentStakingPoolId";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useStakedBalance } from "@/hooks/useStakedBalance";
 import { useStakeNear } from "@/hooks/useStakeNear";
-import { NEAR_TOKEN_METADATA, NEAR_TOKEN } from "@/lib/constants";
-import { formatNumber } from "@/lib/utils";
+import { NEAR_TOKEN_METADATA } from "@/lib/constants";
 import Big from "big.js";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { UnstakeDialogHeader } from "./UnstakeDialogHeader";
 import { AssetIcon } from "../../common/AssetIcon";
-import Image from "next/image";
 
 type UnstakeDialogProps = {
   closeDialog: () => void;
@@ -35,8 +33,6 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
     unstakeNear,
     isUnstakingNear,
     unstakingNearError,
-    unstakeAll,
-    isUnstakingAll,
   } = useStakeNear({
     lockupAccountId: lockupAccountId ?? "",
   });
@@ -67,18 +63,6 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
     }
   };
 
-  const handleUnstakeAll = async () => {
-    if (!lockupAccountId) return;
-    try {
-      await unstakeAll();
-      closeDialog();
-      toast.success("Unstake all transaction submitted");
-    } catch (e) {
-      console.error(e);
-      toast.error("Failed to unstake all");
-    }
-  };
-
   const handleMaxClick = () => {
     if (stakedBalance) {
       // Format to NEAR for display/input
@@ -86,7 +70,7 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
     }
   };
 
-  const isLoading = isUnstakingNear || isUnstakingAll;
+  const isLoading = isUnstakingNear;
 
   return (
     <div className="flex flex-col gap-4 w-full">
