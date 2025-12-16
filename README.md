@@ -209,6 +209,7 @@ The NEAR House of Stake uses a minimal, monochromatic palette with accent colors
 
 | Color | Hex | RGB | Usage |
 |-------|-----|-----|-------|
+| **NEAR Mint** | `#00EC97` | `0 236 151` | Accent color, highlights, NEAR logo |
 | **Brand Primary** | `#000000` | `0 0 0` | Primary text, brand elements, logos |
 | **Brand Secondary** | `#FFFFFF` | `255 255 255` | Backgrounds, inverted elements |
 | **Secondary** | `#404040` | `64 64 64` | Secondary text |
