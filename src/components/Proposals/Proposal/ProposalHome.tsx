@@ -46,7 +46,7 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
         <div className="flex-1 min-w-0">
           <ProposalDescription proposal={proposalWithQuorum} />
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 md:flex-none md:w-[24rem] min-w-0">
           <ProposalVoteResult proposal={proposalWithQuorum} config={config} />
         </div>
       </div>
