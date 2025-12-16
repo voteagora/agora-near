@@ -7,9 +7,11 @@ import nearAssetIcon from "@/assets/near_icon.jpg";
 export const VeNearStakedAssetRow = ({
   stakedBalance,
   stakingPoolId,
+  onUnstakeClick,
 }: {
   stakedBalance: string;
   stakingPoolId: string;
+  onUnstakeClick: () => void;
 }) => {
   const token = useMemo(() => {
     if (stakingPoolId === LINEAR_POOL.contract) {
@@ -43,11 +45,22 @@ export const VeNearStakedAssetRow = ({
     ];
   }, [stakedBalance]);
 
+  const actionButtons = useMemo(
+    () => [
+      {
+        title: "Unstake",
+        onClick: onUnstakeClick,
+      },
+    ],
+    [onUnstakeClick]
+  );
+
   return (
     <ResponsiveAssetRow
       metadata={token}
       columns={columns}
       showOverflowMenu={false}
+      actionButtons={actionButtons}
     />
   );
 };
