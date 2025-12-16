@@ -37,7 +37,7 @@ const getContractConfig = (): ContractConfig => {
       return {
         VENEAR_CONTRACT_ID: "v.voteagora.near", // v.hos-07.testnet (old dev)
         VOTING_CONTRACT_ID: "vote.voteagora.near", // vote.hos-07.testnet (old dev)
-        CLAIM_CONTRACT_ID: "claim.voteagora.near", // claim.hos-07.testnet (old dev)
+        CLAIM_CONTRACT_ID: "rewards.hos-dao.near", // claim.hos-07.testnet (old dev)
       };
     case "staging":
       return {
