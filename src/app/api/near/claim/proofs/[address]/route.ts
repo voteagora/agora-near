@@ -1,6 +1,9 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
+const NEAR_CLAIM_API_URL = process.env.NEAR_CLAIM_API_URL;
+const NEAR_CLAIM_API_KEY = process.env.NEAR_CLAIM_API_KEY;
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: { address: string } }
@@ -14,9 +17,6 @@ export async function GET(
         { status: 400 }
       );
     }
-
-    const NEAR_CLAIM_API_URL = process.env.NEAR_CLAIM_API_URL;
-    const NEAR_CLAIM_API_KEY = process.env.NEAR_CLAIM_API_KEY;
 
     if (!NEAR_CLAIM_API_URL || !NEAR_CLAIM_API_KEY) {
       console.error(
@@ -52,7 +52,7 @@ export async function GET(
       }
 
       throw new Error(
-        `NEAR Claim API responded with status: ${response.status}`
+        `NEAR Claim API responded with status: ${response.status} and message: ${response.data.message}`
       );
     }
 

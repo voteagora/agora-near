@@ -3,7 +3,6 @@ import { useNear } from "@/contexts/NearContext";
 import { UpdatedButton } from "@/components/Button";
 import { CheckIcon, StarIcon } from "@heroicons/react/24/solid";
 import { useState, useMemo, useEffect, useRef } from "react";
-import { ClaimProof } from "@/types/nearClaim";
 import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import { useClaimNearRewards } from "@/hooks/useClaimNearRewards";
 import toast from "react-hot-toast";
@@ -90,13 +89,11 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
     [unclaimedProofs, claimStatusMap]
   );
 
-  const hasMultipleProofs = actuallyUnclaimedProofs.length > 1;
   const hasNoClaimableTokens =
     actuallyUnclaimedProofs.length === 0 || allClaimed;
 
-  const handleClaim = async (
-    proofs: ClaimProof[] = actuallyUnclaimedProofs
-  ) => {
+  const handleClaim = async () => {
+    const proofs = actuallyUnclaimedProofs;
     setCurrentStep("processing");
 
     try {
@@ -135,7 +132,7 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
 
   const openDialog = useOpenDialog();
 
-  const handleStakeRewards = () => {
+  const handleLockRewards = () => {
     closeDialog();
     // Open the Lock dialog with staking source
     openDialog({
@@ -203,12 +200,8 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
           </div>
 
           <div className="flex flex-col gap-3 w-full">
-            <UpdatedButton
-              type="primary"
-              onClick={handleStakeRewards}
-              fullWidth
-            >
-              Stake my rewards
+            <UpdatedButton type="primary" onClick={handleLockRewards} fullWidth>
+              Lock my rewards
             </UpdatedButton>
             <UpdatedButton type="secondary" onClick={closeDialog} fullWidth>
               Done
@@ -219,136 +212,47 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
     );
   }
 
-  // Show "no claimable tokens" state
-  if (hasNoClaimableTokens) {
-    return (
-      <div className="flex flex-col items-center w-full bg-neutral max-w-[28rem] my-8">
-        <div className="flex flex-col gap-6 justify-center min-h-[300px] w-full">
-          <div className="text-center">
-            <p className="text-secondary mb-2">Available to claim</p>
-            <div className="text-4xl font-bold text-primary mb-1">0.00</div>
-            <div className="flex items-center justify-center gap-1 text-sm text-secondary">
-              <AssetIcon
-                icon={NEAR_TOKEN_METADATA.icon}
-                name={NEAR_TOKEN_METADATA.name}
-              />
-              NEAR
-            </div>
-          </div>
-
-          <div className="text-center border border-line rounded-lg p-4 my-8">
-            <p className="text-secondary text-sm">
-              You have no tokens left to claim.
-            </p>
-          </div>
-
-          <UpdatedButton
-            type="primary"
-            onClick={() => {}}
-            disabled={true}
-            fullWidth
-          >
-            No rewards to claim
-          </UpdatedButton>
-        </div>
-      </div>
-    );
-  }
-
-  if (!hasMultipleProofs) {
-    // Calculate total from actually unclaimed proofs
-    const actualTotalAmount = actuallyUnclaimedProofs.reduce(
-      (sum, proof) => (BigInt(sum) + BigInt(proof.amount)).toString(),
-      "0"
-    );
-
-    return (
-      <div className="flex flex-col items-center w-full bg-neutral max-w-[28rem] my-8">
-        <div className="flex flex-col gap-6 justify-center min-h-[300px] w-full">
-          <div className="text-center">
-            <p className="text-secondary mb-2">Available to claim</p>
-            <div className="text-4xl font-bold text-primary mb-1">
-              {convertYoctoToNear(actualTotalAmount, 2)}
-            </div>
-            <div className="flex items-center justify-center gap-1 text-sm text-secondary">
-              <AssetIcon
-                icon={NEAR_TOKEN_METADATA.icon}
-                name={NEAR_TOKEN_METADATA.name}
-              />
-              NEAR
-            </div>
-          </div>
-
-          <div className="text-center border border-line rounded-lg p-4 my-8">
-            <p className="text-secondary text-sm">
-              Rewards are calculated based on your veNEAR holdings and the
-              duration of your lockup. The longer you lock and the more you
-              stake, the higher your rewards.
-            </p>
-          </div>
-
-          <UpdatedButton
-            type="primary"
-            onClick={() => handleClaim()}
-            isLoading={isClaiming || isCheckingStatus}
-            fullWidth
-          >
-            Claim rewards
-          </UpdatedButton>
-        </div>
-      </div>
-    );
-  }
-
-  // Multiple proofs view - calculate total from actually unclaimed
+  // Calculate total from actually unclaimed proofs
   const actualTotalAmount = actuallyUnclaimedProofs.reduce(
     (sum, proof) => (BigInt(sum) + BigInt(proof.amount)).toString(),
     "0"
   );
 
   return (
-    <div className="flex flex-col w-full bg-neutral max-w-[32rem] my-8">
-      <div className="flex flex-col gap-6 justify-center min-h-[400px] w-full">
+    <div className="flex flex-col items-center w-full bg-neutral max-w-[28rem] my-8">
+      <div className="flex flex-col gap-6 justify-center min-h-[300px] w-full">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-primary mb-2">
-            Claim your rewards
-          </h2>
-          <p className="text-secondary text-sm">
-            You have {actuallyUnclaimedProofs.length} unclaimed rewards totaling{" "}
-            {convertYoctoToNear(actualTotalAmount, 2)} NEAR
-          </p>
+          <p className="text-secondary mb-2">Available to claim</p>
+          <div className="text-4xl font-bold text-primary mb-1">
+            {hasNoClaimableTokens
+              ? "0.00"
+              : convertYoctoToNear(actualTotalAmount, 2)}
+          </div>
+          <div className="flex items-center justify-center gap-1 text-sm text-secondary">
+            <AssetIcon
+              icon={NEAR_TOKEN_METADATA.icon}
+              name={NEAR_TOKEN_METADATA.name}
+            />
+            NEAR
+          </div>
         </div>
 
-        <div className="flex flex-col gap-3 max-h-64 overflow-y-auto">
-          {actuallyUnclaimedProofs.map((proof) => (
-            <div
-              key={`${proof.projectId}-${proof.treeIndex}`}
-              className="flex items-center justify-between p-3 border border-line rounded-lg"
-            >
-              <div>
-                <p className="text-sm text-secondary">
-                  {convertYoctoToNear(proof.amount, 2)} NEAR
-                </p>
-              </div>
-              <UpdatedButton
-                type="secondary"
-                onClick={() => handleClaim([proof])}
-                isLoading={isClaiming || isCheckingStatus}
-                className="px-3 py-1 text-sm"
-              >
-                Claim
-              </UpdatedButton>
-            </div>
-          ))}
+        <div className="text-center border border-line rounded-lg p-4 my-8">
+          <p className="text-secondary text-sm">
+            {hasNoClaimableTokens
+              ? "You have no tokens left to claim."
+              : "Rewards are calculated based on your veNEAR holdings and the duration of your lockup. The longer you lock and the more you stake, the higher your rewards."}
+          </p>
         </div>
 
         <UpdatedButton
           type="primary"
-          onClick={() => handleClaim()}
+          onClick={handleClaim}
           isLoading={isClaiming || isCheckingStatus}
+          disabled={hasNoClaimableTokens}
           fullWidth
         >
-          Claim all rewards
+          {hasNoClaimableTokens ? "No rewards to claim" : "Claim rewards"}
         </UpdatedButton>
       </div>
     </div>
