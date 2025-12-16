@@ -1,6 +1,8 @@
 import Big from "big.js";
 import { NEAR_NOMINATION } from "near-api-js/lib/utils/format";
 
+import { LOCKUP_MIN_STORAGE_DEPOSIT } from "./constants";
+
 export const filterDust = ({
   amount,
   dustThreshold = 0.001,
@@ -12,11 +14,13 @@ export const filterDust = ({
 
 export const removeDeposit = ({
   amount,
-  depositAmount = 0.200,
+  depositAmount = LOCKUP_MIN_STORAGE_DEPOSIT,
 }: {
   amount: string;
   depositAmount?: number;
 }) => {
-  const lockableBalance = Big(amount).minus(Big(depositAmount).times(NEAR_NOMINATION.toString()));
+  const lockableBalance = Big(amount).minus(
+    Big(depositAmount).times(NEAR_NOMINATION.toString())
+  );
   return lockableBalance.gte(0) ? lockableBalance.toString() : "0";
-}
+};
