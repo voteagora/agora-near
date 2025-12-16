@@ -199,4 +199,60 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
+## Brand and Style Guide
+
+This section documents the key colors and design tokens used throughout the application.
+
+### Key Brand Colors
+
+The NEAR House of Stake uses a minimal, monochromatic palette with accent colors for semantic states:
+
+| Color | Hex | RGB | Usage |
+|-------|-----|-----|-------|
+| **Brand Primary** | `#000000` | `0 0 0` | Primary text, brand elements, logos |
+| **Brand Secondary** | `#FFFFFF` | `255 255 255` | Backgrounds, inverted elements |
+| **Secondary** | `#404040` | `64 64 64` | Secondary text |
+| **Tertiary** | `#737373` | `115 115 115` | Muted text, placeholders |
+| **Wash** | `#FAFAFA` | `250 250 250` | Card backgrounds, subtle fills |
+| **Line** | `#E5E5E5` | `229 229 229` | Borders, dividers |
+
+### Semantic Colors
+
+| Color | Hex | Usage |
+|-------|-----|-------|
+| **Positive** | `#61D161` | Success states, positive indicators |
+| **Negative** | `#E23636` | Error states, negative indicators |
+| **Vote For** | `#06AB34` | "For" votes on proposals |
+| **Vote Against** | `#D62600` | "Against" votes on proposals |
+| **Vote Abstain** | `#AFAFAF` | "Abstain" votes on proposals |
+
+### Agora Stone Scale
+
+A neutral gray scale used across UI components:
+
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `agora-stone-900` | `#000000` | Darkest (black) |
+| `agora-stone-700` | `#4F4F4F` | Dark gray |
+| `agora-stone-500` | `#AFAFAF` | Medium gray |
+| `agora-stone-100` | `#E0E0E0` | Light gray |
+| `agora-stone-50` | `#FAFAFA` | Lightest (near white) |
+
+### Typography
+
+- **Primary Font**: Inter (system fallback stack)
+- **Monospace Font**: Chivo Mono (used for token amounts)
+- **Code Font**: IBM Plex Mono
+
+### Where Colors Are Defined
+
+Colors are synchronized across three files (see "Styles and CSS" section above):
+1. `tailwind.config.js` - Tailwind theme extension
+2. `src/styles/theme.js` - JavaScript theme object for emotion/css
+3. `src/styles/variables.scss` - SCSS variables
+
+Tenant-specific customizations (like NEAR colors) are defined in `src/lib/tenant/configs/ui/near.ts`.
+
+---
+
 NEAR + Agora
