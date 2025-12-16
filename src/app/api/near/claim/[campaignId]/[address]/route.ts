@@ -1,6 +1,9 @@
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
+const NEAR_CLAIM_API_URL = process.env.NEAR_CLAIM_API_URL;
+const NEAR_CLAIM_API_KEY = process.env.NEAR_CLAIM_API_KEY;
+
 export async function POST(
   request: NextRequest,
   { params }: { params: { campaignId: number; address: string } }
@@ -23,9 +26,6 @@ export async function POST(
         { status: 400 }
       );
     }
-
-    const NEAR_CLAIM_API_URL = process.env.NEAR_CLAIM_API_URL;
-    const NEAR_CLAIM_API_KEY = process.env.NEAR_CLAIM_API_KEY;
 
     if (!NEAR_CLAIM_API_URL || !NEAR_CLAIM_API_KEY) {
       console.error(
@@ -50,7 +50,7 @@ export async function POST(
 
     if (response.status !== 200) {
       throw new Error(
-        `NEAR Claim API responded with status: ${response.status}`
+        `NEAR Claim API responded with status: ${response.status} and message: ${response.data.message}`
       );
     }
 
