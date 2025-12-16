@@ -14,7 +14,6 @@ import { UnstakeDialogHeader } from "./UnstakeDialogHeader";
 import { AssetIcon } from "../../common/AssetIcon";
 import Image from "next/image";
 
-
 type UnstakeDialogProps = {
   closeDialog: () => void;
 };
@@ -92,7 +91,7 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
   return (
     <div className="flex flex-col gap-4 w-full">
       <UnstakeDialogHeader />
-      
+
       <div className="flex flex-col gap-1 mb-6">
         <div className="flex flex-col gap-1">
           <div className="flex items-center text-sm text-secondary">
@@ -104,32 +103,32 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
             </span>
           </div>
         </div>
-      
+
         <div className="relative flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-between rounded-lg border border-gray-200 p-4 gap-3 sm:gap-0">
           <div className="flex items-center gap-2 flex-shrink-0">
-             <AssetIcon
-                icon={NEAR_TOKEN_METADATA.icon}
-                name={NEAR_TOKEN_METADATA.name}
-              />
+            <AssetIcon
+              icon={NEAR_TOKEN_METADATA.icon}
+              name={NEAR_TOKEN_METADATA.name}
+            />
             <span className="font-medium">NEAR</span>
           </div>
 
           <div className="flex items-center flex-1 sm:ml-2 min-w-0">
-             <Input
-                type="number"
-                placeholder="0"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                disabled={isLoading}
-                className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0 pr-2"
-              />
-              <button
-                onClick={handleMaxClick}
-                disabled={isLoading || !stakedBalance}
-                className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200 flex-shrink-0"
-              >
-                Max
-              </button>
+            <Input
+              type="number"
+              placeholder="0"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              disabled={isLoading}
+              className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0 pr-2"
+            />
+            <button
+              onClick={handleMaxClick}
+              disabled={isLoading || !stakedBalance}
+              className="px-3 py-1 text-sm text-[#00E391] hover:bg-[#00E391] hover:text-white rounded transition-colors duration-200 flex-shrink-0"
+            >
+              Max
+            </button>
           </div>
         </div>
       </div>
@@ -141,7 +140,7 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
       <div className="flex-1 flex flex-col justify-end gap-2 mt-4">
         <UpdatedButton
           onClick={handleUnstake}
-          type={(!amount || Big(amount ?? 0).eq(0)) ? "disabled" : "primary"}
+          type={!amount || Big(amount ?? 0).eq(0) ? "disabled" : "primary"}
           disabled={isLoading || !amount || Big(amount ?? 0).eq(0)}
           loading={isLoading}
           className="w-full"
@@ -150,7 +149,6 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
           Unstake
         </UpdatedButton>
       </div>
-
     </div>
   );
 };

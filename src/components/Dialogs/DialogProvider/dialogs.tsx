@@ -191,7 +191,5 @@ export const dialogs: DialogDefinitions<DialogType> = {
   CONFIRM: (params, closeDialog) => (
     <ConfirmDialog {...params} closeDialog={closeDialog} />
   ),
-  NEAR_UNSTAKE: (_, closeDialog) => (
-    <UnstakeDialog closeDialog={closeDialog} />
-  ),
+  NEAR_UNSTAKE: (_, closeDialog) => <UnstakeDialog closeDialog={closeDialog} />,
 };
