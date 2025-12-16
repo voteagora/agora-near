@@ -52,9 +52,7 @@ function CopyableHumanAddress({
       title={address}
     >
       <span
-        className={cn(
-          shouldTruncate && strategy === "end" && "truncate max-w-[280px]"
-        )}
+        className={cn(shouldTruncate && "truncate max-w-[280px]")}
       >
         {displayAddress()}
       </span>
