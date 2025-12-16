@@ -2,7 +2,7 @@ import { useNearClaimProofs } from "@/hooks/useNearClaimProofs";
 import { useNear } from "@/contexts/NearContext";
 import { UpdatedButton } from "@/components/Button";
 import { CheckIcon, StarIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { ClaimProof } from "@/types/nearClaim";
 import { useOpenDialog } from "@/components/Dialogs/DialogProvider/DialogProvider";
 import { useClaimNearRewards } from "@/hooks/useClaimNearRewards";
@@ -10,6 +10,8 @@ import toast from "react-hot-toast";
 import { convertYoctoToNear } from "@/lib/utils";
 import { NEAR_TOKEN_METADATA } from "@/lib/constants";
 import { AssetIcon } from "@/components/common/AssetIcon";
+import { useCheckClaimStatus } from "@/hooks/useCheckClaimStatus";
+import { useMarkProofAsClaimed } from "@/hooks/useMarkProofAsClaimed";
 
 interface NearClaimDialogProps {
   closeDialog: () => void;
@@ -17,8 +19,7 @@ interface NearClaimDialogProps {
 
 export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
   const { signedAccountId } = useNear();
-  const { unclaimedProofs, totalUnclaimedAmount, refetch } =
-    useNearClaimProofs(signedAccountId);
+  const { unclaimedProofs, refetch } = useNearClaimProofs(signedAccountId);
   const [currentStep, setCurrentStep] = useState<
     "initial" | "processing" | "success"
   >("initial");
@@ -31,9 +32,71 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
     },
   });
 
-  const hasMultipleProofs = unclaimedProofs.length > 1;
+  const { markProofAsClaimed } = useMarkProofAsClaimed();
 
-  const handleClaim = async (proofs: ClaimProof[] = unclaimedProofs) => {
+  const syncedCampaignIds = useRef(new Set<number>());
+
+  const campaignIds = useMemo(
+    () => [...new Set(unclaimedProofs.map((proof) => Number(proof.projectId)))],
+    [unclaimedProofs]
+  );
+
+  const {
+    claimStatusMap,
+    allClaimed,
+    isLoading: isCheckingStatus,
+  } = useCheckClaimStatus({
+    campaignIds,
+    accountId: signedAccountId,
+  });
+
+  // Sync API state when contract shows claimed but API doesn't
+  useEffect(() => {
+    if (!signedAccountId || isCheckingStatus || !claimStatusMap.size) return;
+
+    unclaimedProofs.forEach((proof) => {
+      const campaignId = Number(proof.projectId);
+      const isClaimedOnChain = claimStatusMap.get(campaignId);
+
+      if (isClaimedOnChain && !syncedCampaignIds.current.has(campaignId)) {
+        syncedCampaignIds.current.add(campaignId);
+
+        markProofAsClaimed({
+          campaignId,
+          address: signedAccountId,
+          txHash: "AcGDAPMyafLiCZUc8RiJXBG5THThWrQ5AZss95nBWm8B", // Use placeholder since we don't have the original tx hash
+        }).catch((error) => {
+          console.error(
+            `Failed to sync proof for campaign ${campaignId}:`,
+            error
+          );
+          syncedCampaignIds.current.delete(campaignId);
+        });
+      }
+    });
+  }, [
+    unclaimedProofs,
+    claimStatusMap,
+    signedAccountId,
+    isCheckingStatus,
+    markProofAsClaimed,
+  ]);
+
+  const actuallyUnclaimedProofs = useMemo(
+    () =>
+      unclaimedProofs.filter(
+        (proof) => !claimStatusMap.get(Number(proof.projectId))
+      ),
+    [unclaimedProofs, claimStatusMap]
+  );
+
+  const hasMultipleProofs = actuallyUnclaimedProofs.length > 1;
+  const hasNoClaimableTokens =
+    actuallyUnclaimedProofs.length === 0 || allClaimed;
+
+  const handleClaim = async (
+    proofs: ClaimProof[] = actuallyUnclaimedProofs
+  ) => {
     setCurrentStep("processing");
 
     try {
@@ -128,7 +191,7 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
           <div className="text-center">
             <p className="text-secondary mb-2">You just claimed a reward of</p>
             <div className="text-3xl font-bold text-primary mb-1">
-              {convertYoctoToNear(claimedAmount || totalUnclaimedAmount, 2)}
+              {convertYoctoToNear(claimedAmount, 2)}
             </div>
             <div className="flex items-center justify-center gap-1 text-sm text-secondary">
               <AssetIcon
@@ -156,14 +219,56 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
     );
   }
 
+  // Show "no claimable tokens" state
+  if (hasNoClaimableTokens) {
+    return (
+      <div className="flex flex-col items-center w-full bg-neutral max-w-[28rem] my-8">
+        <div className="flex flex-col gap-6 justify-center min-h-[300px] w-full">
+          <div className="text-center">
+            <p className="text-secondary mb-2">Available to claim</p>
+            <div className="text-4xl font-bold text-primary mb-1">0.00</div>
+            <div className="flex items-center justify-center gap-1 text-sm text-secondary">
+              <AssetIcon
+                icon={NEAR_TOKEN_METADATA.icon}
+                name={NEAR_TOKEN_METADATA.name}
+              />
+              NEAR
+            </div>
+          </div>
+
+          <div className="text-center border border-line rounded-lg p-4 my-8">
+            <p className="text-secondary text-sm">
+              You have no tokens left to claim.
+            </p>
+          </div>
+
+          <UpdatedButton
+            type="primary"
+            onClick={() => {}}
+            disabled={true}
+            fullWidth
+          >
+            No rewards to claim
+          </UpdatedButton>
+        </div>
+      </div>
+    );
+  }
+
   if (!hasMultipleProofs) {
+    // Calculate total from actually unclaimed proofs
+    const actualTotalAmount = actuallyUnclaimedProofs.reduce(
+      (sum, proof) => (BigInt(sum) + BigInt(proof.amount)).toString(),
+      "0"
+    );
+
     return (
       <div className="flex flex-col items-center w-full bg-neutral max-w-[28rem] my-8">
         <div className="flex flex-col gap-6 justify-center min-h-[300px] w-full">
           <div className="text-center">
             <p className="text-secondary mb-2">Available to claim</p>
             <div className="text-4xl font-bold text-primary mb-1">
-              {convertYoctoToNear(totalUnclaimedAmount, 2)}
+              {convertYoctoToNear(actualTotalAmount, 2)}
             </div>
             <div className="flex items-center justify-center gap-1 text-sm text-secondary">
               <AssetIcon
@@ -176,16 +281,16 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
 
           <div className="text-center border border-line rounded-lg p-4 my-8">
             <p className="text-secondary text-sm">
-              Explainer on how rewards work and why you got what you got. Ad
-              sint eiusmod officia occaecat veniam nulla laborum ut nostrud
-              incididunt officia labore.
+              Rewards are calculated based on your veNEAR holdings and the
+              duration of your lockup. The longer you lock and the more you
+              stake, the higher your rewards.
             </p>
           </div>
 
           <UpdatedButton
             type="primary"
             onClick={() => handleClaim()}
-            isLoading={isClaiming}
+            isLoading={isClaiming || isCheckingStatus}
             fullWidth
           >
             Claim rewards
@@ -195,6 +300,12 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
     );
   }
 
+  // Multiple proofs view - calculate total from actually unclaimed
+  const actualTotalAmount = actuallyUnclaimedProofs.reduce(
+    (sum, proof) => (BigInt(sum) + BigInt(proof.amount)).toString(),
+    "0"
+  );
+
   return (
     <div className="flex flex-col w-full bg-neutral max-w-[32rem] my-8">
       <div className="flex flex-col gap-6 justify-center min-h-[400px] w-full">
@@ -203,15 +314,15 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
             Claim your rewards
           </h2>
           <p className="text-secondary text-sm">
-            You have {unclaimedProofs.length} unclaimed rewards totaling{" "}
-            {convertYoctoToNear(totalUnclaimedAmount, 2)} NEAR
+            You have {actuallyUnclaimedProofs.length} unclaimed rewards totaling{" "}
+            {convertYoctoToNear(actualTotalAmount, 2)} NEAR
           </p>
         </div>
 
         <div className="flex flex-col gap-3 max-h-64 overflow-y-auto">
-          {unclaimedProofs.map((proof) => (
+          {actuallyUnclaimedProofs.map((proof) => (
             <div
-              key={`${proof.campaignId}-${proof.treeIndex}`}
+              key={`${proof.projectId}-${proof.treeIndex}`}
               className="flex items-center justify-between p-3 border border-line rounded-lg"
             >
               <div>
@@ -222,7 +333,7 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
               <UpdatedButton
                 type="secondary"
                 onClick={() => handleClaim([proof])}
-                isLoading={isClaiming}
+                isLoading={isClaiming || isCheckingStatus}
                 className="px-3 py-1 text-sm"
               >
                 Claim
@@ -234,7 +345,7 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
         <UpdatedButton
           type="primary"
           onClick={() => handleClaim()}
-          isLoading={isClaiming}
+          isLoading={isClaiming || isCheckingStatus}
           fullWidth
         >
           Claim all rewards

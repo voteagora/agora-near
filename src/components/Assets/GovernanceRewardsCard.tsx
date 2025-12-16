@@ -12,7 +12,7 @@ import GreenStar from "@/assets/green_star.svg";
 
 export const GovernanceRewardsCard = memo(() => {
   const { signedAccountId } = useNear();
-  const { hasUnclaimedRewards, totalUnclaimedAmount, isLoading } =
+  const { hasUnclaimedRewards, isLoading } =
     useNearClaimProofs(signedAccountId);
   const openDialog = useOpenDialog();
 
@@ -41,7 +41,9 @@ export const GovernanceRewardsCard = memo(() => {
         <div className="relative z-10 flex">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <div className="text-lg font-semibold">Claim your reward</div>
+              <div className="text-lg font-semibold">
+                Claim your veNEAR rewards
+              </div>
             </div>
             <div className="text-sm text-gray-300 mb-6">
               Your governance staking reward is ready to claim.
@@ -80,10 +82,10 @@ export const GovernanceRewardsCard = memo(() => {
       <div className="relative z-10 flex">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <div className="text-lg font-semibold">Governance Rewards</div>
+            <div className="text-lg font-semibold">veNEAR Rewards</div>
           </div>
           <div className="text-sm text-gray-300 mb-6">
-            NEAR is rewarding veToken holders with liquid NEAR rewards
+            Coming soon: Claim your veNEAR rewards!
           </div>
           <Link
             href="/info?item=rewards-distribution"
