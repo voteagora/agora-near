@@ -240,7 +240,7 @@ export function NearClaimDialog({ closeDialog }: NearClaimDialogProps) {
         <div className="text-center border border-line rounded-lg p-4 my-8">
           <p className="text-secondary text-sm">
             {hasNoClaimableTokens
-              ? "You have no tokens left to claim."
+              ? "You have no tokens left to claim, the next claim round ends within 2 weeks, please check back then."
               : "Rewards are calculated based on your veNEAR holdings and the duration of your lockup. The longer you lock and the more you stake, the higher your rewards."}
           </p>
         </div>
