@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 import { STAKED_BALANCE_QK } from "./useStakedBalance";
+import { UNSTAKED_BALANCE_QK } from "./useUnstakedBalance";
 import { useWriteHOSContract } from "./useWriteHOSContract";
 
 type Props = {
@@ -108,6 +109,10 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
         queryClient.invalidateQueries({
           queryKey: [STAKED_BALANCE_QK],
         });
+
+        queryClient.invalidateQueries({
+          queryKey: [UNSTAKED_BALANCE_QK],
+        });
       } catch (e) {
         console.error("[unstakeNear] error", e);
         setUnstakingNearError(e as Error);
@@ -184,6 +189,10 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
 
       queryClient.invalidateQueries({
         queryKey: [STAKED_BALANCE_QK],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: [UNSTAKED_BALANCE_QK],
       });
     } catch (e) {
       console.error("[unstakeAll] error", e);
