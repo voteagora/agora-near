@@ -18,6 +18,7 @@ type UnstakeDialogProps = {
 
 export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
   const [amount, setAmount] = useState("");
+  const [amountError, setAmountError] = useState<string | null>(null);
   const { lockupAccountId } = useLockupAccount();
   const { stakingPoolId } = useCurrentStakingPoolId({
     lockupAccountId: lockupAccountId ?? "",
@@ -33,18 +34,34 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
     lockupAccountId: lockupAccountId ?? "",
   });
 
-  const handleUnstake = async () => {
-    if (!amount || !lockupAccountId) return;
-    try {
-      if (Big(amount).lte(0)) {
-        toast.error("Amount must be greater than 0");
-        return;
-      }
-      if (Big(amount).gt(stakedBalance ?? "0")) {
-        toast.error("Amount exceeds staked balance");
-        return;
-      }
+  const validateAmount = (value: string) => {
+    if (!value) {
+      setAmountError(null);
+      return;
+    }
+    if (Big(value).lte(0)) {
+      setAmountError("Amount must be greater than 0");
+      return;
+    }
+    const valueYocto = Big(value).mul(Big(10).pow(24));
+    if (valueYocto.gt(Big(stakedBalance ?? "0"))) {
+      setAmountError("Not enough balance available to unstake");
+      return;
+    }
+    setAmountError(null);
+  };
 
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setAmount(value);
+    validateAmount(value);
+  };
+
+  const hasInsufficientBalance = !!amountError;
+
+  const handleUnstake = async () => {
+    if (!amount || !lockupAccountId || amountError) return;
+    try {
       // Convert to yoctoNEAR (assuming input is in NEAR)
       // Note: useStakeNear expects yoctoNEAR string
       const amountYocto = Big(amount).mul(Big(10).pow(24)).toFixed(0);
@@ -61,7 +78,9 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
   const handleMaxClick = () => {
     if (stakedBalance) {
       // Format to NEAR for display/input
-      setAmount(Big(stakedBalance).div(Big(10).pow(24)).toFixed());
+      const maxVal = Big(stakedBalance).div(Big(10).pow(24)).toFixed();
+      setAmount(maxVal);
+      setAmountError(null);
     }
   };
 
@@ -71,7 +90,7 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
     <div className="flex flex-col gap-4 w-full">
       <UnstakeDialogHeader />
 
-      <div className="flex flex-col gap-1 mb-6">
+      <div className="flex flex-col gap-6 mb-6">
         <div className="flex flex-col gap-1">
           <div className="flex items-center text-sm text-secondary">
             <span>Available to unstake</span>
@@ -80,6 +99,9 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
             <span className="text-3xl font-bold text-primary">
               <TokenAmount amount={stakedBalance ?? "0"} />
             </span>
+            <div className="h-[16px]">
+              <p className="text-sm text-red-500">{amountError}</p>
+            </div>
           </div>
         </div>
 
@@ -97,7 +119,7 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
               type="number"
               placeholder="0"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={handleAmountChange}
               disabled={isLoading}
               className="w-full bg-transparent border-none text-lg text-right h-auto focus-visible:ring-0 focus-visible:ring-offset-0 pr-2"
             />
@@ -119,8 +141,17 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
       <div className="flex-1 flex flex-col justify-end gap-2 mt-4">
         <UpdatedButton
           onClick={handleUnstake}
-          type={!amount || Big(amount ?? 0).eq(0) ? "disabled" : "primary"}
-          disabled={isLoading || !amount || Big(amount ?? 0).eq(0)}
+          type={
+            !amount || Big(amount ?? 0).eq(0) || hasInsufficientBalance
+              ? "disabled"
+              : "primary"
+          }
+          disabled={
+            isLoading ||
+            !amount ||
+            Big(amount ?? 0).eq(0) ||
+            hasInsufficientBalance
+          }
           loading={isLoading}
           className="w-full"
           variant="rounded"
