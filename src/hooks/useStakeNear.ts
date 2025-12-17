@@ -150,6 +150,10 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
         queryClient.invalidateQueries({
           queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
         });
+
+        queryClient.invalidateQueries({
+          queryKey: [UNSTAKED_BALANCE_QK],
+        });
       } catch (e) {
         console.error("[withdrawNear] error", e);
         setWithdrawingNearError(e as Error);
