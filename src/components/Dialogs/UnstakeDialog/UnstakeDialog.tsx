@@ -29,18 +29,13 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
     accountId: lockupAccountId,
   });
 
-  const {
-    unstakeNear,
-    isUnstakingNear,
-    unstakingNearError,
-  } = useStakeNear({
+  const { unstakeNear, isUnstakingNear, unstakingNearError } = useStakeNear({
     lockupAccountId: lockupAccountId ?? "",
   });
 
   const handleUnstake = async () => {
     if (!amount || !lockupAccountId) return;
     try {
-      // Basic validation
       if (Big(amount).lte(0)) {
         toast.error("Amount must be greater than 0");
         return;

@@ -103,6 +103,10 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
         queryClient.invalidateQueries({
           queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
         });
+
+        queryClient.invalidateQueries({
+          queryKey: [STAKED_BALANCE_QK],
+        });
       } catch (e) {
         console.error("[unstakeNear] error", e);
         setUnstakingNearError(e as Error);
@@ -171,12 +175,12 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
         contractId: lockupAccountId,
         key: READ_NEAR_CONTRACT_QK,
       });
-      console.log("[withdrawAll] invalidating READ_NEAR_CONTRACT_QK", {
-        contractId: lockupAccountId,
-        key: READ_NEAR_CONTRACT_QK,
-      });
       queryClient.invalidateQueries({
         queryKey: [READ_NEAR_CONTRACT_QK, lockupAccountId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: [STAKED_BALANCE_QK],
       });
     } catch (e) {
       console.error("[unstakeAll] error", e);
