@@ -49,7 +49,7 @@ export const LockTokensCard = memo(
               veNEAR growth per annum.
             </p>
             <Link
-              href="/info"
+              href="/info?item=voting-power"
               className="flex items-center text-black font-medium hover:opacity-80 transition-opacity gap-2"
             >
               Learn More

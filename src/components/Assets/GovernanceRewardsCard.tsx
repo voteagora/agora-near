@@ -16,7 +16,7 @@ export const GovernanceRewardsCard = memo(() => {
             NEAR rewards.
           </div>
           <Link
-            href="/info?item=rewards-distribution"
+            href="/info?item=ve-near-rewards"
             className="text-sm text-white hover:text-gray-200 flex items-center gap-1"
           >
             Learn more <ArrowRightIcon className="w-4 h-4" />
