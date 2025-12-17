@@ -40,6 +40,13 @@ export const HoldingsSection = memo(() => {
     });
   }, [openDialog]);
 
+  const openUnstakeDialog = useCallback(() => {
+    openDialog({
+      type: "NEAR_UNSTAKE",
+      params: {},
+    });
+  }, [openDialog]);
+
   return (
     <div className="flex-1 sm:px-6 pb-6">
       <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
@@ -71,6 +78,7 @@ export const HoldingsSection = memo(() => {
             <HoldingsContent
               openLockDialog={openLockDialog}
               openStakingDialog={openStakingDialog}
+              openUnstakeDialog={openUnstakeDialog}
             />
           ) : (
             <HosActivityTable address={signedAccountId} />

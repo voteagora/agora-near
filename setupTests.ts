@@ -1,6 +1,9 @@
 import "@testing-library/jest-dom/vitest";
 import { afterAll, beforeAll, vi } from "vitest";
 
+// Set environment variable for tests
+vi.stubEnv("NEXT_PUBLIC_AGORA_ENV", "prod");
+
 // Mock window.matchMedia for tests
 Object.defineProperty(window, "matchMedia", {
   writable: true,

@@ -40,6 +40,7 @@ type AssetRowProps = {
   actionButton?: ActionButton;
   actionButtons?: ActionButton[];
   className?: string;
+  icon?: React.ReactNode;
 };
 
 const MAX_COLUMNS = 4;
@@ -53,6 +54,7 @@ export const AssetRow = memo(
     actionButton,
     actionButtons,
     className,
+    icon,
   }: AssetRowProps) => {
     const numColPlaceholders = MAX_COLUMNS - columns.length - 1;
 
@@ -124,15 +126,19 @@ export const AssetRow = memo(
         <td className="py-4 pr-16 w-1 whitespace-nowrap min-w-0 overflow-hidden">
           <div className="flex items-center gap-3">
             <div className="relative w-10 h-10 flex-shrink-0">
-              <div className="w-10 h-10 rounded-full overflow-hidden">
-                <Image
-                  src={metadata?.icon ?? ""}
-                  alt={metadata?.name ?? ""}
-                  width={40}
-                  height={40}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              {icon ? (
+                icon
+              ) : (
+                <div className="w-10 h-10 rounded-full overflow-hidden">
+                  <Image
+                    src={metadata?.icon ?? ""}
+                    alt={metadata?.name ?? ""}
+                    width={40}
+                    height={40}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
               {metadata?.isCustomPool && (
                 <TooltipWithTap content="Non-liquid Staking Pool">
                   <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-black rounded-full border-2 border-white flex items-center justify-center cursor-pointer">

@@ -1,11 +1,12 @@
 import { useWriteHOSContract } from "@/hooks/useWriteHOSContract";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useStakeNear } from "../useStakeNear";
 import { READ_NEAR_CONTRACT_QK } from "../useReadHOSContract";
 import { STAKED_BALANCE_QK } from "../useStakedBalance";
+import { UNSTAKED_BALANCE_QK } from "../useUnstakedBalance";
 
 // Mock the hooks
 vi.mock("@/hooks/useWriteHOSContract", () => ({
@@ -159,11 +160,13 @@ describe("useStakeNear", () => {
         { wrapper }
       );
 
-      await act(async () => {
-        await result.current.stakeNear("1000000000000000000000000");
-      });
+      await expect(
+        result.current.stakeNear("1000000000000000000000000")
+      ).rejects.toThrow(mockError);
 
-      expect(result.current.stakingNearError).toBe(mockError);
+      await waitFor(() => {
+        expect(result.current.stakingNearError).toEqual(mockError);
+      });
       expect(result.current.isStakingNear).toBe(false);
     });
 
@@ -256,11 +259,13 @@ describe("useStakeNear", () => {
         { wrapper }
       );
 
-      await act(async () => {
-        await result.current.unstakeNear("1000000000000000000000000");
-      });
+      await expect(
+        result.current.unstakeNear("1000000000000000000000000")
+      ).rejects.toThrow(mockError);
 
-      expect(result.current.unstakingNearError).toBe(mockError);
+      await waitFor(() => {
+        expect(result.current.unstakingNearError).toEqual(mockError);
+      });
       expect(result.current.isUnstakingNear).toBe(false);
     });
 
@@ -277,9 +282,16 @@ describe("useStakeNear", () => {
         await result.current.unstakeNear("1000000000000000000000000");
       });
 
-      expect(invalidateQueriesSpy).toHaveBeenCalledTimes(1);
+      expect(invalidateQueriesSpy).toHaveBeenCalledTimes(3);
       expect(invalidateQueriesSpy).toHaveBeenCalledWith({
         queryKey: [READ_NEAR_CONTRACT_QK, mockLockupAccountId],
+      });
+      // Order doesn't strictly matter for toHaveBeenCalledWith, but generally good to be aware
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: [STAKED_BALANCE_QK],
+      });
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: [UNSTAKED_BALANCE_QK],
       });
     });
   });
@@ -350,11 +362,13 @@ describe("useStakeNear", () => {
         { wrapper }
       );
 
-      await act(async () => {
-        await result.current.withdrawNear("1000000000000000000000000");
-      });
+      await expect(
+        result.current.withdrawNear("1000000000000000000000000")
+      ).rejects.toThrow(mockError);
 
-      expect(result.current.withdrawingNearError).toBe(mockError);
+      await waitFor(() => {
+        expect(result.current.withdrawingNearError).toEqual(mockError);
+      });
       expect(result.current.isWithdrawingNear).toBe(false);
     });
 
@@ -371,9 +385,12 @@ describe("useStakeNear", () => {
         await result.current.withdrawNear("1000000000000000000000000");
       });
 
-      expect(invalidateQueriesSpy).toHaveBeenCalledTimes(1);
+      expect(invalidateQueriesSpy).toHaveBeenCalledTimes(2);
       expect(invalidateQueriesSpy).toHaveBeenCalledWith({
         queryKey: [READ_NEAR_CONTRACT_QK, mockLockupAccountId],
+      });
+      expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+        queryKey: [UNSTAKED_BALANCE_QK],
       });
     });
   });
