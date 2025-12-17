@@ -70,6 +70,7 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
       } catch (e) {
         console.error("[stakeNear] error", e);
         setStakingNearError(e as Error);
+        throw e;
       } finally {
         setIsStakingNear(false);
         console.log("[stakeNear] end");
@@ -110,6 +111,7 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
       } catch (e) {
         console.error("[unstakeNear] error", e);
         setUnstakingNearError(e as Error);
+        throw e;
       } finally {
         setIsUnstakingNear(false);
         console.log("[unstakeNear] end");
@@ -146,6 +148,7 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
       } catch (e) {
         console.error("[withdrawNear] error", e);
         setWithdrawingNearError(e as Error);
+        throw e;
       } finally {
         setIsWithdrawingNear(false);
         console.log("[withdrawNear] end");
@@ -185,6 +188,7 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
     } catch (e) {
       console.error("[unstakeAll] error", e);
       setUnstakingAllError(e as Error);
+      throw e;
     } finally {
       setIsUnstakingAll(false);
       console.log("[unstakeAll] end");
@@ -214,6 +218,7 @@ export const useStakeNear = ({ lockupAccountId }: Props) => {
     } catch (e) {
       console.error("[withdrawAll] error", e);
       setWithdrawingAllError(e as Error);
+      throw e;
     } finally {
       setIsWithdrawingAll(false);
       console.log("[withdrawAll] end");

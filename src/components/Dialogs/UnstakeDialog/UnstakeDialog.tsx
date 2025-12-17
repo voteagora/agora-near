@@ -69,9 +69,12 @@ export const UnstakeDialog = ({ closeDialog }: UnstakeDialogProps) => {
       await unstakeNear(amountYocto);
       closeDialog();
       toast.success("Unstake transaction submitted");
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      toast.error("Failed to unstake");
+      const isUserRejected = e?.message?.includes("User rejected");
+      if (!isUserRejected) {
+        toast.error("Failed to unstake");
+      }
     }
   };
 
