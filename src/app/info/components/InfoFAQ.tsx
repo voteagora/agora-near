@@ -591,8 +591,7 @@ const InfoFAQ = () => {
   const searchParams = useSearchParams();
   const faqId = searchParams?.get("item");
   const isValidFaqId =
-    faqId &&
-    [...generalFaqs, ...rewardsFaqs].some((faq) => faq.id === faqId);
+    faqId && [...generalFaqs, ...rewardsFaqs].some((faq) => faq.id === faqId);
   const [openItem, setOpenItem] = useState<string | undefined>(
     isValidFaqId ? faqId : undefined
   );
@@ -624,7 +623,6 @@ const InfoFAQ = () => {
   return (
     <div className="mt-16 w-full">
       <div className="mx-auto">
-        {/* veNEAR Rewards FAQs Section */}
         <section className="mb-16" id="ve-near-rewards">
           <h3 className="text-3xl font-black text-primary mb-10">
             FAQs | veNEAR Rewards
@@ -657,17 +655,14 @@ const InfoFAQ = () => {
           ) : (
             <div className="w-full bg-[#5EA5F5] rounded-lg p-12 text-white">
               <div className="text-xl font-medium">
-                Add the newly created
                 <br />
                 FAQs about veNEAR Rewards
                 <br />
-                here
               </div>
             </div>
           )}
         </section>
 
-        {/* General FAQs Section */}
         <section>
           <h3 className="text-3xl font-black text-primary mb-10">
             FAQs | General
