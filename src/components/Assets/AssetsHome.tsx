@@ -23,8 +23,8 @@ export const AssetsHome = memo(() => {
   });
 
   const shouldShowLSTWarning = useMemo(() => {
-    // Only show warning when user is connected AND has account info
-    if (!signedAccountId || !accountInfo) return false;
+    // Only show warning when user is connected
+    if (!signedAccountId) return false;
 
     // Your lockup version takes precedence if you have onboarded, otherwise use global lockup version
     const lockupVersionToCheck = accountInfo?.lockupVersion ?? lockupVersion;
