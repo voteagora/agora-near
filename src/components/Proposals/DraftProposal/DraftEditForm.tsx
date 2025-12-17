@@ -225,110 +225,38 @@ function DraftDetailsForm() {
                       <SelectValue placeholder="Select a proposal type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={ProposalType.Standard}>
-                        Standard
-                      </SelectItem>
-                      <SelectItem value={ProposalType.Tactical}>
-                        Tactical
-                      </SelectItem>
                       <SelectItem value={ProposalType.SimpleMajority}>
                         Simple Majority
                       </SelectItem>
                       <SelectItem value={ProposalType.SuperMajority}>
-                        2/3 Super Majority
+                        Super Majority
                       </SelectItem>
                     </SelectContent>
                   </Select>
                 )}
               />
             </div>
-            {watch("proposalType") !== ProposalType.Standard && (
-              <div className="space-y-4 pt-4 border-t border-line">
-                {watch("proposalType") === ProposalType.Tactical ? (
-                  <>
-                    <div>
-                      <label className="text-xs font-medium text-tertiary mb-1 block">
-                        Quorum Threshold
-                      </label>
-                      <Controller
-                        control={control}
-                        name="quorumThreshold"
-                        render={({ field }) => (
-                          <InputBox
-                            type="number"
-                            min="0"
-                            disabled={displayMode === "preview"}
-                            placeholder="e.g. 10000"
-                            error={!!errors.quorumThreshold}
-                            {...field}
-                            onKeyDown={(e) => {
-                              if (e.key === "-" || e.key === "e") {
-                                e.preventDefault();
-                              }
-                            }}
-                          />
-                        )}
-                      />
-                      {errors.quorumThreshold ? (
-                        <p className={errorTextStyle}>
-                          {errors.quorumThreshold.message}
-                        </p>
-                      ) : null}
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-tertiary mb-1 block">
-                        Approval Threshold
-                      </label>
-                      <Controller
-                        control={control}
-                        name="approvalThreshold"
-                        render={({ field }) => (
-                          <InputBox
-                            type="number"
-                            min="0"
-                            disabled={displayMode === "preview"}
-                            placeholder="e.g. 5000"
-                            error={!!errors.approvalThreshold}
-                            {...field}
-                            onKeyDown={(e) => {
-                              if (e.key === "-" || e.key === "e") {
-                                e.preventDefault();
-                              }
-                            }}
-                          />
-                        )}
-                      />
-                      {errors.approvalThreshold ? (
-                        <p className={errorTextStyle}>
-                          {errors.approvalThreshold.message}
-                        </p>
-                      ) : null}
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="opacity-70">
-                      <label className="text-xs font-medium text-tertiary mb-1 block">
-                        Quorum Threshold
-                      </label>
-                      <div className="p-3 bg-neutral-100 rounded-lg border border-line text-sm text-secondary font-medium">
-                        Default
-                      </div>
-                    </div>
-                    <div className="opacity-70">
-                      <label className="text-xs font-medium text-tertiary mb-1 block">
-                        Approval Threshold
-                      </label>
-                      <div className="p-3 bg-neutral-100 rounded-lg border border-line text-sm text-secondary font-medium">
-                        {watch("proposalType") === ProposalType.SimpleMajority
-                          ? "Simple Majority (> 50% Participating)"
-                          : "Super Majority (>= 2/3 Participating)"}
-                      </div>
-                    </div>
-                  </>
-                )}
+
+            <div className="space-y-4 pt-4 border-t border-line">
+              <div className="opacity-70">
+                <label className="text-xs font-medium text-tertiary mb-1 block">
+                  Quorum Threshold
+                </label>
+                <div className="p-3 bg-neutral-100 rounded-lg border border-line text-sm text-secondary font-medium">
+                  Default
+                </div>
               </div>
-            )}
+              <div className="opacity-70">
+                <label className="text-xs font-medium text-tertiary mb-1 block">
+                  Approval Threshold
+                </label>
+                <div className="p-3 bg-neutral-100 rounded-lg border border-line text-sm text-secondary font-medium">
+                  {watch("proposalType") === ProposalType.SimpleMajority
+                    ? "Simple Majority (> 50% Participating)"
+                    : "Super Majority (>= 66% Participating)"}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -346,27 +274,11 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
 
     const {
       handleSubmit,
-      getValues,
-      trigger,
       formState: { isValid, isDirty },
     } = useFormContext<FormValues>();
 
     const handleSave = async () => {
       if (!isDirty) return;
-
-      // Validate thresholds before saving to prevent bad data
-      const currentValues = getValues();
-      if (currentValues.proposalType !== ProposalType.Standard) {
-        const isTacticalValid = await trigger([
-          "quorumThreshold",
-          "approvalThreshold",
-        ]);
-
-        if (!isTacticalValid) {
-          toast.error("Please fix the threshold errors before saving.");
-          return;
-        }
-      }
 
       handleSubmit(
         (formValues) => {
@@ -377,15 +289,9 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
                 title: formValues.title.trim(),
                 description: encodeMetadata(formValues.description.trim(), {
                   proposalType:
-                    formValues.proposalType || ProposalType.Standard,
-                  quorumThreshold:
-                    formValues.proposalType === ProposalType.Tactical
-                      ? formValues.quorumThreshold
-                      : undefined,
-                  approvalThreshold:
-                    formValues.proposalType === ProposalType.Tactical
-                      ? formValues.approvalThreshold
-                      : undefined,
+                    formValues.proposalType || ProposalType.SimpleMajority,
+                  quorumThreshold: undefined,
+                  approvalThreshold: undefined,
                 }),
                 proposalUrl: formValues.link?.trim() || undefined,
                 votingOptions: { options: NEAR_VOTING_OPTIONS },
@@ -463,19 +369,10 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
                 </p>
               </div>
               <div>
-                <h3 className="font-semibold text-primary">
-                  2/3 Super Majority
-                </h3>
+                <h3 className="font-semibold text-primary">Super Majority</h3>
                 <p>
                   Requires &ge; 66.6% of participating votes to pass. Use for
                   critical changes or constitutional amendments.
-                </p>
-              </div>
-              <div>
-                <h3 className="font-semibold text-primary">Tactical</h3>
-                <p>
-                  Allows enabling custom quorum and approval thresholds. Use
-                  when standard rules do not apply.
                 </p>
               </div>
             </div>

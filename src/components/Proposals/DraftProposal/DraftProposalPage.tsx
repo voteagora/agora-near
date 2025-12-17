@@ -30,88 +30,46 @@ import { toast } from "react-hot-toast";
 import { z } from "zod";
 import DraftEditForm, { DraftEditFormRef } from "./DraftEditForm";
 
-const formSchema = z
-  .object({
-    title: z.string().min(1, "Title is required"),
-    description: z.string().min(1, "Description is required"),
-    // Allow saving drafts without enforcing link validation
-    link: z.string().optional().or(z.literal("")),
-    options: z
-      .array(
-        z.object({
-          title: z.string().min(1, "Option title is required"),
-        })
-      )
-      .min(2, "At least two options are required"),
-    proposalType: z.nativeEnum(ProposalType).default(ProposalType.Standard),
-    quorumThreshold: z.coerce.number().optional(),
-    approvalThreshold: z.coerce.number().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.proposalType !== ProposalType.Standard) {
-      if (!data.quorumThreshold || data.quorumThreshold <= 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message:
-            "A positive quorum threshold is required for non-standard proposals",
-          path: ["quorumThreshold"],
-        });
-      }
-      if (!data.approvalThreshold || data.approvalThreshold <= 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message:
-            "A positive approval threshold is required for non-standard proposals",
-          path: ["approvalThreshold"],
-        });
-      }
-    }
-  });
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  // Allow saving drafts without enforcing link validation
+  link: z.string().optional().or(z.literal("")),
+  options: z
+    .array(
+      z.object({
+        title: z.string().min(1, "Option title is required"),
+      })
+    )
+    .min(2, "At least two options are required"),
+  proposalType: z.nativeEnum(ProposalType).default(ProposalType.Standard),
+  quorumThreshold: z.coerce.number().optional(),
+  approvalThreshold: z.coerce.number().optional(),
+});
 
 // Strict validation used only on submission
-const submitSchema = z
-  .object({
-    title: z.string().min(1, "Title is required"),
-    description: z.string().min(1, "Description is required"),
-    link: z
-      .string()
-      .min(1, "Link is required")
-      .url("Must be a valid URL")
-      .refine((url) => url.includes("https://gov.near.org/"), {
-        message:
-          "Proposal links must be from https://gov.near.org/. Create a forum post first to gather community support.",
-      }),
-    options: z
-      .array(
-        z.object({
-          title: z.string().min(1, "Option title is required"),
-        })
-      )
-      .min(2, "At least two options are required"),
-    proposalType: z.nativeEnum(ProposalType),
-    quorumThreshold: z.coerce.number().optional(),
-    approvalThreshold: z.coerce.number().optional(),
-  })
-  .superRefine((data, ctx) => {
-    if (data.proposalType !== ProposalType.Standard) {
-      if (!data.quorumThreshold || data.quorumThreshold <= 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message:
-            "A positive quorum threshold is required for non-standard proposals",
-          path: ["quorumThreshold"],
-        });
-      }
-      if (!data.approvalThreshold || data.approvalThreshold <= 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message:
-            "A positive approval threshold is required for non-standard proposals",
-          path: ["approvalThreshold"],
-        });
-      }
-    }
-  });
+const submitSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  link: z
+    .string()
+    .min(1, "Link is required")
+    .url("Must be a valid URL")
+    .refine((url) => url.includes("https://gov.near.org/"), {
+      message:
+        "Proposal links must be from https://gov.near.org/. Create a forum post first to gather community support.",
+    }),
+  options: z
+    .array(
+      z.object({
+        title: z.string().min(1, "Option title is required"),
+      })
+    )
+    .min(2, "At least two options are required"),
+  proposalType: z.nativeEnum(ProposalType),
+  quorumThreshold: z.coerce.number().optional(),
+  approvalThreshold: z.coerce.number().optional(),
+});
 
 export type FormValues = z.infer<typeof formSchema>;
 
@@ -295,12 +253,18 @@ const DraftProposalsPageContent = memo(
           draft.description || ""
         );
 
+        let type = metadata?.proposalType || ProposalType.SimpleMajority;
+        // Map legacy "Standard" to "SimpleMajority"
+        if (type === ProposalType.Standard) {
+          type = ProposalType.SimpleMajority;
+        }
+
         reset({
           title: draft.title || "",
           description: cleanDescription,
           link: draft.proposalUrl || "",
           options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
-          proposalType: metadata?.proposalType || ProposalType.Standard,
+          proposalType: type,
           quorumThreshold: metadata?.quorumThreshold,
           approvalThreshold: metadata?.approvalThreshold,
         });
