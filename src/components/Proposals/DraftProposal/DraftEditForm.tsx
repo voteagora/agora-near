@@ -253,7 +253,7 @@ function DraftDetailsForm() {
                 <div className="p-3 bg-neutral-100 rounded-lg border border-line text-sm text-secondary font-medium">
                   {watch("proposalType") === ProposalType.SimpleMajority
                     ? "Simple Majority (> 50% Participating)"
-                    : "Super Majority (>= 66% Participating)"}
+                    : "Super Majority (>= 2/3 Participating)"}
                 </div>
               </div>
             </div>
@@ -371,7 +371,7 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
               <div>
                 <h3 className="font-semibold text-primary">Super Majority</h3>
                 <p>
-                  Requires &ge; 66.6% of participating votes to pass. Use for
+                  Requires &ge; 2/3 of participating votes to pass. Use for
                   critical changes or constitutional amendments.
                 </p>
               </div>
