@@ -128,10 +128,10 @@ export const AssetsLandingPage = memo(
               </div>
 
               <div className="flex flex-row gap-2 lg:gap-6 order-2 lg:order-2 justify-center lg:justify-start mx-auto lg:mx-0">
-                <div className="w-[160px] sm:w-[200px] lg:w-[300px] h-[280px] sm:h-[320px] lg:h-[400px] lg:mb-4">
+                <div className="w-[160px] sm:w-[200px] lg:w-[300px] sm:h-[320px] lg:h-[400px] lg:mb-4">
                   <LockTokensCard apy={lockApy} />
                 </div>
-                <div className="w-[160px] sm:w-[200px] lg:w-[300px] h-[280px] sm:h-[320px] lg:h-[400px] lg:mt-4 flex grow">
+                <div className="w-[160px] sm:w-[200px] lg:w-[300px] sm:h-[320px] lg:h-[400px] lg:mt-4 flex grow">
                   <StakingRewardsCard
                     apy={maxStakingApy}
                     isLoadingApy={isLoadingStakingPoolStats}
@@ -149,10 +149,15 @@ export const AssetsLandingPage = memo(
             />
           </div>
           <div className="mb-8 lg:mb-16 px-4 lg:px-0">
-            <p className="text-sm sm:text-base lg:text-sm text-gray-500">
+            <p className="text-sm sm:text-base lg:text-sm text-gray-500 mb-2">
               *Source of APY comes from non-liquid staking pools and is subject
               to change. For up to date APY, please refer to the staking pools
               directly.
+            </p>
+            <p className="text-sm sm:text-base lg:text-sm text-gray-500">
+              **Rewards and any annualized equivalents are variable, not
+              guaranteed, and may change based on program parameters and
+              participation. Locking may reduce liquidity.
             </p>
           </div>
         </div>

@@ -47,7 +47,7 @@ export const LockTokensCard = memo(
         )}
         style={{ backgroundColor: "#00E391" }}
       >
-        <CardContent className="p-3 sm:p-4 lg:p-6 flex flex-col gap-4 sm:gap-6 lg:gap-8">
+        <CardContent className="p-3 sm:p-4 lg:p-6 flex flex-col gap-4">
           <Image
             src={LockClosedIcon}
             alt="coin"
@@ -56,11 +56,12 @@ export const LockTokensCard = memo(
             className="sm:w-9 sm:h-9 lg:w-10 lg:h-10"
           />
           <div className="text-black flex flex-col gap-3">
-            <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">
-              Lock & Stake NEAR now!
+            <h3 className="text-lg font-bold mb-2">
+              Lock & Stake NEAR to participate in veNEAR governance rewards!
             </h3>
-            <p className="text-sm sm:text-base lg:text-lg mb-4">
-              Receive up to 7.5% APY via veNEAR rewards.
+            <p className="text-sm mb-2">
+              Rewards are variable and may be equivalent to up to ~7.5%
+              annually, depending on participation and program parameters.
             </p>
 
             <UpdatedButton
@@ -72,8 +73,8 @@ export const LockTokensCard = memo(
               Lock & Stake
             </UpdatedButton>
             <Link
-              href="/info"
-              className="flex items-center font-medium hover:opacity-80 transition-opacity gap-2 mt-2"
+              href="/info?item=contract-level-onboarding"
+              className="flex items-center font-medium hover:opacity-80 transition-opacity gap-2"
             >
               Learn More
               <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
