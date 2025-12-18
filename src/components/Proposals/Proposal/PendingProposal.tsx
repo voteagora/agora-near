@@ -19,9 +19,11 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
 
   const { config, votingDuration } = useProposalConfig();
   const { signedAccountId } = useNear();
-  const { description: cleanDescription } = decodeMetadata(
+  const { description: cleanDescription, metadata } = decodeMetadata(
     proposal.description || ""
   );
+
+  const proposalType = proposal.proposalType || metadata?.proposalType;
 
   const isReviewer =
     signedAccountId && config?.reviewer_ids.includes(signedAccountId);
@@ -45,46 +47,41 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
         <section className="px-4 flex-1 w-full">
           <div className="flex items-center gap-3 mb-1">
             <h1 className="text-2xl font-bold">{proposal.title}</h1>
-            {proposal.proposalType &&
-              proposal.proposalType !== ProposalType.Standard && (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button
-                      className="px-2 py-1 text-xs font-semibold rounded-full border bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200 transition-colors cursor-pointer uppercase"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {proposal.proposalType.replace(/([A-Z])/g, " $1").trim()}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-80"
+            {proposalType && proposalType !== ProposalType.Standard && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    className="px-2 py-1 text-xs font-semibold rounded-full border bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200 transition-colors cursor-pointer uppercase"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-primary">
-                        {proposal.proposalType
-                          .replace(/([A-Z])/g, " $1")
-                          .trim()}{" "}
-                        Proposal
-                      </h4>
+                    {proposalType.replace(/([A-Z])/g, " $1").trim()}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-80"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-primary">
+                      {proposalType.replace(/([A-Z])/g, " $1").trim()} Proposal
+                    </h4>
 
-                      {proposal.proposalType ===
-                        ProposalType.SimpleMajority && (
-                        <p className="text-sm text-secondary">
-                          Requires &gt; 50% of participating votes (S&gt;N) to
-                          pass.
-                        </p>
-                      )}
+                    {proposalType === ProposalType.SimpleMajority && (
+                      <p className="text-sm text-secondary">
+                        Requires &gt; 50% of participating votes (S&gt;N) to
+                        pass.
+                      </p>
+                    )}
 
-                      {proposal.proposalType === ProposalType.SuperMajority && (
-                        <p className="text-sm text-secondary">
-                          Requires &ge; 2/3 of participating votes to pass.
-                        </p>
-                      )}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              )}
+                    {proposalType === ProposalType.SuperMajority && (
+                      <p className="text-sm text-secondary">
+                        Requires &ge; 2/3 of participating votes to pass.
+                      </p>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
           <p>Submitted by: {proposal.proposer_id}</p>
           <section className="mt-8 px-4 py-6 border border-secondary/20 rounded-md gap-4 flex flex-col">
