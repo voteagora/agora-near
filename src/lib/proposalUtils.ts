@@ -53,13 +53,8 @@ export function getProposalStatus({
       });
 
       let passedApproval = false;
-      const totalVotes = getTotalVotes(
-        forVotingPower,
-        againstVotingPower,
-        abstainVotingPower
-      );
 
-      // Priority 1: Manual Approval Threshold (Tactical)
+      // Priority 1: Manual Approval Threshold (Explicit Override)
       if (approvalThreshold && Big(approvalThreshold).gt(0)) {
         passedApproval = Big(forVotingPower).gte(approvalThreshold);
       }

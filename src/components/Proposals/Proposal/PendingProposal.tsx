@@ -13,7 +13,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { utils } from "near-api-js";
 
 export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
   const router = useRouter();
@@ -81,47 +80,6 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
                         <p className="text-sm text-secondary">
                           Requires &ge; 2/3 of participating votes to pass.
                         </p>
-                      )}
-
-                      {proposal.proposalType === ProposalType.Tactical && (
-                        <>
-                          <p className="text-sm text-secondary">
-                            This proposal includes custom configuration
-                            metadata.
-                          </p>
-                          <div className="flex flex-col gap-1 border-t pt-2 mt-2">
-                            {proposal.quorumAmountYoctoNear && (
-                              <div className="flex justify-between items-center text-sm">
-                                <span className="text-secondary">
-                                  Quorum Threshold:
-                                </span>
-                                <span className="font-medium text-primary">
-                                  {parseInt(
-                                    utils.format.formatNearAmount(
-                                      proposal.quorumAmountYoctoNear
-                                    )
-                                  ).toLocaleString()}{" "}
-                                  votes
-                                </span>
-                              </div>
-                            )}
-                            {proposal.approvalThreshold && (
-                              <div className="flex justify-between items-center text-sm">
-                                <span className="text-secondary">
-                                  Approval Threshold:
-                                </span>
-                                <span className="font-medium text-primary">
-                                  {parseInt(
-                                    utils.format.formatNearAmount(
-                                      proposal.approvalThreshold
-                                    )
-                                  ).toLocaleString()}{" "}
-                                  votes
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </>
                       )}
                     </div>
                   </PopoverContent>

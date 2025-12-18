@@ -158,14 +158,7 @@ const DraftProposalsPageContent = memo(
 
     const handleSubmit = useCallback(() => {
       handleSubmitForm(
-        async ({
-          title,
-          description,
-          link,
-          proposalType,
-          quorumThreshold,
-          approvalThreshold,
-        }) => {
+        async ({ title, description, link, proposalType }) => {
           if (step === 1) {
             setStep(2);
             updateDraft({
@@ -184,7 +177,6 @@ const DraftProposalsPageContent = memo(
             link,
             options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
             proposalType,
-            quorumThreshold,
           });
 
           if (!submitValidation.success) {
@@ -200,14 +192,6 @@ const DraftProposalsPageContent = memo(
           try {
             const finalDescription = encodeMetadata(description || "", {
               proposalType: proposalType || ProposalType.Standard,
-              quorumThreshold:
-                proposalType === ProposalType.Tactical
-                  ? quorumThreshold
-                  : undefined,
-              approvalThreshold:
-                proposalType === ProposalType.Tactical
-                  ? approvalThreshold
-                  : undefined,
             });
 
             const transactionResult = await createProposalAsync({

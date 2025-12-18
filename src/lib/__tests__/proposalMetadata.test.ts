@@ -23,12 +23,12 @@ describe("proposalMetadata", () => {
       const description =
         'Original description\n\n```json:metadata\n{"proposalType": "Old"}\n```';
       const metadata = {
-        proposalType: ProposalType.Tactical,
+        proposalType: ProposalType.SuperMajority,
         quorumThreshold: 100,
       };
 
       const result = encodeMetadata(description, metadata);
-      expect(result).toContain('"proposalType": "Tactical"');
+      expect(result).toContain('"proposalType": "SuperMajority"');
       expect(result).toContain('"quorumThreshold": 100');
       expect(result).not.toContain('"proposalType": "Old"');
       expect(result).toContain("Original description");
@@ -41,7 +41,7 @@ describe("proposalMetadata", () => {
       
 \`\`\`json:metadata
 {
-  "proposalType": "Tactical",
+  "proposalType": "SuperMajority",
   "quorumThreshold": 500
 }
 \`\`\``;
@@ -50,7 +50,7 @@ describe("proposalMetadata", () => {
         decodeMetadata(description);
 
       expect(metadata).toEqual({
-        proposalType: ProposalType.Tactical,
+        proposalType: ProposalType.SuperMajority,
         quorumThreshold: 500,
       });
       expect(cleanDescription).toBe("My Proposal body");
