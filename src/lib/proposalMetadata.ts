@@ -39,8 +39,15 @@ export function encodeMetadata(
 ): string {
   const parts: string[] = [];
 
-  if (metadata.proposalType) {
-    parts.push(`proposal_type=${metadata.proposalType}`);
+  // Determine threshold to store based on type
+  if (
+    metadata.proposalType &&
+    metadata.proposalType !== ProposalType.Standard
+  ) {
+    const threshold = PROPOSAL_APPROVAL_THRESHOLDS[metadata.proposalType];
+    if (threshold) {
+      parts.push(`approval_threshold=${threshold}`);
+    }
   }
 
   const suffix = parts.length > 0 ? `|${parts.join(",")}` : "";
@@ -78,7 +85,24 @@ export function decodeMetadata(fullDescription: string): {
     const [key, value] = pair.split("=");
     if (!key || !value) continue;
 
-    if (key === "proposal_type") {
+    if (key === "approval_threshold") {
+      const threshold = parseFloat(value);
+      metadata.approvalThreshold = threshold;
+
+      // Infer ProposalType from threshold
+      // SuperMajority is 2/3 (~0.6666)
+      if (
+        threshold >=
+        PROPOSAL_APPROVAL_THRESHOLDS[ProposalType.SuperMajority] - 0.001
+      ) {
+        metadata.proposalType = ProposalType.SuperMajority;
+      } else if (threshold > 0.5) {
+        metadata.proposalType = ProposalType.SimpleMajority;
+      } else {
+        metadata.proposalType = ProposalType.Standard;
+      }
+    } else if (key === "proposal_type") {
+      // Legacy support for explicit type labels
       if (value === "SimpleMajority")
         metadata.proposalType = ProposalType.SimpleMajority;
       else if (value === "SuperMajority")
