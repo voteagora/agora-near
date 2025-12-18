@@ -585,7 +585,141 @@ const generalFaqs: FAQ[] = [
   },
 ];
 
-const rewardsFaqs: FAQ[] = [];
+const rewardsFaqs: FAQ[] = [
+  {
+    id: "what-are-venear-rewards",
+    question: "What are veNEAR rewards?",
+    answer: (
+      <Text>
+        Locking your NEAR demonstrates long-term commitment to the NEAR
+        ecosystem. When you lock NEAR, you receive veNEAR in return. For a
+        limited time, House of Stake is offering additional rewards for every
+        NEAR you lock.
+      </Text>
+    ),
+  },
+  {
+    id: "how-to-receive-venear-rewards",
+    question: "How can I receive veNEAR Rewards?",
+    answer: (
+      <Text>
+        To receive veNEAR rewards, you need to lock NEAR. Start here by clicking
+        “Lock & Stake” and follow the guided process. This tutorial video walks
+        you through each step. First, lock your NEAR to mint veNEAR. Second,
+        optionally, stake your NEAR to receive additional governance rewards.
+        Staking is not required to receive veNEAR rewards. That&apos;s it!
+      </Text>
+    ),
+  },
+  {
+    id: "how-to-claim-venear-rewards",
+    question: "How can I claim my veNEAR Rewards?",
+    answer: (
+      <Text>
+        Go to the{" "}
+        <Link
+          className="text-primary underline hover:text-secondary font-medium"
+          href="/assets"
+        >
+          House of Stake assets page
+        </Link>
+        , and connect your wallet. When rewards are available, a “Claim” button
+        will appear. Click it to initiate the transfer of your rewards. You’ll
+        receive NEAR directly into your lockup address, and your wallet balance
+        will update accordingly. Rewards will be released in multiple rounds
+        over a three-month period. By keeping your veNEAR locked, you’ll
+        automatically participate in all upcoming rounds until the veNEAR
+        rewards campaign concludes.
+      </Text>
+    ),
+  },
+  {
+    id: "how-to-increase-governance-rewards",
+    question: "How can I increase my governance rewards?",
+    answer: (
+      <div className="space-y-4">
+        <Text>
+          Your rewards increase based on how much NEAR you lock and how long you
+          lock it for. Please note: The total amount of veNEAR rewards
+          distributed depends on the overall NEAR participation in the rewards
+          campaign.
+        </Text>
+        <Text>
+          Your individual allocation scales with your lock amount and lock
+          duration.
+        </Text>
+        <Text>
+          You can also increase your overall participation rewards by staking
+          NEAR (optional). Combining locking and staking may increase your
+          overall participation rewards, depending on program parameters. For
+          more details on how rewards are calculated,{" "}
+          <ExternalLink href="https://gov.houseofstake.org/info">
+            check out this link
+          </ExternalLink>
+          .
+        </Text>
+      </div>
+    ),
+  },
+  {
+    id: "unlock-venear-immediately",
+    question: "Can I unlock my veNEAR immediately after claiming rewards?",
+    answer: (
+      <Text>
+        Yes. Claiming rewards is independent of locking mechanics. You can
+        unlock your veNEAR at any time. However, we encourage you to keep your
+        veNEAR locked and delegate it to participate in governance and
+        decision-making at House of Stake. Staying locked and delegated
+        strengthens the ecosystem and gives you an active voice in shaping
+        NEAR&apos;s future.
+      </Text>
+    ),
+  },
+  {
+    id: "unlock-before-claiming",
+    question:
+      "If I unlock my veNEAR before claiming my rewards, will I lose them?",
+    answer: (
+      <Text>
+        No. Rewards that have already been assigned to you remain claimable even
+        after you unlock your veNEAR.
+      </Text>
+    ),
+  },
+  {
+    id: "withdraw-immediately-after-unlock",
+    question: "Can I withdraw my NEAR immediately after unlocking veNEAR?",
+    answer: (
+      <Text>
+        No. Once you unlock veNEAR, there is a 45-day cooldown period. After the
+        cooldown ends, you can withdraw your underlying NEAR.
+      </Text>
+    ),
+  },
+  {
+    id: "min-amount-near",
+    question:
+      "What is the minimum amount of NEAR required to receive veNEAR rewards?",
+    answer: (
+      <Text>
+        You must have at least 2.1 NEAR available in your wallet to qualify for
+        veNEAR rewards.
+      </Text>
+    ),
+  },
+  {
+    id: "delegate-venear-consequences",
+    question: "What happens when I delegate veNEAR to a delegator?",
+    answer: (
+      <Text>
+        Your veNEAR is burned, and new veNEAR is minted for the delegate. Your
+        locked NEAR balance remains unchanged within the lockup contract. Your
+        reward calculation is unaffected; delegating does not change the amount
+        of rewards you receive. You can undelegate your veNEAR at any time.
+      </Text>
+    ),
+  },
+];
 
 const InfoFAQ = () => {
   const searchParams = useSearchParams();
