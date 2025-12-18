@@ -22,6 +22,7 @@ export interface ProposalMetadataConfig {
 export const METADATA_PREFIX = "\u001E\u001E\u001E\u001E";
 // Version 1: \u0001\u0001 (Avoids \x00)
 export const METADATA_VERSION = "\u0001\u0001";
+const THRESHOLD_PRECISION = 10000;
 
 export const PROPOSAL_APPROVAL_THRESHOLDS: Record<ProposalType, number> = {
   [ProposalType.Standard]: 0.5,
@@ -46,7 +47,9 @@ export function encodeMetadata(
   ) {
     const threshold = PROPOSAL_APPROVAL_THRESHOLDS[metadata.proposalType];
     if (threshold) {
-      parts.push(`approval_threshold=${threshold}`);
+      // Store as basis points (e.g. 0.5 -> 5000, 2/3 -> 6667)
+      const encodedValue = Math.round(threshold * THRESHOLD_PRECISION);
+      parts.push(`approval_threshold=${encodedValue}`);
     }
   }
 
@@ -86,17 +89,17 @@ export function decodeMetadata(fullDescription: string): {
     if (!key || !value) continue;
 
     if (key === "approval_threshold") {
-      const threshold = parseFloat(value);
+      const rawValue = parseInt(value, 10);
+      const threshold = rawValue / THRESHOLD_PRECISION;
       metadata.approvalThreshold = threshold;
 
       // Infer ProposalType from threshold
-      // SuperMajority is 2/3 (~0.6666)
-      if (
-        threshold >=
-        PROPOSAL_APPROVAL_THRESHOLDS[ProposalType.SuperMajority] - 0.001
-      ) {
+      // 6667 / 10000 = 0.6667
+      // 2/3 = 0.66666...
+      // Check > 0.6
+      if (threshold > 0.6) {
         metadata.proposalType = ProposalType.SuperMajority;
-      } else if (threshold > 0.5) {
+      } else if (threshold > 0.4) {
         metadata.proposalType = ProposalType.SimpleMajority;
       } else {
         metadata.proposalType = ProposalType.Standard;

@@ -23,9 +23,9 @@ describe("proposalMetadata", () => {
       expect(result.slice(4, 6)).toBe(METADATA_VERSION);
       // Check Description
       expect(result).toContain("My Proposal");
-      // Check Suffix with numeric threshold
-      // SuperMajority = 2/3 = 0.6666666666666666
-      expect(result).toContain("approval_threshold=0.6666666666666666");
+      // Check Suffix with numeric threshold (Basis Points)
+      // SuperMajority = 2/3 = 0.666666... * 10000 = 6667
+      expect(result).toContain("approval_threshold=6667");
     });
 
     it("should not append metadata for Standard type", () => {
@@ -43,7 +43,7 @@ describe("proposalMetadata", () => {
   describe("decodeMetadata", () => {
     it("should decode numeric threshold (SuperMajority)", () => {
       const description = "Body";
-      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|approval_threshold=0.67`;
+      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|approval_threshold=6700`;
 
       const { metadata, description: cleanDesc } = decodeMetadata(encoded);
 
@@ -54,7 +54,7 @@ describe("proposalMetadata", () => {
 
     it("should decode numeric threshold (SimpleMajority)", () => {
       const description = "Body";
-      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|approval_threshold=0.51`;
+      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|approval_threshold=5100`;
 
       const { metadata, description: cleanDesc } = decodeMetadata(encoded);
 
