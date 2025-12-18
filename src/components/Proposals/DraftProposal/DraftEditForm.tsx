@@ -207,7 +207,7 @@ function DraftDetailsForm() {
           <h4 className="text-xs font-semibold text-secondary">
             Configuration
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4">
             <div>
               <label className="text-xs font-medium text-tertiary mb-1 block">
                 Proposal Type
@@ -235,27 +235,6 @@ function DraftDetailsForm() {
                   </Select>
                 )}
               />
-            </div>
-
-            <div className="space-y-4 pt-4 border-t border-line">
-              <div className="opacity-70">
-                <label className="text-xs font-medium text-tertiary mb-1 block">
-                  Quorum Threshold
-                </label>
-                <div className="p-3 bg-neutral-100 rounded-lg border border-line text-sm text-secondary font-medium">
-                  Default
-                </div>
-              </div>
-              <div className="opacity-70">
-                <label className="text-xs font-medium text-tertiary mb-1 block">
-                  Approval Threshold
-                </label>
-                <div className="p-3 bg-neutral-100 rounded-lg border border-line text-sm text-secondary font-medium">
-                  {watch("proposalType") === ProposalType.SimpleMajority
-                    ? "Simple Majority (> 50% Participating)"
-                    : "Super Majority (>= 2/3 Participating)"}
-                </div>
-              </div>
             </div>
           </div>
         </div>
