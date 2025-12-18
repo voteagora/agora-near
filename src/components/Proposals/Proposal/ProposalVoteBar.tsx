@@ -1,4 +1,5 @@
 import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { decodeMetadata, ProposalType } from "@/lib/proposalMetadata";
 
 export default function ProposalVoteBar({
   proposal,
@@ -12,11 +13,15 @@ export default function ProposalVoteBar({
   const abstainVotes = Number(proposal.votes[2]?.total_venear ?? "0");
   const totalVotes = Number(proposal.total_votes.total_venear);
 
-  // Threshold is at 50% of for+against votes (abstain doesn't count)
-  const thresholdPosition =
-    totalVotes > 0 && forVotes + againstVotes > 0
-      ? ((forVotes + againstVotes) / 2 / totalVotes) * 100
-      : 50;
+  const { metadata } = decodeMetadata(
+    proposal.description || ""
+  );
+  const proposalType = proposal.proposalType || metadata?.proposalType;
+  const approvalPercentage =
+    proposalType === ProposalType.SuperMajority ? 2 / 3 : 0.5;
+
+  // Calculate threshold position based on approval percentage (50% or 66%)
+  const thresholdPosition = approvalPercentage * 100;
 
   return (
     <div id="chartContainer" className="relative flex items-stretch gap-x-0.5">
