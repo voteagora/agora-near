@@ -19,7 +19,7 @@ interface LockTokensCardProps {
 }
 
 export const LockTokensCard = memo(
-  ({ apy, className }: LockTokensCardProps) => {
+  ({ className }: LockTokensCardProps) => {
     const { signedAccountId, signIn } = useNear();
     const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
 
