@@ -17,8 +17,11 @@ export interface ProposalMetadataConfig {
   approvalThreshold?: number;
 }
 
-export const METADATA_PREFIX = "\x00\x00\x00\x00";
-export const METADATA_VERSION = "\x00\x01"; // Version 1 (0x0001)
+// Postgres TEXT columns do not support NULL bytes (\x00).
+// We use Record Separator (\x1E) as a safe alternative.
+export const METADATA_PREFIX = "\u001E\u001E\u001E\u001E";
+// Version 1: \u0001\u0001 (Avoids \x00)
+export const METADATA_VERSION = "\u0001\u0001";
 
 export function encodeMetadata(
   description: string,

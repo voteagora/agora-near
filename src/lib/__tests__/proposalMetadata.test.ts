@@ -56,7 +56,7 @@ describe("proposalMetadata", () => {
     });
 
     it("should ignore metadata if version mismatch", () => {
-      const invalidVersion = "\x00\x02";
+      const invalidVersion = "\u0001\u0002"; // Invalid version
       const encoded = `${METADATA_PREFIX}${invalidVersion}Content|proposal_type=SuperMajority`;
       const { metadata, description: cleanDesc } = decodeMetadata(encoded);
 
