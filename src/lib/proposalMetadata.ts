@@ -23,6 +23,16 @@ export const METADATA_PREFIX = "\u001E\u001E\u001E\u001E";
 // Version 1: \u0001\u0001 (Avoids \x00)
 export const METADATA_VERSION = "\u0001\u0001";
 
+export const PROPOSAL_APPROVAL_THRESHOLDS: Record<ProposalType, number> = {
+  [ProposalType.Standard]: 0.5,
+  [ProposalType.SimpleMajority]: 0.5,
+  [ProposalType.SuperMajority]: 2 / 3,
+};
+
+export function getApprovalThreshold(type?: ProposalType | null): number {
+  return PROPOSAL_APPROVAL_THRESHOLDS[type ?? ProposalType.Standard] ?? 0.5;
+}
+
 export function encodeMetadata(
   description: string,
   metadata: ProposalMetadataConfig

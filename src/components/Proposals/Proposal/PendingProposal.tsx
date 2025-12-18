@@ -7,12 +7,8 @@ import { useProposalActions } from "@/hooks/useProposalActions";
 import { toast } from "react-hot-toast";
 import { ChevronLeftIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { decodeMetadata, ProposalType } from "@/lib/proposalMetadata";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { decodeMetadata } from "@/lib/proposalMetadata";
+import { ProposalTypeBadge } from "../ProposalTypeBadge";
 
 export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
   const router = useRouter();
@@ -47,41 +43,7 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
         <section className="px-4 flex-1 w-full">
           <div className="flex items-center gap-3 mb-1">
             <h1 className="text-2xl font-bold">{proposal.title}</h1>
-            {proposalType && proposalType !== ProposalType.Standard && (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    className="px-2 py-1 text-xs font-semibold rounded-full border bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-200 transition-colors cursor-pointer uppercase"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {proposalType.replace(/([A-Z])/g, " $1").trim()}
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-80"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-primary">
-                      {proposalType.replace(/([A-Z])/g, " $1").trim()} Proposal
-                    </h4>
-
-                    {proposalType === ProposalType.SimpleMajority && (
-                      <p className="text-sm text-secondary">
-                        Requires &gt; 50% of participating votes (S&gt;N) to
-                        pass.
-                      </p>
-                    )}
-
-                    {proposalType === ProposalType.SuperMajority && (
-                      <p className="text-sm text-secondary">
-                        Requires &ge; 2/3 of participating votes to pass.
-                      </p>
-                    )}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            )}
+            <ProposalTypeBadge type={proposalType} />
           </div>
           <p>Submitted by: {proposal.proposer_id}</p>
           <section className="mt-8 px-4 py-6 border border-secondary/20 rounded-md gap-4 flex flex-col">

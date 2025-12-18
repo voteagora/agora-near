@@ -1,13 +1,17 @@
 import Link from "next/link";
-
 import { Proposal as ProposalType } from "@/lib/api/proposal/types";
 import { cn } from "@/lib/utils";
 import { memo } from "react";
 import ProposalStatus from "./ProposalStatus";
 import { ProposalStatusText } from "./ProposalStatusText";
 import ProposalTimeStatus from "./ProposalTimeStatus";
+import { decodeMetadata } from "@/lib/proposalMetadata";
+import { ProposalTypeBadge } from "../ProposalTypeBadge";
 
 export const Proposal = memo(({ proposal }: { proposal: ProposalType }) => {
+  const { metadata } = decodeMetadata(proposal.proposalDescription || "");
+  const proposalType = proposal.proposalType || metadata?.proposalType;
+
   return (
     <Link key={proposal.id} href={`/proposals/${proposal.proposalId}`}>
       <div className="border-b border-line items-center flex flex-row bg-neutral">
@@ -17,10 +21,11 @@ export const Proposal = memo(({ proposal }: { proposal: ProposalType }) => {
             "w-full items-start justify-center"
           )}
         >
-          <div className="flex flex-row text-xs text-secondary gap-1">
+          <div className="flex flex-row text-xs text-secondary gap-2 items-center mb-1">
             <div className="hidden sm:inline">
               Proposal by {proposal.creatorId}
             </div>
+            <ProposalTypeBadge type={proposalType} />
             <div className="block sm:hidden">
               <ProposalStatusText proposal={proposal} />
             </div>
