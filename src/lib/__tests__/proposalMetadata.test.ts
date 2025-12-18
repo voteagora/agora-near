@@ -23,20 +23,59 @@ describe("proposalMetadata", () => {
       expect(result.slice(4, 6)).toBe(METADATA_VERSION);
       // Check Description
       expect(result).toContain("My Proposal");
-      // Check Suffix
-      expect(result).toContain("|proposal_type=SuperMajority");
+      // Check Suffix with numeric threshold
+      // SuperMajority = 2/3 = 0.6666666666666666
+      expect(result).toContain("approval_threshold=0.6666666666666666");
     });
 
-    it("should decode binary metadata correctly", () => {
-      const description = "My Proposal Body";
-      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|proposal_type=SimpleMajority`;
+    it("should not append metadata for Standard type", () => {
+      const result = encodeMetadata("Desc", {
+        proposalType: ProposalType.Standard,
+      });
+      expect(result).toContain("Desc");
+      // Should still include prefix? Implementation says yes: `${METADATA_PREFIX}...${suffix}`
+      // Suffix will be empty if Standard.
+      expect(result.startsWith(METADATA_PREFIX)).toBe(true);
+      expect(result).not.toContain("|");
+    });
+  });
+
+  describe("decodeMetadata", () => {
+    it("should decode numeric threshold (SuperMajority)", () => {
+      const description = "Body";
+      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|approval_threshold=0.67`;
 
       const { metadata, description: cleanDesc } = decodeMetadata(encoded);
 
       expect(cleanDesc).toBe(description);
-      expect(metadata).toEqual({
-        proposalType: ProposalType.SimpleMajority,
-      });
+      expect(metadata?.approvalThreshold).toBe(0.67);
+      expect(metadata?.proposalType).toBe(ProposalType.SuperMajority);
+    });
+
+    it("should decode numeric threshold (SimpleMajority)", () => {
+      const description = "Body";
+      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|approval_threshold=0.51`;
+
+      const { metadata, description: cleanDesc } = decodeMetadata(encoded);
+
+      expect(cleanDesc).toBe(description);
+      expect(metadata?.approvalThreshold).toBe(0.51);
+      expect(metadata?.proposalType).toBe(ProposalType.SimpleMajority);
+    });
+
+    it("should return null metadata for plain text", () => {
+      const description = "Just text";
+      const { metadata, description: cleanDesc } = decodeMetadata(description);
+
+      expect(metadata).toBeNull();
+      expect(cleanDesc).toBe(description);
+    });
+
+    it("should fallback to legacy labels if present", () => {
+      const description = "Body";
+      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|proposal_type=SuperMajority`;
+      const { metadata } = decodeMetadata(encoded);
+      expect(metadata?.proposalType).toBe(ProposalType.SuperMajority);
     });
 
     it("should return null metadata for legacy descriptions (no prefix)", () => {
