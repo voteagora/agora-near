@@ -18,72 +18,70 @@ interface LockTokensCardProps {
   className?: string;
 }
 
-export const LockTokensCard = memo(
-  ({ apy, className }: LockTokensCardProps) => {
-    const { signedAccountId, signIn } = useNear();
-    const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
+export const LockTokensCard = memo(({ className }: LockTokensCardProps) => {
+  const { signedAccountId, signIn } = useNear();
+  const { data: accountInfo } = useVenearAccountInfo(signedAccountId);
 
-    const openDialog = useOpenDialog();
+  const openDialog = useOpenDialog();
 
-    const handleStakeAndLock = useCallback(() => {
-      if (!signedAccountId) {
-        signIn();
-        return;
-      }
+  const handleStakeAndLock = useCallback(() => {
+    if (!signedAccountId) {
+      signIn();
+      return;
+    }
 
-      openDialog({
-        type: "NEAR_LOCK",
-        params: {
-          source: accountInfo ? "account_management" : "onboarding",
-        },
-      });
-    }, [signedAccountId, openDialog, accountInfo, signIn]);
+    openDialog({
+      type: "NEAR_LOCK",
+      params: {
+        source: accountInfo ? "account_management" : "onboarding",
+      },
+    });
+  }, [signedAccountId, openDialog, accountInfo, signIn]);
 
-    return (
-      <Card
-        className={cn(
-          "relative flex h-full border border-black shadow-lg",
-          className
-        )}
-        style={{ backgroundColor: "#00E391" }}
-      >
-        <CardContent className="p-3 sm:p-4 lg:p-6 flex flex-col gap-4">
-          <Image
-            src={LockClosedIcon}
-            alt="coin"
-            width={32}
-            height={32}
-            className="sm:w-9 sm:h-9 lg:w-10 lg:h-10"
-          />
-          <div className="text-black flex flex-col gap-3">
-            <h3 className="text-lg font-bold mb-2">
-              Lock & Stake NEAR to participate in veNEAR governance rewards!
-            </h3>
-            <p className="text-sm mb-2">
-              Rewards are variable and may be equivalent to up to ~7.5%**
-              annually, depending on participation and program parameters.
-            </p>
+  return (
+    <Card
+      className={cn(
+        "relative flex h-full border border-black shadow-lg",
+        className
+      )}
+      style={{ backgroundColor: "#00E391" }}
+    >
+      <CardContent className="p-3 sm:p-4 lg:p-6 flex flex-col gap-4">
+        <Image
+          src={LockClosedIcon}
+          alt="coin"
+          width={32}
+          height={32}
+          className="sm:w-9 sm:h-9 lg:w-10 lg:h-10"
+        />
+        <div className="text-black flex flex-col gap-3">
+          <h3 className="text-lg font-bold mb-2">
+            Lock & Stake NEAR to participate in veNEAR governance rewards!
+          </h3>
+          <p className="text-sm mb-2">
+            Rewards are variable and may be equivalent to up to ~7.5%**
+            annually, depending on participation and program parameters.
+          </p>
 
-            <UpdatedButton
-              type="primary"
-              variant="rounded"
-              onClick={handleStakeAndLock}
-              className="!border-black"
-            >
-              Lock & Stake
-            </UpdatedButton>
-            <Link
-              href="/info?item=contract-level-onboarding"
-              className="flex items-center font-medium hover:opacity-80 transition-opacity gap-2"
-            >
-              Learn More
-              <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-);
+          <UpdatedButton
+            type="primary"
+            variant="rounded"
+            onClick={handleStakeAndLock}
+            className="!border-black"
+          >
+            Lock & Stake
+          </UpdatedButton>
+          <Link
+            href="/info?item=voting-power"
+            className="flex items-center font-medium hover:opacity-80 transition-opacity gap-2"
+          >
+            Learn More
+            <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
+  );
+});
 
 LockTokensCard.displayName = "LockTokensCard";
