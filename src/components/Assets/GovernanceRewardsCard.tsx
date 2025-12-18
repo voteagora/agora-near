@@ -42,11 +42,11 @@ export const GovernanceRewardsCard = memo(() => {
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
               <div className="text-lg font-semibold">
-                Claim your veNEAR rewards
+                Claim your veNEAR Rewards
               </div>
             </div>
             <div className="text-sm text-gray-300 mb-6">
-              Your governance staking reward is ready to claim.
+              Your governance reward is ready to claim.
             </div>
             <div className="flex justify-between">
               <UpdatedButton
@@ -59,7 +59,7 @@ export const GovernanceRewardsCard = memo(() => {
                 Claim
               </UpdatedButton>
               <Link
-                href="/info?item=rewards-distribution"
+                href="/info#ve-near-rewards"
                 className="text-sm text-white hover:text-gray-200 flex items-center gap-1"
               >
                 Learn more <ArrowRightIcon className="w-4 h-4" />
@@ -82,13 +82,15 @@ export const GovernanceRewardsCard = memo(() => {
       <div className="relative z-10 flex">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <div className="text-lg font-semibold">veNEAR Rewards</div>
+            <div className="text-lg font-semibold">
+              veNEAR Governance Rewards
+            </div>
           </div>
           <div className="text-sm text-gray-300 mb-6">
             Coming soon: Claim your veNEAR rewards!
           </div>
           <Link
-            href="/info?item=rewards-distribution"
+            href="/info#ve-near-rewards"
             className="text-sm text-white hover:text-gray-200 flex items-center gap-1"
           >
             Learn more <ArrowRightIcon className="w-4 h-4" />
