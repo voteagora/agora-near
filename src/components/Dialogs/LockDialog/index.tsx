@@ -6,7 +6,10 @@ import { useEffect } from "react";
 import { MixpanelEvents } from "@/lib/analytics/mixpanel";
 import { trackEvent } from "@/lib/analytics";
 
-export type LockDialogSource = "onboarding" | "account_management";
+export type LockDialogSource =
+  | "onboarding"
+  | "account_management"
+  | "claim_rewards";
 
 type NearLockDialogProps = {
   closeDialog: () => void;

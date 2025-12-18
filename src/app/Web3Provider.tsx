@@ -8,7 +8,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Tenant from "@/lib/tenant/tenant";
 import { NearProvider } from "@/contexts/NearContext";
-import InfoBanner from "@/components/InfoBanner";
 import { MixpanelProvider } from "@/components/Analytics/MixpanelProvider";
 
 const queryClient = new QueryClient({
@@ -28,7 +27,6 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
     <NearProvider networkId={networkId}>
       <>
-        <InfoBanner />
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <MixpanelProvider>
           <PageContainer>
