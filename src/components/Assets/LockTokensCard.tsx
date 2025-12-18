@@ -59,8 +59,8 @@ export const LockTokensCard = memo(({ className }: LockTokensCardProps) => {
             Lock & Stake NEAR to participate in veNEAR governance rewards!
           </h3>
           <p className="text-sm mb-2">
-            Rewards are variable and may be equivalent to up to ~7.5% annually,
-            depending on participation and program parameters.
+            Rewards are variable and may be equivalent to up to ~7.5%**
+            annually, depending on participation and program parameters.
           </p>
 
           <UpdatedButton
