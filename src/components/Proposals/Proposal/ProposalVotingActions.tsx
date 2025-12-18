@@ -192,9 +192,10 @@ export default function ProposalVotingActions({
       accountId: signedAccountId,
     });
 
-  const { isRegisteredToVote } = useCheckVoterStatus({
-    enabled: !!signedAccountId,
-  });
+  const { isRegisteredToVote, isLoading: isLoadingVoterStatus } =
+    useCheckVoterStatus({
+      enabled: !!signedAccountId,
+    });
 
   const queryClient = useQueryClient();
 
@@ -238,12 +239,18 @@ export default function ProposalVotingActions({
     );
   }
 
-  if (!isRegisteredToVote) {
-    return null;
+  if (isLoadingUserVote || isLoadingVotingPower || isLoadingVoterStatus) {
+    return <ProposalVotingActionsFallback />;
   }
 
-  if (isLoadingUserVote || isLoadingVotingPower) {
-    return <ProposalVotingActionsFallback />;
+  if (!isRegisteredToVote) {
+    return (
+      <div className="flex flex-col justify-between py-3 px-3 border-t border-line">
+        <Button className="w-full" disabled>
+          You need to lock tokens to vote
+        </Button>
+      </div>
+    );
   }
 
   const hasVoted = userVoteIndex !== null && userVoteIndex !== undefined;
