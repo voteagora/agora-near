@@ -60,12 +60,11 @@ export function getProposalStatus({
       }
       // Priority 2: 2/3 Super Majority (Dynamic)
       else if (proposalType === "SuperMajority") {
-        // >= 2/3 of participating votes (excluding abstentions)
-        // For >= (For + Against) * 2 / 3
+        // >= 6667/10000 (66.67%) of participating votes
         const participatingVotes = Big(forVotingPower).plus(againstVotingPower);
         const superMajorityThreshold = participatingVotes
-          .mul(2)
-          .div(3)
+          .mul(6667)
+          .div(10000)
           .round(0, 3); // 3 = Big.roundUp
         passedApproval = Big(forVotingPower).gte(superMajorityThreshold);
       }

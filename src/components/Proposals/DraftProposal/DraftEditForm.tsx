@@ -350,8 +350,8 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
               <div>
                 <h3 className="font-semibold text-primary">Super Majority</h3>
                 <p>
-                  Requires &ge; 2/3 of participating votes to pass. Use for
-                  critical changes or constitutional amendments.
+                  Requires &ge; 66.67% of participating votes to pass (excluding
+                  abstentions). Required to amend the constitutional documents.
                 </p>
               </div>
             </div>
