@@ -91,7 +91,10 @@ export function decodeMetadata(fullDescription: string): {
     if (key === "approval_threshold") {
       const rawValue = parseInt(value, 10);
       const threshold = rawValue / THRESHOLD_PRECISION;
-      metadata.approvalThreshold = threshold;
+      // Do NOT set metadata.approvalThreshold here because it is a Ratio (e.g. 0.6667).
+      // Downstream logic (getProposalStatus) treats approvalThreshold as an ABSOLUTE VOTE COUNT (manual override).
+      // Leaving it undefined ensures we fall through to the proposalType logic (Priority 2/3).
+      // metadata.approvalThreshold = threshold;
 
       // Infer ProposalType from threshold
       // 6667 / 10000 = 0.6667
