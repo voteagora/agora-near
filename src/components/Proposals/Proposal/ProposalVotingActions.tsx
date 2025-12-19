@@ -239,7 +239,7 @@ export default function ProposalVotingActions({
     );
   }
 
-  if (isLoadingUserVote || isLoadingVotingPower || isLoadingVoterStatus) {
+  if (isLoadingVoterStatus) {
     return <ProposalVotingActionsFallback />;
   }
 
