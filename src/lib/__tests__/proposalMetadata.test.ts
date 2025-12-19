@@ -43,24 +43,39 @@ describe("proposalMetadata", () => {
   describe("decodeMetadata", () => {
     it("should decode numeric threshold (SuperMajority)", () => {
       const description = "Body";
-      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|approval_threshold=6700`;
+      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|approval_threshold=6667`;
 
       const { metadata, description: cleanDesc } = decodeMetadata(encoded);
 
       expect(cleanDesc).toBe(description);
-      expect(metadata?.approvalThreshold).toBe(0.67);
+      // We no longer set approvalThreshold in the metadata object to avoid confusion with absolute vote counts in downstream logic
+      // expect(metadata?.approvalThreshold).toBe(0.6667);
       expect(metadata?.proposalType).toBe(ProposalType.SuperMajority);
     });
 
     it("should decode numeric threshold (SimpleMajority)", () => {
       const description = "Body";
-      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|approval_threshold=5100`;
+      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|approval_threshold=5000`;
 
       const { metadata, description: cleanDesc } = decodeMetadata(encoded);
 
       expect(cleanDesc).toBe(description);
-      expect(metadata?.approvalThreshold).toBe(0.51);
       expect(metadata?.proposalType).toBe(ProposalType.SimpleMajority);
+    });
+
+    it("should fallback to legacy 'proposal_type' if approval_threshold is missing", () => {
+      const description = "Body";
+      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|proposal_type=SuperMajority`;
+      const { metadata } = decodeMetadata(encoded);
+      expect(metadata?.proposalType).toBe(ProposalType.SuperMajority);
+    });
+
+    it("should fallback to legacy 'proposal_type' if approval_threshold is invalid (legacy float)", () => {
+      // Legacy proposals might have "approval_threshold=0.6666" which parseInt becomes 0
+      const description = "Body";
+      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|proposal_type=SuperMajority,approval_threshold=0.6666`;
+      const { metadata } = decodeMetadata(encoded);
+      expect(metadata?.proposalType).toBe(ProposalType.SuperMajority);
     });
 
     it("should return null metadata for plain text", () => {
@@ -69,13 +84,6 @@ describe("proposalMetadata", () => {
 
       expect(metadata).toBeNull();
       expect(cleanDesc).toBe(description);
-    });
-
-    it("should fallback to legacy labels if present", () => {
-      const description = "Body";
-      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|proposal_type=SuperMajority`;
-      const { metadata } = decodeMetadata(encoded);
-      expect(metadata?.proposalType).toBe(ProposalType.SuperMajority);
     });
 
     it("should return null metadata for legacy descriptions (no prefix)", () => {

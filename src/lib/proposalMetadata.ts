@@ -22,7 +22,12 @@ export interface ProposalMetadataConfig {
 export const METADATA_PREFIX = "\u001E\u001E\u001E\u001E";
 // Version 1: \u0001\u0001 (Avoids \x00)
 export const METADATA_VERSION = "\u0001\u0001";
-const THRESHOLD_PRECISION = 10000;
+export const THRESHOLD_PRECISION = 10000;
+
+export const THRESHOLD_BASIS_POINTS = {
+  SUPER_MAJORITY: 6667, // ~2/3
+  SIMPLE_MAJORITY: 5000, // 0.5
+};
 
 export const PROPOSAL_APPROVAL_THRESHOLDS: Record<ProposalType, number> = {
   [ProposalType.Standard]: 0.5,
@@ -90,31 +95,28 @@ export function decodeMetadata(fullDescription: string): {
 
     if (key === "approval_threshold") {
       const rawValue = parseInt(value, 10);
-      const threshold = rawValue / THRESHOLD_PRECISION;
-      // Do NOT set metadata.approvalThreshold here because it is a Ratio (e.g. 0.6667).
-      // Downstream logic (getProposalStatus) treats approvalThreshold as an ABSOLUTE VOTE COUNT (manual override).
-      // Leaving it undefined ensures we fall through to the proposalType logic (Priority 2/3).
-      // metadata.approvalThreshold = threshold;
 
-      // Infer ProposalType from threshold
-      // 6667 / 10000 = 0.6667
-      // 2/3 = 0.66666...
-      // Check > 0.6
-      if (threshold > 0.6) {
+      // Only infer from threshold if it looks like a valid basis point value (integer > 0)
+      if (rawValue > 0) {
+        if (rawValue >= THRESHOLD_BASIS_POINTS.SUPER_MAJORITY) {
+          metadata.proposalType = ProposalType.SuperMajority;
+        } else if (rawValue >= THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY) {
+          metadata.proposalType = ProposalType.SimpleMajority;
+        } else {
+          metadata.proposalType = ProposalType.Standard;
+        }
+      }
+    }
+
+    // Fallback: Check for legacy 'proposal_type' key if type wasn't already inferred from a valid threshold
+    if (key === "proposal_type" && !metadata.proposalType) {
+      if (value === ProposalType.SuperMajority) {
         metadata.proposalType = ProposalType.SuperMajority;
-      } else if (threshold > 0.4) {
+      } else if (value === ProposalType.SimpleMajority) {
         metadata.proposalType = ProposalType.SimpleMajority;
-      } else {
+      } else if (value === ProposalType.Standard) {
         metadata.proposalType = ProposalType.Standard;
       }
-    } else if (key === "proposal_type") {
-      // Legacy support for explicit type labels
-      if (value === "SimpleMajority")
-        metadata.proposalType = ProposalType.SimpleMajority;
-      else if (value === "SuperMajority")
-        metadata.proposalType = ProposalType.SuperMajority;
-      else if (value === "Standard")
-        metadata.proposalType = ProposalType.Standard;
     }
   }
 
