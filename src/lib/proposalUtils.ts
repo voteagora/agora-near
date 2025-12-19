@@ -241,12 +241,23 @@ export const enrichProposal = <
   const rawDescription =
     proposal.proposalDescription ?? proposal.description ?? "";
   const { metadata, description } = decodeMetadata(rawDescription);
+
+  const proposalType = metadata?.proposalType ?? (proposal as any).proposalType;
+
+  // For Super/Simple Majority, ignore approvalThreshold to prevent ratio misinterpretation
+  let approvalThreshold: string | undefined;
+  if (proposalType === "SuperMajority" || proposalType === "SimpleMajority") {
+    approvalThreshold = undefined;
+  } else {
+    approvalThreshold =
+      metadata?.approvalThreshold?.toString() ??
+      (proposal as any).approvalThreshold;
+  }
+
   return {
     ...proposal,
-    proposalType: metadata?.proposalType ?? (proposal as any).proposalType,
-    approvalThreshold:
-      metadata?.approvalThreshold?.toString() ??
-      (proposal as any).approvalThreshold,
+    proposalType,
+    approvalThreshold,
     decodedDescription: description,
   };
 };
