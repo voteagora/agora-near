@@ -603,8 +603,18 @@ const rewardsFaqs: FAQ[] = [
     question: "How can I receive veNEAR Rewards?",
     answer: (
       <Text>
-        To receive veNEAR rewards, you need to lock NEAR. Start here by clicking
-        “Lock & Stake” and follow the guided process. This tutorial video walks
+        To receive veNEAR rewards, you need to lock NEAR.{" "}
+        <Link
+          href="/assets"
+          className="text-primary underline hover:text-secondary font-medium"
+        >
+          Start here
+        </Link>{" "}
+        by clicking
+        “Lock & Stake” and follow the guided process. This <ExternalLink href="https://www.youtube.com/watch?v=UMDX3uFvS3w">
+         tutorial video
+        </ExternalLink>{" "}
+        walks
         you through each step. First, lock your NEAR to mint veNEAR. Second,
         optionally, stake your NEAR to receive additional governance rewards.
         Staking is not required to receive veNEAR rewards. That&apos;s it!
@@ -653,7 +663,7 @@ const rewardsFaqs: FAQ[] = [
           NEAR (optional). Combining locking and staking may increase your
           overall participation rewards, depending on program parameters. For
           more details on how rewards are calculated,{" "}
-          <ExternalLink href="https://gov.houseofstake.org/info">
+          <ExternalLink href="https://github.com/houseofstake/proposals/blob/e82f6a2978d62617f9b79a8b39016e383d3189ee/HSPs/hsp-003.md">
             check out this link
           </ExternalLink>
           .
