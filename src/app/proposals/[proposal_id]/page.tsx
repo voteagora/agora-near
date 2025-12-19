@@ -2,6 +2,7 @@ import ProposalHome from "@/components/Proposals/Proposal/ProposalHome";
 import { fetchProposal } from "@/lib/api/proposal/requests";
 import { cleanString, truncateString } from "@/lib/text";
 import { Metadata } from "next";
+import { decodeMetadata } from "@/lib/proposalMetadata";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -15,11 +16,12 @@ export async function generateMetadata({
 
   const proposal = await fetchProposal(proposalId);
 
-  const title = truncateString(cleanString(proposal?.title || ""), 40);
-  const description = truncateString(
-    cleanString(proposal?.description || ""),
-    80
+  const { description: cleanDesc } = decodeMetadata(
+    proposal?.description || ""
   );
+
+  const title = truncateString(cleanString(proposal?.title || ""), 40);
+  const description = truncateString(cleanString(cleanDesc), 80);
 
   const preview = `/api/images/og/generic?title=${encodeURIComponent(
     title
