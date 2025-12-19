@@ -610,14 +610,14 @@ const rewardsFaqs: FAQ[] = [
         >
           Start here
         </Link>{" "}
-        by clicking
-        “Lock & Stake” and follow the guided process. This <ExternalLink href="https://www.youtube.com/watch?v=UMDX3uFvS3w">
-         tutorial video
+        by clicking “Lock & Stake” and follow the guided process. This{" "}
+        <ExternalLink href="https://www.youtube.com/watch?v=UMDX3uFvS3w">
+          tutorial video
         </ExternalLink>{" "}
-        walks
-        you through each step. First, lock your NEAR to mint veNEAR. Second,
-        optionally, stake your NEAR to receive additional governance rewards.
-        Staking is not required to receive veNEAR rewards. That&apos;s it!
+        walks you through each step. First, lock your NEAR to mint veNEAR.
+        Second, optionally, stake your NEAR to receive additional governance
+        rewards. Staking is not required to receive veNEAR rewards. That&apos;s
+        it!
       </Text>
     ),
   },
