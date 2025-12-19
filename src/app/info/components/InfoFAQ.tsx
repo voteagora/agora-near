@@ -696,6 +696,7 @@ const InfoFAQ = () => {
           value={openItem}
           onValueChange={handleToggle}
         >
+          {/* FAQ Items */}
           {faqs.map((faq) => (
             <AccordionItem
               key={faq.id}
