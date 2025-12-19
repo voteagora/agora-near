@@ -9,6 +9,7 @@ import {
   ProposalDisplayStatus,
   ProposalStatus,
 } from "./contracts/types/voting";
+import { decodeMetadata } from "./proposalMetadata";
 import {
   DEFAULT_QUORUM_FLOOR_VENEAR,
   DEFAULT_QUORUM_THRESHOLD_PERCENTAGE,
@@ -223,4 +224,27 @@ export const getVotingDays = ({
     return `${votingDays} ${votingDays === 1 ? "day" : "days"}`;
   }
   return formatNanoSecondsToTimeUnit(voting_duration_ns);
+};
+
+export const enrichProposal = <
+  T extends {
+    description?: string | null;
+    proposalDescription?: string | null;
+  },
+>(
+  proposal: T
+): T & {
+  proposalType?: string;
+  approvalThreshold?: string;
+  decodedDescription?: string;
+} => {
+  const rawDescription =
+    proposal.proposalDescription ?? proposal.description ?? "";
+  const { metadata, description } = decodeMetadata(rawDescription);
+  return {
+    ...proposal,
+    proposalType: metadata?.proposalType,
+    approvalThreshold: metadata?.approvalThreshold?.toString(),
+    decodedDescription: description,
+  };
 };

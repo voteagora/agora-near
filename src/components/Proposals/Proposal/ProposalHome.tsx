@@ -4,9 +4,8 @@ import AgoraLoader from "@/components/shared/AgoraLoader/AgoraLoader";
 import { useProposal } from "@/hooks/useProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { useProposalQuorum } from "@/hooks/useProposalQuorum";
-import { ProposalStatus } from "@/lib/contracts/types/voting";
-import { useMemo } from "react";
-import { PendingProposal } from "./PendingProposal";
+import { enrichProposal } from "@/lib/proposalUtils";
+import Link from "next/link";
 import ProposalDescription from "./ProposalDescription";
 import ProposalVoteResult from "./ProposalVoteResult";
 
@@ -20,10 +19,6 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
     proposalId,
   });
 
-  const proposalWithQuorum = useMemo(() => {
-    return proposal ? { ...proposal, quorumAmount } : null;
-  }, [proposal, quorumAmount]);
-
   const isLoading =
     isLoadingProposal || isConfigLoading || isLoadingQuorumAmount;
 
@@ -31,26 +26,28 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
     return <AgoraLoader />;
   }
 
-  if (!proposalWithQuorum || !config) {
+  if (!proposal || !config) {
     return <div>Proposal not found</div>;
   }
 
-  if (proposalWithQuorum.status === ProposalStatus.Created) {
-    return <PendingProposal proposal={proposalWithQuorum} />;
-  }
+  const proposalWithQuorum = enrichProposal({
+    ...proposal,
+    quorumAmount: quorumAmount ?? undefined,
+  });
 
   return (
-    <div className="flex flex-col items-center mt-12">
-      <div className="flex gap-8 lg:gap-16 justify-between items-start max-w-desktop w-full flex-col md:flex-row md:items-start md:justify-between">
-        <div className="flex-1 min-w-0">
-          <ProposalDescription proposal={proposalWithQuorum} />
-        </div>
-        <div className="flex-1 md:flex-none md:w-[24rem] min-w-0">
-          <ProposalVoteResult proposal={proposalWithQuorum} config={config} />
-        </div>
+    <div className="flex flex-col gap-6 w-full">
+      <Link
+        href="/proposals"
+        className="text-sm text-secondary hover:text-primary transition-colors mb-0 w-fit"
+      >
+        ← Back to proposals
+      </Link>
+
+      <div className="flex flex-col md:flex-row gap-8 relative items-start">
+        <ProposalDescription proposal={proposalWithQuorum} />
+        <ProposalVoteResult proposal={proposalWithQuorum} config={config} />
       </div>
-      {/* Mobile-only spacer to prevent overlap with modal/circle */}
-      <div className="block md:hidden" style={{ height: 65 }} />
     </div>
   );
 }

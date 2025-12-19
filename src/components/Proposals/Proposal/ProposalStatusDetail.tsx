@@ -10,6 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+  enrichProposal,
   getProposalStatus,
   getProposalStatusColor,
   isQuorumFulfilled,
@@ -26,17 +27,23 @@ export default function ProposalStatusDetail({
   proposal: ProposalInfo;
   className?: string;
 }) {
-  const quorum = proposal.quorumAmount ?? "0";
-  const approvalThreshold = proposal.approvalThreshold;
+  const {
+    quorumAmount,
+    proposalType,
+    approvalThreshold,
+    voting_start_time_ns,
+    voting_duration_ns,
+    creation_time_ns,
+  } = enrichProposal(proposal);
 
   const status = getProposalStatus({
     status: proposal.status,
-    quorumAmount: quorum,
+    quorumAmount: quorumAmount ?? "0",
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
     abstainVotingPower: proposal.votes[2]?.total_venear ?? "0",
+    proposalType,
     approvalThreshold,
-    proposalType: proposal.proposalType,
   });
 
   const isDefeated = status === ProposalDisplayStatus.Defeated;
@@ -44,7 +51,7 @@ export default function ProposalStatusDetail({
   const { text, bg } = getProposalStatusColor(status);
 
   const quorumFulfilled = isQuorumFulfilled({
-    quorumAmount: quorum,
+    quorumAmount: quorumAmount ?? "0",
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
     abstainVotingPower: proposal.votes[2]?.total_venear ?? "0",
@@ -73,7 +80,7 @@ export default function ProposalStatusDetail({
                   <InfoIcon size={14} />
                 </TooltipTrigger>
                 <TooltipContent className="max-w-[400px]">
-                  <QuorumExplanation quorumAmount={quorum} />{" "}
+                  <QuorumExplanation quorumAmount={quorumAmount ?? "0"} />{" "}
                   <a
                     className="text-blue-500"
                     href="/info?item=quorum-requirements"
@@ -88,9 +95,9 @@ export default function ProposalStatusDetail({
       </div>
       <div className="font-normal">
         <ProposalTimeStatus
-          votingDurationNs={proposal.voting_duration_ns}
-          votingStartTimeNs={proposal.voting_start_time_ns ?? ""}
-          votingCreationTimeNs={proposal.creation_time_ns ?? ""}
+          votingDurationNs={voting_duration_ns}
+          votingStartTimeNs={voting_start_time_ns ?? ""}
+          votingCreationTimeNs={creation_time_ns ?? ""}
           status={proposal.status}
         />
       </div>
