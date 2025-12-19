@@ -30,7 +30,7 @@ export type Proposal = {
   proposalType?: string; // e.g. 'SimpleMajority' | 'SuperMajority'
   votingStartTimeNs?: string | null;
   votingCreatedAtNs?: string | null;
-  quorumAmountYoctoNear?: string | null;
+  quorumAmount?: string | null;
 };
 
 export type ProposalNonVotersRecord = {

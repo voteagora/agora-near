@@ -56,7 +56,7 @@ export interface ProposalInfo {
     total_venear: string;
     venear_growth_config: any;
   } | null;
-  quorumAmountYoctoNear?: string;
+  quorumAmount?: string;
   proposalType?: string;
   approvalThreshold?: string;
 }

@@ -14,7 +14,7 @@ export const useProposalQuorum = ({ proposalId }: { proposalId: string }) => {
   });
 
   return useMemo(
-    () => ({ quorumAmountYoctoNear: data?.quorumAmount, isLoading }),
+    () => ({ quorumAmount: data?.quorumAmount, isLoading }),
     [data?.quorumAmount, isLoading]
   );
 };

@@ -26,7 +26,7 @@ export default function ProposalStatusDetail({
   proposal: ProposalInfo;
   className?: string;
 }) {
-  const quorum = proposal.quorumAmountYoctoNear ?? "0";
+  const quorum = proposal.quorumAmount ?? "0";
   const approvalThreshold = proposal.approvalThreshold;
 
   const status = getProposalStatus({

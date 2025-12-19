@@ -28,10 +28,10 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
     return row;
   }, [createdTime, startTime, endTime]);
 
-  const quorum = proposal.quorumAmountYoctoNear ?? "0";
+  const quorumAmount = proposal.quorumAmount ?? "0";
 
   const hasMetQuorum = isQuorumFulfilled({
-    quorumAmount: quorum,
+    quorumAmount: quorumAmount,
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
     abstainVotingPower: proposal.votes[2]?.total_venear ?? "0",
@@ -81,7 +81,7 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
             )}
             <p className="text-xs font-semibold text-secondary">
               <TokenAmount amount={totalVotes.toFixed(0)} hideCurrency /> /{" "}
-              <TokenAmount amount={quorum} hideCurrency />
+              <TokenAmount amount={quorumAmount} hideCurrency />
               Required
             </p>
           </div>

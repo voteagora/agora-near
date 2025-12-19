@@ -7,7 +7,7 @@ export const ProposalStatusText = memo(
   ({ proposal }: { proposal: Proposal }) => {
     const status = getProposalStatus({
       status: proposal.status ?? "",
-      quorumAmount: proposal.quorumAmountYoctoNear ?? "0",
+      quorumAmount: proposal.quorumAmount ?? "0",
       forVotingPower: proposal.forVotingPower ?? "0",
       againstVotingPower: proposal.againstVotingPower ?? "0",
       abstainVotingPower: proposal.abstainVotingPower ?? "0",
