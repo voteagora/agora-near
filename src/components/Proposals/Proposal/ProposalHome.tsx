@@ -28,7 +28,10 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
   }, [proposal, quorumAmountYoctoNear]);
 
   const isLoading =
-    isLoadingProposal || isConfigLoading || isLoadingQuorumAmount || !isNearInitialized;
+    isLoadingProposal ||
+    isConfigLoading ||
+    isLoadingQuorumAmount ||
+    !isNearInitialized;
 
   if (isLoading) {
     return <AgoraLoader />;
@@ -39,7 +42,7 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
   }
 
   if (proposalWithQuorum.status === ProposalStatus.Created) {
-    return <PendingProposal proposal={proposalWithQuorum} />;
+    return <PendingProposal proposal={proposalWithQuorum} config={config} />;
   }
 
   return (

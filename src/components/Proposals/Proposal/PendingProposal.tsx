@@ -1,21 +1,29 @@
-import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { ProposalInfo, VotingConfig } from "@/lib/contracts/types/voting";
 import Markdown from "@/components/shared/Markdown/Markdown";
-import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { useNear } from "@/contexts/NearContext";
 import { Button } from "@/components/ui/button";
 import { useProposalActions } from "@/hooks/useProposalActions";
 import { toast } from "react-hot-toast";
 import { ChevronLeftIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { getVotingDays } from "@/lib/proposalUtils";
 
-export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
+export const PendingProposal = ({
+  proposal,
+  config,
+}: {
+  proposal: ProposalInfo;
+  config: VotingConfig;
+}) => {
   const router = useRouter();
 
-  const { config, votingDuration } = useProposalConfig();
+  const votingDuration = getVotingDays({
+    voting_duration_ns: config.voting_duration_ns ?? "",
+  });
   const { signedAccountId } = useNear();
 
   const isReviewer =
-    signedAccountId && config?.reviewer_ids.includes(signedAccountId);
+    signedAccountId && config.reviewer_ids.includes(signedAccountId);
 
   const { approveProposal, isApprovingProposal, approveProposalError } =
     useProposalActions({
