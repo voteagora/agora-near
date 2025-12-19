@@ -243,8 +243,10 @@ export const enrichProposal = <
   const { metadata, description } = decodeMetadata(rawDescription);
   return {
     ...proposal,
-    proposalType: metadata?.proposalType,
-    approvalThreshold: metadata?.approvalThreshold?.toString(),
+    proposalType: metadata?.proposalType ?? (proposal as any).proposalType,
+    approvalThreshold:
+      metadata?.approvalThreshold?.toString() ??
+      (proposal as any).approvalThreshold,
     decodedDescription: description,
   };
 };

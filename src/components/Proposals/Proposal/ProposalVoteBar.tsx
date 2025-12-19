@@ -1,9 +1,9 @@
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import {
-  decodeMetadata,
   ProposalType,
   getApprovalThreshold,
 } from "@/lib/proposalMetadata";
+import { enrichProposal } from "@/lib/proposalUtils";
 
 export default function ProposalVoteBar({
   proposal,
@@ -17,10 +17,10 @@ export default function ProposalVoteBar({
   const abstainVotes = Number(proposal.votes[2]?.total_venear ?? "0");
   const totalVotes = Number(proposal.total_votes.total_venear);
 
-  const { metadata } = decodeMetadata(proposal.description || "");
-  const proposalType = (proposal.proposalType ||
-    metadata?.proposalType) as ProposalType;
-  const approvalPercentage = getApprovalThreshold(proposalType);
+  const { proposalType } = enrichProposal(proposal);
+  const approvalPercentage = getApprovalThreshold(
+    proposalType as ProposalType | null
+  );
 
   // Calculate threshold position based on approval percentage (50% or 66%)
   const thresholdPosition = approvalPercentage * 100;
