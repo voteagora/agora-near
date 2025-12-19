@@ -107,17 +107,6 @@ export function decodeMetadata(fullDescription: string): {
         }
       }
     }
-
-    // Fallback: Check for legacy 'proposal_type' key if type wasn't already inferred from a valid threshold
-    if (key === "proposal_type" && !metadata.proposalType) {
-      if (value === ProposalType.SuperMajority) {
-        metadata.proposalType = ProposalType.SuperMajority;
-      } else if (value === ProposalType.SimpleMajority) {
-        metadata.proposalType = ProposalType.SimpleMajority;
-      } else if (value === ProposalType.Standard) {
-        metadata.proposalType = ProposalType.Standard;
-      }
-    }
   }
 
   return { metadata, description: cleanDescription };

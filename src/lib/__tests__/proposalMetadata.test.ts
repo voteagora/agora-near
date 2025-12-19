@@ -63,21 +63,6 @@ describe("proposalMetadata", () => {
       expect(metadata?.proposalType).toBe(ProposalType.SimpleMajority);
     });
 
-    it("should fallback to legacy 'proposal_type' if approval_threshold is missing", () => {
-      const description = "Body";
-      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|proposal_type=SuperMajority`;
-      const { metadata } = decodeMetadata(encoded);
-      expect(metadata?.proposalType).toBe(ProposalType.SuperMajority);
-    });
-
-    it("should fallback to legacy 'proposal_type' if approval_threshold is invalid (legacy float)", () => {
-      // Legacy proposals might have "approval_threshold=0.6666" which parseInt becomes 0
-      const description = "Body";
-      const encoded = `${METADATA_PREFIX}${METADATA_VERSION}${description}|proposal_type=SuperMajority,approval_threshold=0.6666`;
-      const { metadata } = decodeMetadata(encoded);
-      expect(metadata?.proposalType).toBe(ProposalType.SuperMajority);
-    });
-
     it("should return null metadata for plain text", () => {
       const description = "Just text";
       const { metadata, description: cleanDesc } = decodeMetadata(description);
@@ -104,7 +89,7 @@ describe("proposalMetadata", () => {
 
     it("should ignore metadata if version mismatch", () => {
       const invalidVersion = "\u0001\u0002"; // Invalid version
-      const encoded = `${METADATA_PREFIX}${invalidVersion}Content|proposal_type=SuperMajority`;
+      const encoded = `${METADATA_PREFIX}${invalidVersion}Content|approval_threshold=6667`;
       const { metadata, description: cleanDesc } = decodeMetadata(encoded);
 
       expect(metadata).toBeNull();
