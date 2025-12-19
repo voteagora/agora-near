@@ -1,6 +1,7 @@
 "use client";
 
 import AgoraLoader from "@/components/shared/AgoraLoader/AgoraLoader";
+import { useNear } from "@/contexts/NearContext";
 import { useProposal } from "@/hooks/useProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { useProposalQuorum } from "@/hooks/useProposalQuorum";
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 export default function ProposalHome({ proposalId }: { proposalId: string }) {
+  const { isInitialized: isNearInitialized } = useNear();
   const { proposal, isLoading: isLoadingProposal } = useProposal(proposalId);
   const { config, isLoading: isConfigLoading } = useProposalConfig();
   const { quorumAmountYoctoNear, isLoading: isLoadingQuorumAmount } =
@@ -26,7 +28,7 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
   }, [proposal, quorumAmountYoctoNear]);
 
   const isLoading =
-    isLoadingProposal || isConfigLoading || isLoadingQuorumAmount;
+    isLoadingProposal || isConfigLoading || isLoadingQuorumAmount || !isNearInitialized;
 
   if (isLoading) {
     return <AgoraLoader />;
