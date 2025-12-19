@@ -82,3 +82,11 @@ export function stripMarkdown(text: string): string {
       .trim()
   );
 }
+
+// Sanitize string fields to replace curly quotes with straight quotes
+export const sanitizeString = (str: string | undefined | null) => {
+  if (!str) return "";
+  return str.replace(/[‘’”“]/g, (match) =>
+    ["‘", "’"].includes(match) ? "'" : '"'
+  );
+};

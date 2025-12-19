@@ -11,6 +11,7 @@ import EnvelopePaper from "./DialogImage/EnvelopePaper";
 import EnvelopeTop from "./DialogImage/EnvelopeTop";
 import StarIcon from "./DialogImage/Star";
 import Link from "next/link";
+import { sanitizeString } from "@/lib/sanitizationUtils";
 
 const HeroImage = ({ isHovering }: { isHovering: boolean }) => {
   return (
@@ -84,12 +85,6 @@ const SubscribeDialog = ({
       }
       throw new Error("Email is required");
     }
-
-    // Sanitize string fields to replace curly quotes with straight quotes
-    const sanitizeString = (str: string | undefined | null) => {
-      if (!str) return str || "";
-      return str.replace(/['""]/g, (match) => (match === "'" ? "'" : '"'));
-    };
 
     const body = {
       address: signedAccountId,
