@@ -101,6 +101,8 @@ export const RNEAR_TOKEN_METADATA: TokenMetadata = {
   icon: rnearAssetIcon,
 };
 
+export const LOCKUP_MIN_STORAGE_DEPOSIT = 0.2;
+
 export const DEFAULT_GAS_RESERVE = "200000000000000000000000"; // 0.2 NEAR
 
 export const LINEAR_POOL: StakingPool = {

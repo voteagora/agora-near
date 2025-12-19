@@ -1,8 +1,8 @@
+
 ## Getting Started
 
 1. Git clone this repo
-
-2. Hit up the Discord and make sure that you get a local copy of the `.env.local` file. This is required to run the application locally. Then run the development server:
+2. Hit up the [Discord](https://discord.com/invite/nearprotocol) and make sure that you get a local copy of the `.env.local` file. This is required to run the application locally. Then run the development server:
 3. Run `yarn`
 4. `yarn start` / `yarn start:dev`
 
@@ -199,5 +199,151 @@ Create a separate token for prod and swap the env var for mainnet deployments.
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Brand and Style Guide
+
+This section documents the key colors and design tokens used throughout the application.
+
+### Key Brand Colors
+
+The NEAR House of Stake uses a minimal, monochromatic palette with accent colors for semantic states:
+
+| Color | Hex | RGB | Usage |
+|-------|-----|-----|-------|
+| **NEAR Mint** | `#00EC97` | `0 236 151` | Accent color, highlights, NEAR logo |
+| **Brand Primary** | `#000000` | `0 0 0` | Primary text, brand elements, logos |
+| **Brand Secondary** | `#FFFFFF` | `255 255 255` | Backgrounds, inverted elements |
+| **Secondary** | `#404040` | `64 64 64` | Secondary text |
+| **Tertiary** | `#737373` | `115 115 115` | Muted text, placeholders |
+| **Wash** | `#FAFAFA` | `250 250 250` | Card backgrounds, subtle fills |
+| **Line** | `#E5E5E5` | `229 229 229` | Borders, dividers |
+
+### Semantic Colors
+
+| Color | Hex | Usage |
+|-------|-----|-------|
+| **Positive** | `#61D161` | Success states, positive indicators |
+| **Negative** | `#E23636` | Error states, negative indicators |
+| **Vote For** | `#06AB34` | "For" votes on proposals |
+| **Vote Against** | `#D62600` | "Against" votes on proposals |
+| **Vote Abstain** | `#AFAFAF` | "Abstain" votes on proposals |
+
+### Agora Stone Scale
+
+A neutral gray scale used across UI components:
+
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `agora-stone-900` | `#000000` | Darkest (black) |
+| `agora-stone-700` | `#4F4F4F` | Dark gray |
+| `agora-stone-500` | `#AFAFAF` | Medium gray |
+| `agora-stone-100` | `#E0E0E0` | Light gray |
+| `agora-stone-50` | `#FAFAFA` | Lightest (near white) |
+
+### Typography
+
+- **Primary Font**: Inter (system fallback stack)
+- **Monospace Font**: Chivo Mono (used for token amounts)
+- **Code Font**: IBM Plex Mono
+
+### Where Colors Are Defined
+
+Colors are synchronized across three files (see "Styles and CSS" section above):
+1. `tailwind.config.js` - Tailwind theme extension
+2. `src/styles/theme.js` - JavaScript theme object for emotion/css
+3. `src/styles/variables.scss` - SCSS variables
+
+Tenant-specific customizations (like NEAR colors) are defined in `src/lib/tenant/configs/ui/near.ts`.
+
+## How Data is Stored: On-Chain vs Off-Chain
+
+This section explains what happens to data in this application, written for non-technical users.
+
+### Understanding Blockchain vs Database Storage
+
+When using House of Stake, user actions are recorded in two places:
+
+- **On-chain (blockchain)**: Data stored permanently on the NEAR blockchain. This data is public, transparent, and cannot be changed or deleted by anyone.
+- **Off-chain (database)**: Data stored in a production postgres database. This enables fast searching and rich features, but isn't part of the blockchain itself. 
+
+### What Gets Stored On-Chain
+
+The following information is written to the NEAR blockchain and stored forever:
+
+**Voting Power (veNEAR)**
+- Locked NEAR balance and accrued voting power
+- How voting power grows over time while locked
+- The total voting power across all participants
+
+**Delegation**
+- Who has been delegated voting power (if anyone)
+- When delegations happen
+
+**Proposals**
+- The proposal ID, creator, and creation timestamp
+- Voting options (e.g., "Yes", "No", "Abstain")
+- Proposal status (pending, voting, finished, rejected)
+- The final vote tallies for each option
+- A cryptographic snapshot of all eligible voters at voting start
+
+**Votes**
+- Which proposal has been voted on
+- Which option what chose
+- Voting power at the time of voting
+- Cryptographic proof
+
+**Locking and Unlocking NEAR**
+- When NEAR is locked to receive veNEAR
+- When unlocking begins (starts a waiting period)
+- When an unlock is completed and NEAR is withdrawn
+- Which staking pool has been selected (if staking)
+
+### What Gets Stored Off-Chain (Database)
+
+The following is stored in our database for faster access and richer features:
+
+**Proposal Details**
+- Proposal titles, descriptions, and external links
+- Cached voting results (synced from blockchain for faster loading)
+- Voting history searchable by voter
+- Lists of eligible voters who haven't voted yet
+
+**Draft Proposals**
+- Proposals that have been written but not yet submitted
+- These remain private until submitted to the blockchain
+
+**Delegate Profiles**
+- Delegate statements (what delegates stand for)
+- Social links (Twitter, Discord, email, Warpcast)
+- Top issues and priorities
+- Notification preferences (email alerts for proposals)
+- Aggregated voting statistics (participation rate, vote counts)
+
+**Supporting Data**
+- Transaction receipt lookups
+- Staking pool APY rates
+- Current NEAR price
+
+### Why Use Both?
+
+| Storage Type | Benefits | Trade-offs |
+|-------------|----------|------------|
+| **Blockchain** | Transparent, tamper-proof, decentralized | Slower, costs gas fees, limited query options |
+| **Database** | Fast searches, rich filtering, no fees | Requires trust in the operator, not immutable |
+
+We use blockchain storage for anything that requires trust and permanence (votes, balances, proposals), and database storage for features that need speed and flexibility (search, profiles, drafts).
+
+### Summary by Action
+
+| Action | Stored on-chain | Stored off-chain |
+|--------|----------------|------------------|
+| **Lock NEAR** | Locked balance and lock timestamp | — |
+| **Delegate** | Delegation target | Delegate's profile (for display) |
+| **Create a proposal** | Proposal ID, options, deposit | Title, description, links |
+| **Vote** | Vote choice and voting power | Vote indexed for search |
+| **Write delegate statement** | — | Statement and social links |
+| **Save draft proposal** | — | Draft content (until submitted) |
+
+---
 
 NEAR + Agora

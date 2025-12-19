@@ -28,6 +28,7 @@ import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { FormProvider, useForm, useFormContext } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { z } from "zod";
+import CopyableHumanAddress from "@/components/shared/CopyableHumanAddress";
 import DraftEditForm, { DraftEditFormRef } from "./DraftEditForm";
 
 const formSchema = z.object({
@@ -106,7 +107,11 @@ function ScreeningCommitteePanel({
                 {reviewerId.slice(0, 2).toUpperCase()}
               </span>
             </div>
-            <span className="text-sm text-primary">{reviewerId}</span>
+            <CopyableHumanAddress
+              address={reviewerId}
+              strategy="middle"
+              className="text-sm"
+            />
           </div>
         ))}
       </div>

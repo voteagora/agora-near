@@ -122,7 +122,7 @@ const APITable = ({ rows }: { rows: APITableRow[] }) => (
   </div>
 );
 
-const faqs: FAQ[] = [
+const generalFaqs: FAQ[] = [
   {
     id: "what-is-near-governance",
     question: "What is NEAR House of Stake governance?",
@@ -366,62 +366,6 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: "rewards-system",
-    question: "How does the rewards system work?",
-    answer: (
-      <Text>
-        House of Stake is currently debating how best to reward governance
-        participants. It&apos;s likely that rewards will be offered in future,
-        but this isn&apos;t final yet.
-      </Text>
-    ),
-  },
-  {
-    id: "proposal-process",
-    question: "What is the proposal process?",
-    answer: (
-      <div className="space-y-6">
-        <Text>
-          The proposal process begins with community discussion on the
-          governance forum. Once a proposal gains sufficient support, it can be
-          submitted as a pull request to the canonical proposals repository ({" "}
-          <ExternalLink href="https://github.com/houseofstake/proposals">
-            github.com/houseofstake/proposals
-          </ExternalLink>{" "}
-          ). See{" "}
-          <ExternalLink href="https://github.com/houseofstake/proposals/blob/main/HSPs/hsp-001.md">
-            {" "}
-            https://github.com/houseofstake/proposals/blob/main/HSPs/hsp-001.md
-          </ExternalLink>{" "}
-          for more information on this process.
-        </Text>
-        <Text>
-          Once a proposal has been merged there, it can go live on-chain for
-          voting. Proposals must meet quorum requirements and pass with the
-          required majority to be implemented.
-        </Text>
-        <Text>
-          All proposals require a forum post on gov.near.org and to be merged to
-          the proposals repository before on-chain submission. This ensures
-          proper community discussion.
-        </Text>
-        <Callout>
-          <p className="font-semibold mb-4 text-base">Process:</p>
-          <ol className="list-decimal list-inside space-y-3 text-base leading-relaxed">
-            <li>Create a forum post discussing your proposal</li>
-            <li>Gather feedback and build community support</li>
-            <li>
-              Submit complete proposal, in correct format, to the proposals
-              repository and wait until it&apos;s been merged and assigned a HSP
-              number.
-            </li>
-            <li>Submit on-chain using your merged HSP URL.</li>
-          </ol>
-        </Callout>
-      </div>
-    ),
-  },
-  {
     id: "quorum-requirements",
     question: "What are the quorum requirements?",
     answer: (
@@ -623,16 +567,6 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: "proposal-start-timing",
-    question: "When does a proposal go live?",
-    answer: (
-      <Text>
-        The proposal reviewer selects the start time. This can be any time, on a
-        per-proposal basis.
-      </Text>
-    ),
-  },
-  {
     id: "proposal-alpha-unstake",
     question: "How do I unstake from the alpha contracts?",
     answer: (
@@ -651,10 +585,157 @@ const faqs: FAQ[] = [
   },
 ];
 
+const rewardsFaqs: FAQ[] = [
+  {
+    id: "what-are-venear-rewards",
+    question: "What are veNEAR rewards?",
+    answer: (
+      <Text>
+        Locking your NEAR demonstrates long-term commitment to the NEAR
+        ecosystem. When you lock NEAR, you receive veNEAR in return. For a
+        limited time, House of Stake is offering additional rewards for every
+        NEAR you lock.
+      </Text>
+    ),
+  },
+  {
+    id: "how-to-receive-venear-rewards",
+    question: "How can I receive veNEAR Rewards?",
+    answer: (
+      <Text>
+        To receive veNEAR rewards, you need to lock NEAR.{" "}
+        <Link
+          href="/assets"
+          className="text-primary underline hover:text-secondary font-medium"
+        >
+          Start here
+        </Link>{" "}
+        by clicking
+        “Lock & Stake” and follow the guided process. This <ExternalLink href="https://www.youtube.com/watch?v=UMDX3uFvS3w">
+         tutorial video
+        </ExternalLink>{" "}
+        walks
+        you through each step. First, lock your NEAR to mint veNEAR. Second,
+        optionally, stake your NEAR to receive additional governance rewards.
+        Staking is not required to receive veNEAR rewards. That&apos;s it!
+      </Text>
+    ),
+  },
+  {
+    id: "how-to-claim-venear-rewards",
+    question: "How can I claim my veNEAR Rewards?",
+    answer: (
+      <Text>
+        Go to the{" "}
+        <Link
+          className="text-primary underline hover:text-secondary font-medium"
+          href="/assets"
+        >
+          House of Stake assets page
+        </Link>
+        , and connect your wallet. When rewards are available, a “Claim” button
+        will appear. Click it to initiate the transfer of your rewards. You’ll
+        receive NEAR directly into your lockup address, and your wallet balance
+        will update accordingly. Rewards will be released in multiple rounds
+        over a three-month period. By keeping your veNEAR locked, you’ll
+        automatically participate in all upcoming rounds until the veNEAR
+        rewards campaign concludes.
+      </Text>
+    ),
+  },
+  {
+    id: "how-to-increase-governance-rewards",
+    question: "How can I increase my governance rewards?",
+    answer: (
+      <div className="space-y-4">
+        <Text>
+          Your rewards increase based on how much NEAR you lock and how long you
+          lock it for. Please note: The total amount of veNEAR rewards
+          distributed depends on the overall NEAR participation in the rewards
+          campaign.
+        </Text>
+        <Text>
+          Your individual allocation scales with your lock amount and lock
+          duration.
+        </Text>
+        <Text>
+          You can also increase your overall participation rewards by staking
+          NEAR (optional). Combining locking and staking may increase your
+          overall participation rewards, depending on program parameters. For
+          more details on how rewards are calculated,{" "}
+          <ExternalLink href="https://github.com/houseofstake/proposals/blob/e82f6a2978d62617f9b79a8b39016e383d3189ee/HSPs/hsp-003.md">
+            check out this link
+          </ExternalLink>
+          .
+        </Text>
+      </div>
+    ),
+  },
+  {
+    id: "unlock-venear-immediately",
+    question: "Can I unlock my veNEAR immediately after claiming rewards?",
+    answer: (
+      <Text>
+        Yes. Claiming rewards is independent of locking mechanics. You can
+        unlock your veNEAR at any time. However, we encourage you to keep your
+        veNEAR locked and delegate it to participate in governance and
+        decision-making at House of Stake. Staying locked and delegated
+        strengthens the ecosystem and gives you an active voice in shaping
+        NEAR&apos;s future.
+      </Text>
+    ),
+  },
+  {
+    id: "unlock-before-claiming",
+    question:
+      "If I unlock my veNEAR before claiming my rewards, will I lose them?",
+    answer: (
+      <Text>
+        No. Rewards that have already been assigned to you remain claimable even
+        after you unlock your veNEAR.
+      </Text>
+    ),
+  },
+  {
+    id: "withdraw-immediately-after-unlock",
+    question: "Can I withdraw my NEAR immediately after unlocking veNEAR?",
+    answer: (
+      <Text>
+        No. Once you unlock veNEAR, there is a 45-day cooldown period. After the
+        cooldown ends, you can withdraw your underlying NEAR.
+      </Text>
+    ),
+  },
+  {
+    id: "min-amount-near",
+    question:
+      "What is the minimum amount of NEAR required to receive veNEAR rewards?",
+    answer: (
+      <Text>
+        You must have at least 2.1 NEAR available in your wallet to qualify for
+        veNEAR rewards.
+      </Text>
+    ),
+  },
+  {
+    id: "delegate-venear-consequences",
+    question: "What happens when I delegate veNEAR to a delegator?",
+    answer: (
+      <Text>
+        Your veNEAR is burned, and new veNEAR is minted for the delegate. Your
+        locked NEAR balance remains unchanged within the lockup contract. Your
+        reward calculation is unaffected; delegating does not change the amount
+        of rewards you receive. You can undelegate your veNEAR at any time.
+      </Text>
+    ),
+  },
+];
+
 const InfoFAQ = () => {
   const searchParams = useSearchParams();
   const faqId = searchParams?.get("item");
-  const isValidFaqId = faqId && faqs.some((faq) => faq.id === faqId);
+  const isValidFaqId =
+    faqId && [...generalFaqs, ...rewardsFaqs].some((faq) => faq.id === faqId);
   const [openItem, setOpenItem] = useState<string | undefined>(
     isValidFaqId ? faqId : undefined
   );
@@ -675,7 +756,7 @@ const InfoFAQ = () => {
   const handleToggle = useCallback((value: string) => {
     setOpenItem(value);
     if (value) {
-      const faq = faqs.find((f) => f.id === value);
+      const faq = [...generalFaqs, ...rewardsFaqs].find((f) => f.id === value);
       trackEvent({
         event_name: MixpanelEvents.FAQExpanded,
         event_data: { id: value, question: faq?.question },
@@ -686,46 +767,88 @@ const InfoFAQ = () => {
   return (
     <div className="mt-16 w-full">
       <div className="mx-auto">
-        <h3 className="text-3xl font-black text-primary mb-10">
-          Frequently Asked Questions
-        </h3>
-        <Accordion
-          type="single"
-          collapsible
-          className="space-y-4"
-          value={openItem}
-          onValueChange={handleToggle}
-        >
-          {/* FAQ Items */}
-          {faqs.map((faq) => (
-            <AccordionItem
-              key={faq.id}
-              value={faq.id}
-              id={faq.id}
-              className="w-full border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow data-[state=open]:shadow-md"
+        <section className="mb-16" id="ve-near-rewards">
+          <h3 className="text-3xl font-black text-primary mb-10">
+            FAQs | veNEAR Rewards
+          </h3>
+
+          {rewardsFaqs.length > 0 ? (
+            <Accordion
+              type="single"
+              collapsible
+              className="space-y-4"
+              value={openItem}
+              onValueChange={handleToggle}
             >
-              <AccordionTrigger className="w-full text-left text-primary hover:text-secondary text-base font-semibold px-8 py-6 hover:no-underline">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="w-full text-base leading-relaxed px-8 pb-8 pt-2">
-                {faq.answer}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-        <div className="mt-12 text-base text-tertiary bg-gray-50 rounded-lg p-6">
-          <Text>
-            Have more questions? Join the discussion on our{" "}
-            <ExternalLink href="https://gov.near.org/">
-              Governance Forum
-            </ExternalLink>{" "}
-            or{" "}
-            <ExternalLink href="https://discord.gg/nearprotocol">
-              Discord
-            </ExternalLink>
-            .
-          </Text>
-        </div>
+              {rewardsFaqs.map((faq) => (
+                <AccordionItem
+                  key={faq.id}
+                  value={faq.id}
+                  id={faq.id}
+                  className="w-full border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow data-[state=open]:shadow-md"
+                >
+                  <AccordionTrigger className="w-full text-left text-primary hover:text-secondary text-base font-semibold px-8 py-6 hover:no-underline">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="w-full text-base leading-relaxed px-8 pb-8 pt-2">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          ) : (
+            <div className="w-full bg-[#5EA5F5] rounded-lg p-12 text-white">
+              <div className="text-xl font-medium">
+                <br />
+                FAQs about veNEAR Rewards
+                <br />
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section>
+          <h3 className="text-3xl font-black text-primary mb-10">
+            FAQs | General
+          </h3>
+          <Accordion
+            type="single"
+            collapsible
+            className="space-y-4"
+            value={openItem}
+            onValueChange={handleToggle}
+          >
+            {generalFaqs.map((faq) => (
+              <AccordionItem
+                key={faq.id}
+                value={faq.id}
+                id={faq.id}
+                className="w-full border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow data-[state=open]:shadow-md"
+              >
+                <AccordionTrigger className="w-full text-left text-primary hover:text-secondary text-base font-semibold px-8 py-6 hover:no-underline">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="w-full text-base leading-relaxed px-8 pb-8 pt-2">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+
+          <div className="mt-12 text-base text-tertiary bg-gray-50 rounded-lg p-6">
+            <Text>
+              Have more questions? Join the discussion on our{" "}
+              <ExternalLink href="https://gov.near.org/">
+                Governance Forum
+              </ExternalLink>{" "}
+              or{" "}
+              <ExternalLink href="https://discord.gg/nearprotocol">
+                Discord
+              </ExternalLink>
+              .
+            </Text>
+          </div>
+        </section>
       </div>
     </div>
   );

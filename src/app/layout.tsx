@@ -126,11 +126,13 @@ export default async function RootLayout({
         <GoogleAnalytics />
         <NuqsAdapter>
           <ClientLayout>
-            <div className="mx-auto max-w-[1280px] my-3 sm:my-4 px-3 sm:px-8">
-              <Header />
+            <div className="my-3 sm:my-4 px-3 sm:px-8">
+              <div className="mx-auto max-w-desktop">
+                <Header />
+              </div>
               {children}
             </div>
-            <div className="hidden sm:block">
+            <div className="hidden sm:block mx-auto max-w-desktop">
               <DAOMetricsHeader />
             </div>
           </ClientLayout>
