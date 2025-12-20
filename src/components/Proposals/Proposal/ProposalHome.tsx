@@ -4,6 +4,7 @@ import AgoraLoader from "@/components/shared/AgoraLoader/AgoraLoader";
 import { useProposal } from "@/hooks/useProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { useProposalQuorum } from "@/hooks/useProposalQuorum";
+import { enrichProposal } from "@/lib/proposalUtils";
 import { ProposalStatus } from "@/lib/contracts/types/voting";
 import { useMemo } from "react";
 import { PendingProposal } from "./PendingProposal";
@@ -21,8 +22,17 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
   });
 
   const proposalWithQuorum = useMemo(() => {
-    return proposal ? { ...proposal, quorumAmount } : null;
+    return proposal ? enrichProposal({ ...proposal, quorumAmount }) : null;
   }, [proposal, quorumAmount]);
+
+  const finalProposal = useMemo(() => {
+    if (!proposalWithQuorum) return null;
+    return {
+      ...proposalWithQuorum,
+      description:
+        proposalWithQuorum.decodedDescription || proposalWithQuorum.description,
+    };
+  }, [proposalWithQuorum]);
 
   const isLoading =
     isLoadingProposal || isConfigLoading || isLoadingQuorumAmount;
@@ -31,22 +41,22 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
     return <AgoraLoader />;
   }
 
-  if (!proposalWithQuorum || !config) {
+  if (!finalProposal || !config) {
     return <div>Proposal not found</div>;
   }
 
-  if (proposalWithQuorum.status === ProposalStatus.Created) {
-    return <PendingProposal proposal={proposalWithQuorum} />;
+  if (finalProposal.status === ProposalStatus.Created) {
+    return <PendingProposal proposal={finalProposal} />;
   }
 
   return (
     <div className="flex flex-col items-center mt-12">
       <div className="flex gap-8 lg:gap-16 justify-between items-start max-w-desktop w-full flex-col md:flex-row md:items-start md:justify-between">
         <div className="flex-1 min-w-0">
-          <ProposalDescription proposal={proposalWithQuorum} />
+          <ProposalDescription proposal={finalProposal} />
         </div>
         <div className="flex-1 md:flex-none md:w-[24rem] min-w-0">
-          <ProposalVoteResult proposal={proposalWithQuorum} config={config} />
+          <ProposalVoteResult proposal={finalProposal} config={config} />
         </div>
       </div>
       {/* Mobile-only spacer to prevent overlap with modal/circle */}
