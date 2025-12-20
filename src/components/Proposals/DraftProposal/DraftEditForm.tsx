@@ -212,24 +212,34 @@ function DraftDetailsForm() {
               <Controller
                 control={control}
                 name="proposalType"
+                rules={{ required: "Proposal type is required" }}
                 render={({ field }) => (
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    disabled={displayMode === "preview"}
-                  >
-                    <SelectTrigger className="w-full bg-white">
-                      <SelectValue placeholder="Select a proposal type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={ProposalType.SimpleMajority}>
-                        Simple Majority
-                      </SelectItem>
-                      <SelectItem value={ProposalType.SuperMajority}>
-                        Super Majority
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      disabled={displayMode === "preview"}
+                    >
+                      <SelectTrigger
+                        className={`w-full bg-white ${errors.proposalType ? "border-negative" : ""}`}
+                      >
+                        <SelectValue placeholder="Select a proposal type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={ProposalType.SimpleMajority}>
+                          Simple Majority
+                        </SelectItem>
+                        <SelectItem value={ProposalType.SuperMajority}>
+                          Super Majority
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.proposalType && (
+                      <p className={errorTextStyle}>
+                        {errors.proposalType.message}
+                      </p>
+                    )}
+                  </>
                 )}
               />
             </div>
