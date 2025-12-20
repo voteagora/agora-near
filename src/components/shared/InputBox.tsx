@@ -9,7 +9,7 @@ export const InputBox = React.forwardRef<
   return (
     <input
       ref={ref}
-      className={`w-full py-2 px-4 rounded-md text-base border ${error ? "border-negative" : "border-line"} bg-neutral`}
+      className={`w-full py-2 px-4 rounded-md text-base border ${error ? "border-negative" : "border-line"} bg-neutral disabled:opacity-50 disabled:cursor-not-allowed`}
       onWheel={(e) => e.currentTarget.blur()}
       {...props}
     />

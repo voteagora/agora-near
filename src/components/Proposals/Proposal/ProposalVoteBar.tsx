@@ -1,9 +1,14 @@
+```typescript
 import { ProposalInfo } from "@/lib/contracts/types/voting";
+import { ProposalType, getApprovalThreshold } from "@/lib/proposalMetadata";
+import { enrichProposal } from "@/lib/proposalUtils";
 
 export default function ProposalVoteBar({
   proposal,
+  config,
 }: {
   proposal: ProposalInfo;
+  config: any;
 }) {
   const hasVotes = proposal.total_votes.total_venear !== "0";
 
@@ -13,10 +18,12 @@ export default function ProposalVoteBar({
   const totalVotes = Number(proposal.total_votes.total_venear);
 
   // Threshold is at 50% of for+against votes (abstain doesn't count)
-  const thresholdPosition =
-    totalVotes > 0 && forVotes + againstVotes > 0
-      ? ((forVotes + againstVotes) / 2 / totalVotes) * 100
-      : 50;
+  const { proposalType } = enrichProposal(proposal);
+  const approvalPercentage = getApprovalThreshold(
+    proposalType as ProposalType | null
+  );
+  // Calculate threshold position based on approval percentage (50% or 66%)
+  const thresholdPosition = approvalPercentage * 100;
 
   return (
     <div id="chartContainer" className="relative flex items-stretch gap-x-0.5">
