@@ -35,7 +35,6 @@ const formSchema = z.object({
   description: z.string().min(1, "Description is required"),
   // Allow saving drafts without enforcing link validation
   link: z.string().optional().or(z.literal("")),
-  proposalType: z.nativeEnum(ProposalType),
   options: z
     .array(
       z.object({
@@ -43,6 +42,9 @@ const formSchema = z.object({
       })
     )
     .min(2, "At least two options are required"),
+  proposalType: z.nativeEnum(ProposalType).default(ProposalType.Standard),
+  quorumThreshold: z.coerce.number().optional(),
+  approvalThreshold: z.coerce.number().optional(),
 });
 
 // Strict validation used only on submission
@@ -57,7 +59,6 @@ const submitSchema = z.object({
       message:
         "Proposal links must be from https://gov.near.org/. Create a forum post first to gather community support.",
     }),
-  proposalType: z.nativeEnum(ProposalType),
   options: z
     .array(
       z.object({
@@ -65,6 +66,9 @@ const submitSchema = z.object({
       })
     )
     .min(2, "At least two options are required"),
+  proposalType: z.nativeEnum(ProposalType),
+  quorumThreshold: z.coerce.number().optional(),
+  approvalThreshold: z.coerce.number().optional(),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -487,6 +491,8 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
       link: "",
       options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
       proposalType: ProposalType.Standard,
+      quorumThreshold: undefined,
+      approvalThreshold: undefined,
     },
     mode: "onSubmit",
   });

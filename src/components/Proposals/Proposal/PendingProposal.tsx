@@ -12,7 +12,7 @@ import { ProposalTypeBadge } from "../ProposalTypeBadge";
 export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
   const router = useRouter();
 
-  const { config, votingDuration } = useProposalConfig();
+  const { config, votingDuration, isLoading } = useProposalConfig();
   const { signedAccountId } = useNear();
 
   const isReviewer =
@@ -24,6 +24,10 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
         toast.success("Proposal approved");
       },
     });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <section>

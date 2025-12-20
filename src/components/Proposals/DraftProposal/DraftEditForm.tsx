@@ -82,35 +82,6 @@ function DraftDetailsForm() {
           justifyContent="justify-between"
           gap={4}
         >
-          <div className="flex flex-col gap-1 w-full max-w-[200px]">
-            <h4 className="text-xs font-semibold text-secondary">
-              Proposal Type
-            </h4>
-            <Controller
-              control={control}
-              name="proposalType"
-              render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  disabled={displayMode === "preview"}
-                >
-                  <SelectTrigger className="w-full bg-white">
-                    <SelectValue placeholder="Select a proposal type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={ProposalType.SimpleMajority}>
-                      Simple Majority
-                    </SelectItem>
-                    <SelectItem value={ProposalType.SuperMajority}>
-                      Super Majority
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </div>
-
           <div className="flex flex-col gap-1">
             <h4 className="text-xs font-semibold text-secondary">Content</h4>
             <Tab.Group
@@ -208,6 +179,7 @@ function DraftDetailsForm() {
             <InputBox
               placeholder={"https://gov.near.org/your-proposal"}
               error={!!errors.link}
+              disabled={displayMode === "preview"}
               {...field}
             />
           )}
@@ -228,6 +200,41 @@ function DraftDetailsForm() {
             )}
           </div>
         )}
+        <div className="flex flex-col gap-4 border-t border-line pt-4 mt-2">
+          <h4 className="text-xs font-semibold text-secondary">
+            Configuration
+          </h4>
+          <div className="flex flex-col gap-4">
+            <div>
+              <label className="text-xs font-medium text-tertiary mb-1 block">
+                Proposal Type
+              </label>
+              <Controller
+                control={control}
+                name="proposalType"
+                render={({ field }) => (
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={displayMode === "preview"}
+                  >
+                    <SelectTrigger className="w-full bg-white">
+                      <SelectValue placeholder="Select a proposal type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={ProposalType.SimpleMajority}>
+                        Simple Majority
+                      </SelectItem>
+                      <SelectItem value={ProposalType.SuperMajority}>
+                        Super Majority
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </VStack>
   );
