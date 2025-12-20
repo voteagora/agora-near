@@ -143,14 +143,10 @@ const DraftProposalsPageContent = memo(
       handleSubmit: handleSubmitForm,
       watch,
       setError,
+      getValues,
     } = useFormContext<FormValues>();
 
-    const [title, description, link, proposalType] = watch([
-      "title",
-      "description",
-      "link",
-      "proposalType",
-    ]);
+    const [title, description, link] = watch(["title", "description", "link"]);
 
     const { createProposalAsync, isCreatingProposal, createProposalError } =
       useCreateProposal({
@@ -400,12 +396,8 @@ const DraftProposalsPageContent = memo(
             config={config}
             votingDuration={votingDuration}
             onSaveSuccess={() => {
-              reset({
-                title: draft.title || "",
-                description: draft.description || "",
-                link: draft.proposalUrl || "",
-                options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
-              });
+              const currentValues = getValues();
+              reset(currentValues);
             }}
           />
         ) : (
@@ -494,6 +486,7 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
       description: "",
       link: "",
       options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
+      proposalType: ProposalType.Standard,
     },
     mode: "onSubmit",
   });
