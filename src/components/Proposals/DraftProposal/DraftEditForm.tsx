@@ -268,14 +268,18 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
 
       handleSubmit(
         (formValues) => {
+          if (!formValues.proposalType) {
+            toast.error("Please select a proposal type before saving");
+            return;
+          }
+
           updateDraft(
             {
               id: draft.id,
               data: {
                 title: formValues.title.trim(),
                 description: encodeMetadata(formValues.description.trim(), {
-                  proposalType:
-                    formValues.proposalType || ProposalType.SimpleMajority,
+                  proposalType: formValues.proposalType,
                   quorumThreshold: undefined,
                   approvalThreshold: undefined,
                 }),

@@ -42,7 +42,7 @@ const formSchema = z.object({
       })
     )
     .min(2, "At least two options are required"),
-  proposalType: z.nativeEnum(ProposalType).default(ProposalType.Standard),
+  proposalType: z.nativeEnum(ProposalType).optional(),
   quorumThreshold: z.coerce.number().optional(),
   approvalThreshold: z.coerce.number().optional(),
 });
@@ -245,7 +245,7 @@ const DraftProposalsPageContent = memo(
           title: draft.title || "",
           description: cleanDescription,
           link: draft.proposalUrl || "",
-          proposalType: metadata?.proposalType || ProposalType.Standard,
+          proposalType: metadata?.proposalType || undefined,
           options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
         });
       }
@@ -490,7 +490,7 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
       description: "",
       link: "",
       options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
-      proposalType: ProposalType.Standard,
+      proposalType: undefined,
       quorumThreshold: undefined,
       approvalThreshold: undefined,
     },
