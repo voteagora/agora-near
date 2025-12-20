@@ -9,6 +9,7 @@ import {
   ProposalDisplayStatus,
   ProposalStatus,
 } from "./contracts/types/voting";
+import { decodeMetadata } from "./proposalMetadata";
 import {
   DEFAULT_QUORUM_FLOOR_VENEAR,
   DEFAULT_QUORUM_THRESHOLD_PERCENTAGE,
@@ -32,12 +33,16 @@ export function getProposalStatus({
   forVotingPower,
   againstVotingPower,
   abstainVotingPower,
+  approvalThreshold,
+  proposalType,
 }: {
   status: string;
   quorumAmount: string;
   forVotingPower: string;
   againstVotingPower: string;
   abstainVotingPower: string;
+  approvalThreshold?: string;
+  proposalType?: string;
 }) {
   switch (status) {
     case ProposalStatus.Finished: {
@@ -47,11 +52,29 @@ export function getProposalStatus({
         againstVotingPower,
         abstainVotingPower,
       });
-      const forGreaterThanAgainst = isForGreaterThanAgainst({
-        forVotingPower,
-        againstVotingPower,
-      });
-      return quorumFulfilled && forGreaterThanAgainst
+      let passedApproval = false;
+      // Priority 1: Manual Approval Threshold (Explicit Override)
+      if (approvalThreshold && Big(approvalThreshold).gt(0)) {
+        passedApproval = Big(forVotingPower).gte(approvalThreshold);
+      }
+      // Priority 2: 2/3 Super Majority (Dynamic)
+      else if (proposalType === "SuperMajority") {
+        // >= 6667/10000 (66.67%) of participating votes
+        const participatingVotes = Big(forVotingPower).plus(againstVotingPower);
+        const superMajorityThreshold = participatingVotes
+          .mul(6667)
+          .div(10000)
+          .round(0, 3); // 3 = Big.roundUp
+        passedApproval = Big(forVotingPower).gte(superMajorityThreshold);
+      }
+      // Priority 3: Simple Majority / Standard (For > Against)
+      else {
+        passedApproval = isForGreaterThanAgainst({
+          forVotingPower,
+          againstVotingPower,
+        });
+      }
+      return quorumFulfilled && passedApproval
         ? ProposalDisplayStatus.Succeeded
         : ProposalDisplayStatus.Defeated;
     }
