@@ -16,14 +16,14 @@ export const maxDuration = 60;
 export default function ProposalHome({ proposalId }: { proposalId: string }) {
   const { proposal, isLoading: isLoadingProposal } = useProposal(proposalId);
   const { config, isLoading: isConfigLoading } = useProposalConfig();
-  const { quorumAmountYoctoNear, isLoading: isLoadingQuorumAmount } =
+  const { quorumAmount, isLoading: isLoadingQuorumAmount } =
     useProposalQuorum({
       proposalId,
     });
 
   const proposalWithQuorum = useMemo(() => {
-    return proposal ? { ...proposal, quorumAmountYoctoNear } : null;
-  }, [proposal, quorumAmountYoctoNear]);
+    return proposal ? { ...proposal, quorumAmount } : null;
+  }, [proposal, quorumAmount]);
 
   const isLoading =
     isLoadingProposal || isConfigLoading || isLoadingQuorumAmount;

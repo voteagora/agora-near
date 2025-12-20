@@ -1,14 +1,11 @@
-```typescript
 import { ProposalInfo } from "@/lib/contracts/types/voting";
 import { ProposalType, getApprovalThreshold } from "@/lib/proposalMetadata";
 import { enrichProposal } from "@/lib/proposalUtils";
 
 export default function ProposalVoteBar({
   proposal,
-  config,
 }: {
   proposal: ProposalInfo;
-  config: any;
 }) {
   const hasVotes = proposal.total_votes.total_venear !== "0";
 

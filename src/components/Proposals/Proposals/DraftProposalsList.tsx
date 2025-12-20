@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useMemo } from "react";
 
 import { decodeMetadata } from "@/lib/proposalMetadata";
-import { ProposalTypeBadge } from "../../ProposalTypeBadge";
+import { ProposalTypeBadge } from "@/components/Proposals/ProposalTypeBadge";
 
 function DraftProposalCard({ draft }: { draft: DraftProposal }) {
   const router = useRouter();
