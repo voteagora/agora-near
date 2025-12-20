@@ -31,13 +31,15 @@ export default function ProposalDescription({
           )}
         </div>
         <div className="flex flex-col gap-2 mt-1">
-          <h2
-            className="font-black text-2xl text-primary max-w-full"
-            style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}
-          >
-            {proposal.title}
-          </h2>
-          <ProposalTypeBadge type={proposal.proposalType} />
+          <div className="flex items-start justify-between gap-4">
+            <h2
+              className="font-black text-2xl text-primary max-w-full"
+              style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}
+            >
+              {proposal.title}
+            </h2>
+            <ProposalTypeBadge className="mt-1 shrink-0" type={proposal.proposalType} />
+          </div>
         </div>
       </div>
       {proposal.status !== ProposalStatus.Created &&
