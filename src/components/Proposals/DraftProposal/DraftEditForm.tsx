@@ -4,6 +4,8 @@ import { useState, useImperativeHandle, forwardRef } from "react";
 import { VStack, HStack } from "@/components/Layout/Stack";
 import { Tab } from "@headlessui/react";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
+import { Select } from "@/components/ui/select";
+import { ProposalType, encodeMetadata } from "@/lib/proposalMetadata";
 import Markdown from "@/components/shared/Markdown/Markdown";
 import { InputBox } from "@/components/shared/InputBox";
 import { DraftProposal } from "@/lib/api/proposal/types";

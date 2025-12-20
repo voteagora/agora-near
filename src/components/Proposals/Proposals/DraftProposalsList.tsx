@@ -9,12 +9,17 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useMemo } from "react";
 
+import { decodeMetadata } from "@/lib/proposalMetadata";
+import { ProposalTypeBadge } from "../../ProposalTypeBadge";
+
 function DraftProposalCard({ draft }: { draft: DraftProposal }) {
   const router = useRouter();
 
   const handleClick = () => {
     router.push(`/proposals/drafts/${draft.id}`);
   };
+
+  const { metadata, description } = decodeMetadata(draft.description || "");
 
   const getStageColor = (stage: DraftProposalStage) => {
     switch (stage) {
@@ -35,9 +40,14 @@ function DraftProposalCard({ draft }: { draft: DraftProposal }) {
       onClick={handleClick}
     >
       <div className="flex justify-between items-start mb-2">
-        <h3 className="text-lg font-semibold text-primary hover:text-secondary transition-colors">
-          {draft.title || "Untitled Draft"}
-        </h3>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-primary hover:text-secondary transition-colors">
+              {draft.title || "Untitled Draft"}
+            </h3>
+            <ProposalTypeBadge type={metadata?.proposalType} />
+          </div>
+        </div>
         <span
           className={cn(
             "px-2 py-1 text-xs font-medium rounded-full border",
@@ -49,7 +59,7 @@ function DraftProposalCard({ draft }: { draft: DraftProposal }) {
       </div>
 
       <p className="text-sm text-secondary mb-3 line-clamp-2">
-        {draft.description || "No description provided"}
+        {description || "No description provided"}
       </p>
 
       <div className="flex justify-between items-center text-xs text-tertiary">

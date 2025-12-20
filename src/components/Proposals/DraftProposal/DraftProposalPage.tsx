@@ -24,12 +24,18 @@ import { toast } from "react-hot-toast";
 import { z } from "zod";
 import CopyableHumanAddress from "@/components/shared/CopyableHumanAddress";
 import DraftEditForm, { DraftEditFormRef } from "./DraftEditForm";
+import {
+  decodeMetadata,
+  encodeMetadata,
+  ProposalType,
+} from "@/lib/proposalMetadata";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   // Allow saving drafts without enforcing link validation
   link: z.string().optional().or(z.literal("")),
+  proposalType: z.nativeEnum(ProposalType),
   options: z
     .array(
       z.object({
@@ -51,6 +57,7 @@ const submitSchema = z.object({
       message:
         "Proposal links must be from https://gov.near.org/. Create a forum post first to gather community support.",
     }),
+  proposalType: z.nativeEnum(ProposalType),
   options: z
     .array(
       z.object({
@@ -138,7 +145,12 @@ const DraftProposalsPageContent = memo(
       setError,
     } = useFormContext<FormValues>();
 
-    const [title, description, link] = watch(["title", "description", "link"]);
+    const [title, description, link, proposalType] = watch([
+      "title",
+      "description",
+      "link",
+      "proposalType",
+    ]);
 
     const { createProposalAsync, isCreatingProposal, createProposalError } =
       useCreateProposal({
@@ -150,7 +162,7 @@ const DraftProposalsPageContent = memo(
 
     const handleSubmit = useCallback(() => {
       handleSubmitForm(
-        async ({ title, description, link }) => {
+        async ({ title, description, link, proposalType }) => {
           if (step === 1) {
             setStep(2);
             updateDraft({
@@ -167,6 +179,7 @@ const DraftProposalsPageContent = memo(
             title,
             description,
             link,
+            proposalType,
             options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
           });
 
@@ -181,9 +194,13 @@ const DraftProposalsPageContent = memo(
           }
 
           try {
+            const encodedDescription = encodeMetadata(description, {
+              proposalType,
+            });
+
             const transactionResult = await createProposalAsync({
               title: title || null,
-              description: description || null,
+              description: encodedDescription || null,
               link: link || null,
               voting_options: NEAR_VOTING_OPTIONS,
             });
@@ -220,10 +237,15 @@ const DraftProposalsPageContent = memo(
 
     useEffect(() => {
       if (draft && !isDirty) {
+        const { description: cleanDescription, metadata } = decodeMetadata(
+          draft.description || ""
+        );
+
         reset({
           title: draft.title || "",
-          description: draft.description || "",
+          description: cleanDescription,
           link: draft.proposalUrl || "",
+          proposalType: metadata?.proposalType || ProposalType.Standard,
           options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
         });
       }
