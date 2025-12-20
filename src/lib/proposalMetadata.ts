@@ -57,38 +57,42 @@ export function decodeMetadata(fullDescription: string): {
   metadata: ProposalMetadataConfig | null;
   description: string;
 } {
-  if (!fullDescription.startsWith(METADATA_PREFIX)) {
-    return { metadata: null, description: fullDescription };
-  }
-  const version = fullDescription.slice(4, 6);
-  if (version !== METADATA_VERSION) {
-    return { metadata: null, description: fullDescription };
-  }
-  const remaining = fullDescription.slice(6);
-  const lastPipeIndex = remaining.lastIndexOf("|");
-  if (lastPipeIndex === -1) {
-    return { metadata: null, description: remaining };
-  }
-  const cleanDescription = remaining.substring(0, lastPipeIndex);
-  const metadataString = remaining.substring(lastPipeIndex + 1);
-  const metadata: ProposalMetadataConfig = {};
-  const pairs = metadataString.split(",");
-  for (const pair of pairs) {
-    const [key, value] = pair.split("=");
-    if (!key || !value) continue;
-    if (key === "approval_threshold") {
-      const rawValue = parseInt(value, 10);
-      // Only infer from threshold if it looks like a valid basis point value (integer > 0)
-      if (rawValue > 0) {
-        if (rawValue >= THRESHOLD_BASIS_POINTS.SUPER_MAJORITY) {
-          metadata.proposalType = ProposalType.SuperMajority;
-        } else if (rawValue >= THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY) {
-          metadata.proposalType = ProposalType.SimpleMajority;
-        } else {
-          metadata.proposalType = ProposalType.Standard;
+  // 1. Try to parse V1 Metadata
+  if (fullDescription.startsWith(METADATA_PREFIX)) {
+    const version = fullDescription.slice(4, 6);
+    if (version === METADATA_VERSION) {
+      const remaining = fullDescription.slice(6);
+      const lastPipeIndex = remaining.lastIndexOf("|");
+
+      if (lastPipeIndex !== -1) {
+        const cleanDescription = remaining.substring(0, lastPipeIndex);
+        const metadataString = remaining.substring(lastPipeIndex + 1);
+        const metadata: ProposalMetadataConfig = {};
+        const pairs = metadataString.split(",");
+
+        for (const pair of pairs) {
+          const [key, value] = pair.split("=");
+          if (!key || !value) continue;
+
+          if (key === "approval_threshold") {
+            const rawValue = parseInt(value, 10);
+            if (rawValue > 0) {
+              if (rawValue >= THRESHOLD_BASIS_POINTS.SUPER_MAJORITY) {
+                metadata.proposalType = ProposalType.SuperMajority;
+              } else if (rawValue >= THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY) {
+                metadata.proposalType = ProposalType.SimpleMajority;
+              } else {
+                metadata.proposalType = ProposalType.Standard;
+              }
+              metadata.approvalThreshold = rawValue / THRESHOLD_PRECISION;
+            }
+          }
         }
+        return { metadata, description: cleanDescription };
       }
     }
   }
-  return { metadata, description: cleanDescription };
+
+  // 2. Default: No metadata, Standard Proposal
+  return { metadata: null, description: fullDescription };
 }

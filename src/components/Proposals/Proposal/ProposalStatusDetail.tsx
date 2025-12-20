@@ -13,6 +13,7 @@ import {
   getProposalStatus,
   getProposalStatusColor,
   isQuorumFulfilled,
+  enrichProposal,
 } from "@/lib/proposalUtils";
 import { cn } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
@@ -28,12 +29,17 @@ export default function ProposalStatusDetail({
 }) {
   const quorum = proposal.quorumAmountYoctoNear ?? "0";
 
+  const { quorumAmount, proposalType, approvalThreshold } =
+    enrichProposal(proposal);
+
   const status = getProposalStatus({
     status: proposal.status,
     quorumAmount: quorum,
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
     abstainVotingPower: proposal.votes[2]?.total_venear ?? "0",
+    proposalType,
+    approvalThreshold,
   });
 
   const isDefeated = status === ProposalDisplayStatus.Defeated;

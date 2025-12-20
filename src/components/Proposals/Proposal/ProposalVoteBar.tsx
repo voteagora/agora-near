@@ -19,8 +19,14 @@ export default function ProposalVoteBar({
   const approvalPercentage = getApprovalThreshold(
     proposalType as ProposalType | null
   );
+
   // Calculate threshold position based on approval percentage (50% or 66%)
-  const thresholdPosition = approvalPercentage * 100;
+  // Adjusted by the ratio of (For + Against) / Total, since the bar includes Abstain.
+  const participatingVotes = forVotes + againstVotes;
+  const thresholdPosition =
+    totalVotes > 0
+      ? approvalPercentage * (participatingVotes / totalVotes) * 100
+      : approvalPercentage * 100;
 
   return (
     <div id="chartContainer" className="relative flex items-stretch gap-x-0.5">

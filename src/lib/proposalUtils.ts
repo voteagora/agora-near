@@ -239,6 +239,7 @@ export const enrichProposal = <
     proposal.proposalDescription ?? proposal.description ?? "";
   const { metadata, description } = decodeMetadata(rawDescription);
   const proposalType = metadata?.proposalType ?? (proposal as any).proposalType;
+
   // For Super/Simple Majority, ignore approvalThreshold to prevent ratio misinterpretation
   let approvalThreshold: string | undefined;
   if (proposalType === "SuperMajority" || proposalType === "SimpleMajority") {
@@ -248,6 +249,7 @@ export const enrichProposal = <
       metadata?.approvalThreshold?.toString() ??
       (proposal as any).approvalThreshold;
   }
+
   return {
     ...proposal,
     proposalType,
