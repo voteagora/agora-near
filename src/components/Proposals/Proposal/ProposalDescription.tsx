@@ -3,6 +3,7 @@ import { ProposalInfo, ProposalStatus } from "@/lib/contracts/types/voting";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import styles from "./ProposalDescription.module.scss";
 import ProposalChart from "../ProposalPage/ProposalChart/ProposalChart";
+import { ProposalTypeBadge } from "../ProposalTypeBadge";
 
 export default function ProposalDescription({
   proposal,
@@ -29,12 +30,15 @@ export default function ProposalDescription({
             </a>
           )}
         </div>
-        <h2
-          className="font-black text-2xl text-primary max-w-full"
-          style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}
-        >
-          {proposal.title}
-        </h2>
+        <div className="flex flex-col gap-2 mt-1">
+          <h2
+            className="font-black text-2xl text-primary max-w-full"
+            style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}
+          >
+            {proposal.title}
+          </h2>
+          <ProposalTypeBadge type={proposal.proposalType} />
+        </div>
       </div>
       {proposal.status !== ProposalStatus.Created &&
         proposal.status !== ProposalStatus.Rejected && (

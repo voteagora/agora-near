@@ -6,8 +6,13 @@ import { memo } from "react";
 import ProposalStatus from "./ProposalStatus";
 import { ProposalStatusText } from "./ProposalStatusText";
 import ProposalTimeStatus from "./ProposalTimeStatus";
+import { ProposalTypeBadge } from "../ProposalTypeBadge";
+import { decodeMetadata } from "@/lib/proposalMetadata";
 
 export const Proposal = memo(({ proposal }: { proposal: ProposalType }) => {
+  const { metadata } = decodeMetadata(proposal.proposalDescription || "");
+  const proposalType = proposal.proposalType || metadata?.proposalType;
+
   return (
     <Link key={proposal.id} href={`/proposals/${proposal.proposalId}`}>
       <div className="border-b border-line items-center flex flex-row bg-neutral">
@@ -24,8 +29,9 @@ export const Proposal = memo(({ proposal }: { proposal: ProposalType }) => {
             <div className="block sm:hidden">
               <ProposalStatusText proposal={proposal} />
             </div>
+            <ProposalTypeBadge type={proposalType} />
           </div>
-          <div className="overflow-ellipsis overflow-visible whitespace-normal break-words text-primary">
+          <div className="overflow-ellipsis overflow-visible whitespace-normal break-words text-primary mt-1">
             {(proposal.proposalTitle ?? "").length > 80
               ? `${proposal.proposalTitle?.slice(0, 80)}...`
               : proposal.proposalTitle}
