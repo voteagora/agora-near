@@ -16,10 +16,9 @@ export const maxDuration = 60;
 export default function ProposalHome({ proposalId }: { proposalId: string }) {
   const { proposal, isLoading: isLoadingProposal } = useProposal(proposalId);
   const { config, isLoading: isConfigLoading } = useProposalConfig();
-  const { quorumAmount, isLoading: isLoadingQuorumAmount } =
-    useProposalQuorum({
-      proposalId,
-    });
+  const { quorumAmount, isLoading: isLoadingQuorumAmount } = useProposalQuorum({
+    proposalId,
+  });
 
   const proposalWithQuorum = useMemo(() => {
     return proposal ? { ...proposal, quorumAmount } : null;
