@@ -9,10 +9,10 @@ import {
   ProposalDisplayStatus,
   ProposalStatus,
 } from "./contracts/types/voting";
-import { decodeMetadata } from "./proposalMetadata";
+import { decodeMetadata, ProposalType } from "./proposalMetadata";
 import {
   DEFAULT_QUORUM_FLOOR_VENEAR,
-  DEFAULT_QUORUM_THRESHOLD_PERCENTAGE,
+  DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
 } from "./constants";
 
 export const isForGreaterThanAgainst = ({
@@ -41,7 +41,7 @@ export function getProposalStatus({
   forVotingPower: string;
   againstVotingPower: string;
   abstainVotingPower: string;
-  approvalThreshold?: string;
+  approvalThreshold: number;
   proposalType?: string;
 }) {
   switch (status) {
@@ -74,6 +74,7 @@ export function getProposalStatus({
           againstVotingPower,
         });
       }
+
       return quorumFulfilled && passedApproval
         ? ProposalDisplayStatus.Succeeded
         : ProposalDisplayStatus.Defeated;
@@ -141,44 +142,12 @@ export const getProposalTimes = ({
   };
 };
 
-const QUORUM_OVERRIDE_AMOUNT_IN_NEAR =
-  process.env.NEXT_PUBLIC_NEAR_QUORUM_VENEAR_OVERRIDE;
-
-const QUORUM_THRESHOLD_PERCENTAGE =
-  process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ??
-  DEFAULT_QUORUM_THRESHOLD_PERCENTAGE;
-
 const QUORUM_FLOOR_IN_NEAR =
   process.env.NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR ??
   DEFAULT_QUORUM_FLOOR_VENEAR;
 
-export const getYoctoNearForQuorum = (totalVotingPower: string) => {
-  const isQuorumOverrideActive = getIsQuorumOverrideActive();
-
-  if (isQuorumOverrideActive) {
-    return Big(getQuorumOverrideYoctoNear());
-  }
-
-  const quorumPercentage = Big(QUORUM_THRESHOLD_PERCENTAGE);
-  const quorumFloor = Big(getQuorumFloorYoctoNear());
-
-  const percentageBasedQuorum = Big(totalVotingPower).mul(quorumPercentage);
-
-  return percentageBasedQuorum.gt(quorumFloor)
-    ? percentageBasedQuorum
-    : quorumFloor;
-};
-
-export const getIsQuorumOverrideActive = (): boolean => {
-  return !!QUORUM_OVERRIDE_AMOUNT_IN_NEAR;
-};
-
-export const getQuorumOverrideYoctoNear = () => {
-  return parseNearAmount(QUORUM_OVERRIDE_AMOUNT_IN_NEAR) ?? "0";
-};
-
 export const getFormattedQuorumPercentage = () =>
-  `${Number(QUORUM_THRESHOLD_PERCENTAGE) * 100}%`;
+  `${Number(DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS) / 100}%`;
 
 export const getQuorumFloorYoctoNear = () =>
   parseNearAmount(QUORUM_FLOOR_IN_NEAR) ?? "0";
@@ -231,24 +200,17 @@ export const enrichProposal = <
 >(
   proposal: T
 ): T & {
-  proposalType?: string;
-  approvalThreshold?: string;
-  decodedDescription?: string;
+  proposalType: ProposalType;
+  approvalThreshold: number;
+  decodedDescription: string;
 } => {
   const rawDescription =
     proposal.proposalDescription ?? proposal.description ?? "";
   const { metadata, description } = decodeMetadata(rawDescription);
-  const proposalType = metadata?.proposalType ?? (proposal as any).proposalType;
 
-  // For Super/Simple Majority, ignore approvalThreshold to prevent ratio misinterpretation
-  let approvalThreshold: string | undefined;
-  if (proposalType === "SuperMajority" || proposalType === "SimpleMajority") {
-    approvalThreshold = undefined;
-  } else {
-    approvalThreshold =
-      metadata?.approvalThreshold?.toString() ??
-      (proposal as any).approvalThreshold;
-  }
+  const proposalType = metadata.proposalType;
+
+  const approvalThreshold = metadata.approvalThreshold;
 
   return {
     ...proposal,

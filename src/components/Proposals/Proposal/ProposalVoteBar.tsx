@@ -1,5 +1,5 @@
 import { ProposalInfo } from "@/lib/contracts/types/voting";
-import { ProposalType, getApprovalThreshold } from "@/lib/proposalMetadata";
+import { ProposalType } from "@/lib/proposalMetadata";
 import { enrichProposal } from "@/lib/proposalUtils";
 
 export default function ProposalVoteBar({
@@ -15,11 +15,8 @@ export default function ProposalVoteBar({
   const totalVotes = Number(proposal.total_votes.total_venear);
 
   // Threshold is at 50% of for+against votes (abstain doesn't count)
-  const { proposalType } = enrichProposal(proposal);
-  const approvalPercentage = getApprovalThreshold(
-    proposalType as ProposalType | null
-  );
-
+  const { approvalThreshold } = enrichProposal(proposal);
+  const approvalPercentage = approvalThreshold / 10000;
   // Calculate threshold position based on approval percentage (50% or 66%)
   // Adjusted by the ratio of (For + Against) / Total, since the bar includes Abstain.
   const participatingVotes = forVotes + againstVotes;

@@ -1,98 +1,120 @@
+import { DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS } from "./constants";
+
 /**
  * Supported proposal types.
  * 'Standard' uses the contract default.
  * 'Tactical' allows overriding quorum/thresholds via metadata.
  */
 export enum ProposalType {
-  Standard = "Standard",
   SimpleMajority = "SimpleMajority",
   SuperMajority = "SuperMajority",
 }
-export interface ProposalMetadataConfig {
-  proposalType?: ProposalType;
-  // Optional override for quorum threshold
-  quorumThreshold?: number;
-  // Optional override for approval threshold
-  approvalThreshold?: number;
+export interface ProposalMetadata {
+  proposalType: ProposalType;
+  quorum: string;
+  approvalThreshold: number;
+  version: number
 }
 // Postgres TEXT columns do not support NULL bytes (\x00).
 // We use Record Separator (\x1E) as a safe alternative.
 export const METADATA_PREFIX = "\u001E\u001E\u001E\u001E";
 // Version 1: \u0001\u0001 (Avoids \x00)
 export const METADATA_VERSION = "\u0001\u0001";
-export const THRESHOLD_PRECISION = 10000;
-export const THRESHOLD_BASIS_POINTS = {
+export const APPROVAL_THRESHOLD_BASIS_POINTS = {
   SUPER_MAJORITY: 6667, // ~2/3
   SIMPLE_MAJORITY: 5000, // 0.5
 };
-export const PROPOSAL_APPROVAL_THRESHOLDS: Record<ProposalType, number> = {
-  [ProposalType.Standard]: 0.5,
-  [ProposalType.SimpleMajority]: 0.5,
-  [ProposalType.SuperMajority]: 2 / 3,
-};
-export function getApprovalThreshold(type?: ProposalType | null): number {
-  return PROPOSAL_APPROVAL_THRESHOLDS[type ?? ProposalType.Standard] ?? 0.5;
-}
+
 export function encodeMetadata(
   description: string,
-  metadata: ProposalMetadataConfig
+  metadata: ProposalMetadata
 ): string {
   const parts: string[] = [];
-  // Determine threshold to store based on type
-  if (
-    metadata.proposalType &&
-    metadata.proposalType !== ProposalType.Standard
-  ) {
-    const threshold = PROPOSAL_APPROVAL_THRESHOLDS[metadata.proposalType];
-    if (threshold) {
-      // Store as basis points (e.g. 0.5 -> 5000, 2/3 -> 6667)
-      const encodedValue = Math.round(threshold * THRESHOLD_PRECISION);
-      parts.push(`approval_threshold=${encodedValue}`);
-    }
-  }
+
+  parts.push(`approval_threshold=${metadata.approvalThreshold}`);
+  parts.push(`quorum=${metadata.quorum}`);
+
   const suffix = parts.length > 0 ? `|${parts.join(",")}` : "";
   return `${METADATA_PREFIX}${METADATA_VERSION}${description}${suffix}`;
 }
 export function decodeMetadata(fullDescription: string): {
-  metadata: ProposalMetadataConfig | null;
+  metadata: ProposalMetadata;
   description: string;
 } {
+  let version = 0;
+  let proposalType = ProposalType.SimpleMajority;
+  let approvalThreshold = APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY;
+  let quorum = DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS;
+
+  const v0Metadata = {
+    proposalType,
+    quorum,
+    approvalThreshold,
+    version,
+  };
+
   // 1. Try to parse V1 Metadata
   if (fullDescription.startsWith(METADATA_PREFIX)) {
-    const version = fullDescription.slice(4, 6);
-    if (version === METADATA_VERSION) {
-      const remaining = fullDescription.slice(6);
-      const lastPipeIndex = remaining.lastIndexOf("|");
+    const rawVersion = fullDescription.slice(4, 6);
+    if (rawVersion !== METADATA_VERSION) {
+      // If prefix exists but version mismatch
+      return { metadata: v0Metadata, description: fullDescription };
+    } else {
+      version = 1;
+    }
 
-      if (lastPipeIndex !== -1) {
-        const cleanDescription = remaining.substring(0, lastPipeIndex);
-        const metadataString = remaining.substring(lastPipeIndex + 1);
-        const metadata: ProposalMetadataConfig = {};
-        const pairs = metadataString.split(",");
+    const remaining = fullDescription.slice(6);
+    const lastPipeIndex = remaining.lastIndexOf("|");
 
-        for (const pair of pairs) {
-          const [key, value] = pair.split("=");
-          if (!key || !value) continue;
+    if (lastPipeIndex === -1) {
+      return { metadata: v0Metadata, description: fullDescription };
+    }
 
-          if (key === "approval_threshold") {
-            const rawValue = parseInt(value, 10);
-            if (rawValue > 0) {
-              if (rawValue >= THRESHOLD_BASIS_POINTS.SUPER_MAJORITY) {
-                metadata.proposalType = ProposalType.SuperMajority;
-              } else if (rawValue >= THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY) {
-                metadata.proposalType = ProposalType.SimpleMajority;
-              } else {
-                metadata.proposalType = ProposalType.Standard;
-              }
-              metadata.approvalThreshold = rawValue / THRESHOLD_PRECISION;
-            }
+    const cleanDescription = remaining.substring(0, lastPipeIndex);
+    const metadataString = remaining.substring(lastPipeIndex + 1);
+
+    const pairs = metadataString.split(",");
+
+    for (const pair of pairs) {
+      const [key, value] = pair.split("=");
+      if (!key || !value) continue;
+
+      if (key === "approval_threshold") {
+        const rawApprovalThreshold = parseInt(value, 10);
+        if (rawApprovalThreshold > 0) {
+          approvalThreshold = rawApprovalThreshold;
+
+          if (
+            approvalThreshold == APPROVAL_THRESHOLD_BASIS_POINTS.SUPER_MAJORITY
+          ) {
+            proposalType = ProposalType.SuperMajority;
+          } else if (
+            approvalThreshold == APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY
+          ) {
+            proposalType = ProposalType.SimpleMajority;
+          } else {
+            throw new Error("Invalid approval threshold");
           }
         }
-        return { metadata, description: cleanDescription };
+      }
+
+      if (key == "quorum") {
+        const rawQuorum = parseInt(value, 10);
+        if (rawQuorum > 0) {
+          quorum = rawQuorum;
+        }
       }
     }
+
+    const metadata: ProposalMetadata = {
+      version,
+      quorum,
+      approvalThreshold,
+      proposalType,
+    };
+
+    return { metadata, description: cleanDescription };
   }
 
-  // 2. Default: No metadata, Standard Proposal
-  return { metadata: null, description: fullDescription };
+  return { metadata: v0Metadata, description: fullDescription };
 }

@@ -14,7 +14,7 @@ import {
 } from "@/hooks/useDraftProposals";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { DraftProposalStage } from "@/lib/api/proposal/types";
-import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
+import { DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS, NEAR_VOTING_OPTIONS } from "@/lib/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeftIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -25,8 +25,10 @@ import { z } from "zod";
 import CopyableHumanAddress from "@/components/shared/CopyableHumanAddress";
 import DraftEditForm, { DraftEditFormRef } from "./DraftEditForm";
 import {
+  APPROVAL_THRESHOLD_BASIS_POINTS,
   decodeMetadata,
   encodeMetadata,
+  ProposalMetadata,
   ProposalType,
 } from "@/lib/proposalMetadata";
 
@@ -194,9 +196,20 @@ const DraftProposalsPageContent = memo(
           }
 
           try {
-            const encodedDescription = encodeMetadata(description, {
-              proposalType,
-            });
+
+            let metadata: ProposalMetadata = {
+                version: 1,
+                quorum: DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
+                approvalThreshold: APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY,
+                proposalType: ProposalType.SimpleMajority,
+              };
+            
+            if (proposalType === ProposalType.SuperMajority) {
+              metadata.approvalThreshold = APPROVAL_THRESHOLD_BASIS_POINTS.SUPER_MAJORITY;
+              metadata.proposalType = ProposalType.SuperMajority;
+              };
+
+            const encodedDescription = encodeMetadata(description, metadata);
 
             const transactionResult = await createProposalAsync({
               title: title || null,
@@ -245,7 +258,7 @@ const DraftProposalsPageContent = memo(
           title: draft.title || "",
           description: cleanDescription,
           link: draft.proposalUrl || "",
-          proposalType: metadata?.proposalType || undefined,
+          proposalType: metadata.proposalType,
           options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
         });
       }

@@ -5,13 +5,18 @@ import {
   ProposalType,
   METADATA_PREFIX,
   METADATA_VERSION,
+  APPROVAL_THRESHOLD_BASIS_POINTS,
 } from "../proposalMetadata";
+import { DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS } from "../constants";
 describe("proposalMetadata", () => {
   describe("encodeMetadata", () => {
     it("should encode metadata into description using binary prefix and suffix", () => {
       const description = "My Proposal";
       const metadata = {
         proposalType: ProposalType.SuperMajority,
+        version: 1,
+        quorum: DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
+        approvalThreshold: APPROVAL_THRESHOLD_BASIS_POINTS.SUPER_MAJORITY
       };
       const result = encodeMetadata(description, metadata);
       // Check Prefix (4 bytes)
@@ -24,15 +29,18 @@ describe("proposalMetadata", () => {
       // SuperMajority = 2/3 = 0.666666... * 10000 = 6667
       expect(result).toContain("approval_threshold=6667");
     });
-    it("should not append metadata for Standard type", () => {
+    it("should append metadata for Standard type", () => {
       const result = encodeMetadata("Desc", {
-        proposalType: ProposalType.Standard,
+        proposalType: ProposalType.SimpleMajority,
+        version: 1,
+        quorum: DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
+        approvalThreshold: APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY
       });
       expect(result).toContain("Desc");
       // Should still include prefix? Implementation says yes: `${METADATA_PREFIX}...${suffix}`
       // Suffix will be empty if Standard.
       expect(result.startsWith(METADATA_PREFIX)).toBe(true);
-      expect(result).not.toContain("|");
+      expect(result).toContain("approval_threshold=5000,quorum=3500");
     });
   });
   describe("decodeMetadata", () => {
@@ -52,30 +60,30 @@ describe("proposalMetadata", () => {
       expect(cleanDesc).toBe(description);
       expect(metadata?.proposalType).toBe(ProposalType.SimpleMajority);
     });
-    it("should return null metadata for plain text", () => {
+    it("should default to simple majority if null metadata for plain text", () => {
       const description = "Just text";
       const { metadata, description: cleanDesc } = decodeMetadata(description);
-      expect(metadata).toBeNull();
+      expect(metadata?.proposalType).toBe(ProposalType.SimpleMajority);
       expect(cleanDesc).toBe(description);
     });
-    it("should return null metadata for legacy descriptions (no prefix)", () => {
+    it("should default to simpler majority for v0 descriptions (no prefix)", () => {
       const description = "Just a plain old proposal description";
       const { metadata, description: cleanDesc } = decodeMetadata(description);
-      expect(metadata).toBeNull();
+      expect(metadata?.proposalType).toBe(ProposalType.SimpleMajority);
       expect(cleanDesc).toBe(description);
     });
-    it("should handle description with pipe but no prefix", () => {
+    it("should default to simple majority if pipe but no prefix", () => {
       const description = "This is a pipe | character";
       const { metadata, description: cleanDesc } = decodeMetadata(description);
-      expect(metadata).toBeNull();
+      expect(metadata?.proposalType).toBe(ProposalType.SimpleMajority);
       expect(cleanDesc).toBe(description);
     });
-    it("should ignore metadata if version mismatch", () => {
+    it("should default to simple majority if version mismatch", () => {
       const invalidVersion = "\u0001\u0002"; // Invalid version
       const encoded = `${METADATA_PREFIX}${invalidVersion}Content|approval_threshold=6667`;
       const { metadata, description: cleanDesc } = decodeMetadata(encoded);
-      expect(metadata).toBeNull();
-      expect(cleanDesc).toBe(encoded);
+      expect(metadata?.proposalType).toBe(ProposalType.SimpleMajority);
+      expect(cleanDesc).toBe(cleanDesc);
     });
   });
 });

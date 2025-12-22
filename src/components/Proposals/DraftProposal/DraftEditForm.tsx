@@ -11,13 +11,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProposalType, encodeMetadata } from "@/lib/proposalMetadata";
+import { APPROVAL_THRESHOLD_BASIS_POINTS, ProposalMetadata, ProposalType, encodeMetadata } from "@/lib/proposalMetadata";
 import Markdown from "@/components/shared/Markdown/Markdown";
 import { InputBox } from "@/components/shared/InputBox";
 import { DraftProposal } from "@/lib/api/proposal/types";
 import { useUpdateDraftProposal } from "@/hooks/useDraftProposals";
 import { toast } from "react-hot-toast";
-import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
+import { DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS, NEAR_VOTING_OPTIONS } from "@/lib/constants";
 import Link from "next/link";
 import { Controller, useFormContext } from "react-hook-form";
 import TokenAmount from "@/components/shared/TokenAmount";
@@ -268,9 +268,26 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
 
       handleSubmit(
         (formValues) => {
+
           if (!formValues.proposalType) {
             toast.error("Please select a proposal type before saving");
             return;
+          }
+
+          let metadata: ProposalMetadata = {
+              version: 1,
+              quorum: DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
+              approvalThreshold: APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY,
+              proposalType: ProposalType.SimpleMajority,
+            }
+          
+          if (formValues.proposalType === ProposalType.SuperMajority) {
+            metadata = {
+              version: 1,
+              quorum: DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
+              approvalThreshold: APPROVAL_THRESHOLD_BASIS_POINTS.SUPER_MAJORITY,
+              proposalType: ProposalType.SuperMajority,
+            };
           }
 
           updateDraft(
@@ -278,11 +295,7 @@ const DraftEditForm = forwardRef<DraftEditFormRef, DraftEditFormProps>(
               id: draft.id,
               data: {
                 title: formValues.title.trim(),
-                description: encodeMetadata(formValues.description.trim(), {
-                  proposalType: formValues.proposalType,
-                  quorumThreshold: undefined,
-                  approvalThreshold: undefined,
-                }),
+                description: encodeMetadata(formValues.description.trim(), metadata),
                 proposalUrl: formValues.link?.trim() || undefined,
                 votingOptions: { options: NEAR_VOTING_OPTIONS },
               },

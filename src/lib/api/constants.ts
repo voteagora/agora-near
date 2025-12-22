@@ -9,7 +9,7 @@ const getApiUrl = () => {
     case "dev":
       return "https://near-api-158107670134.us-west1.run.app/api";
     case "local":
-      return "http://127.0.0.1:8080/api";
+      return "http://localhost:8080/api";
     default:
       throw new Error(
         `Unknown NEXT_PUBLIC_AGORA_ENV: ${process.env.NEXT_PUBLIC_AGORA_ENV}, so API is unknown.`

@@ -45,7 +45,7 @@ function DraftProposalCard({ draft }: { draft: DraftProposal }) {
             <h3 className="text-lg font-semibold text-primary hover:text-secondary transition-colors">
               {draft.title || "Untitled Draft"}
             </h3>
-            <ProposalTypeBadge type={metadata?.proposalType} />
+            <ProposalTypeBadge type={metadata.proposalType} />
           </div>
         </div>
         <span

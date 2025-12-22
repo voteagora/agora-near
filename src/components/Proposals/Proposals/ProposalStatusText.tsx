@@ -26,7 +26,7 @@ export const ProposalStatusText = memo(
       againstVotingPower: againstVotingPower ?? "0",
       abstainVotingPower: abstainVotingPower ?? "0",
       proposalType,
-      approvalThreshold: approvalThreshold,
+      approvalThreshold,
     });
 
     const { text } = getProposalStatusColor(status);

@@ -11,7 +11,7 @@ import { decodeMetadata } from "@/lib/proposalMetadata";
 
 export const Proposal = memo(({ proposal }: { proposal: ProposalType }) => {
   const { metadata } = decodeMetadata(proposal.proposalDescription || "");
-  const proposalType = proposal.proposalType || metadata?.proposalType;
+  const proposalType = metadata.proposalType;
 
   return (
     <Link key={proposal.id} href={`/proposals/${proposal.proposalId}`}>
