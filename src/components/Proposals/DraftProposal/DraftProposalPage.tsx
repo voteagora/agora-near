@@ -14,7 +14,10 @@ import {
 } from "@/hooks/useDraftProposals";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { DraftProposalStage } from "@/lib/api/proposal/types";
-import { DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS, NEAR_VOTING_OPTIONS } from "@/lib/constants";
+import {
+  DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
+  NEAR_VOTING_OPTIONS,
+} from "@/lib/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeftIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -196,18 +199,19 @@ const DraftProposalsPageContent = memo(
           }
 
           try {
-
             let metadata: ProposalMetadata = {
-                version: 1,
-                quorum: DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
-                approvalThreshold: APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY,
-                proposalType: ProposalType.SimpleMajority,
-              };
-            
+              version: 1,
+              quorum: DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
+              approvalThreshold:
+                APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY,
+              proposalType: ProposalType.SimpleMajority,
+            };
+
             if (proposalType === ProposalType.SuperMajority) {
-              metadata.approvalThreshold = APPROVAL_THRESHOLD_BASIS_POINTS.SUPER_MAJORITY;
+              metadata.approvalThreshold =
+                APPROVAL_THRESHOLD_BASIS_POINTS.SUPER_MAJORITY;
               metadata.proposalType = ProposalType.SuperMajority;
-              };
+            }
 
             const encodedDescription = encodeMetadata(description, metadata);
 

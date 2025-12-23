@@ -15,9 +15,6 @@ const deriveBrandName = (namespace: TenantNamespace): string => {
 };
 
 function generateVoteBars(forPercentage: number, againstPercentage: number) {
-
-  console.log('generateVoteBars');
-
   const totalBars = 114;
   const bars = [];
   const forBars = Math.round((totalBars * forPercentage) / 100);

@@ -130,7 +130,7 @@ export const MIN_VERSION_FOR_LST_LOCKUP = process.env.MIN_VERSION_FOR_LST_LOCKUP
   ? Number(process.env.MIN_VERSION_FOR_LST_LOCKUP)
   : Number.MAX_SAFE_INTEGER;
 
-export const DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS = '3500';
+export const DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS = "3500";
 
 export const LEGACY_STAKING_DISMISSED_KEY =
   "agora-legacy-staking-banner-dismissed";

@@ -1,14 +1,10 @@
 import { Proposal } from "@/lib/api/proposal/types";
-import {
-  getProposalStatus,
-  getProposalStatusColor,
-} from "@/lib/proposalUtils";
+import { getProposalStatus, getProposalStatusColor } from "@/lib/proposalUtils";
 import { cn } from "@/lib/utils";
 import { memo } from "react";
 
 export const ProposalStatusText = memo(
   ({ proposal }: { proposal: Proposal }) => {
-
     const {
       status: baseStatus,
       quorumAmount,

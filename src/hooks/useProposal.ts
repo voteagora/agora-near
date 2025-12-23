@@ -13,8 +13,6 @@ export const useProposal = (proposalId: string) => {
   ]);
 
   const proposal = useMemo(() => {
-
-    console.log("data", data)
     return data ? unpackProposal(data) : null;
   }, [data]);
 

@@ -22,11 +22,14 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
   });
 
   const proposalWithQuorum = useMemo(() => {
-  return proposal ? { ...proposal, 
-                      quorumAmount, 
-                      proposalType : proposal.metadata.proposalType, 
-                      approvalThreshold : proposal.metadata.approvalThreshold} : null;
-
+    return proposal
+      ? {
+          ...proposal,
+          quorumAmount,
+          proposalType: proposal.metadata.proposalType,
+          approvalThreshold: proposal.metadata.approvalThreshold,
+        }
+      : null;
   }, [proposal, quorumAmount]);
 
   const finalProposal = useMemo(() => {

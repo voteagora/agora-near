@@ -16,7 +16,7 @@ describe("proposalMetadata", () => {
         proposalType: ProposalType.SuperMajority,
         version: 1,
         quorum: DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
-        approvalThreshold: APPROVAL_THRESHOLD_BASIS_POINTS.SUPER_MAJORITY
+        approvalThreshold: APPROVAL_THRESHOLD_BASIS_POINTS.SUPER_MAJORITY,
       };
       const result = encodeMetadata(description, metadata);
       // Check Prefix (4 bytes)
@@ -34,7 +34,7 @@ describe("proposalMetadata", () => {
         proposalType: ProposalType.SimpleMajority,
         version: 1,
         quorum: DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
-        approvalThreshold: APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY
+        approvalThreshold: APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY,
       });
       expect(result).toContain("Desc");
       // Should still include prefix? Implementation says yes: `${METADATA_PREFIX}...${suffix}`

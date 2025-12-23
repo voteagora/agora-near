@@ -9,7 +9,6 @@ import ProposalTimeStatus from "./ProposalTimeStatus";
 import { ProposalTypeBadge } from "../ProposalTypeBadge";
 
 export const Proposal = memo(({ proposal }: { proposal: ProposalType }) => {
-
   return (
     <Link key={proposal.id} href={`/proposals/${proposal.proposalId}`}>
       <div className="border-b border-line items-center flex flex-row bg-neutral">

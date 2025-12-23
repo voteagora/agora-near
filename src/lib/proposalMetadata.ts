@@ -13,7 +13,7 @@ export interface ProposalMetadata {
   proposalType: ProposalType;
   quorum: string;
   approvalThreshold: number;
-  version: number
+  version: number;
 }
 // Postgres TEXT columns do not support NULL bytes (\x00).
 // We use Record Separator (\x1E) as a safe alternative.
@@ -95,7 +95,6 @@ export function decodeMetadata(fullDescription: string): {
           } else {
             throw new Error("Invalid approval threshold");
           }
-          console.log("proposalType", proposalType)
         }
       }
 

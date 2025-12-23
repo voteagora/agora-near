@@ -26,8 +26,7 @@ export default function ProposalStatusDetail({
   proposal: ProposalInfo;
   className?: string;
 }) {
-
-  const quorum = proposal.quorumAmount || "0"
+  const quorum = proposal.quorumAmount || "0";
 
   const status = getProposalStatus({
     status: proposal.status,

@@ -9,7 +9,11 @@ import {
   ProposalDisplayStatus,
   ProposalStatus,
 } from "./contracts/types/voting";
-import { decodeMetadata, ProposalMetadata, ProposalType } from "./proposalMetadata";
+import {
+  decodeMetadata,
+  ProposalMetadata,
+  ProposalType,
+} from "./proposalMetadata";
 import {
   DEFAULT_QUORUM_FLOOR_VENEAR,
   DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
@@ -19,26 +23,23 @@ import { Metadata } from "next";
 export const isApprovalThresholdMet = ({
   forVotingPower,
   againstVotingPower,
-  approvalThreshold
+  approvalThreshold,
 }: {
   forVotingPower: string;
   againstVotingPower: string;
   approvalThreshold: number;
 }) => {
-  console.log("isApprovalThresholdMet", forVotingPower, againstVotingPower, approvalThreshold);
-
   const votedFor = Big(forVotingPower ?? 0);
   const votedAgainst = Big(againstVotingPower ?? 0);
   const num = votedFor;
   const den = votedFor.add(votedAgainst);
 
   if (den.eq(0)) {
-    return false
+    return false;
   }
 
-  const div = num.div(den)
-  const result = div.gte(Big(approvalThreshold).div(10000))
-  console.log("num, den, result", num.toString(), den.toString(), div.toString(), result.toString());
+  const div = num.div(den);
+  const result = div.gte(Big(approvalThreshold).div(10000));
 
   return result;
 };
@@ -83,8 +84,8 @@ export function getProposalStatus({
       return ProposalDisplayStatus.Active;
     default:
       return status;
-    }
   }
+}
 
 export function getProposalStatusColor(proposalStatus: string) {
   switch (proposalStatus) {
@@ -174,8 +175,7 @@ export const isQuorumFulfilled = ({
     againstVotingPower,
     abstainVotingPower
   );
-  const result = totalVotes.gte(quorumAmount)
-  console.log("isQuorumFulfilled", result, quorumAmount, forVotingPower, againstVotingPower, totalVotes.toString())
+  const result = totalVotes.gte(quorumAmount);
   return result;
 };
 
@@ -209,6 +209,6 @@ export const unpackProposal = <
   return {
     ...proposal,
     metadata,
-    cleanDescription : description,
+    cleanDescription: description,
   };
 };

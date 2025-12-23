@@ -17,16 +17,9 @@ export const ProposalTypeBadge = ({
   type?: string | null;
   className?: string;
 }) => {
-
-  console.log("ProposalTypeBadge.type 1", type);
-
   if (!type) return null;
 
-  console.log("ProposalTypeBadge.type 2", type);
-
   const config = TYPE_CONFIG[type];
-
-  console.log("ProposalTypeBadge.config", config);
 
   // Fallback for unknown types (future proofing)
   const label = config?.label || type.replace(/([A-Z])/g, " $1").trim();
