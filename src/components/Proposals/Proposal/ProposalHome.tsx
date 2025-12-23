@@ -27,7 +27,7 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
           ...proposal,
           quorumAmount,
           proposalType: proposal.metadata.proposalType,
-          approvalThreshold: proposal.metadata.approvalThreshold,
+          approvalThreshold: proposal.metadata.approvalThreshold.toString(),
         }
       : null;
   }, [proposal, quorumAmount]);
