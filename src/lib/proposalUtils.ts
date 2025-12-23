@@ -9,22 +9,38 @@ import {
   ProposalDisplayStatus,
   ProposalStatus,
 } from "./contracts/types/voting";
-import { decodeMetadata, ProposalType } from "./proposalMetadata";
+import { decodeMetadata, ProposalMetadata, ProposalType } from "./proposalMetadata";
 import {
   DEFAULT_QUORUM_FLOOR_VENEAR,
   DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
 } from "./constants";
+import { Metadata } from "next";
 
-export const isForGreaterThanAgainst = ({
+export const isApprovalThresholdMet = ({
   forVotingPower,
   againstVotingPower,
+  approvalThreshold
 }: {
   forVotingPower: string;
   againstVotingPower: string;
+  approvalThreshold: number;
 }) => {
+  console.log("isApprovalThresholdMet", forVotingPower, againstVotingPower, approvalThreshold);
+
   const votedFor = Big(forVotingPower ?? 0);
   const votedAgainst = Big(againstVotingPower ?? 0);
-  return votedFor.gt(votedAgainst);
+  const num = votedFor;
+  const den = votedFor.add(votedAgainst);
+
+  if (den.eq(0)) {
+    return false
+  }
+
+  const div = num.div(den)
+  const result = div.gte(Big(approvalThreshold).div(10000))
+  console.log("num, den, result", num.toString(), den.toString(), div.toString(), result.toString());
+
+  return result;
 };
 
 export function getProposalStatus({
@@ -52,30 +68,12 @@ export function getProposalStatus({
         againstVotingPower,
         abstainVotingPower,
       });
-      let passedApproval = false;
-      // Priority 1: Manual Approval Threshold (Explicit Override)
-      if (approvalThreshold && Big(approvalThreshold).gt(0)) {
-        passedApproval = Big(forVotingPower).gte(approvalThreshold);
-      }
-      // Priority 2: 2/3 Super Majority (Dynamic)
-      else if (proposalType === "SuperMajority") {
-        // >= 6667/10000 (66.67%) of participating votes
-        const participatingVotes = Big(forVotingPower).plus(againstVotingPower);
-        const superMajorityThreshold = participatingVotes
-          .mul(6667)
-          .div(10000)
-          .round(0, 3); // 3 = Big.roundUp
-        passedApproval = Big(forVotingPower).gte(superMajorityThreshold);
-      }
-      // Priority 3: Simple Majority / Standard (For > Against)
-      else {
-        passedApproval = isForGreaterThanAgainst({
-          forVotingPower,
-          againstVotingPower,
-        });
-      }
-
-      return quorumFulfilled && passedApproval
+      const approvalFulfilled = isApprovalThresholdMet({
+        forVotingPower,
+        againstVotingPower,
+        approvalThreshold,
+      });
+      return quorumFulfilled && approvalFulfilled
         ? ProposalDisplayStatus.Succeeded
         : ProposalDisplayStatus.Defeated;
     }
@@ -85,8 +83,8 @@ export function getProposalStatus({
       return ProposalDisplayStatus.Active;
     default:
       return status;
+    }
   }
-}
 
 export function getProposalStatusColor(proposalStatus: string) {
   switch (proposalStatus) {
@@ -176,7 +174,9 @@ export const isQuorumFulfilled = ({
     againstVotingPower,
     abstainVotingPower
   );
-  return totalVotes.gte(quorumAmount);
+  const result = totalVotes.gte(quorumAmount)
+  console.log("isQuorumFulfilled", result, quorumAmount, forVotingPower, againstVotingPower, totalVotes.toString())
+  return result;
 };
 
 export const getVotingDays = ({
@@ -192,34 +192,23 @@ export const getVotingDays = ({
   return formatNanoSecondsToTimeUnit(voting_duration_ns);
 };
 
-export const enrichProposal = <
+export const unpackProposal = <
   T extends {
     description?: string | null;
-    proposalDescription?: string | null;
   },
 >(
   proposal: T
 ): T & {
-  proposalType: ProposalType;
-  approvalThreshold: number;
-  decodedDescription: string;
+  metadata: ProposalMetadata;
+  cleanDescription: string;
 } => {
-  const rawDescription =
-    proposal.proposalDescription ?? proposal.description ?? "";
+  const rawDescription = proposal.description || "";
 
-  console.log("enrichProposal", rawDescription)
   const { metadata, description } = decodeMetadata(rawDescription);
-
-  const proposalType = metadata.proposalType;
-
-  const approvalThreshold = metadata.approvalThreshold;
-
-  console.log("approvalThreshold",approvalThreshold)
 
   return {
     ...proposal,
-    proposalType,
-    approvalThreshold,
-    decodedDescription: description,
+    metadata,
+    cleanDescription : description,
   };
 };

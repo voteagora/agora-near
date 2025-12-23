@@ -1,6 +1,6 @@
 import { CONTRACTS } from "@/lib/contractConstants";
 import { useReadHOSContract } from "./useReadHOSContract";
-import { enrichProposal } from "@/lib/proposalUtils";
+import { unpackProposal } from "@/lib/proposalUtils";
 import { useMemo } from "react";
 
 export const useProposal = (proposalId: string) => {
@@ -13,7 +13,9 @@ export const useProposal = (proposalId: string) => {
   ]);
 
   const proposal = useMemo(() => {
-    return data ? enrichProposal(data) : null;
+
+    console.log("data", data)
+    return data ? unpackProposal(data) : null;
   }, [data]);
 
   return {

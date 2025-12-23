@@ -1,6 +1,5 @@
 import { Proposal } from "@/lib/api/proposal/types";
 import {
-  enrichProposal,
   getProposalStatus,
   getProposalStatusColor,
 } from "@/lib/proposalUtils";
@@ -9,7 +8,7 @@ import { memo } from "react";
 
 export const ProposalStatusText = memo(
   ({ proposal }: { proposal: Proposal }) => {
-    const enriched = enrichProposal<Proposal>(proposal);
+
     const {
       status: baseStatus,
       quorumAmount,
@@ -18,7 +17,7 @@ export const ProposalStatusText = memo(
       abstainVotingPower,
       proposalType,
       approvalThreshold,
-    } = enriched;
+    } = proposal;
     const status = getProposalStatus({
       status: baseStatus ?? "",
       quorumAmount: quorumAmount ?? "0",

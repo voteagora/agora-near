@@ -4,7 +4,7 @@ import AgoraLoader from "@/components/shared/AgoraLoader/AgoraLoader";
 import { useProposal } from "@/hooks/useProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { useProposalQuorum } from "@/hooks/useProposalQuorum";
-import { enrichProposal } from "@/lib/proposalUtils";
+
 import { ProposalStatus } from "@/lib/contracts/types/voting";
 import { useMemo } from "react";
 import { PendingProposal } from "./PendingProposal";
@@ -22,7 +22,11 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
   });
 
   const proposalWithQuorum = useMemo(() => {
-    return proposal ? enrichProposal({ ...proposal, quorumAmount }) : null;
+  return proposal ? { ...proposal, 
+                      quorumAmount, 
+                      proposalType : proposal.metadata.proposalType, 
+                      approvalThreshold : proposal.metadata.approvalThreshold} : null;
+
   }, [proposal, quorumAmount]);
 
   const finalProposal = useMemo(() => {
@@ -30,7 +34,7 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
     return {
       ...proposalWithQuorum,
       description:
-        proposalWithQuorum.decodedDescription || proposalWithQuorum.description,
+        proposalWithQuorum.cleanDescription || proposalWithQuorum.description,
     };
   }, [proposalWithQuorum]);
 

@@ -11,15 +11,12 @@ export default function ProposalDescription({
 }: {
   proposal: ProposalInfo;
 }) {
-  const { description: cleanDescription, metadata } = decodeMetadata(
-    proposal.description ?? ""
-  );
   return (
     <div className="flex flex-col gap-4 w-full min-w-0 flex-1 break-words">
       <div className="flex-col items-start min-w-0">
         <div className="text-xs font-semibold text-secondary flex items-center gap-2 mb-1">
           <ProposalTypeBadge
-            type={metadata.proposalType}
+            type={proposal.proposalType}
           />
           <span className="flex items-center">
             Proposal by {proposal.proposer_id}
@@ -52,7 +49,7 @@ export default function ProposalDescription({
         )}
       <div className="flex flex-col gap-2">
         <div className={styles.proposal_description_md}>
-          <Markdown content={cleanDescription} />
+          <Markdown content={proposal.description || ""} />
         </div>
       </div>
     </div>

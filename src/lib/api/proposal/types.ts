@@ -32,6 +32,7 @@ export type Proposal = {
   votingCreatedAtNs?: string | null;
   quorumAmountYoctoNear?: string | null;
   quorumAmount?: string | null;
+  approvalThreshold: number;
 };
 
 export type ProposalNonVotersRecord = {
