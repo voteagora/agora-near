@@ -206,11 +206,15 @@ export const enrichProposal = <
 } => {
   const rawDescription =
     proposal.proposalDescription ?? proposal.description ?? "";
+
+  console.log("enrichProposal", rawDescription)
   const { metadata, description } = decodeMetadata(rawDescription);
 
   const proposalType = metadata.proposalType;
 
   const approvalThreshold = metadata.approvalThreshold;
+
+  console.log("approvalThreshold",approvalThreshold)
 
   return {
     ...proposal,

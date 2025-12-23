@@ -17,6 +17,9 @@ export default function ProposalVoteBar({
   // Threshold is at 50% of for+against votes (abstain doesn't count)
   const { approvalThreshold } = enrichProposal(proposal);
   const approvalPercentage = approvalThreshold / 10000;
+
+  console.log("approvalPercentage", approvalPercentage);
+  
   // Calculate threshold position based on approval percentage (50% or 66%)
   // Adjusted by the ratio of (For + Against) / Total, since the bar includes Abstain.
   const participatingVotes = forVotes + againstVotes;
