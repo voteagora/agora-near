@@ -5,12 +5,23 @@ import { memo } from "react";
 
 export const ProposalStatusText = memo(
   ({ proposal }: { proposal: Proposal }) => {
+    const {
+      status: baseStatus,
+      quorumAmount,
+      forVotingPower,
+      againstVotingPower,
+      abstainVotingPower,
+      proposalType,
+      approvalThreshold,
+    } = proposal;
     const status = getProposalStatus({
-      status: proposal.status ?? "",
-      quorumAmount: proposal.quorumAmountYoctoNear ?? "0",
-      forVotingPower: proposal.forVotingPower ?? "0",
-      againstVotingPower: proposal.againstVotingPower ?? "0",
-      abstainVotingPower: proposal.abstainVotingPower ?? "0",
+      status: baseStatus ?? "",
+      quorumAmount: quorumAmount ?? "0",
+      forVotingPower: forVotingPower ?? "0",
+      againstVotingPower: againstVotingPower ?? "0",
+      abstainVotingPower: abstainVotingPower ?? "0",
+      proposalType,
+      approvalThreshold,
     });
 
     const { text } = getProposalStatusColor(status);

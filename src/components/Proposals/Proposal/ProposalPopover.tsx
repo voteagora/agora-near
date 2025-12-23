@@ -28,7 +28,7 @@ const ProposalPopover = ({ proposal }: { proposal: ProposalInfo }) => {
     return row;
   }, [createdTime, startTime, endTime]);
 
-  const quorum = proposal.quorumAmountYoctoNear ?? "0";
+  const quorum = proposal.quorumAmount ?? "0";
 
   const hasMetQuorum = isQuorumFulfilled({
     quorumAmount: quorum,

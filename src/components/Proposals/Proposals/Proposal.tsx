@@ -6,6 +6,7 @@ import { memo } from "react";
 import ProposalStatus from "./ProposalStatus";
 import { ProposalStatusText } from "./ProposalStatusText";
 import ProposalTimeStatus from "./ProposalTimeStatus";
+import { ProposalTypeBadge } from "../ProposalTypeBadge";
 
 export const Proposal = memo(({ proposal }: { proposal: ProposalType }) => {
   return (
@@ -24,8 +25,9 @@ export const Proposal = memo(({ proposal }: { proposal: ProposalType }) => {
             <div className="block sm:hidden">
               <ProposalStatusText proposal={proposal} />
             </div>
+            <ProposalTypeBadge type={proposal.proposalType} />
           </div>
-          <div className="overflow-ellipsis overflow-visible whitespace-normal break-words text-primary">
+          <div className="overflow-ellipsis overflow-visible whitespace-normal break-words text-primary mt-1">
             {(proposal.proposalTitle ?? "").length > 80
               ? `${proposal.proposalTitle?.slice(0, 80)}...`
               : proposal.proposalTitle}

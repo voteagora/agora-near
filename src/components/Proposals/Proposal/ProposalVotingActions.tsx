@@ -192,9 +192,10 @@ export default function ProposalVotingActions({
       accountId: signedAccountId,
     });
 
-  const { isRegisteredToVote } = useCheckVoterStatus({
-    enabled: !!signedAccountId,
-  });
+  const { isRegisteredToVote, isLoading: isLoadingVoterStatus } =
+    useCheckVoterStatus({
+      enabled: !!signedAccountId,
+    });
 
   const queryClient = useQueryClient();
 
@@ -238,12 +239,12 @@ export default function ProposalVotingActions({
     );
   }
 
-  if (!isRegisteredToVote) {
-    return null;
+  if (isLoadingUserVote || isLoadingVotingPower || isLoadingVoterStatus) {
+    return <ProposalVotingActionsFallback />;
   }
 
-  if (isLoadingUserVote || isLoadingVotingPower) {
-    return <ProposalVotingActionsFallback />;
+  if (!isRegisteredToVote) {
+    return null;
   }
 
   const hasVoted = userVoteIndex !== null && userVoteIndex !== undefined;

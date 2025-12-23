@@ -27,9 +27,12 @@ export type Proposal = {
   votingDurationNs?: string | null;
   totalVotingPower?: string | null;
   status?: string | null; // 'Created' | 'Voting' | 'Finished' | 'Rejected'
+  proposalType?: string; // e.g. 'SimpleMajority' | 'SuperMajority'
   votingStartTimeNs?: string | null;
   votingCreatedAtNs?: string | null;
   quorumAmountYoctoNear?: string | null;
+  quorumAmount?: string | null;
+  approvalThreshold: number;
 };
 
 export type ProposalNonVotersRecord = {
