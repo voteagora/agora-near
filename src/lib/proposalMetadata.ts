@@ -95,13 +95,14 @@ export function decodeMetadata(fullDescription: string): {
           } else {
             throw new Error("Invalid approval threshold");
           }
+          console.log("proposalType", proposalType)
         }
       }
 
       if (key == "quorum") {
         const rawQuorum = parseInt(value, 10);
         if (rawQuorum > 0) {
-          quorum = rawQuorum;
+          quorum = rawQuorum.toString();
         }
       }
     }
