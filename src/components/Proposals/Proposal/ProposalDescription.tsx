@@ -1,6 +1,6 @@
 import Markdown from "@/components/shared/Markdown/Markdown";
 import { ProposalInfo, ProposalStatus } from "@/lib/contracts/types/voting";
-import { decodeMetadata } from "@/lib/proposalMetadata";
+
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import styles from "./ProposalDescription.module.scss";
 import ProposalChart from "../ProposalPage/ProposalChart/ProposalChart";

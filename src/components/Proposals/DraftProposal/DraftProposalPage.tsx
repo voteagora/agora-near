@@ -199,19 +199,18 @@ const DraftProposalsPageContent = memo(
           }
 
           try {
-            let metadata: ProposalMetadata = {
+            const metadata: ProposalMetadata = {
               version: 1,
               quorum: DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
               approvalThreshold:
-                APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY,
-              proposalType: ProposalType.SimpleMajority,
+                proposalType === ProposalType.SuperMajority
+                  ? APPROVAL_THRESHOLD_BASIS_POINTS.SUPER_MAJORITY
+                  : APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY,
+              proposalType:
+                proposalType === ProposalType.SuperMajority
+                  ? ProposalType.SuperMajority
+                  : ProposalType.SimpleMajority,
             };
-
-            if (proposalType === ProposalType.SuperMajority) {
-              metadata.approvalThreshold =
-                APPROVAL_THRESHOLD_BASIS_POINTS.SUPER_MAJORITY;
-              metadata.proposalType = ProposalType.SuperMajority;
-            }
 
             const encodedDescription = encodeMetadata(description, metadata);
 
