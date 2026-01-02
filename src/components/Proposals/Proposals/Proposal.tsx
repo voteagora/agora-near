@@ -18,7 +18,7 @@ export const Proposal = memo(({ proposal }: { proposal: ProposalType }) => {
             "w-full items-start justify-center"
           )}
         >
-          <div className="flex flex-row text-xs text-secondary gap-1">
+          <div className="flex flex-row items-center text-xs text-secondary gap-1">
             <div className="hidden sm:inline">
               Proposal by {proposal.creatorId}
             </div>

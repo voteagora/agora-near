@@ -39,7 +39,7 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
       </header>
       <section className="flex gap-8 flex-col md:flex-row">
         <section className="px-4 flex-1 w-full">
-          <div className="flex flex-col gap-2 mb-4">
+          <div className="flex flex-col items-start gap-2 mb-4">
             <ProposalTypeBadge type={proposal.proposalType} />
             <h1 className="text-2xl font-bold">{proposal.title}</h1>
           </div>

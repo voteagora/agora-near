@@ -27,7 +27,7 @@ export const ProposalTypeBadge = ({
   return (
     <span
       className={cn(
-        "text-[10px] px-1.5 py-0.5 rounded-full border font-semibold whitespace-nowrap",
+        "inline-flex text-[10px] px-1.5 py-0.5 rounded-full border font-semibold whitespace-nowrap",
         style,
         className
       )}
