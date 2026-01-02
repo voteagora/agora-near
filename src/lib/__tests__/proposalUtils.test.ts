@@ -47,6 +47,8 @@ describe("proposalUtils", () => {
         forVotingPower: "100",
         againstVotingPower: "50",
         abstainVotingPower: "50",
+        approvalThreshold: 5000,
+        proposalType: "SimpleMajority",
       });
       expect(status).toBe(ProposalDisplayStatus.Succeeded);
     });
@@ -55,9 +57,11 @@ describe("proposalUtils", () => {
       const status = getProposalStatus({
         status: ProposalStatus.Finished,
         quorumAmount: "201",
-        forVotingPower: "100",
+        forVotingPower: "99",
         againstVotingPower: "50",
         abstainVotingPower: "50",
+        approvalThreshold: 5000,
+        proposalType: "SimpleMajority",
       });
       expect(status).toBe(ProposalDisplayStatus.Defeated);
     });
@@ -69,6 +73,8 @@ describe("proposalUtils", () => {
         forVotingPower: "50",
         againstVotingPower: "100",
         abstainVotingPower: "50",
+        approvalThreshold: 5000,
+        proposalType: "SimpleMajority",
       });
       expect(status).toBe(ProposalDisplayStatus.Defeated);
     });

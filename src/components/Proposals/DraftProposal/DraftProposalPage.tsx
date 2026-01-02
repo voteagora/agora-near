@@ -14,7 +14,10 @@ import {
 } from "@/hooks/useDraftProposals";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { DraftProposalStage } from "@/lib/api/proposal/types";
-import { NEAR_VOTING_OPTIONS } from "@/lib/constants";
+import {
+  DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
+  NEAR_VOTING_OPTIONS,
+} from "@/lib/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeftIcon, TrashIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -24,6 +27,13 @@ import { toast } from "react-hot-toast";
 import { z } from "zod";
 import CopyableHumanAddress from "@/components/shared/CopyableHumanAddress";
 import DraftEditForm, { DraftEditFormRef } from "./DraftEditForm";
+import {
+  APPROVAL_THRESHOLD_BASIS_POINTS,
+  decodeMetadata,
+  encodeMetadata,
+  ProposalMetadata,
+  ProposalType,
+} from "@/lib/proposalMetadata";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -37,6 +47,9 @@ const formSchema = z.object({
       })
     )
     .min(2, "At least two options are required"),
+  proposalType: z.nativeEnum(ProposalType).optional(),
+  quorumThreshold: z.coerce.number().optional(),
+  approvalThreshold: z.coerce.number().optional(),
 });
 
 // Strict validation used only on submission
@@ -58,6 +71,9 @@ const submitSchema = z.object({
       })
     )
     .min(2, "At least two options are required"),
+  proposalType: z.nativeEnum(ProposalType),
+  quorumThreshold: z.coerce.number().optional(),
+  approvalThreshold: z.coerce.number().optional(),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -136,6 +152,7 @@ const DraftProposalsPageContent = memo(
       handleSubmit: handleSubmitForm,
       watch,
       setError,
+      getValues,
     } = useFormContext<FormValues>();
 
     const [title, description, link] = watch(["title", "description", "link"]);
@@ -150,7 +167,7 @@ const DraftProposalsPageContent = memo(
 
     const handleSubmit = useCallback(() => {
       handleSubmitForm(
-        async ({ title, description, link }) => {
+        async ({ title, description, link, proposalType }) => {
           if (step === 1) {
             setStep(2);
             updateDraft({
@@ -167,6 +184,7 @@ const DraftProposalsPageContent = memo(
             title,
             description,
             link,
+            proposalType,
             options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
           });
 
@@ -181,9 +199,24 @@ const DraftProposalsPageContent = memo(
           }
 
           try {
+            const metadata: ProposalMetadata = {
+              version: 1,
+              quorum: DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
+              approvalThreshold:
+                proposalType === ProposalType.SuperMajority
+                  ? APPROVAL_THRESHOLD_BASIS_POINTS.SUPER_MAJORITY
+                  : APPROVAL_THRESHOLD_BASIS_POINTS.SIMPLE_MAJORITY,
+              proposalType:
+                proposalType === ProposalType.SuperMajority
+                  ? ProposalType.SuperMajority
+                  : ProposalType.SimpleMajority,
+            };
+
+            const encodedDescription = encodeMetadata(description, metadata);
+
             const transactionResult = await createProposalAsync({
               title: title || null,
-              description: description || null,
+              description: encodedDescription || null,
               link: link || null,
               voting_options: NEAR_VOTING_OPTIONS,
             });
@@ -220,10 +253,15 @@ const DraftProposalsPageContent = memo(
 
     useEffect(() => {
       if (draft && !isDirty) {
+        const { description: cleanDescription, metadata } = decodeMetadata(
+          draft.description || ""
+        );
+
         reset({
           title: draft.title || "",
-          description: draft.description || "",
+          description: cleanDescription,
           link: draft.proposalUrl || "",
+          proposalType: metadata.proposalType,
           options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
         });
       }
@@ -378,12 +416,8 @@ const DraftProposalsPageContent = memo(
             config={config}
             votingDuration={votingDuration}
             onSaveSuccess={() => {
-              reset({
-                title: draft.title || "",
-                description: draft.description || "",
-                link: draft.proposalUrl || "",
-                options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
-              });
+              const currentValues = getValues();
+              reset(currentValues);
             }}
           />
         ) : (
@@ -472,6 +506,9 @@ export default function DraftProposalPage({ draftId }: DraftProposalPageProps) {
       description: "",
       link: "",
       options: NEAR_VOTING_OPTIONS.map((title) => ({ title })),
+      proposalType: undefined,
+      quorumThreshold: undefined,
+      approvalThreshold: undefined,
     },
     mode: "onSubmit",
   });

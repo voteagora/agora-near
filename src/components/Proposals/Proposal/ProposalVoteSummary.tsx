@@ -26,6 +26,7 @@ export default function ProposalVoteSummary({
   const againstVotesNumber =
     Number(proposal.votes[1].total_venear) / Math.pow(10, NEAR_TOKEN.decimals);
 
+  const quorumAmount = proposal.quorumAmount ?? "0";
   // Format both values independently
   const formattedForVotes = formatVotingPower(forVotesNumber, forVotesNumber);
   const formattedAgainstVotes = formatVotingPower(
@@ -53,11 +54,7 @@ export default function ProposalVoteSummary({
             </div>
             <ProposalVoteBar proposal={proposal} />
             <div className="text-secondary font-normal pb-2">
-              Quorum{" "}
-              <TokenAmount
-                amount={proposal.quorumAmountYoctoNear ?? "0"}
-                hideCurrency
-              />
+              Quorum <TokenAmount amount={quorumAmount} hideCurrency />
             </div>
           </HoverCardTrigger>
           <div className="cursor-pointer flex flex-col gap-2 px-4">

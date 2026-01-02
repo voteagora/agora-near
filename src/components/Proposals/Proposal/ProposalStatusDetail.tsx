@@ -26,7 +26,7 @@ export default function ProposalStatusDetail({
   proposal: ProposalInfo;
   className?: string;
 }) {
-  const quorum = proposal.quorumAmountYoctoNear ?? "0";
+  const quorum = proposal.quorumAmount || "0";
 
   const status = getProposalStatus({
     status: proposal.status,
@@ -34,6 +34,8 @@ export default function ProposalStatusDetail({
     forVotingPower: proposal.votes[0].total_venear,
     againstVotingPower: proposal.votes[1].total_venear,
     abstainVotingPower: proposal.votes[2]?.total_venear ?? "0",
+    proposalType: proposal.proposalType,
+    approvalThreshold: Number(proposal.approvalThreshold),
   });
 
   const isDefeated = status === ProposalDisplayStatus.Defeated;

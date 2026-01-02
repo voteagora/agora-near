@@ -51,7 +51,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
       Number(proposal.voting_duration_ns)
     ).toString()
   );
-  const quorum = Big(proposal.quorumAmountYoctoNear ?? "0");
+  const quorumAmount = Big(proposal.quorumAmount ?? "0");
 
   const stackIds: { [key: string]: string } = {
     for: "1",
@@ -124,13 +124,13 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
               0,
               (dataMax: number) => {
                 // Add 10% padding above the higher value between dataMax and quorum
-                return Math.max(dataMax, quorum.toNumber()) * 1.1;
+                return Math.max(dataMax, quorumAmount.toNumber()) * 1.1;
               },
             ]}
           />
-          {!!quorum && (
+          {!!quorumAmount && (
             <ReferenceLine
-              y={quorum.toString()}
+              y={quorumAmount.toString()}
               strokeWidth={1}
               strokeDasharray="3 3"
               stroke="#4F4F4F"
@@ -144,7 +144,7 @@ export const TimelineChart = ({ votes, proposal }: Props) => {
           )}
 
           <Tooltip
-            content={<CustomTooltip quorum={quorum.toFixed(0)} />}
+            content={<CustomTooltip quorum={quorumAmount.toFixed(0)} />}
             cursor={{ stroke: "#666", strokeWidth: 1, strokeDasharray: "4 4" }}
           />
           <Area
