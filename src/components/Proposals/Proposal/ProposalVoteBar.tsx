@@ -10,13 +10,18 @@ export default function ProposalVoteBar({
   const forVotes = Number(proposal.votes[0].total_venear);
   const againstVotes = Number(proposal.votes[1].total_venear);
   const abstainVotes = Number(proposal.votes[2]?.total_venear ?? "0");
-  const totalVotes = Number(proposal.total_votes.total_venear);
+  const totalVotes = forVotes + againstVotes + abstainVotes;
 
   // Threshold is at 50% of for+against votes (abstain doesn't count)
+  const approvalPercentage = Number(proposal.approvalThreshold) / 10000;
+
+  // Calculate threshold position based on approval percentage (50% or 66%)
+  // Adjusted by the ratio of (For + Against) / Total, since the bar includes Abstain.
+  const participatingVotes = forVotes + againstVotes;
   const thresholdPosition =
-    totalVotes > 0 && forVotes + againstVotes > 0
-      ? ((forVotes + againstVotes) / 2 / totalVotes) * 100
-      : 50;
+    totalVotes > 0
+      ? approvalPercentage * (participatingVotes / totalVotes) * 100
+      : approvalPercentage * 100;
 
   return (
     <div id="chartContainer" className="relative flex items-stretch gap-x-0.5">

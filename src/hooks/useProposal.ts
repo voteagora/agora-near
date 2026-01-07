@@ -1,5 +1,7 @@
 import { CONTRACTS } from "@/lib/contractConstants";
 import { useReadHOSContract } from "./useReadHOSContract";
+import { unpackProposal } from "@/lib/proposalUtils";
+import { useMemo } from "react";
 
 export const useProposal = (proposalId: string) => {
   const [{ data, isLoading, error }] = useReadHOSContract([
@@ -10,8 +12,12 @@ export const useProposal = (proposalId: string) => {
     },
   ]);
 
+  const proposal = useMemo(() => {
+    return data ? unpackProposal(data) : null;
+  }, [data]);
+
   return {
-    proposal: data,
+    proposal,
     isLoading,
     error,
   };

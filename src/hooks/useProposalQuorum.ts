@@ -4,7 +4,11 @@ import { useMemo } from "react";
 
 const PROPOSAL_QUORUM_QK = "proposal-quorum";
 
-export const useProposalQuorum = ({ proposalId }: { proposalId: string }) => {
+export const useProposalQuorum = ({
+  proposalId,
+}: {
+  proposalId: string;
+}): { quorumAmount: string | undefined; isLoading: boolean } => {
   const { data, isLoading } = useQuery({
     queryKey: [PROPOSAL_QUORUM_QK, proposalId],
     queryFn: async () => {
@@ -14,7 +18,7 @@ export const useProposalQuorum = ({ proposalId }: { proposalId: string }) => {
   });
 
   return useMemo(
-    () => ({ quorumAmountYoctoNear: data?.quorumAmount, isLoading }),
+    () => ({ quorumAmount: data?.quorumAmount, isLoading }),
     [data?.quorumAmount, isLoading]
   );
 };

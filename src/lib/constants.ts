@@ -5,6 +5,7 @@ import linearAssetIcon from "@/assets/linear.svg";
 import stnearAssetIcon from "@/assets/stnear.svg";
 import veNearAssetIcon from "@/assets/venear.svg";
 import rnearAssetIcon from "@/assets/rnear.svg";
+import Big from "big.js";
 
 export const SECONDS_IN_HOUR = 3600;
 
@@ -129,12 +130,13 @@ export const MIN_VERSION_FOR_LST_LOCKUP = process.env.MIN_VERSION_FOR_LST_LOCKUP
   ? Number(process.env.MIN_VERSION_FOR_LST_LOCKUP)
   : Number.MAX_SAFE_INTEGER;
 
-export const DEFAULT_QUORUM_THRESHOLD_PERCENTAGE = "0.35";
+export const DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS = "3500";
 
 export const LEGACY_STAKING_DISMISSED_KEY =
   "agora-legacy-staking-banner-dismissed";
 
-export const DEFAULT_QUORUM_FLOOR_VENEAR = "7000000"; // 7M veNEAR
+// export const DEFAULT_QUORUM_FLOOR_VENEAR = "7000000"; // 7M veNEAR
+export const DEFAULT_QUORUM_FLOOR_VENEAR = "10"; // 10 veNEAR (Dev override)
 
 export const STAKE_ENCOURAGEMENT_BANNER_DISMISS_KEY =
   "agora-stake-encouragement-dismissed";

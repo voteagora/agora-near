@@ -4,6 +4,7 @@ import AgoraLoader from "@/components/shared/AgoraLoader/AgoraLoader";
 import { useProposal } from "@/hooks/useProposal";
 import { useProposalConfig } from "@/hooks/useProposalConfig";
 import { useProposalQuorum } from "@/hooks/useProposalQuorum";
+
 import { ProposalStatus } from "@/lib/contracts/types/voting";
 import { useMemo } from "react";
 import { PendingProposal } from "./PendingProposal";
@@ -16,14 +17,29 @@ export const maxDuration = 60;
 export default function ProposalHome({ proposalId }: { proposalId: string }) {
   const { proposal, isLoading: isLoadingProposal } = useProposal(proposalId);
   const { config, isLoading: isConfigLoading } = useProposalConfig();
-  const { quorumAmountYoctoNear, isLoading: isLoadingQuorumAmount } =
-    useProposalQuorum({
-      proposalId,
-    });
+  const { quorumAmount, isLoading: isLoadingQuorumAmount } = useProposalQuorum({
+    proposalId,
+  });
 
   const proposalWithQuorum = useMemo(() => {
-    return proposal ? { ...proposal, quorumAmountYoctoNear } : null;
-  }, [proposal, quorumAmountYoctoNear]);
+    return proposal
+      ? {
+          ...proposal,
+          quorumAmount,
+          proposalType: proposal.metadata.proposalType,
+          approvalThreshold: proposal.metadata.approvalThreshold.toString(),
+        }
+      : null;
+  }, [proposal, quorumAmount]);
+
+  const finalProposal = useMemo(() => {
+    if (!proposalWithQuorum) return null;
+    return {
+      ...proposalWithQuorum,
+      description:
+        proposalWithQuorum.cleanDescription || proposalWithQuorum.description,
+    };
+  }, [proposalWithQuorum]);
 
   const isLoading =
     isLoadingProposal || isConfigLoading || isLoadingQuorumAmount;
@@ -32,26 +48,28 @@ export default function ProposalHome({ proposalId }: { proposalId: string }) {
     return <AgoraLoader />;
   }
 
-  if (!proposalWithQuorum || !config) {
+  if (!finalProposal || !config) {
     return <div>Proposal not found</div>;
   }
 
-  if (proposalWithQuorum.status === ProposalStatus.Created) {
-    return <PendingProposal proposal={proposalWithQuorum} />;
+  if (finalProposal.status === ProposalStatus.Created) {
+    return <PendingProposal proposal={finalProposal} />;
   }
 
   return (
     <div className="flex flex-col items-center mt-12">
-      <div className="flex gap-8 lg:gap-16 justify-between items-start max-w-desktop w-full flex-col md:flex-row md:items-start md:justify-between">
-        <div className="flex-1 min-w-0">
-          <ProposalDescription proposal={proposalWithQuorum} />
+      <div className="flex flex-col gap-6 w-full max-w-desktop">
+        <div className="flex flex-col md:flex-row gap-8 relative items-start justify-between">
+          <div className="flex-1 min-w-0">
+            <ProposalDescription proposal={finalProposal} />
+          </div>
+          <div className="flex-1 md:flex-none md:w-[24rem] min-w-0">
+            <ProposalVoteResult proposal={finalProposal} config={config} />
+          </div>
         </div>
-        <div className="flex-1 md:flex-none md:w-[24rem] min-w-0">
-          <ProposalVoteResult proposal={proposalWithQuorum} config={config} />
-        </div>
+        {/* Mobile-only spacer to prevent overlap with modal/circle */}
+        <div className="block md:hidden" style={{ height: 65 }} />
       </div>
-      {/* Mobile-only spacer to prevent overlap with modal/circle */}
-      <div className="block md:hidden" style={{ height: 65 }} />
     </div>
   );
 }

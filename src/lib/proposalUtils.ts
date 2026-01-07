@@ -10,20 +10,38 @@ import {
   ProposalStatus,
 } from "./contracts/types/voting";
 import {
+  decodeMetadata,
+  ProposalMetadata,
+  ProposalType,
+} from "./proposalMetadata";
+import {
   DEFAULT_QUORUM_FLOOR_VENEAR,
-  DEFAULT_QUORUM_THRESHOLD_PERCENTAGE,
+  DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS,
 } from "./constants";
+import { Metadata } from "next";
 
-export const isForGreaterThanAgainst = ({
+export const isApprovalThresholdMet = ({
   forVotingPower,
   againstVotingPower,
+  approvalThreshold,
 }: {
   forVotingPower: string;
   againstVotingPower: string;
+  approvalThreshold: number;
 }) => {
   const votedFor = Big(forVotingPower ?? 0);
   const votedAgainst = Big(againstVotingPower ?? 0);
-  return votedFor.gt(votedAgainst);
+  const num = votedFor;
+  const den = votedFor.add(votedAgainst);
+
+  if (den.eq(0)) {
+    return false;
+  }
+
+  const div = num.div(den);
+  const result = div.gte(Big(approvalThreshold).div(10000));
+
+  return result;
 };
 
 export function getProposalStatus({
@@ -32,12 +50,16 @@ export function getProposalStatus({
   forVotingPower,
   againstVotingPower,
   abstainVotingPower,
+  approvalThreshold,
+  proposalType,
 }: {
   status: string;
   quorumAmount: string;
   forVotingPower: string;
   againstVotingPower: string;
   abstainVotingPower: string;
+  approvalThreshold: number;
+  proposalType?: string;
 }) {
   switch (status) {
     case ProposalStatus.Finished: {
@@ -47,11 +69,12 @@ export function getProposalStatus({
         againstVotingPower,
         abstainVotingPower,
       });
-      const forGreaterThanAgainst = isForGreaterThanAgainst({
+      const approvalFulfilled = isApprovalThresholdMet({
         forVotingPower,
         againstVotingPower,
+        approvalThreshold,
       });
-      return quorumFulfilled && forGreaterThanAgainst
+      return quorumFulfilled && approvalFulfilled
         ? ProposalDisplayStatus.Succeeded
         : ProposalDisplayStatus.Defeated;
     }
@@ -118,44 +141,12 @@ export const getProposalTimes = ({
   };
 };
 
-const QUORUM_OVERRIDE_AMOUNT_IN_NEAR =
-  process.env.NEXT_PUBLIC_NEAR_QUORUM_VENEAR_OVERRIDE;
-
-const QUORUM_THRESHOLD_PERCENTAGE =
-  process.env.NEXT_PUBLIC_NEAR_QUORUM_THRESHOLD_PERCENTAGE ??
-  DEFAULT_QUORUM_THRESHOLD_PERCENTAGE;
-
 const QUORUM_FLOOR_IN_NEAR =
   process.env.NEXT_PUBLIC_NEAR_QUORUM_FLOOR_VENEAR ??
   DEFAULT_QUORUM_FLOOR_VENEAR;
 
-export const getYoctoNearForQuorum = (totalVotingPower: string) => {
-  const isQuorumOverrideActive = getIsQuorumOverrideActive();
-
-  if (isQuorumOverrideActive) {
-    return Big(getQuorumOverrideYoctoNear());
-  }
-
-  const quorumPercentage = Big(QUORUM_THRESHOLD_PERCENTAGE);
-  const quorumFloor = Big(getQuorumFloorYoctoNear());
-
-  const percentageBasedQuorum = Big(totalVotingPower).mul(quorumPercentage);
-
-  return percentageBasedQuorum.gt(quorumFloor)
-    ? percentageBasedQuorum
-    : quorumFloor;
-};
-
-export const getIsQuorumOverrideActive = (): boolean => {
-  return !!QUORUM_OVERRIDE_AMOUNT_IN_NEAR;
-};
-
-export const getQuorumOverrideYoctoNear = () => {
-  return parseNearAmount(QUORUM_OVERRIDE_AMOUNT_IN_NEAR) ?? "0";
-};
-
 export const getFormattedQuorumPercentage = () =>
-  `${Number(QUORUM_THRESHOLD_PERCENTAGE) * 100}%`;
+  `${Number(DEFAULT_QUORUM_THRESHOLD_PERCENTAGE_BPS) / 100}%`;
 
 export const getQuorumFloorYoctoNear = () =>
   parseNearAmount(QUORUM_FLOOR_IN_NEAR) ?? "0";
@@ -184,7 +175,8 @@ export const isQuorumFulfilled = ({
     againstVotingPower,
     abstainVotingPower
   );
-  return totalVotes.gte(quorumAmount);
+  const result = totalVotes.gte(quorumAmount);
+  return result;
 };
 
 export const getVotingDays = ({
@@ -198,4 +190,25 @@ export const getVotingDays = ({
     return `${votingDays} ${votingDays === 1 ? "day" : "days"}`;
   }
   return formatNanoSecondsToTimeUnit(voting_duration_ns);
+};
+
+export const unpackProposal = <
+  T extends {
+    description?: string | null;
+  },
+>(
+  proposal: T
+): T & {
+  metadata: ProposalMetadata;
+  cleanDescription: string;
+} => {
+  const rawDescription = proposal.description || "";
+
+  const { metadata, description } = decodeMetadata(rawDescription);
+
+  return {
+    ...proposal,
+    metadata,
+    cleanDescription: description,
+  };
 };
