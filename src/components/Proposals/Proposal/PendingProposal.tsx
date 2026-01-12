@@ -7,11 +7,12 @@ import { useProposalActions } from "@/hooks/useProposalActions";
 import { toast } from "react-hot-toast";
 import { ChevronLeftIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ProposalTypeBadge } from "../ProposalTypeBadge";
 
 export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
   const router = useRouter();
 
-  const { config, votingDuration } = useProposalConfig();
+  const { config, votingDuration, isLoading } = useProposalConfig();
   const { signedAccountId } = useNear();
 
   const isReviewer =
@@ -24,6 +25,10 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
       },
     });
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <section>
       <header className="py-8 flex items-center gap-2">
@@ -34,7 +39,10 @@ export const PendingProposal = ({ proposal }: { proposal: ProposalInfo }) => {
       </header>
       <section className="flex gap-8 flex-col md:flex-row">
         <section className="px-4 flex-1 w-full">
-          <h1 className="text-2xl font-bold">{proposal.title}</h1>
+          <div className="flex flex-col items-start gap-2 mb-4">
+            <ProposalTypeBadge type={proposal.proposalType} />
+            <h1 className="text-2xl font-bold">{proposal.title}</h1>
+          </div>
           <p>Submitted by: {proposal.proposer_id}</p>
           <section className="mt-8 px-4 py-6 border border-secondary/20 rounded-md gap-4 flex flex-col">
             <div className="border border-secondary/20">

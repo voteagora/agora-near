@@ -18,6 +18,7 @@ import DelegateProfile from "../Delegates/DelegateProfile/DelegateProfile";
 import { DelegateProfile as DelegateProfileType } from "@/lib/api/delegates/types";
 import { MixpanelEvents } from "@/lib/analytics/mixpanel";
 import { trackEvent } from "@/lib/analytics";
+import { sanitizeString } from "@/lib/sanitizationUtils";
 
 export default function DelegateStatementForm({
   form,
@@ -63,12 +64,6 @@ export default function DelegateStatementForm({
       topIssues,
       notificationPreferences,
     } = values;
-
-    // Sanitize string fields to replace curly quotes with straight quotes
-    const sanitizeString = (str: string | undefined) => {
-      if (!str) return "";
-      return str.replace(/['""]/g, (match) => (match === "'" ? "'" : '"'));
-    };
 
     // User will only sign what they are seeing on the frontend
     const body = {

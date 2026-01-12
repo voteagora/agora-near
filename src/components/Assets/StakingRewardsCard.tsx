@@ -2,6 +2,8 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { ArrowRightIcon } from "lucide-react";
+import Link from "next/link";
 import { memo } from "react";
 
 interface StakingRewardsCardProps {
@@ -21,7 +23,7 @@ export const StakingRewardsCard = memo(
       >
         <CardContent className="relative p-3 sm:p-4 lg:p-6">
           <div className="relative text-center">
-            <div className="flex flex-col py-4 sm:py-6 lg:py-8">
+            <div className="flex flex-col lg:py-4">
               <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-2">
                 Staking Rewards
               </h3>
@@ -42,6 +44,13 @@ export const StakingRewardsCard = memo(
                 <span className="text-xs sm:text-sm lg:text-sm text-white">
                   APY*
                 </span>
+                <Link
+                  href="/info?item=contract-level-onboarding"
+                  className="flex items-center font-medium hover:opacity-80 transition-opacity gap-2 mt-2"
+                >
+                  Learn More
+                  <ArrowRightIcon className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
+                </Link>
               </div>
             </div>
             <div className="flex flex-row w-full justify-center">
