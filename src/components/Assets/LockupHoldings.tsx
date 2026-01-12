@@ -76,9 +76,6 @@ export const LockupHoldings = memo(
       accountId: lockupAccountId,
     });
 
-
-
-
     const { withdrawNear, isWithdrawingNear } = useStakeNear({
       lockupAccountId: lockupAccountId ?? "",
     });
