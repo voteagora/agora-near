@@ -76,6 +76,9 @@ export const LockupHoldings = memo(
       accountId: lockupAccountId,
     });
 
+
+
+
     const { withdrawNear, isWithdrawingNear } = useStakeNear({
       lockupAccountId: lockupAccountId ?? "",
     });
@@ -171,12 +174,14 @@ export const LockupHoldings = memo(
         )}
         {stakingPoolId && (
           <>
-            <VeNearStakedAssetRow
-              stakingPoolId={stakingPoolId}
-              stakedBalance={stakedBalance ?? "0"}
-              onUnstakeClick={openUnstakeDialog}
-            />
-            {Big(unstakedBalance ?? "0").gt(0) && (
+            {Big(filterDust({ amount: stakedBalance ?? "0" })).gt(0) && (
+              <VeNearStakedAssetRow
+                stakingPoolId={stakingPoolId}
+                stakedBalance={stakedBalance ?? "0"}
+                onUnstakeClick={openUnstakeDialog}
+              />
+            )}
+            {Big(filterDust({ amount: unstakedBalance ?? "0" })).gt(0) && (
               <VeNearStakedAssetRow
                 stakingPoolId={stakingPoolId}
                 stakedBalance={unstakedBalance ?? "0"}
