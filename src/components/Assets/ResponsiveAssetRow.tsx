@@ -27,6 +27,7 @@ type ResponsiveAssetRowProps = {
   overflowButtons?: OverflowButton[];
   actionButton?: ActionButton;
   actionButtons?: ActionButton[];
+  icon?: React.ReactNode;
 };
 
 export const ResponsiveAssetRow = memo<ResponsiveAssetRowProps>(
@@ -37,6 +38,7 @@ export const ResponsiveAssetRow = memo<ResponsiveAssetRowProps>(
     overflowButtons,
     actionButton,
     actionButtons,
+    icon,
   }) => {
     return (
       <>
@@ -48,6 +50,7 @@ export const ResponsiveAssetRow = memo<ResponsiveAssetRowProps>(
           overflowButtons={overflowButtons}
           actionButton={actionButton}
           actionButtons={actionButtons}
+          icon={icon}
           className="hidden sm:table-row"
         />
 

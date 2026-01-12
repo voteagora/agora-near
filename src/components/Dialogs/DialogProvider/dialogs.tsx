@@ -12,6 +12,7 @@ import { UnlockDialog } from "../UnlockDialog";
 import { EncourageConnectWalletDialog } from "@/components/Delegates/Delegations/EncourageConnectWalletDialog";
 import SubscribeDialog from "@/components/Notifications/SubscribeDialog";
 import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
+import { UnstakeDialog } from "../UnstakeDialog";
 import { NearClaimDialog } from "../NearClaimDialog/NearClaimDialog";
 
 export type DialogType =
@@ -27,6 +28,7 @@ export type DialogType =
   | EncourageConnectWalletDialogType
   | SubscribeDialogType
   | ConfirmDialogType
+  | NearUnstakeDialogType
   | NearClaimDialogType;
 
 export type DelegateDialogType = {
@@ -121,6 +123,11 @@ export type ConfirmDialogType = {
   };
 };
 
+export type NearUnstakeDialogType = {
+  type: "NEAR_UNSTAKE";
+  params: Record<string, never>;
+};
+
 export type NearClaimDialogType = {
   type: "NEAR_CLAIM";
   params: Record<string, never>;
@@ -191,5 +198,6 @@ export const dialogs: DialogDefinitions<DialogType> = {
   CONFIRM: (params, closeDialog) => (
     <ConfirmDialog {...params} closeDialog={closeDialog} />
   ),
+  NEAR_UNSTAKE: (_, closeDialog) => <UnstakeDialog closeDialog={closeDialog} />,
   NEAR_CLAIM: (_, closeDialog) => <NearClaimDialog closeDialog={closeDialog} />,
 };

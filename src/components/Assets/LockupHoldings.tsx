@@ -4,10 +4,13 @@ import { useLiquidLockupBalance } from "@/hooks/useLiquidLockupBalance";
 import { useLockupAccount } from "@/hooks/useLockupAccount";
 import { useLockupPendingBalance } from "@/hooks/useLockupPendingBalance";
 import { useStakedBalance } from "@/hooks/useStakedBalance";
+import { useStakeNear } from "@/hooks/useStakeNear";
 import { useVenearAccountInfo } from "@/hooks/useVenearAccountInfo";
+import { useUnstakedBalance } from "@/hooks/useUnstakedBalance";
 import { filterDust } from "@/lib/tokenUtils";
 import Big from "big.js";
 import { memo, useMemo } from "react";
+import toast from "react-hot-toast";
 import { Skeleton } from "../ui/skeleton";
 import { VeNearAssetRow } from "./VeNearAssetRow";
 import { LockupLiquidNearRow } from "./LockupLiquidNearRow";
@@ -16,10 +19,15 @@ import { VeNearStakedAssetRow } from "./VeNearStakedAssetRow";
 interface LockupHoldingsProps {
   openLockDialog: (preSelectedTokenId?: string | null) => void;
   openStakingDialog: () => void;
+  openUnstakeDialog: () => void;
 }
 
 export const LockupHoldings = memo(
-  ({ openLockDialog, openStakingDialog }: LockupHoldingsProps) => {
+  ({
+    openLockDialog,
+    openStakingDialog,
+    openUnstakeDialog,
+  }: LockupHoldingsProps) => {
     const { signedAccountId } = useNear();
 
     const { lockupAccountId, isLoading: isLoadingLockupAccountId } =
@@ -59,6 +67,19 @@ export const LockupHoldings = memo(
         accountId: lockupAccountId,
       });
 
+    const {
+      unstakedBalance,
+      isLoading: isLoadingUnstakedBalance,
+      isAvailable: isUnstakedBalanceAvailable,
+    } = useUnstakedBalance({
+      stakingPoolId,
+      accountId: lockupAccountId,
+    });
+
+    const { withdrawNear, isWithdrawingNear } = useStakeNear({
+      lockupAccountId: lockupAccountId ?? "",
+    });
+
     const filteredLiquidLockupBalance = useMemo(() => {
       return {
         withdrawableNearBalance: filterDust({
@@ -95,6 +116,7 @@ export const LockupHoldings = memo(
       isLoadingAccountInfo ||
       isLoadingLockupPendingBalance ||
       isLoadingStakedBalance ||
+      isLoadingUnstakedBalance ||
       isLoadingLiquidLockupBalance;
 
     if (isLoading) {
@@ -148,10 +170,48 @@ export const LockupHoldings = memo(
           />
         )}
         {stakingPoolId && (
-          <VeNearStakedAssetRow
-            stakingPoolId={stakingPoolId}
-            stakedBalance={stakedBalance ?? "0"}
-          />
+          <>
+            {Big(filterDust({ amount: stakedBalance ?? "0" })).gt(0) && (
+              <VeNearStakedAssetRow
+                stakingPoolId={stakingPoolId}
+                stakedBalance={stakedBalance ?? "0"}
+                onUnstakeClick={openUnstakeDialog}
+              />
+            )}
+            {Big(filterDust({ amount: unstakedBalance ?? "0" })).gt(0) && (
+              <VeNearStakedAssetRow
+                stakingPoolId={stakingPoolId}
+                stakedBalance={unstakedBalance ?? "0"}
+                onUnstakeClick={async () => {
+                  if (unstakedBalance) {
+                    try {
+                      await withdrawNear(unstakedBalance);
+                      toast.success("Withdraw complete");
+                    } catch (e: any) {
+                      if (
+                        e?.message?.includes("User rejected") ||
+                        e?.message?.includes("user rejected")
+                      ) {
+                        return;
+                      }
+                      toast.error("Failed to withdraw");
+                    }
+                  }
+                }}
+                overrideTitle={
+                  isUnstakedBalanceAvailable
+                    ? "Available to withdraw"
+                    : "Pending Release"
+                }
+                hideUnstakeButton={!isUnstakedBalanceAvailable}
+                releaseTimeLabel={
+                  isUnstakedBalanceAvailable ? "Now" : "~52-65 hours"
+                }
+                overrideUnstakeLabel="Withdraw"
+                isLoading={isWithdrawingNear}
+              />
+            )}
+          </>
         )}
       </>
     );

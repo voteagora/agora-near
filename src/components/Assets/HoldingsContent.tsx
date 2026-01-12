@@ -6,10 +6,15 @@ import StakeEncouragementBanner from "./StakeEncouragementBanner";
 interface HoldingsContentProps {
   openLockDialog: (preSelectedTokenId?: string | null) => void;
   openStakingDialog: () => void;
+  openUnstakeDialog: () => void;
 }
 
 export const HoldingsContent = memo(
-  ({ openLockDialog, openStakingDialog }: HoldingsContentProps) => {
+  ({
+    openLockDialog,
+    openStakingDialog,
+    openUnstakeDialog,
+  }: HoldingsContentProps) => {
     return (
       <div className="w-full">
         <StakeEncouragementBanner onStakeClick={openStakingDialog} />
@@ -18,6 +23,7 @@ export const HoldingsContent = memo(
             <LockupHoldings
               openLockDialog={openLockDialog}
               openStakingDialog={openStakingDialog}
+              openUnstakeDialog={openUnstakeDialog}
             />
             <WalletHoldings openLockDialog={openLockDialog} />
           </tbody>
