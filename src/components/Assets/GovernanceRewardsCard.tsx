@@ -35,7 +35,8 @@ export const GovernanceRewardsCard = memo(() => {
     );
   }
 
-  const hasClaimedRewards = data && data.proofs.length > 0 && !hasUnclaimedRewards;
+  const hasClaimedRewards =
+    data && data.proofs.length > 0 && !hasUnclaimedRewards;
 
   if (hasUnclaimedRewards) {
     return (
