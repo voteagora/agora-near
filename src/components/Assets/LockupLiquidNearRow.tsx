@@ -2,6 +2,7 @@ import { useTransferLockup } from "@/hooks/useTransferLockup";
 import { NEAR_TOKEN_METADATA } from "@/lib/constants";
 import { LockupLiquidBalance } from "@/lib/types";
 import { useCallback, useMemo } from "react";
+import Big from "big.js";
 import toast from "react-hot-toast";
 import TokenAmount from "../shared/TokenAmount";
 import { ResponsiveAssetRow } from "./ResponsiveAssetRow";
@@ -46,13 +47,23 @@ export const LockupLiquidNearRow = ({
       {
         title: "Stake",
         onClick: handleStakeClick,
+        disabled: !Big(liquidLockupBalance.stakableNearBalance ?? "0").gt(0),
       },
       {
         title: "Withdraw",
         onClick: handleWithdraw,
+        disabled: !Big(liquidLockupBalance.withdrawableNearBalance ?? "0").gt(
+          0
+        ),
       },
     ],
-    [handleLockClick, handleStakeClick, handleWithdraw]
+    [
+      handleLockClick,
+      handleStakeClick,
+      handleWithdraw,
+      liquidLockupBalance.stakableNearBalance,
+      liquidLockupBalance.withdrawableNearBalance,
+    ]
   );
 
   const availableToTransferCol = useMemo(() => {
