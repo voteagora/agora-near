@@ -8,7 +8,7 @@ import { DelegationEvent } from "@/lib/api/delegates/types";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 import { format } from "date-fns";
 import Link from "next/link";
-import { truncateMiddle } from "@/lib/text";
+import { truncateAddress } from "@/lib/text";
 
 export default function DelegationFromRow({
   delegation,
@@ -32,7 +32,7 @@ export default function DelegationFromRow({
             className="truncate max-w-[120px]"
             title={delegation.delegatorId}
           >
-            {truncateMiddle(delegation.delegatorId || "")}
+            {truncateAddress(delegation.delegatorId || "")}
           </span>
         </Link>
       </TableCell>
