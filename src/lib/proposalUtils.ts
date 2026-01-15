@@ -117,7 +117,7 @@ export const formatNearTime = (time: string | null | undefined) => {
   if (!time) return null;
   const date = new Date(Number(time) / 1000000);
   // Uses local time zone; "O" provides a short offset (e.g. GMT+2)
-  return format(date, "h:mm aaa MMM dd, yyyy O");
+  return format(date, "yyyy-MM-dd h:mm aaa");
 };
 
 export const getProposalTimes = ({
