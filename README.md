@@ -346,6 +346,6 @@ We use blockchain storage for anything that requires trust and permanence (votes
 
 ### Audits
 
-* [01-15-2026 - House Of Stake
+* [2026-01-16 - House Of Stake
 Super Majority Voting
 Security Review Report](./audits/Super_Majority_v1.1.pdf)
