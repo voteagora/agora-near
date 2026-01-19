@@ -29,6 +29,8 @@ const HosActivityRow = memo(({ activity }: HosActivityRowProps) => {
         return "Delegated to";
       case "initial_registration":
         return "Registration";
+      case "staking_pool_withdraw":
+        return "Withdraw from Pool";
       case "withdraw":
         return "Withdraw";
       case "unstake":
@@ -51,6 +53,8 @@ const HosActivityRow = memo(({ activity }: HosActivityRowProps) => {
       case "withdraw":
       case "unstake":
         return "text-red-600";
+      case "staking_pool_withdraw":
+        return "text-gray-900";
       default:
         return "text-gray-900";
     }
@@ -69,6 +73,8 @@ const HosActivityRow = memo(({ activity }: HosActivityRowProps) => {
       case "withdraw":
       case "unstake":
         return "-";
+      case "staking_pool_withdraw":
+        return "";
       default:
         return "";
     }
@@ -96,7 +102,9 @@ const HosActivityRow = memo(({ activity }: HosActivityRowProps) => {
             : "text-gray-500"
         )}
       >
-        {activity.nearAmount ? (
+        {activity.transactionType === "staking_pool_withdraw" ? (
+          <span className="text-gray-500">-</span>
+        ) : activity.nearAmount ? (
           <span>
             {getAmountPrefix(activity.transactionType)}
             <TokenAmount amount={activity.nearAmount} currency="veNEAR" />
