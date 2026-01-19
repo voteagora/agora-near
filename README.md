@@ -348,4 +348,4 @@ We use blockchain storage for anything that requires trust and permanence (votes
 
 * [01-15-2026 - House Of Stake
 Super Majority Voting
-Security Review Report](./audits/Public Report Agora HOS-Super Majority v1.1.pdf)
+Security Review Report](./audits/Super_Majority_v1.1.pdf)
