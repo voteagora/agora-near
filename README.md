@@ -344,6 +344,8 @@ We use blockchain storage for anything that requires trust and permanence (votes
 | **Write delegate statement** | — | Statement and social links |
 | **Save draft proposal** | — | Draft content (until submitted) |
 
----
+### Audits
 
-NEAR + Agora
+* [01-15-2026 - House Of Stake
+Super Majority Voting
+Security Review Report](./audits/Public Report Agora HOS-Super Majority v1.1.pdf)
