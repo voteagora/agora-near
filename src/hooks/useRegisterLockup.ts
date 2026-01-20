@@ -3,6 +3,8 @@ import { useWriteHOSContract } from "./useWriteHOSContract";
 
 import { CONTRACTS } from "@/lib/contractConstants";
 import { useCallback, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { READ_NEAR_CONTRACT_QK } from "./useReadHOSContract";
 
 type Props = {
   onSuccess?: () => void;
@@ -11,9 +13,19 @@ type Props = {
 export const useRegisterLockup = ({ onSuccess }: Props) => {
   const { signedAccountId } = useNear();
 
+  const queryClient = useQueryClient();
+
   const onRegisterLockupSuccess = useCallback(() => {
     onSuccess?.();
-  }, [onSuccess]);
+
+    queryClient.invalidateQueries({
+      queryKey: [
+        READ_NEAR_CONTRACT_QK,
+        CONTRACTS.VENEAR_CONTRACT_ID,
+        "get_account_info",
+      ],
+    });
+  }, [onSuccess, queryClient]);
 
   const {
     mutate: registerMutation,
