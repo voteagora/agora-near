@@ -30,6 +30,7 @@ import {
   useState,
 } from "react";
 import { generateNonce } from "@/lib/api/nonce/requests";
+import { SignClient } from "@walletconnect/sign-client";
 
 // Default to max Tgas since it gets refunded if not used
 const DEFAULT_GAS = convertUnit("30 Tgas");
@@ -162,6 +163,17 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         const nearConnectNetwork: "mainnet" | "testnet" =
           networkId === "mainnet" ? "mainnet" : "testnet";
 
+          const walletConnect = SignClient.init({
+            projectId: process.env
+              .NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
+            metadata: {
+              name: "Agora NEAR",
+              description: "The on-chain governance company",
+              url: "https://gov.houseofstake.org/",
+              icons: ["https://avatars.githubusercontent.com/u/37784886"],
+            },
+          });
+
         const connector = new NearConnector({
           network: nearConnectNetwork,
           autoConnect: true,
@@ -169,16 +181,7 @@ export const NearProvider: React.FC<NearProviderProps> = ({
           // Do not filter by features to not hide wallets from the manifest
           logger: console,
           walletConnect: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
-            ? {
-                projectId: process.env
-                  .NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
-                metadata: {
-                  name: "Agora NEAR",
-                  description: "The on-chain governance company",
-                  url: "https://gov.houseofstake.org/",
-                  icons: ["https://avatars.githubusercontent.com/u/37784886"],
-                },
-              }
+            ? walletConnect
             : undefined,
         });
 
