@@ -163,16 +163,15 @@ export const NearProvider: React.FC<NearProviderProps> = ({
         const nearConnectNetwork: "mainnet" | "testnet" =
           networkId === "mainnet" ? "mainnet" : "testnet";
 
-          const walletConnect = SignClient.init({
-            projectId: process.env
-              .NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
-            metadata: {
-              name: "Agora NEAR",
-              description: "The on-chain governance company",
-              url: "https://gov.houseofstake.org/",
-              icons: ["https://avatars.githubusercontent.com/u/37784886"],
-            },
-          });
+        const walletConnect = SignClient.init({
+          projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
+          metadata: {
+            name: "Agora NEAR",
+            description: "The on-chain governance company",
+            url: "https://gov.houseofstake.org/",
+            icons: ["https://avatars.githubusercontent.com/u/37784886"],
+          },
+        });
 
         const connector = new NearConnector({
           network: nearConnectNetwork,
